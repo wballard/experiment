@@ -14,30 +14,122 @@ window.InventorySystem = {
     
     loadEquippedItems() {
         try {
-            const savedItems = localStorage.getItem('courierEquippedItems');
-            if (savedItems) {
-                const parsedItems = JSON.parse(savedItems);
-                window.CourierGame.data.equippedItems = parsedItems;
-                console.log('Inventory system loaded equipped items from localStorage:', parsedItems);
+            if (window.CourierData) {
+                // Load from data manager
+                const weapons = window.CourierData.getWeaponsData();
+                const armor = window.CourierData.getArmorData();
+                
+                window.CourierGame.data.equippedItems = {
+                    primary: weapons.equipped?.primary || null,
+                    secondary: weapons.equipped?.secondary || null,
+                    head: armor.equipped?.head || null,
+                    shoulders: armor.equipped?.shoulders || null,
+                    chest: armor.equipped?.chest || null,
+                    gloves: armor.equipped?.gloves || null,
+                    legs: armor.equipped?.legs || null,
+                    back: armor.equipped?.back || null,
+                    bracers: armor.equipped?.bracers || null
+                };
+                
+                console.log('Inventory system loaded equipped items from data manager:', window.CourierGame.data.equippedItems);
+            } else {
+                // Fallback to localStorage
+                const savedItems = localStorage.getItem('courierEquippedItems');
+                if (savedItems) {
+                    const parsedItems = JSON.parse(savedItems);
+                    window.CourierGame.data.equippedItems = parsedItems;
+                    console.log('Inventory system loaded equipped items from localStorage:', parsedItems);
+                }
             }
         } catch (error) {
-            console.error('Error loading equipped items from localStorage:', error);
+            console.error('Error loading equipped items:', error);
         }
     },
     
     async loadInventoryData() {
         try {
-            const response = await fetch('../../assets/data/items.json');
+            // Load from CourierDataManager first
+            if (window.CourierData) {
+                const weapons = window.CourierData.getWeaponsData();
+                const armor = window.CourierData.getArmorData();
+                const modifiers = window.CourierData.getModifiersData();
+                
+                // Load other collections
+                const modifications = window.CourierData.getModificationsData();
+                const consumables = window.CourierData.getConsumablesData();
+                
+                // Combine all items into a single collection
+                const allItems = [
+                    ...weapons.collection,
+                    ...armor.collection,
+                    ...modifiers.collection,
+                    ...modifications.collection,
+                    ...consumables.collection
+                ];
+                
+                // Create items object for compatibility
+                window.CourierGame.data.items = {};
+                allItems.forEach(item => {
+                    window.CourierGame.data.items[item.id] = item;
+                });
+                
+                console.log('Inventory data loaded from CourierDataManager:', allItems.length, 'items');
+                
+                // If no items in data manager, try to load from JSON and migrate
+                if (allItems.length === 0) {
+                    await this.loadAndMigrateFromJson();
+                }
+            } else {
+                // Fallback to JSON file if data manager not available
+                await this.loadFromJsonFallback();
+            }
+        } catch (error) {
+            console.error('Error loading inventory data:', error);
+        }
+    },
+
+    async loadAndMigrateFromJson() {
+        try {
+            console.log('No items in data manager, attempting migration from JSON...');
+            const response = await fetch('assets/data/items.json');
+            if (response.ok) {
+                const data = await response.json();
+                
+                // Migrate weapons to data manager
+                if (data.weapons && window.CourierData) {
+                    Object.values(data.weapons).forEach(weapon => {
+                        window.CourierData.addWeapon(weapon);
+                    });
+                }
+                
+                // Migrate armor to data manager
+                if (data.armor && window.CourierData) {
+                    Object.values(data.armor).forEach(armor => {
+                        window.CourierData.addArmor(armor);
+                    });
+                }
+                
+                console.log('Migration completed - reloading inventory data...');
+                await this.loadInventoryData(); // Reload from data manager
+            }
+        } catch (error) {
+            console.error('Error migrating from JSON:', error);
+        }
+    },
+
+    async loadFromJsonFallback() {
+        try {
+            const response = await fetch('assets/data/items.json');
             if (response.ok) {
                 const data = await response.json();
                 // Combine weapons and armor into a single items object
                 window.CourierGame.data.items = { ...data.weapons, ...data.armor };
-                console.log('Inventory data loaded:', Object.keys(window.CourierGame.data.items).length, 'items');
+                console.log('Inventory data loaded from JSON fallback:', Object.keys(window.CourierGame.data.items).length, 'items');
             } else {
-                console.error('Failed to load inventory data');
+                console.error('Failed to load inventory data from JSON');
             }
         } catch (error) {
-            console.error('Error loading inventory data:', error);
+            console.error('Error loading inventory data from JSON:', error);
         }
     },
     
@@ -138,24 +230,47 @@ window.InventorySystem = {
     equipItem(item) {
         console.log('Equipping item:', item.name);
         
-        // Update equipped items
-        if (window.CourierGame.data.equippedItems) {
-            window.CourierGame.data.equippedItems[item.slot] = item;
+        let success = false;
+        
+        if (window.CourierData) {
+            // Use data manager to equip item
+            if (item.type === 'weapon') {
+                // Determine weapon slot based on weapon type
+                const weaponSlot = (item.weaponType === 'sniper_rifle' || item.weaponType === 'shotgun') ? 'primary' : 'primary';
+                success = window.CourierData.equipWeapon(item.id, weaponSlot);
+            } else if (item.type === 'armor') {
+                success = window.CourierData.equipArmor(item.id, item.slot);
+            }
         }
         
-        // Save to localStorage for cross-page sync
-        localStorage.setItem('courierEquippedItems', JSON.stringify(window.CourierGame.data.equippedItems));
-        
-        // Emit event for cross-component sync
-        if (window.CourierGame.emit) {
-            window.CourierGame.emit('itemEquipped', { item, slot: item.slot });
+        if (success || !window.CourierData) {
+            // Update local equipped items for immediate UI feedback
+            if (window.CourierGame.data.equippedItems) {
+                const slot = item.type === 'weapon' ? 'primary' : item.slot;
+                window.CourierGame.data.equippedItems[slot] = item;
+            }
+            
+            // Fallback to localStorage if data manager not available
+            if (!window.CourierData) {
+                localStorage.setItem('courierEquippedItems', JSON.stringify(window.CourierGame.data.equippedItems));
+            }
+            
+            // Emit event for cross-component sync
+            if (window.CourierGame.emit) {
+                window.CourierGame.emit('itemEquipped', { item, slot: item.slot });
+            }
+            
+            // Update visual display
+            this.updateEquippedItemsDisplay();
+            
+            // Update power budget display
+            this.updatePowerBudget();
+            
+            console.log(`Successfully equipped ${item.name}`);
+        } else {
+            console.error('Failed to equip item:', item.name);
+            alert('Failed to equip item. Please try again.');
         }
-        
-        // Update visual display
-        this.updateEquippedItemsDisplay();
-        
-        // Update power budget display
-        this.updatePowerBudget();
     },
     
     unequipItem(slotType) {
@@ -163,10 +278,26 @@ window.InventorySystem = {
             const item = window.CourierGame.data.equippedItems[slotType];
             console.log('Unequipping item:', item.name);
             
+            // Update data manager
+            if (window.CourierData) {
+                if (item.type === 'weapon') {
+                    const weapons = window.CourierData.getWeaponsData();
+                    weapons.equipped[slotType] = null;
+                    window.CourierData.saveWeaponsData(weapons);
+                } else if (item.type === 'armor') {
+                    const armor = window.CourierData.getArmorData();
+                    armor.equipped[slotType] = null;
+                    window.CourierData.saveArmorData(armor);
+                }
+            }
+            
+            // Update local data
             window.CourierGame.data.equippedItems[slotType] = null;
             
-            // Save to localStorage for cross-page sync
-            localStorage.setItem('courierEquippedItems', JSON.stringify(window.CourierGame.data.equippedItems));
+            // Fallback to localStorage if data manager not available
+            if (!window.CourierData) {
+                localStorage.setItem('courierEquippedItems', JSON.stringify(window.CourierGame.data.equippedItems));
+            }
             
             // Emit event for cross-component sync
             if (window.CourierGame.emit) {
@@ -178,6 +309,8 @@ window.InventorySystem = {
             
             // Update power budget display
             this.updatePowerBudget();
+            
+            console.log(`Successfully unequipped ${item.name}`);
         }
     },
     

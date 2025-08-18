@@ -1,27 +1,44 @@
 // COURIER - Main Application JavaScript
 
-// Global game state
+// Global game state - now using CourierDataManager
 window.CourierGame = {
-    data: {
-        selectedItem: null,
-        equippedItems: {
-            primary: null,
-            secondary: null,
-            head: null,
-            shoulders: null,
-            chest: null,
-            gloves: null,
-            legs: null,
-            back: null,
-            bracers: null
-        },
-        playerLevel: 60,
-        paragonLevel: 40,
-        skillPoints: {
-            available: 15,
-            total: 60,
-            invested: {}
-        }
+    // Legacy data access - now proxies to CourierData
+    get data() {
+        if (!window.CourierData) return {};
+        
+        return {
+            selectedItem: null, // UI state, not persisted
+            equippedItems: this.getEquippedItems(),
+            character: window.CourierData.getCharacterData(),
+            weapons: window.CourierData.getWeaponsData(),
+            armor: window.CourierData.getArmorData(),
+            loadouts: window.CourierData.getLoadoutsData(),
+            skillTrees: window.CourierData.getSkillTreesData(),
+            modifiers: window.CourierData.getModifiersData(),
+            
+            // Legacy compatibility
+            playerLevel: window.CourierData.getCharacterData().profile?.level || 60,
+            paragonLevel: window.CourierData.getCharacterData().profile?.paragonLevel || 40,
+            skillPoints: window.CourierData.getSkillTreesData()
+        };
+    },
+
+    // Helper to get all equipped items in legacy format
+    getEquippedItems() {
+        const weapons = window.CourierData?.getWeaponsData() || {};
+        const armor = window.CourierData?.getArmorData() || {};
+        
+        return {
+            primary: weapons.equipped?.primary || null,
+            secondary: weapons.equipped?.secondary || null,
+            head: armor.equipped?.head || null,
+            shoulders: armor.equipped?.shoulders || null,
+            chest: armor.equipped?.chest || null,
+            gloves: armor.equipped?.gloves || null,
+            legs: armor.equipped?.legs || null,
+            back: armor.equipped?.back || null,
+            bracers: armor.equipped?.bracers || null
+        };
     },
     
     // Event system for cross-component communication
@@ -46,7 +63,49 @@ window.CourierGame = {
     // Initialize the application
     init() {
         console.log('Courier Game Framework Initialized');
+        
+        // Wait for CourierData to be available
+        if (window.CourierData) {
+            console.log('CourierDataManager available:', window.CourierData.getDataSummary());
+            this.setupDataListeners();
+        } else {
+            // Wait for data manager to load
+            document.addEventListener('DOMContentLoaded', () => {
+                if (window.CourierData) {
+                    console.log('CourierDataManager loaded:', window.CourierData.getDataSummary());
+                    this.setupDataListeners();
+                }
+            });
+        }
+        
         this.loadComponents();
+    },
+
+    // Setup data synchronization listeners
+    setupDataListeners() {
+        if (!window.CourierData) return;
+        
+        // Listen for data changes and emit legacy events
+        window.CourierData.on('dataChanged', (eventData) => {
+            this.emit('dataChanged', eventData);
+            
+            // Emit specific events for backward compatibility
+            if (eventData.key.includes('equipped')) {
+                this.emit('equipmentChanged', eventData.data);
+            }
+            if (eventData.key.includes('skill')) {
+                this.emit('skillsChanged', eventData.data);
+            }
+            if (eventData.key.includes('character')) {
+                this.emit('characterChanged', eventData.data);
+            }
+        });
+
+        // Listen for cross-tab storage changes
+        window.CourierData.on('storageChanged', (eventData) => {
+            this.emit('storageSync', eventData);
+            console.log('Data synced from another tab:', eventData.key);
+        });
     },
     
     // Load page components dynamically

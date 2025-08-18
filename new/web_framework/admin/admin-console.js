@@ -1100,13 +1100,45 @@ class AdminConsole {
             return;
         }
 
-        // Save to localStorage
-        const savedItems = JSON.parse(localStorage.getItem('courier_admin_items')) || [];
-        savedItems.push(item);
-        localStorage.setItem('courier_admin_items', JSON.stringify(savedItems));
+        // Save using CourierDataManager
+        let success = false;
+        
+        if (window.CourierData) {
+            switch (item.type) {
+                case 'weapon':
+                    success = window.CourierData.addWeapon(item);
+                    break;
+                case 'armor':
+                    success = window.CourierData.addArmor(item);
+                    break;
+                case 'modifier':
+                    success = window.CourierData.addModifier(item);
+                    break;
+                default:
+                    // For unsupported types, fall back to generic storage
+                    const savedItems = JSON.parse(localStorage.getItem('courier_admin_items')) || [];
+                    savedItems.push(item);
+                    localStorage.setItem('courier_admin_items', JSON.stringify(savedItems));
+                    success = true;
+                    break;
+            }
+        } else {
+            // Fallback to old method if data manager not available
+            const savedItems = JSON.parse(localStorage.getItem('courier_admin_items')) || [];
+            savedItems.push(item);
+            localStorage.setItem('courier_admin_items', JSON.stringify(savedItems));
+            success = true;
+        }
 
-        alert(`${item.name} saved successfully!`);
-        console.log('Item saved:', item);
+        if (success) {
+            alert(`${item.name} saved successfully!`);
+            console.log('Item saved to data manager:', item);
+            
+            // Reset form after successful save
+            this.resetForm();
+        } else {
+            alert('Failed to save item. Please try again.');
+        }
     }
 
     exportItem() {

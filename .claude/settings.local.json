@@ -25,7 +25,15 @@
       "Bash(open \"http://localhost:9000/skills.html\")",
       "WebFetch(domain:www.wowsims.com)",
       "Bash(open \"http://localhost:8001/sim/\")",
-      "Bash(open \"http://localhost:8002/sim/\")"
+      "Bash(open \"http://localhost:8002/sim/\")",
+      "Bash(open \"http://localhost:8003/loadouts.html\")",
+      "Bash(open \"http://localhost:8004/loadouts.html\")",
+      "Bash(open \"http://localhost:8004/test-loadout.html\")",
+      "Bash(rm:*)",
+      "Bash(open \"http://localhost:8004/test-data-manager.html\")",
+      "Bash(open \"http://localhost:8004/inventory.html\")",
+      "Bash(open \"http://localhost:8004/game/dashboard.html\")",
+      "WebFetch(domain:docs.anthropic.com)"
     ],
     "deny": [],
     "ask": [],

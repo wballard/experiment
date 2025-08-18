@@ -615,13 +615,29 @@
         LAST UPDATED: 2025-08-17 CST • LOADOUTS: Equipment integration and combat simulator access
     </footer>
 
+    <script src="assets/js/data-manager.js"></script>
     <script src="assets/js/main.js"></script>
     <script src="assets/js/navigation.js"></script>
     <script>
-        // Equipment integration for loadouts
+        // Equipment integration for loadouts using data manager
         function loadEquippedItems() {
             try {
-                const equippedItems = JSON.parse(localStorage.getItem('courier_equipped_items')) || {};
+                let equippedItems = {};
+                
+                if (window.CourierData) {
+                    // Get equipped items from data manager
+                    const weaponsData = window.CourierData.getWeaponsData();
+                    const armorData = window.CourierData.getArmorData();
+                    
+                    equippedItems = {
+                        primary: weaponsData.equipped?.primary,
+                        secondary: weaponsData.equipped?.secondary,
+                        ...armorData.equipped
+                    };
+                } else {
+                    // Fallback to localStorage
+                    equippedItems = JSON.parse(localStorage.getItem('courier_equipped_items')) || {};
+                }
                 
                 // Update equipment slots with actual equipped items
                 Object.entries(equippedItems).forEach(([slot, item]) => {
@@ -664,14 +680,11 @@
             }
         });
 
-        // Load equipment when page loads
-        document.addEventListener('DOMContentLoaded', () => {
-            loadEquippedItems();
-        });
-
         // Refresh equipment periodically (in case storage events don't fire)
         setInterval(loadEquippedItems, 5000);
     </script>
+
+    <script>
         // Initialize loadout system with skill data
         let skillsDatabase = {};
         let currentSkillPoints = {
@@ -680,26 +693,35 @@
             invested: {}
         };
         
-        // Load current skill investments from localStorage
+        // Load current skill investments from data manager
         function loadCurrentSkillInvestments() {
             try {
-                const savedSkills = localStorage.getItem('courier-skill-investments');
-                if (savedSkills) {
-                    const parsed = JSON.parse(savedSkills);
-                    currentSkillPoints.invested = parsed.class || {};
-                    console.log('Loaded skill investments from localStorage:', currentSkillPoints.invested);
+                if (window.CourierData) {
+                    const skillData = window.CourierData.getSkillTreesData();
+                    currentSkillPoints.invested = skillData.invested.class || {};
+                    currentSkillPoints.available = skillData.available;
+                    currentSkillPoints.total = skillData.total;
+                    console.log('Loaded skill investments from data manager:', currentSkillPoints.invested);
                 } else {
-                    // Demo data if no saved skills
-                    currentSkillPoints.invested = {
-                        'dead-eye': 3,
-                        'quick-hands': 2,
-                        'sniper-specialist': 2,
-                        'fan-hammer': 5,
-                        'bullet-time': 4,
-                        'never-miss': 3,
-                        'ace-hole': 2,
-                        'high-noon': 5
-                    };
+                    // Fallback to localStorage
+                    const savedSkills = localStorage.getItem('courier-skill-investments');
+                    if (savedSkills) {
+                        const parsed = JSON.parse(savedSkills);
+                        currentSkillPoints.invested = parsed.class || {};
+                        console.log('Loaded skill investments from localStorage:', currentSkillPoints.invested);
+                    } else {
+                        // Demo data if no saved skills
+                        currentSkillPoints.invested = {
+                            'dead-eye': 3,
+                            'quick-hands': 2,
+                            'sniper-specialist': 2,
+                            'fan-hammer': 5,
+                            'bullet-time': 4,
+                            'never-miss': 3,
+                            'ace-hole': 2,
+                            'high-noon': 5
+                        };
+                    }
                 }
             } catch (error) {
                 console.error('Error loading skill investments:', error);
@@ -1007,7 +1029,14 @@
 
         // Initialize when page loads
         document.addEventListener('DOMContentLoaded', () => {
-            loadSkillsData();
+            console.log('Loadout page DOMContentLoaded - initializing...');
+            try {
+                loadEquippedItems();
+                loadSkillsData();
+                console.log('Loadout page initialization complete');
+            } catch (error) {
+                console.error('Error during loadout page initialization:', error);
+            }
         });
     </script>
     <script>
@@ -1141,17 +1170,42 @@
             return false;
         }
         
-        // Activate loadout button
+        // Activate loadout button using data manager
         document.querySelector('.btn-activate').addEventListener('click', function() {
-            const currentLoadoutName = document.querySelector('.loadout-title').textContent;
-            const success = loadSavedLoadout(currentLoadoutName);
+            const activeTab = document.querySelector('.loadout-tab.active');
+            const loadoutId = activeTab?.dataset.loadout;
+            let success = false;
+            
+            if (window.CourierData && loadoutId) {
+                // Map loadout numbers to IDs
+                const loadoutIdMap = {
+                    '1': 'boss-killer',
+                    '2': 'mob-clear', 
+                    '3': 'pvp-duelist',
+                    '4': 'support'
+                };
+                
+                const loadoutKey = loadoutIdMap[loadoutId];
+                if (loadoutKey) {
+                    success = window.CourierData.activateLoadout(loadoutKey);
+                    
+                    if (success) {
+                        // Reload current skill investments to show the activated loadout
+                        loadCurrentSkillInvestments();
+                        populateLoadout();
+                    }
+                }
+            } else {
+                // Fallback to old method
+                const currentLoadoutName = document.querySelector('.loadout-title').textContent;
+                success = loadSavedLoadout(currentLoadoutName);
+            }
             
             if (success) {
                 // Remove activated state from all tabs
                 loadoutTabs.forEach(tab => tab.classList.remove('activated'));
                 
                 // Add activated state to currently selected tab
-                const activeTab = document.querySelector('.loadout-tab.active');
                 if (activeTab) {
                     activeTab.classList.add('activated');
                 }
