@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loadouts & Skill Assignment - Courier Specifications</title>
+    <link rel="stylesheet" href="../assets/css/design-system.css?v=22">
+    <link rel="stylesheet" href="../assets/css/main.css?v=22">
+    <link rel="stylesheet" href="../assets/css/game.css?v=22">
+    <style>
+        .loadout-card {
+            background: var(--bg-medium);
+            border: 1px solid var(--border-gray);
+            padding: var(--spacing-lg);
+            margin: var(--spacing-md) 0;
+        }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--spacing-md);
+            margin: var(--spacing-md) 0;
+        }
+        .workflow-step {
+            background: var(--bg-dark);
+            border-left: 3px solid var(--primary-cyan);
+            padding: var(--spacing-md);
+            margin: var(--spacing-sm) 0;
+        }
+        .build-example {
+            background: var(--bg-light);
+            border: 1px solid var(--border-gray);
+            padding: var(--spacing-md);
+            margin: var(--spacing-sm) 0;
+        }
+        .slot-visual {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--spacing-sm);
+            margin: var(--spacing-sm) 0;
+        }
+        .slot-box {
+            background: var(--bg-medium);
+            border: 2px solid var(--border-gray);
+            padding: var(--spacing-sm);
+            text-align: center;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        .slot-filled {
+            border-color: var(--primary-cyan);
+            background: var(--bg-light);
+        }
+        .slot-empty {
+            border-style: dashed;
+            opacity: 0.6;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Header -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <div class="nav-logo"></div>
+            <div>
+                <div class="nav-username">LOADOUTS & SKILL ASSIGNMENT</div>
+                <div class="nav-level">SYSTEM SPECIFICATION</div>
+            </div>
+        </div>
+        <div class="nav-menu">
+            <a href="../game/dashboard.html" class="nav-item">CHARACTER</a>
+            <a href="../inventory.html" class="nav-item">INVENTORY</a>
+            <a href="../missions.html" class="nav-item">MISSIONS</a>
+            <a href="../skills.html" class="nav-item">SKILLS</a>
+            <a href="../loadouts.html" class="nav-item">LOADOUTS</a>
+            <a href="../build-planner.html" class="nav-item">BUILD PLANNER</a>
+            <a href="../marketplace.html" class="nav-item">MARKET</a>
+            <a href="../crafting.html" class="nav-item">CRAFTING</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="page-container">
+        <div class="page-header">
+            <h1 class="page-title">LOADOUTS & SKILL ASSIGNMENT</h1>
+            <p style="color: var(--text-normal);">Build management system for organizing and deploying skill configurations</p>
+        </div>
+
+        <!-- System Overview -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Loadout System Overview</h2>
+            </div>
+            <div class="card-accent"></div>
+
+            <p style="color: var(--text-normal); margin-bottom: var(--spacing-lg); line-height: 1.6;">
+                The Loadout System allows players to create, save, and quickly switch between different skill configurations. 
+                This system bridges the gap between skill investment (character progression) and skill deployment (active combat abilities), 
+                enabling players to experiment with different playstyles and optimize for specific content.
+            </p>
+
+            <div class="feature-grid">
+                <div class="loadout-card">
+                    <h3 style="color: var(--primary-cyan); margin-bottom: var(--spacing-sm);">🎯 Skill Assignment</h3>
+                    <p style="color: var(--text-normal); font-size: 13px; line-height: 1.5;">
+                        Assign learned skills to specific action slots. Only skills with invested points can be assigned. 
+                        Players can customize which abilities are actively available during combat.
+                    </p>
+                </div>
+
+                <div class="loadout-card">
+                    <h3 style="color: var(--primary-cyan); margin-bottom: var(--spacing-sm);">💾 Build Management</h3>
+                    <p style="color: var(--text-normal); font-size: 13px; line-height: 1.5;">
+                        Save multiple loadout configurations for different scenarios. Switch between builds for 
+                        boss fights, mob clearing, PvP, or support roles with a single click.
+                    </p>
+                </div>
+
+                <div class="loadout-card">
+                    <h3 style="color: var(--primary-cyan); margin-bottom: var(--spacing-sm);">🔄 Real-time Sync</h3>
+                    <p style="color: var(--text-normal); font-size: 13px; line-height: 1.5;">
+                        Loadouts automatically reflect current skill investments. When you invest more points in a skill, 
+                        all loadouts using that skill show the updated rank and effects.
+                    </p>
+                </div>
+
+                <div class="loadout-card">
+                    <h3 style="color: var(--primary-cyan); margin-bottom: var(--spacing-sm);">📋 Predefined Builds</h3>
+                    <p style="color: var(--text-normal); font-size: 13px; line-height: 1.5;">
+                        Access optimized builds for common playstyles. These templates help new players understand 
+                        skill synergies and provide starting points for custom builds.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slot System -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Skill Slot System</h2>
+            </div>
+            <div class="card-accent"></div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--spacing-lg);">
+                <div>
+                    <h3 style="color: var(--primary-orange); margin-bottom: var(--spacing-md);">Slot Categories</h3>
+                    
+                    <div class="workflow-step">
+                        <h4 style="color: var(--primary-cyan); margin-bottom: var(--spacing-sm);">🌅 Ultimate Slot (1)</h4>
+                        <p style="color: var(--text-normal); font-size: 13px; margin-bottom: var(--spacing-sm);">
+                            Dedicated slot for ultimate abilities. Only Tier 6 skills can be assigned here.
+                        </p>
+                        <div class="slot-visual">
+                            <div class="slot-box slot-filled">High Noon</div>
+                            <div class="slot-box slot-empty">+ Add</div>
+                            <div class="slot-box slot-empty">+ Add</div>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <h4 style="color: var(--primary-cyan); margin-bottom: var(--spacing-sm);">⚡ Active Slots (6)</h4>
+                        <p style="color: var(--text-normal); font-size: 13px; margin-bottom: var(--spacing-sm);">
+                            Quick-access slots for combat abilities. Can assign any learned active skill.
+                        </p>
+                        <div class="slot-visual">
+                            <div class="slot-box slot-filled">Fan Hammer</div>
+                            <div class="slot-box slot-filled">Bullet Time</div>
+                            <div class="slot-box slot-empty">+ Add</div>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <h4 style="color: var(--primary-cyan); margin-bottom: var(--spacing-sm);">🛡️ Passive Display</h4>
+                        <p style="color: var(--text-normal); font-size: 13px;">
+                            All invested passive skills automatically apply. No assignment needed - 
+                            shows current bonuses for reference.
+                        </p>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 style="color: var(--primary-orange); margin-bottom: var(--spacing-md);">Assignment Rules</h3>
+                    
+                    <div class="loadout-card">
+                        <h4 style="color: var(--primary-cyan); margin-bottom: var(--spacing-sm);">Eligibility Requirements</h4>
+                        <ul style="color: var(--text-normal); font-size: 13px; line-height: 1.5;">
+                            <li>Skill must have at least 1 invested point</li>
+                            <li>Ultimate skills require Tier 6 access</li>
+                            <li>No skill point cost for assignment/reassignment</li>
+                            <li>Can assign same skill to multiple slots if desired</li>
+                        </ul>
+                    </div>
+
+                    <div class="loadout-card">
+                        <h4 style="color: var(--primary-cyan); margin-bottom: var(--spacing-sm);">Slot Limitations</h4>
+                        <ul style="color: var(--text-normal); font-size: 13px; line-height: 1.5;">
+                            <li>Ultimate slot: Only Tier 6 skills (High Noon, Dead Man's Hand, Perfect Shot)</li>
+                            <li>Active slots: Any non-passive skill with active component</li>
+                            <li>Empty slots remain functional - click to assign skills</li>
+                            <li>Right-click or long-press to remove assigned skills</li>
+                        </ul>
+                    </div>
+
+                    <div class="loadout-card">
+                        <h4 style="color: var(--primary-cyan); margin-bottom: var(--spacing-sm);">Dynamic Updates</h4>
+                        <ul style="color: var(--text-normal); font-size: 13px; line-height: 1.5;">
+                            <li>Skill effects update based on current investment</li>
+                            <li>Cooldowns and damage scale with skill rank</li>
+                            <li>Invalid assignments removed if prerequisites lost</li>
+                            <li>Visual indicators show skill rank and effectiveness</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Predefined Loadouts -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Predefined Loadout Templates</h2>
+            </div>
+            <div class="card-accent"></div>
+
+            <p style="color: var(--text-normal); margin-bottom: var(--spacing-md); line-height: 1.6;">
+                The system includes four optimized loadout templates that demonstrate effective skill combinations 
+                and provide starting points for players to customize their builds.
+            </p>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--spacing-md);">
+                <div class="build-example">
+                    <h3 style="color: var(--primary-orange); margin-bottom: var(--spacing-sm);">🎯 Boss Killer</h3>
+                    <p style="color: var(--text-normal); font-size: 12px; margin-bottom: var(--spacing-sm);"><strong>Focus:</strong> Single-target elimination</p>
+                    <div style="font-size: 11px; color: var(--text-dim);">
+                        <strong>Ultimate:</strong> High Noon<br>
+                        <strong>Key Skills:</strong> Dead Eye, Sniper Specialist, Fan Hammer, Bullet Time<br>
+                        <strong>Strategy:</strong> Precision shooting with time manipulation
+                    </div>
+                </div>
+
+                <div class="build-example">
+                    <h3 style="color: var(--primary-orange); margin-bottom: var(--spacing-sm);">🌪️ Mob Clear</h3>
+                    <p style="color: var(--text-normal); font-size: 12px; margin-bottom: var(--spacing-sm);"><strong>Focus:</strong> Area damage and crowd control</p>
+                    <div style="font-size: 11px; color: var(--text-dim);">
+                        <strong>Ultimate:</strong> Dead Man's Hand<br>
+                        <strong>Key Skills:</strong> Shotgun Specialist, Explosive Rounds, Ricochet Roulette<br>
+                        <strong>Strategy:</strong> AOE damage with explosive effects
+                    </div>
+                </div>
+
+                <div class="build-example">
+                    <h3 style="color: var(--primary-orange); margin-bottom: var(--spacing-sm);">⚔️ PvP Duelist</h3>
+                    <p style="color: var(--text-normal); font-size: 12px; margin-bottom: var(--spacing-sm);"><strong>Focus:</strong> Mobility and unpredictability</p>
+                    <div style="font-size: 11px; color: var(--text-dim);">
+                        <strong>Ultimate:</strong> Perfect Shot<br>
+                        <strong>Key Skills:</strong> Lucky Charm, Vanish, Quick Draw, Lucky Streak<br>
+                        <strong>Strategy:</strong> Hit-and-run with luck manipulation
+                    </div>
+                </div>
+
+                <div class="build-example">
+                    <h3 style="color: var(--primary-orange); margin-bottom: var(--spacing-sm);">🤝 Support</h3>
+                    <p style="color: var(--text-normal); font-size: 12px; margin-bottom: var(--spacing-sm);"><strong>Focus:</strong> Team utility and debuffs</p>
+                    <div style="font-size: 11px; color: var(--text-dim);">
+                        <strong>Ultimate:</strong> Varies by situation<br>
+                        <strong>Key Skills:</strong> Mark Death, Steady Aim, Run & Gun<br>
+                        <strong>Strategy:</strong> Enemy debuffing with consistent damage
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Workflow -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Player Workflow</h2>
+            </div>
+            <div class="card-accent"></div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--spacing-lg);">
+                <div>
+                    <h3 style="color: var(--primary-cyan); margin-bottom: var(--spacing-md);">Creating a New Loadout</h3>
+                    
+                    <div class="workflow-step">
+                        <strong>Step 1:</strong> Navigate to Loadouts page
+                    </div>
+                    <div class="workflow-step">
+                        <strong>Step 2:</strong> Click empty loadout slot or "Create New"
+                    </div>
+                    <div class="workflow-step">
+                        <strong>Step 3:</strong> Assign skills to Ultimate and Active slots
+                    </div>
+                    <div class="workflow-step">
+                        <strong>Step 4:</strong> Name and save the loadout configuration
+                    </div>
+                    <div class="workflow-step">
+                        <strong>Step 5:</strong> Test and refine skill combinations
+                    </div>
+                </div>
+
+                <div>
+                    <h3 style="color: var(--primary-cyan); margin-bottom: var(--spacing-md);">Skill Assignment Process</h3>
+                    
+                    <div class="workflow-step">
+                        <strong>Select Slot:</strong> Click on empty slot (+ icon)
+                    </div>
+                    <div class="workflow-step">
+                        <strong>Choose Skill:</strong> Modal shows available learned skills
+                    </div>
+                    <div class="workflow-step">
+                        <strong>Confirm:</strong> Click skill to assign to selected slot
+                    </div>
+                    <div class="workflow-step">
+                        <strong>Verify:</strong> Slot shows skill icon, name, and current rank
+                    </div>
+                    <div class="workflow-step">
+                        <strong>Modify:</strong> Click assigned slot to remove or reassign
+                    </div>
+                </div>
+
+                <div>
+                    <h3 style="color: var(--primary-cyan); margin-bottom: var(--spacing-md);">Switching Loadouts</h3>
+                    
+                    <div class="workflow-step">
+                        <strong>Browse:</strong> Click loadout tabs to preview builds
+                    </div>
+                    <div class="workflow-step">
+                        <strong>Compare:</strong> View skill assignments and passive effects
+                    </div>
+                    <div class="workflow-step">
+                        <strong>Activate:</strong> Click "Activate Loadout" to apply
+                    </div>
+                    <div class="workflow-step">
+                        <strong>Sync:</strong> Current skill investments automatically update
+                    </div>
+                    <div class="workflow-step">
+                        <strong>Deploy:</strong> Use skills in combat with new configuration
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Technical Implementation -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Technical Implementation</h2>
+            </div>
+            <div class="card-accent"></div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--spacing-lg);">
+                <div>
+                    <h3 style="color: var(--primary-orange); margin-bottom: var(--spacing-md);">Data Storage</h3>
+                    
+                    <div class="loadout-card">
+                        <h4 style="color: var(--primary-cyan); margin-bottom: var(--spacing-sm);">LocalStorage Integration</h4>
+                        <p style="color: var(--text-normal); font-size: 13px; line-height: 1.5;">
+                            Loadouts saved to browser localStorage for persistence across sessions. 
+                            Skill investments sync between Skills page and Loadouts page automatically.
+                        </p>
+                    </div>
+
+                    <div class="loadout-card">
+                        <h4 style="color: var(--primary-cyan); margin-bottom: var(--spacing-sm);">Data Structure</h4>
+                        <div style="background: var(--bg-black); padding: var(--spacing-sm); font-family: var(--font-mono); font-size: 11px; margin-top: var(--spacing-sm);">
+                            <div style="color: var(--primary-cyan);">// Loadout Object Structure</div>
+                            <div style="color: var(--text-bright);">{</div>
+                            <div style="color: var(--text-bright);">  name: "Boss Killer",</div>
+                            <div style="color: var(--text-bright);">  ultimate: "high-noon",</div>
+                            <div style="color: var(--text-bright);">  actives: ["fan-hammer", "bullet-time", null, null, null, null],</div>
+                            <div style="color: var(--text-bright);">  timestamp: "2025-08-17T12:00:00Z"</div>
+                            <div style="color: var(--text-bright);">}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 style="color: var(--primary-orange); margin-bottom: var(--spacing-md);">Skill Validation</h3>
+                    
+                    <div class="loadout-card">
+                        <h4 style="color: var(--primary-cyan); margin-bottom: var(--spacing-sm);">Assignment Checks</h4>
+                        <ul style="color: var(--text-normal); font-size: 13px; line-height: 1.5;">
+                            <li>Verify skill has invested points before assignment</li>
+                            <li>Check slot type compatibility (Ultimate vs Active)</li>
+                            <li>Validate prerequisites are still met</li>
+                            <li>Remove invalid assignments when loading</li>
+                        </ul>
+                    </div>
+
+                    <div class="loadout-card">
+                        <h4 style="color: var(--primary-cyan); margin-bottom: var(--spacing-sm);">Real-time Updates</h4>
+                        <ul style="color: var(--text-normal); font-size: 13px; line-height: 1.5;">
+                            <li>Monitor skill investment changes</li>
+                            <li>Update displayed effects and cooldowns</li>
+                            <li>Refresh passive skill calculations</li>
+                            <li>Maintain loadout validity</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 style="color: var(--primary-orange); margin-bottom: var(--spacing-md);">User Interface</h3>
+                    
+                    <div class="loadout-card">
+                        <h4 style="color: var(--primary-cyan); margin-bottom: var(--spacing-sm);">Visual Indicators</h4>
+                        <ul style="color: var(--text-normal); font-size: 13px; line-height: 1.5;">
+                            <li>Skill icons with rank indicators</li>
+                            <li>Empty slots with dashed borders and + icons</li>
+                            <li>Tooltip information on hover</li>
+                            <li>Color coding for different skill types</li>
+                        </ul>
+                    </div>
+
+                    <div class="loadout-card">
+                        <h4 style="color: var(--primary-cyan); margin-bottom: var(--spacing-sm);">Modal System</h4>
+                        <ul style="color: var(--text-normal); font-size: 13px; line-height: 1.5;">
+                            <li>Skill selector popup for assignment</li>
+                            <li>Filter available skills by slot type</li>
+                            <li>Preview skill effects before assignment</li>
+                            <li>Cancel/confirm assignment actions</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Integration Points -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">System Integration</h2>
+            </div>
+            <div class="card-accent"></div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--spacing-md);">
+                <div class="loadout-card">
+                    <h3 style="color: var(--primary-cyan); margin-bottom: var(--spacing-sm);">📊 Skills Page</h3>
+                    <p style="color: var(--text-normal); font-size: 13px; line-height: 1.5;">
+                        Direct integration with skill tree investment. Changes in skill points immediately 
+                        reflect in loadout system. Navigation links between pages for seamless workflow.
+                    </p>
+                </div>
+
+                <div class="loadout-card">
+                    <h3 style="color: var(--primary-cyan); margin-bottom: var(--spacing-sm);">⚔️ Combat System</h3>
+                    <p style="color: var(--text-normal); font-size: 13px; line-height: 1.5;">
+                        Active loadout determines available combat abilities. Skill cooldowns, damage, 
+                        and effects pulled from current loadout configuration during gameplay.
+                    </p>
+                </div>
+
+                <div class="loadout-card">
+                    <h3 style="color: var(--primary-cyan); margin-bottom: var(--spacing-sm);">👤 Character Sheet</h3>
+                    <p style="color: var(--text-normal); font-size: 13px; line-height: 1.5;">
+                        Passive skill bonuses from loadout apply to character statistics. 
+                        Equipment recommendations can factor in loadout requirements and synergies.
+                    </p>
+                </div>
+
+                <div class="loadout-card">
+                    <h3 style="color: var(--primary-cyan); margin-bottom: var(--spacing-sm);">🎯 Build Planner</h3>
+                    <p style="color: var(--text-normal); font-size: 13px; line-height: 1.5;">
+                        Future integration with build planning tools. Export/import loadout configurations. 
+                        Sharing builds between players and theory-crafting community features.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer style="padding: 20px; text-align: center; font-size: 10px; color: #666; border-top: 1px solid #333; margin-top: 40px;">
+        <a href="../changelog.html" style="color: #666; text-decoration: none; border-bottom: 1px dotted #666;">CHANGELOG</a> • 
+        <a href="index.html" style="color: #666; text-decoration: none; border-bottom: 1px dotted #666;">SPECS</a> • 
+        LAST UPDATED: 2025-08-17 CST • LOADOUTS: Complete skill assignment and build management system specification
+    </footer>
+
+    <script src="../assets/js/main.js"></script>
+    <script src="../assets/js/navigation.js"></script>
+</body>
+</html>

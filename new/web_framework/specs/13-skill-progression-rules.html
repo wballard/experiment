@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skill Progression Rules - Courier Specifications</title>
+    <link rel="stylesheet" href="../assets/css/design-system.css?v=22">
+    <link rel="stylesheet" href="../assets/css/main.css?v=22">
+    <link rel="stylesheet" href="../assets/css/game.css?v=22">
+    <style>
+        .rule-card {
+            background: var(--bg-dark);
+            border: 1px solid var(--primary-orange);
+            padding: var(--spacing-lg);
+            margin: var(--spacing-md) 0;
+        }
+        .example-card {
+            background: var(--bg-light);
+            border-left: 3px solid var(--primary-cyan);
+            padding: var(--spacing-md);
+            margin: var(--spacing-sm) 0;
+        }
+        .formula-box {
+            background: var(--bg-black);
+            border: 1px solid var(--border-gray);
+            padding: var(--spacing-md);
+            font-family: var(--font-mono);
+            font-size: 13px;
+            margin: var(--spacing-sm) 0;
+        }
+        .progression-visual {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: var(--spacing-sm);
+            margin: var(--spacing-md) 0;
+        }
+        .tier-box {
+            background: var(--bg-medium);
+            border: 2px solid var(--border-gray);
+            padding: var(--spacing-sm);
+            text-align: center;
+            border-radius: 4px;
+        }
+        .tier-box.unlocked {
+            border-color: var(--primary-cyan);
+            background: var(--bg-light);
+        }
+        .tier-box.locked {
+            border-color: var(--text-dim);
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Header -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <div class="nav-logo"></div>
+            <div>
+                <div class="nav-username">SKILL PROGRESSION RULES</div>
+                <div class="nav-level">GAME MECHANICS</div>
+            </div>
+        </div>
+        <div class="nav-menu">
+            <a href="../game/dashboard.html" class="nav-item">CHARACTER</a>
+            <a href="../inventory.html" class="nav-item">INVENTORY</a>
+            <a href="../missions.html" class="nav-item">MISSIONS</a>
+            <a href="../skills.html" class="nav-item">SKILLS</a>
+            <a href="../loadouts.html" class="nav-item">LOADOUTS</a>
+            <a href="../build-planner.html" class="nav-item">BUILD PLANNER</a>
+            <a href="../marketplace.html" class="nav-item">MARKET</a>
+            <a href="../crafting.html" class="nav-item">CRAFTING</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="page-container">
+        <div class="page-header">
+            <h1 class="page-title">SKILL PROGRESSION RULES</h1>
+            <p style="color: var(--text-normal);">Comprehensive rules governing skill tree progression and unlocking mechanics</p>
+        </div>
+
+        <!-- Core Progression Rules -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Core Progression Mechanics</h2>
+            </div>
+            <div class="card-accent"></div>
+
+            <div class="rule-card">
+                <h3 style="color: var(--primary-orange); margin-bottom: var(--spacing-md);">🔑 Primary Rule: Tier Gating</h3>
+                <p style="color: var(--text-normal); line-height: 1.6; margin-bottom: var(--spacing-md);">
+                    Players must invest exactly <strong>5 skill points</strong> in the current tier before gaining access to the next tier. 
+                    This ensures balanced progression and prevents players from rushing to high-tier abilities without building proper foundations.
+                </p>
+                
+                <div class="formula-box">
+                    <div style="color: var(--primary-cyan);">// Tier Unlock Calculation</div>
+                    <div style="color: var(--text-bright);">function isTierUnlocked(tierNumber) {</div>
+                    <div style="color: var(--text-bright);">  if (tierNumber === 1) return true;</div>
+                    <div style="color: var(--text-bright);">  const previousTierPoints = getTierInvestment(tierNumber - 1);</div>
+                    <div style="color: var(--text-bright);">  return previousTierPoints >= 5;</div>
+                    <div style="color: var(--text-bright);">}</div>
+                </div>
+            </div>
+
+            <div class="rule-card">
+                <h3 style="color: var(--primary-orange); margin-bottom: var(--spacing-md);">⚡ Secondary Rule: Prerequisites</h3>
+                <p style="color: var(--text-normal); line-height: 1.6; margin-bottom: var(--spacing-md);">
+                    Some skills require specific prerequisite skills to be learned before they can be unlocked. 
+                    These prerequisites must have at least 1 skill point invested, regardless of tier access.
+                </p>
+                
+                <div class="example-card">
+                    <h4 style="color: var(--primary-cyan); margin-bottom: var(--spacing-sm);">Example: Fan Hammer Skill</h4>
+                    <p style="color: var(--text-normal); font-size: 13px;">
+                        <strong>Requirements:</strong> Sniper Specialist AND Shotgun Specialist<br>
+                        <strong>Logic:</strong> Player must have invested at least 1 point in both prerequisite skills, 
+                        AND have 5 points total in Tier 2 to access Tier 3 where Fan Hammer resides.
+                    </p>
+                </div>
+            </div>
+
+            <div class="rule-card">
+                <h3 style="color: var(--primary-orange); margin-bottom: var(--spacing-md);">📊 Skill Point Budget</h3>
+                <ul style="color: var(--text-normal); line-height: 1.6;">
+                    <li><strong>Total Available:</strong> 60 skill points (1 per level + 5 per 10 levels)</li>
+                    <li><strong>Class Skills:</strong> Can invest all 60 points in class tree if desired</li>
+                    <li><strong>Elemental Skills:</strong> Share the same 60-point budget</li>
+                    <li><strong>Flexibility:</strong> Players choose how to split points between class and elemental trees</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Tier Progression Visual -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Tier Progression Visualization</h2>
+            </div>
+            <div class="card-accent"></div>
+
+            <h3 style="color: var(--primary-cyan); margin-bottom: var(--spacing-md);">Example: Player with 12 Invested Points</h3>
+            
+            <div class="progression-visual">
+                <div class="tier-box unlocked">
+                    <div style="font-weight: bold; color: var(--primary-cyan);">TIER 1</div>
+                    <div style="font-size: 12px; color: var(--text-normal);">7/∞ points</div>
+                    <div style="font-size: 10px; color: var(--primary-cyan);">✓ UNLOCKED</div>
+                </div>
+                <div class="tier-box unlocked">
+                    <div style="font-weight: bold; color: var(--primary-cyan);">TIER 2</div>
+                    <div style="font-size: 12px; color: var(--text-normal);">5/∞ points</div>
+                    <div style="font-size: 10px; color: var(--primary-cyan);">✓ UNLOCKED</div>
+                </div>
+                <div class="tier-box unlocked">
+                    <div style="font-weight: bold; color: var(--primary-cyan);">TIER 3</div>
+                    <div style="font-size: 12px; color: var(--text-normal);">0/∞ points</div>
+                    <div style="font-size: 10px; color: var(--primary-cyan);">✓ AVAILABLE</div>
+                </div>
+                <div class="tier-box locked">
+                    <div style="font-weight: bold; color: var(--text-dim);">TIER 4</div>
+                    <div style="font-size: 12px; color: var(--text-dim);">0/∞ points</div>
+                    <div style="font-size: 10px; color: var(--text-dim);">✗ LOCKED</div>
+                </div>
+                <div class="tier-box locked">
+                    <div style="font-weight: bold; color: var(--text-dim);">TIER 5</div>
+                    <div style="font-size: 12px; color: var(--text-dim);">0/∞ points</div>
+                    <div style="font-size: 10px; color: var(--text-dim);">✗ LOCKED</div>
+                </div>
+                <div class="tier-box locked">
+                    <div style="font-weight: bold; color: var(--text-dim);">TIER 6</div>
+                    <div style="font-size: 12px; color: var(--text-dim);">0/∞ points</div>
+                    <div style="font-size: 10px; color: var(--text-dim);">✗ LOCKED</div>
+                </div>
+            </div>
+
+            <p style="color: var(--text-dim); font-size: 12px; margin-top: var(--spacing-md);">
+                <strong>Status:</strong> Player has invested 7 points in Tier 1 and 5 points in Tier 2. 
+                Tier 3 is now available for investment, but Tiers 4-6 remain locked until 5 points are invested in Tier 3.
+            </p>
+        </div>
+
+        <!-- Skill States and Conditions -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Skill State System</h2>
+            </div>
+            <div class="card-accent"></div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--spacing-md);">
+                <div>
+                    <h3 style="color: var(--primary-cyan); margin-bottom: var(--spacing-md);">Skill States</h3>
+                    
+                    <div class="example-card" style="margin-bottom: var(--spacing-sm);">
+                        <h4 style="color: #00ff88; margin-bottom: var(--spacing-xs);">🟢 AVAILABLE</h4>
+                        <p style="color: var(--text-normal); font-size: 12px;">
+                            Tier is unlocked, prerequisites met, skill points available to invest
+                        </p>
+                    </div>
+
+                    <div class="example-card" style="margin-bottom: var(--spacing-sm);">
+                        <h4 style="color: #ffad00; margin-bottom: var(--spacing-xs);">🟡 INVESTED</h4>
+                        <p style="color: var(--text-normal); font-size: 12px;">
+                            Player has invested 1+ points, skill provides active benefits
+                        </p>
+                    </div>
+
+                    <div class="example-card" style="margin-bottom: var(--spacing-sm);">
+                        <h4 style="color: #666; margin-bottom: var(--spacing-xs);">⚫ LOCKED</h4>
+                        <p style="color: var(--text-normal); font-size: 12px;">
+                            Tier not unlocked OR prerequisites not met
+                        </p>
+                    </div>
+
+                    <div class="example-card">
+                        <h4 style="color: #ff6600; margin-bottom: var(--spacing-xs);">🔶 MAXED</h4>
+                        <p style="color: var(--text-normal); font-size: 12px;">
+                            Skill has maximum points invested, no further investment possible
+                        </p>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 style="color: var(--primary-cyan); margin-bottom: var(--spacing-md);">Unlock Conditions</h3>
+                    
+                    <div class="formula-box" style="margin-bottom: var(--spacing-sm);">
+                        <div style="color: var(--primary-cyan);">// Skill Availability Check</div>
+                        <div style="color: var(--text-bright);">function isSkillAvailable(skill) {</div>
+                        <div style="color: var(--text-bright);">  // Check tier access</div>
+                        <div style="color: var(--text-bright);">  if (!isTierUnlocked(skill.tier)) return false;</div>
+                        <div style="color: var(--text-bright);">  </div>
+                        <div style="color: var(--text-bright);">  // Check prerequisites</div>
+                        <div style="color: var(--text-bright);">  for (let prereq of skill.prerequisites) {</div>
+                        <div style="color: var(--text-bright);">    if (getInvestedPoints(prereq) < 1) return false;</div>
+                        <div style="color: var(--text-bright);">  }</div>
+                        <div style="color: var(--text-bright);">  </div>
+                        <div style="color: var(--text-bright);">  // Check if maxed</div>
+                        <div style="color: var(--text-bright);">  if (getInvestedPoints(skill) >= skill.maxPoints) return false;</div>
+                        <div style="color: var(--text-bright);">  </div>
+                        <div style="color: var(--text-bright);">  return true;</div>
+                        <div style="color: var(--text-bright);">}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Connection Line Rules -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Visual Connection System</h2>
+            </div>
+            <div class="card-accent"></div>
+
+            <div class="rule-card">
+                <h3 style="color: var(--primary-orange); margin-bottom: var(--spacing-md);">🔗 Connection Line Rules</h3>
+                <p style="color: var(--text-normal); line-height: 1.6; margin-bottom: var(--spacing-md);">
+                    Connection lines are dynamically generated to show the relationship between skills. 
+                    These visual indicators help players understand the skill tree structure and plan their builds.
+                </p>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--spacing-md);">
+                    <div class="example-card">
+                        <h4 style="color: var(--primary-cyan); margin-bottom: var(--spacing-sm);">When Lines Appear</h4>
+                        <ul style="color: var(--text-normal); font-size: 13px; line-height: 1.5;">
+                            <li>Only between skills with actual prerequisite relationships</li>
+                            <li>Not for general tier progression (no lines for tier gates)</li>
+                            <li>Lines connect prerequisite skills to dependent skills</li>
+                        </ul>
+                    </div>
+
+                    <div class="example-card">
+                        <h4 style="color: var(--primary-cyan); margin-bottom: var(--spacing-sm);">Line States</h4>
+                        <ul style="color: var(--text-normal); font-size: 13px; line-height: 1.5;">
+                            <li><span style="color: #404040;">⚫ Gray:</span> Prerequisite not met</li>
+                            <li><span style="color: #00ff88;">🟢 Green:</span> Prerequisite met, target available</li>
+                            <li><span style="color: #ffad00;">🟡 Gold:</span> Both skills have points invested</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="example-card">
+                <h4 style="color: var(--primary-cyan); margin-bottom: var(--spacing-sm);">Example: Fan Hammer Connections</h4>
+                <p style="color: var(--text-normal); font-size: 13px; margin-bottom: var(--spacing-sm);">
+                    Fan Hammer requires both "Sniper Specialist" and "Shotgun Specialist". The skill tree shows:
+                </p>
+                <ul style="color: var(--text-normal); font-size: 13px; line-height: 1.5;">
+                    <li>Two connection lines: Sniper Specialist → Fan Hammer, Shotgun Specialist → Fan Hammer</li>
+                    <li>Lines turn green when both prerequisites have 1+ points invested</li>
+                    <li>No connection lines show for tier progression requirements</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Implementation Examples -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Implementation Examples</h2>
+            </div>
+            <div class="card-accent"></div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: var(--spacing-lg);">
+                <div>
+                    <h3 style="color: var(--primary-cyan); margin-bottom: var(--spacing-md);">Scenario 1: Early Game</h3>
+                    <div class="example-card">
+                        <p style="color: var(--text-normal); font-size: 13px; margin-bottom: var(--spacing-sm);">
+                            <strong>Player Level:</strong> 15<br>
+                            <strong>Available Points:</strong> 15<br>
+                            <strong>Strategy:</strong> Focus on single specialization
+                        </p>
+                        <ul style="color: var(--text-normal); font-size: 12px; line-height: 1.4;">
+                            <li>5 points in Tier 1 (unlock Tier 2)</li>
+                            <li>5 points in Tier 2 (unlock Tier 3)</li>
+                            <li>5 points in Tier 3 (unlock Tier 4)</li>
+                            <li>Can access first Elite skills at level 15</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 style="color: var(--primary-cyan); margin-bottom: var(--spacing-md);">Scenario 2: Mid Game</h3>
+                    <div class="example-card">
+                        <p style="color: var(--text-normal); font-size: 13px; margin-bottom: var(--spacing-sm);">
+                            <strong>Player Level:</strong> 35<br>
+                            <strong>Available Points:</strong> 35<br>
+                            <strong>Strategy:</strong> Hybrid specialization
+                        </p>
+                        <ul style="color: var(--text-normal); font-size: 12px; line-height: 1.4;">
+                            <li>Spread points across multiple paths</li>
+                            <li>Max out key skills for build synergy</li>
+                            <li>Access to Tier 5 Mastery skills</li>
+                            <li>Begin working toward Ultimate abilities</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 style="color: var(--primary-cyan); margin-bottom: var(--spacing-md);">Scenario 3: End Game</h3>
+                    <div class="example-card">
+                        <p style="color: var(--text-normal); font-size: 13px; margin-bottom: var(--spacing-sm);">
+                            <strong>Player Level:</strong> 60<br>
+                            <strong>Available Points:</strong> 60<br>
+                            <strong>Strategy:</strong> Complete specialization
+                        </p>
+                        <ul style="color: var(--text-normal); font-size: 12px; line-height: 1.4;">
+                            <li>Access to all 6 tiers</li>
+                            <li>Can max 1-2 Ultimate abilities</li>
+                            <li>Choice: deep specialization vs. broad coverage</li>
+                            <li>Legendary Capstone potentially accessible</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Respec and Changes -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Skill Point Reallocation</h2>
+            </div>
+            <div class="card-accent"></div>
+
+            <div class="rule-card">
+                <h3 style="color: var(--primary-orange); margin-bottom: var(--spacing-md);">💎 Respec System</h3>
+                <p style="color: var(--text-normal); line-height: 1.6; margin-bottom: var(--spacing-md);">
+                    Players can reallocate their skill points to experiment with different builds and adapt to new content or balance changes.
+                </p>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--spacing-md);">
+                    <div class="example-card">
+                        <h4 style="color: var(--primary-cyan); margin-bottom: var(--spacing-sm);">Full Reset</h4>
+                        <ul style="color: var(--text-normal); font-size: 13px; line-height: 1.5;">
+                            <li>Costs in-game currency</li>
+                            <li>Returns all 60 points to unallocated pool</li>
+                            <li>Player can rebuild from scratch</li>
+                            <li>Useful for major build changes</li>
+                        </ul>
+                    </div>
+
+                    <div class="example-card">
+                        <h4 style="color: var(--primary-cyan); margin-bottom: var(--spacing-sm);">Partial Reset</h4>
+                        <ul style="color: var(--text-normal); font-size: 13px; line-height: 1.5;">
+                            <li>Reset individual skills or branches</li>
+                            <li>Lower cost than full reset</li>
+                            <li>Allows fine-tuning of builds</li>
+                            <li>Maintains overall progression</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer style="padding: 20px; text-align: center; font-size: 10px; color: #666; border-top: 1px solid #333; margin-top: 40px;">
+        <a href="../changelog.html" style="color: #666; text-decoration: none; border-bottom: 1px dotted #666;">CHANGELOG</a> • 
+        <a href="index.html" style="color: #666; text-decoration: none; border-bottom: 1px dotted #666;">SPECS</a> • 
+        LAST UPDATED: 2025-08-17 CST • PROGRESSION: Complete skill tree progression rules and tier-gating mechanics
+    </footer>
+
+    <script src="../assets/js/main.js"></script>
+    <script src="../assets/js/navigation.js"></script>
+</body>
+</html>

@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elemental Skills - Courier Specifications</title>
+    <link rel="stylesheet" href="../assets/css/design-system.css?v=12">
+    <link rel="stylesheet" href="../assets/css/main.css?v=12">
+    <link rel="stylesheet" href="../assets/css/game.css?v=12">
+    <style>
+        .breadcrumb {
+            color: var(--text-dim);
+            font-size: 12px;
+            margin-bottom: var(--spacing-lg);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .breadcrumb a {
+            color: var(--primary-cyan);
+            text-decoration: none;
+        }
+        .breadcrumb a:hover {
+            color: var(--text-bright);
+        }
+        .doc-nav-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: var(--spacing-xl);
+            padding: var(--spacing-lg);
+            background: var(--bg-dark);
+            border: 1px solid var(--border-gray);
+        }
+        .doc-nav-bottom a {
+            color: var(--primary-cyan);
+            text-decoration: none;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border: 1px solid var(--border-gray);
+            background: var(--bg-medium);
+            transition: all 0.3s ease;
+        }
+        .doc-nav-bottom a:hover {
+            border-color: var(--primary-cyan);
+            background: var(--bg-light);
+        }
+        .content-section {
+            margin-bottom: var(--spacing-xl);
+        }
+        .element-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: var(--spacing-lg);
+            margin: var(--spacing-lg) 0;
+        }
+        .element-card {
+            background: var(--bg-medium);
+            border: 1px solid var(--border-gray);
+            padding: var(--spacing-lg);
+        }
+        .element-card h3 {
+            color: var(--primary-cyan);
+            margin-bottom: var(--spacing-md);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+        .element-icon {
+            font-size: 24px;
+        }
+        .tier-section {
+            margin-bottom: var(--spacing-lg);
+        }
+        .tier-header {
+            background: var(--bg-dark);
+            padding: var(--spacing-sm);
+            border: 1px solid var(--primary-orange);
+            margin-bottom: var(--spacing-sm);
+        }
+        .tier-header h4 {
+            color: var(--primary-orange);
+            margin: 0;
+            font-size: 14px;
+        }
+        .skill-item {
+            background: var(--bg-dark);
+            padding: var(--spacing-sm);
+            border: 1px solid var(--border-gray);
+            margin-bottom: var(--spacing-sm);
+        }
+        .skill-item h5 {
+            color: var(--primary-cyan);
+            margin: 0 0 var(--spacing-xs) 0;
+            font-size: 12px;
+        }
+        .skill-points {
+            font-family: monospace;
+            font-size: 11px;
+            color: var(--text-normal);
+        }
+        .tier-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-md);
+            margin: var(--spacing-lg) 0;
+        }
+        .tier-card {
+            background: var(--bg-dark);
+            padding: var(--spacing-md);
+            border: 1px solid var(--border-gray);
+            text-align: center;
+        }
+        .tier-card h4 {
+            color: var(--primary-orange);
+            margin-bottom: var(--spacing-sm);
+            font-size: 13px;
+        }
+        .combo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--spacing-md);
+            margin: var(--spacing-lg) 0;
+        }
+        .combo-card {
+            background: var(--bg-dark);
+            padding: var(--spacing-md);
+            border: 1px solid var(--primary-orange);
+        }
+        .combo-card h4 {
+            color: var(--primary-orange);
+            margin-bottom: var(--spacing-sm);
+            font-size: 13px;
+        }
+        .toc {
+            background: var(--bg-medium);
+            border: 1px solid var(--border-gray);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+        .toc h3 {
+            color: var(--primary-cyan);
+            margin-bottom: var(--spacing-md);
+        }
+        .toc ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        .toc li {
+            margin-bottom: var(--spacing-sm);
+        }
+        .toc a {
+            color: var(--text-normal);
+            text-decoration: none;
+            font-size: 13px;
+        }
+        .toc a:hover {
+            color: var(--primary-cyan);
+        }
+        .strategy-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--spacing-lg);
+            margin: var(--spacing-lg) 0;
+        }
+        .strategy-card {
+            background: var(--bg-medium);
+            border: 1px solid var(--border-gray);
+            padding: var(--spacing-lg);
+        }
+        .strategy-card h4 {
+            color: var(--primary-cyan);
+            margin-bottom: var(--spacing-md);
+        }
+        .capstone {
+            background: var(--bg-dark);
+            border: 2px solid var(--primary-orange);
+            padding: var(--spacing-md);
+            margin: var(--spacing-sm) 0;
+        }
+        .capstone h5 {
+            color: var(--primary-orange);
+            margin: 0 0 var(--spacing-xs) 0;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Header -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <div class="nav-logo"></div>
+            <div>
+                <div class="nav-username">COURIER SPECIFICATIONS</div>
+                <div class="nav-level">ELEMENTAL SKILLS</div>
+            </div>
+        </div>
+        <div class="nav-menu">
+            <a href="../game/dashboard.html" class="nav-item">CHARACTER</a>
+            <a href="../inventory.html" class="nav-item">INVENTORY</a>
+            <a href="../missions.html" class="nav-item">MISSIONS</a>
+            <a href="../skills.html" class="nav-item">SKILLS</a>
+            <a href="../build-planner.html" class="nav-item">BUILD PLANNER</a>
+            <a href="../marketplace.html" class="nav-item">MARKET</a>
+            <a href="../crafting.html" class="nav-item">CRAFTING</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="page-container">
+        <div class="breadcrumb">
+            <a href="index.html">SPECS</a> > ELEMENTAL SKILLS
+        </div>
+
+        <div class="page-header">
+            <h1 class="page-title">COURIER - ELEMENTAL SKILLS</h1>
+            <p style="color: var(--text-normal); margin-top: var(--spacing-md);">Skill Trees & Ability Progression</p>
+        </div>
+
+        <!-- Table of Contents -->
+        <div class="toc">
+            <h3>📋 TABLE OF CONTENTS</h3>
+            <ul>
+                <li><a href="#skill-tree-structure">Elemental Skill Tree Structure</a></li>
+                <li><a href="#fire-tree">🔥 Fire Skill Tree</a></li>
+                <li><a href="#ice-tree">❄️ Ice Skill Tree</a></li>
+                <li><a href="#electric-tree">⚡ Electric Skill Tree</a></li>
+                <li><a href="#earth-tree">🌍 Earth Skill Tree</a></li>
+                <li><a href="#nature-tree">🌿 Nature Skill Tree</a></li>
+                <li><a href="#combination-synergies">Combination Skill Synergies</a></li>
+                <li><a href="#progression-strategy">Skill Progression Strategy</a></li>
+            </ul>
+        </div>
+
+        <!-- Skill Tree Structure Section -->
+        <div class="card content-section" id="skill-tree-structure">
+            <div class="card-header">
+                <h2 class="card-title">ELEMENTAL SKILL TREE STRUCTURE</h2>
+            </div>
+            <div class="card-accent"></div>
+            
+            <p style="color: var(--text-normal); line-height: 1.6; margin-bottom: var(--spacing-lg);">
+                Each of the five elements contains a comprehensive skill tree with 30-45 total skill points of investment opportunities. Players can allocate skill points from their total pool of 60 across their chosen elemental specializations.
+            </p>
+
+            <div class="tier-grid">
+                <div class="tier-card">
+                    <h4>Tier 1 - Foundation (Levels 20-30)</h4>
+                    <div style="color: var(--text-normal); font-size: 11px;">
+                        • Passive bonuses and basic elemental effects<br>
+                        • 10-15 skill points available<br>
+                        • Required: 1 skill point to unlock elemental mastery
+                    </div>
+                </div>
+                <div class="tier-card">
+                    <h4>Tier 2 - Specialization (Levels 30-45)</h4>
+                    <div style="color: var(--text-normal); font-size: 11px;">
+                        • Active abilities and enhanced effects<br>
+                        • 10-15 skill points available<br>
+                        • Required: 5 skill points in Tier 1 to unlock
+                    </div>
+                </div>
+                <div class="tier-card">
+                    <h4>Tier 3 - Mastery (Levels 45-60)</h4>
+                    <div style="color: var(--text-normal); font-size: 11px;">
+                        • Ultimate abilities and combination mastery<br>
+                        • 10-15 skill points available<br>
+                        • Required: 10 skill points in Tier 2 to unlock
+                    </div>
+                </div>
+                <div class="tier-card">
+                    <h4>Tier 4 - Transcendence (Levels 55-60)</h4>
+                    <div style="color: var(--text-normal); font-size: 11px;">
+                        • Capstone passive abilities and elemental mastery<br>
+                        • 1-2 skill points available<br>
+                        • Required: 15 skill points in Tier 3 to unlock
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fire Skill Tree Section -->
+        <div class="card content-section" id="fire-tree">
+            <div class="card-header">
+                <h2 class="card-title">🔥 FIRE SKILL TREE</h2>
+            </div>
+            <div class="card-accent"></div>
+            
+            <div class="tier-section">
+                <div class="tier-header">
+                    <h4>Tier 1 - Ignition Foundation</h4>
+                </div>
+                
+                <div class="skill-item">
+                    <h5>Combustion Mastery (Passive - 3 points max)</h5>
+                    <div class="skill-points">
+                        • Point 1: +10% fire damage, burn duration +1 second<br>
+                        • Point 2: +20% fire damage, burn spreads to 1 nearby enemy<br>
+                        • Point 3: +30% fire damage, burn spreads to 2 nearby enemies
+                    </div>
+                </div>
+
+                <div class="skill-item">
+                    <h5>Flame Weapon (Passive - 5 points max)</h5>
+                    <div class="skill-points">
+                        • Point 1: Weapons deal fire damage, 10% chance to ignite<br>
+                        • Point 2: Ignite chance +20%, fire damage +15%<br>
+                        • Point 3: Ignite chance +30%, fire damage +25%<br>
+                        • Point 4: Ignite chance +40%, fire damage +35%<br>
+                        • Point 5: Ignite chance +50%, fire damage +50%
+                    </div>
+                </div>
+
+                <div class="skill-item">
+                    <h5>Heat Resistance (Passive - 2 points max)</h5>
+                    <div class="skill-points">
+                        • Point 1: +25% fire resistance, immunity to self-inflicted fire damage<br>
+                        • Point 2: +50% fire resistance, fire heals for 10% of damage
+                    </div>
+                </div>
+            </div>
+
+            <div class="tier-section">
+                <div class="tier-header">
+                    <h4>Tier 2 - Inferno Specialization</h4>
+                </div>
+                
+                <div class="element-grid">
+                    <div class="skill-item">
+                        <h5>Fireball (Active - 3 points max)</h5>
+                        <div class="skill-points">
+                            • Point 1: Launch explosive fireball (30 power cost)<br>
+                            • Point 2: +50% explosion radius, +25% damage<br>
+                            • Point 3: Fireball pierces through enemies
+                        </div>
+                    </div>
+
+                    <div class="skill-item">
+                        <h5>Flame Wall (Active - 4 points max)</h5>
+                        <div class="skill-points">
+                            • Point 1: Create wall of fire blocking passage (40 power cost)<br>
+                            • Point 2: Wall duration +100%, damage +50%<br>
+                            • Point 3: Wall width +50%, spreads fire on contact<br>
+                            • Point 4: Can create multiple walls simultaneously
+                        </div>
+                    </div>
+
+                    <div class="skill-item">
+                        <h5>Burning Ground (Active - 3 points max)</h5>
+                        <div class="skill-points">
+                            • Point 1: Create area of burning ground (25 power cost)<br>
+                            • Point 2: Area size +100%, duration +50%<br>
+                            • Point 3: Burning ground follows enemies
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tier-section">
+                <div class="tier-header">
+                    <h4>Tier 3 - Conflagration Mastery</h4>
+                </div>
+                
+                <div class="skill-item">
+                    <h5>Phoenix Surge (Ultimate - 5 points max)</h5>
+                    <div class="skill-points">
+                        • Point 1: Become fire elemental for 10 seconds (100 power cost)<br>
+                        • Point 2: Duration +5 seconds, fire immunity<br>
+                        • Point 3: All attacks create fire explosions<br>
+                        • Point 4: Movement leaves burning trail<br>
+                        • Point 5: Resurrection on death during surge
+                    </div>
+                </div>
+
+                <div class="skill-item">
+                    <h5>Combination Mastery: Fire (Passive - 2 points max)</h5>
+                    <div class="skill-points">
+                        • Point 1: Combination abilities cost -25% power<br>
+                        • Point 2: Combination effects last +50% longer
+                    </div>
+                </div>
+            </div>
+
+            <div class="tier-section">
+                <div class="tier-header">
+                    <h4>Tier 4 - Transcendence</h4>
+                </div>
+                
+                <div class="capstone">
+                    <h5>Pyroclasm Lord (Capstone Passive - 1 point max)</h5>
+                    <div class="skill-points">
+                        Become the ultimate master of Fire and destruction<br>
+                        • +100% Fire Potency<br>
+                        • +50% Fire Resistance<br>
+                        • All Fire abilities ignore 50% of enemy Fire Resistance<br>
+                        • Burn buildup decays 50% slower (5% per second)
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ice Skill Tree Section -->
+        <div class="card content-section" id="ice-tree">
+            <div class="card-header">
+                <h2 class="card-title">❄️ ICE SKILL TREE</h2>
+            </div>
+            <div class="card-accent"></div>
+            
+            <div class="tier-section">
+                <div class="tier-header">
+                    <h4>Tier 1 - Frost Foundation</h4>
+                </div>
+                
+                <div class="element-grid">
+                    <div class="skill-item">
+                        <h5>Cryogenic Mastery (Passive - 3 points max)</h5>
+                        <div class="skill-points">
+                            • Point 1: +10% ice damage, slow effects +50% duration<br>
+                            • Point 2: +20% ice damage, chance to freeze on critical hits<br>
+                            • Point 3: +30% ice damage, frozen enemies take +100% damage
+                        </div>
+                    </div>
+
+                    <div class="skill-item">
+                        <h5>Frost Weapon (Passive - 5 points max)</h5>
+                        <div class="skill-points">
+                            • Point 1: Weapons deal ice damage, 10% chance to slow<br>
+                            • Point 2: Slow chance +20%, ice damage +15%<br>
+                            • Point 3: Slow chance +30%, ice damage +25%, chance to freeze<br>
+                            • Point 4: Freeze chance +15%, ice damage +35%<br>
+                            • Point 5: Freeze chance +25%, ice damage +50%
+                        </div>
+                    </div>
+
+                    <div class="skill-item">
+                        <h5>Cold Resistance (Passive - 2 points max)</h5>
+                        <div class="skill-points">
+                            • Point 1: +25% ice resistance, immunity to slowing effects<br>
+                            • Point 2: +50% ice resistance, ice damage restores energy
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tier-section">
+                <div class="tier-header">
+                    <h4>Tier 2 - Blizzard Specialization</h4>
+                </div>
+                
+                <div class="element-grid">
+                    <div class="skill-item">
+                        <h5>Ice Shard (Active - 3 points max)</h5>
+                        <div class="skill-points">
+                            • Point 1: Launch piercing ice projectile (25 power cost)<br>
+                            • Point 2: Shard splits into 3 on impact<br>
+                            • Point 3: Each shard can freeze targets
+                        </div>
+                    </div>
+
+                    <div class="skill-item">
+                        <h5>Ice Barrier (Active - 4 points max)</h5>
+                        <div class="skill-points">
+                            • Point 1: Create defensive ice wall (35 power cost)<br>
+                            • Point 2: Barrier reflects projectiles<br>
+                            • Point 3: Barrier explodes when destroyed<br>
+                            • Point 4: Multiple barriers can be maintained
+                        </div>
+                    </div>
+
+                    <div class="skill-item">
+                        <h5>Frozen Zone (Active - 3 points max)</h5>
+                        <div class="skill-points">
+                            • Point 1: Create area that slows enemies (30 power cost)<br>
+                            • Point 2: Zone also damages enemies over time<br>
+                            • Point 3: Zone moves with caster
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tier-section">
+                <div class="tier-header">
+                    <h4>Tier 3 - Absolute Zero Mastery</h4>
+                </div>
+                
+                <div class="skill-item">
+                    <h5>Winter's Embrace (Ultimate - 5 points max)</h5>
+                    <div class="skill-points">
+                        • Point 1: Freeze all enemies in large area (120 power cost)<br>
+                        • Point 2: Frozen enemies take +200% damage<br>
+                        • Point 3: Area spreads outward over time<br>
+                        • Point 4: Allies gain ice immunity and damage bonus<br>
+                        • Point 5: Effect can be maintained by spending power over time
+                    </div>
+                </div>
+            </div>
+
+            <div class="tier-section">
+                <div class="tier-header">
+                    <h4>Tier 4 - Transcendence</h4>
+                </div>
+                
+                <div class="capstone">
+                    <h5>Cryogenic Master (Capstone Passive - 1 point max)</h5>
+                    <div class="skill-points">
+                        Become the ultimate master of Ice and Freeze<br>
+                        • +100% Ice Potency<br>
+                        • +50% Ice Resistance<br>
+                        • All Ice abilities ignore 50% of enemy Ice Resistance<br>
+                        • +50% freeze buildup rate on all Ice damage
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Electric Skill Tree Section -->
+        <div class="card content-section" id="electric-tree">
+            <div class="card-header">
+                <h2 class="card-title">⚡ ELECTRIC SKILL TREE</h2>
+            </div>
+            <div class="card-accent"></div>
+            
+            <div class="tier-section">
+                <div class="tier-header">
+                    <h4>Tier 1 - Current Foundation</h4>
+                </div>
+                
+                <div class="element-grid">
+                    <div class="skill-item">
+                        <h5>Electrical Mastery (Passive - 3 points max)</h5>
+                        <div class="skill-points">
+                            • Point 1: +10% electric damage, attacks chain to 1 enemy<br>
+                            • Point 2: +20% electric damage, chain to 2 enemies<br>
+                            • Point 3: +30% electric damage, chain to 3 enemies
+                        </div>
+                    </div>
+
+                    <div class="skill-item">
+                        <h5>Shock Weapon (Passive - 5 points max)</h5>
+                        <div class="skill-points">
+                            • Point 1: Weapons deal electric damage, 10% chance to stun<br>
+                            • Point 2: Stun chance +20%, electric damage +15%<br>
+                            • Point 3: Stun chance +30%, electric damage +25%<br>
+                            • Point 4: Stun chance +40%, electric damage +35%<br>
+                            • Point 5: Stun chance +50%, electric damage +50%
+                        </div>
+                    </div>
+
+                    <div class="skill-item">
+                        <h5>Conductivity (Passive - 2 points max)</h5>
+                        <div class="skill-points">
+                            • Point 1: +25% electric resistance, gain energy when taking electric damage<br>
+                            • Point 2: +50% electric resistance, electric damage restores 25% energy
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tier-section">
+                <div class="tier-header">
+                    <h4>Tier 2 - Storm Specialization</h4>
+                </div>
+                
+                <div class="element-grid">
+                    <div class="skill-item">
+                        <h5>Lightning Bolt (Active - 3 points max)</h5>
+                        <div class="skill-points">
+                            • Point 1: Instant electric attack (20 power cost)<br>
+                            • Point 2: Bolt chains through all enemies in line<br>
+                            • Point 3: Each chain increases damage
+                        </div>
+                    </div>
+
+                    <div class="skill-item">
+                        <h5>Tesla Coil (Active - 4 points max)</h5>
+                        <div class="skill-points">
+                            • Point 1: Deploy electrical generator (45 power cost)<br>
+                            • Point 2: Coil damage and range +100%<br>
+                            • Point 3: Coil chains between multiple targets<br>
+                            • Point 4: Multiple coils can be deployed
+                        </div>
+                    </div>
+
+                    <div class="skill-item">
+                        <h5>Electric Field (Active - 3 points max)</h5>
+                        <div class="skill-points">
+                            • Point 1: Create damaging electric area (35 power cost)<br>
+                            • Point 2: Field stuns enemies who enter<br>
+                            • Point 3: Field follows caster movement
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tier-section">
+                <div class="tier-header">
+                    <h4>Tier 3 - Tempest Mastery</h4>
+                </div>
+                
+                <div class="skill-item">
+                    <h5>Storm Lord (Ultimate - 5 points max)</h5>
+                    <div class="skill-points">
+                        • Point 1: Continuous lightning strikes in area (100 power cost)<br>
+                        • Point 2: Lightning targets prioritize strongest enemies<br>
+                        • Point 3: Each strike increases subsequent damage<br>
+                        • Point 4: Allies gain electric damage bonus<br>
+                        • Point 5: Storm can be guided and redirected
+                    </div>
+                </div>
+            </div>
+
+            <div class="tier-section">
+                <div class="tier-header">
+                    <h4>Tier 4 - Transcendence</h4>
+                </div>
+                
+                <div class="capstone">
+                    <h5>Storm God (Capstone Passive - 1 point max)</h5>
+                    <div class="skill-points">
+                        Become the ultimate master of lightning and storms<br>
+                        • +100% Electric Potency<br>
+                        • +50% Electric Resistance<br>
+                        • All Electric abilities ignore 50% of enemy Electric Resistance<br>
+                        • Chain damage no longer diminishes with jumps
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Earth Skill Tree Section -->
+        <div class="card content-section" id="earth-tree">
+            <div class="card-header">
+                <h2 class="card-title">🌍 EARTH SKILL TREE</h2>
+            </div>
+            <div class="card-accent"></div>
+            
+            <div class="tier-section">
+                <div class="tier-header">
+                    <h4>Tier 1 - Stone Foundation</h4>
+                </div>
+                
+                <div class="element-grid">
+                    <div class="skill-item">
+                        <h5>Geological Mastery (Passive - 3 points max)</h5>
+                        <div class="skill-points">
+                            • Point 1: +15% earth damage, +20% damage reduction<br>
+                            • Point 2: +25% earth damage, +35% damage reduction<br>
+                            • Point 3: +35% earth damage, +50% damage reduction
+                        </div>
+                    </div>
+
+                    <div class="skill-item">
+                        <h5>Stone Weapon (Passive - 5 points max)</h5>
+                        <div class="skill-points">
+                            • Point 1: Weapons deal earth damage, 10% chance to knockdown<br>
+                            • Point 2: Knockdown chance +20%, earth damage +15%<br>
+                            • Point 3: Knockdown chance +30%, earth damage +25%<br>
+                            • Point 4: Knockdown chance +40%, earth damage +35%<br>
+                            • Point 5: Knockdown chance +50%, earth damage +50%
+                        </div>
+                    </div>
+
+                    <div class="skill-item">
+                        <h5>Seismic Stability (Passive - 2 points max)</h5>
+                        <div class="skill-points">
+                            • Point 1: Immunity to knockback and displacement effects<br>
+                            • Point 2: Standing still for 3+ seconds grants +25% damage
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tier-section">
+                <div class="tier-header">
+                    <h4>Tier 2 - Terrain Specialization</h4>
+                </div>
+                
+                <div class="element-grid">
+                    <div class="skill-item">
+                        <h5>Earth Spike (Active - 3 points max)</h5>
+                        <div class="skill-points">
+                            • Point 1: Summon damaging stone spike (25 power cost)<br>
+                            • Point 2: Spike creates line of smaller spikes<br>
+                            • Point 3: Spikes remain as terrain obstacles
+                        </div>
+                    </div>
+
+                    <div class="skill-item">
+                        <h5>Stone Wall (Active - 4 points max)</h5>
+                        <div class="skill-points">
+                            • Point 1: Create defensive earth barrier (40 power cost)<br>
+                            • Point 2: Wall grants cover bonus to allies<br>
+                            • Point 3: Wall can be climbed for elevation advantage<br>
+                            • Point 4: Multiple walls can be maintained
+                        </div>
+                    </div>
+
+                    <div class="skill-item">
+                        <h5>Earthquake (Active - 3 points max)</h5>
+                        <div class="skill-points">
+                            • Point 1: Create damaging ground tremor (50 power cost)<br>
+                            • Point 2: Earthquake knocks down all enemies<br>
+                            • Point 3: Effect spreads outward in waves
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tier-section">
+                <div class="tier-header">
+                    <h4>Tier 3 - Tectonic Mastery</h4>
+                </div>
+                
+                <div class="skill-item">
+                    <h5>Mountain's Fury (Ultimate - 5 points max)</h5>
+                    <div class="skill-points">
+                        • Point 1: Reshape battlefield terrain (150 power cost)<br>
+                        • Point 2: Create elevated positions and cover<br>
+                        • Point 3: Terrain changes are permanent<br>
+                        • Point 4: Allies gain movement bonuses on earth terrain<br>
+                        • Point 5: Can create massive walls and chasms
+                    </div>
+                </div>
+            </div>
+
+            <div class="tier-section">
+                <div class="tier-header">
+                    <h4>Tier 4 - Transcendence</h4>
+                </div>
+                
+                <div class="capstone">
+                    <h5>Earthquake God (Capstone Passive - 1 point max)</h5>
+                    <div class="skill-points">
+                        Become the ultimate master of Earth and stone<br>
+                        • +100% Earth Potency<br>
+                        • +50% Earth Resistance<br>
+                        • All Earth abilities ignore 50% of enemy Earth Resistance<br>
+                        • Fracture buildup never decays
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Nature Skill Tree Section -->
+        <div class="card content-section" id="nature-tree">
+            <div class="card-header">
+                <h2 class="card-title">🌿 NATURE SKILL TREE</h2>
+            </div>
+            <div class="card-accent"></div>
+            
+            <div class="tier-section">
+                <div class="tier-header">
+                    <h4>Tier 1 - Growth Foundation</h4>
+                </div>
+                
+                <div class="element-grid">
+                    <div class="skill-item">
+                        <h5>Natural Mastery (Passive - 3 points max)</h5>
+                        <div class="skill-points">
+                            • Point 1: +10% nature damage, +25% healing effectiveness<br>
+                            • Point 2: +20% nature damage, +50% healing effectiveness<br>
+                            • Point 3: +30% nature damage, +75% healing effectiveness
+                        </div>
+                    </div>
+
+                    <div class="skill-item">
+                        <h5>Living Weapon (Passive - 5 points max)</h5>
+                        <div class="skill-points">
+                            • Point 1: Weapons deal nature damage, 10% chance to heal on hit<br>
+                            • Point 2: Heal chance +20%, nature damage +15%<br>
+                            • Point 3: Heal chance +30%, nature damage +25%<br>
+                            • Point 4: Heal chance +40%, nature damage +35%<br>
+                            • Point 5: Heal chance +50%, nature damage +50%
+                        </div>
+                    </div>
+
+                    <div class="skill-item">
+                        <h5>Natural Resistance (Passive - 2 points max)</h5>
+                        <div class="skill-points">
+                            • Point 1: +25% nature resistance, regenerate health over time<br>
+                            • Point 2: +50% nature resistance, regenerate energy over time
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tier-section">
+                <div class="tier-header">
+                    <h4>Tier 2 - Verdant Specialization</h4>
+                </div>
+                
+                <div class="element-grid">
+                    <div class="skill-item">
+                        <h5>Healing Burst (Active - 3 points max)</h5>
+                        <div class="skill-points">
+                            • Point 1: Instant area healing (30 power cost)<br>
+                            • Point 2: Also removes negative status effects<br>
+                            • Point 3: Grants temporary damage resistance
+                        </div>
+                    </div>
+
+                    <div class="skill-item">
+                        <h5>Thorn Barrier (Active - 4 points max)</h5>
+                        <div class="skill-points">
+                            • Point 1: Create damaging plant wall (35 power cost)<br>
+                            • Point 2: Barrier heals allies who touch it<br>
+                            • Point 3: Barrier grows larger over time<br>
+                            • Point 4: Multiple barriers can be maintained
+                        </div>
+                    </div>
+
+                    <div class="skill-item">
+                        <h5>Nature's Blessing (Active - 3 points max)</h5>
+                        <div class="skill-points">
+                            • Point 1: Create healing area over time (25 power cost)<br>
+                            • Point 2: Area also boosts ally damage<br>
+                            • Point 3: Effect follows allies
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tier-section">
+                <div class="tier-header">
+                    <h4>Tier 3 - Primal Mastery</h4>
+                </div>
+                
+                <div class="skill-item">
+                    <h5>World Tree (Ultimate - 5 points max)</h5>
+                    <div class="skill-points">
+                        • Point 1: Summon massive healing tree (120 power cost)<br>
+                        • Point 2: Tree provides cover and elevation<br>
+                        • Point 3: Tree spreads healing aura continuously<br>
+                        • Point 4: Allies gain nature damage bonus near tree<br>
+                        • Point 5: Tree can move and attack enemies
+                    </div>
+                </div>
+            </div>
+
+            <div class="tier-section">
+                <div class="tier-header">
+                    <h4>Tier 4 - Transcendence</h4>
+                </div>
+                
+                <div class="capstone">
+                    <h5>Plague God (Capstone Passive - 1 point max)</h5>
+                    <div class="skill-points">
+                        Become the ultimate master of toxins and life<br>
+                        • +100% Nature Potency<br>
+                        • +50% Nature Resistance<br>
+                        • All Nature abilities ignore 50% of enemy Nature Resistance<br>
+                        • Toxin buildup spreads on any damage, not just contact
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Combination Synergies Section -->
+        <div class="card content-section" id="combination-synergies">
+            <div class="card-header">
+                <h2 class="card-title">COMBINATION SKILL SYNERGIES</h2>
+            </div>
+            <div class="card-accent"></div>
+            
+            <p style="color: var(--text-normal); line-height: 1.6; margin-bottom: var(--spacing-lg);">
+                When players have skill points in two adjacent elements:
+            </p>
+
+            <div class="combo-grid">
+                <div class="combo-card">
+                    <h4>Shared Passives (Automatically Unlocked)</h4>
+                    <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 15px;">
+                        <li><strong>Elemental Harmony:</strong> -10% power cost for all elemental abilities</li>
+                        <li><strong>Dual Mastery:</strong> +15% effectiveness for both elements</li>
+                        <li><strong>Combination Potential:</strong> Unlocks combination abilities</li>
+                    </ul>
+                </div>
+
+                <div class="combo-card">
+                    <h4>Combination Abilities (Require investment in both trees)</h4>
+                    <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 15px;">
+                        <li><strong>Tier 2 Access:</strong> 10+ points in each element to unlock basic combinations</li>
+                        <li><strong>Tier 3 Access:</strong> 20+ points in each element to unlock advanced combinations</li>
+                        <li><strong>Mastery Combinations:</strong> 30+ points in each element for ultimate combinations</li>
+                    </ul>
+                </div>
+
+                <div class="combo-card">
+                    <h4>Power Budget Considerations</h4>
+                    <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 15px;">
+                        <li><strong>Skill Point Investment:</strong> Each skill point represents ongoing power budget commitment</li>
+                        <li><strong>Active Ability Slots:</strong> Limited slots for active abilities (3-5 total)</li>
+                        <li><strong>Passive Benefits:</strong> Always active but consume power budget</li>
+                        <li><strong>Combination Abilities:</strong> Temporary high power cost during use</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progression Strategy Section -->
+        <div class="card content-section" id="progression-strategy">
+            <div class="card-header">
+                <h2 class="card-title">SKILL PROGRESSION STRATEGY</h2>
+            </div>
+            <div class="card-accent"></div>
+            
+            <div class="strategy-grid">
+                <div class="strategy-card">
+                    <h4>Damage Specialist (Fire + Electric)</h4>
+                    <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 15px;">
+                        <li>Focus on active damage abilities</li>
+                        <li>Maximize combination potential</li>
+                        <li>Trade defense for offense</li>
+                    </ul>
+                </div>
+
+                <div class="strategy-card">
+                    <h4>Tank Specialist (Earth + Ice)</h4>
+                    <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 15px;">
+                        <li>Emphasize defensive passives</li>
+                        <li>Control and barrier abilities</li>
+                        <li>High survivability focus</li>
+                    </ul>
+                </div>
+
+                <div class="strategy-card">
+                    <h4>Support Specialist (Nature + Earth)</h4>
+                    <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 15px;">
+                        <li>Healing and ally enhancement</li>
+                        <li>Terrain control for team advantage</li>
+                        <li>Balanced offense and utility</li>
+                    </ul>
+                </div>
+
+                <div class="strategy-card">
+                    <h4>Hybrid Specialist (Any Adjacent Pair)</h4>
+                    <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 15px;">
+                        <li>Balanced investment in both trees</li>
+                        <li>Versatile ability selection</li>
+                        <li>Adaptable to different situations</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="tier-section">
+                <div class="tier-header">
+                    <h4>Skill Point Allocation Guidelines</h4>
+                </div>
+                
+                <div class="tier-grid">
+                    <div class="tier-card">
+                        <h4>Early Game (Levels 20-35)</h4>
+                        <div style="color: var(--text-normal); font-size: 11px;">
+                            Focus on one element, maximize Tier 1
+                        </div>
+                    </div>
+                    <div class="tier-card">
+                        <h4>Mid Game (Levels 35-50)</h4>
+                        <div style="color: var(--text-normal); font-size: 11px;">
+                            Begin second element, unlock Tier 2 abilities
+                        </div>
+                    </div>
+                    <div class="tier-card">
+                        <h4>Late Game (Levels 50-60)</h4>
+                        <div style="color: var(--text-normal); font-size: 11px;">
+                            Master combinations, optimize Tier 3 abilities
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="background: var(--bg-dark); border: 1px solid var(--primary-orange); padding: var(--spacing-lg); margin-top: var(--spacing-lg);">
+                <h4 style="color: var(--primary-orange); margin-bottom: var(--spacing-md);">System Integration</h4>
+                <p style="color: var(--text-normal); font-size: 13px; margin: 0;">
+                    This skill system provides deep customization while maintaining clear progression paths and meaningful choices that integrate with Courier's core Power Budget System.
+                </p>
+            </div>
+        </div>
+
+        <!-- Document Navigation -->
+        <div class="doc-nav-bottom">
+            <a href="03-character-systems.html">← Previous: Character Systems</a>
+            <div style="color: var(--text-dim); font-size: 12px; text-align: center;">
+                <strong>NEXT:</strong> <a href="elemental-system.html" style="color: var(--primary-cyan);">Elemental System</a><br>
+                <span style="color: var(--text-dim);">Primary elemental mechanics and Ice tree design</span>
+            </div>
+            <a href="elemental-system.html">Next: Elemental System →</a>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer style="padding: 20px; text-align: center; font-size: 10px; color: #666; border-top: 1px solid #333; margin-top: 40px;">
+        <a href="../changelog.html" style="color: #666; text-decoration: none; border-bottom: 1px dotted #666;">CHANGELOG</a> • 
+        <a href="index.html" style="color: #666; text-decoration: none; border-bottom: 1px dotted #666;">SPECS</a> • 
+        RELATED: <a href="05-elemental-combat.html" style="color: #666; text-decoration: none;">Elemental Combat</a> • 
+        <a href="03-character-systems.html" style="color: #666; text-decoration: none;">Character Systems</a> • 
+        <a href="elemental-system.html" style="color: #666; text-decoration: none;">Elemental System</a>
+    </footer>
+
+    <script src="../assets/js/main.js"></script>
+    <script src="../assets/js/navigation.js"></script>
+</body>
+</html>

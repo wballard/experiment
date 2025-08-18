@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Progression & Economy - Courier Specifications</title>
+    <link rel="stylesheet" href="../assets/css/design-system.css?v=13">
+    <link rel="stylesheet" href="../assets/css/main.css?v=13">
+    <link rel="stylesheet" href="../assets/css/game.css?v=13">
+    <style>
+        .breadcrumb {
+            color: var(--text-dim);
+            font-size: 12px;
+            margin-bottom: var(--spacing-lg);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .breadcrumb a {
+            color: var(--primary-cyan);
+            text-decoration: none;
+        }
+        .breadcrumb a:hover {
+            color: var(--text-bright);
+        }
+        .doc-nav-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: var(--spacing-xl);
+            padding: var(--spacing-lg);
+            background: var(--bg-dark);
+            border: 1px solid var(--border-gray);
+        }
+        .doc-nav-bottom a {
+            color: var(--primary-cyan);
+            text-decoration: none;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border: 1px solid var(--border-gray);
+            background: var(--bg-medium);
+            transition: all 0.3s ease;
+        }
+        .doc-nav-bottom a:hover {
+            border-color: var(--primary-cyan);
+            background: var(--bg-light);
+        }
+        .content-section {
+            margin-bottom: var(--spacing-xl);
+        }
+        .highlight-box {
+            background: var(--bg-dark);
+            border: 1px solid var(--primary-orange);
+            padding: var(--spacing-lg);
+            margin: var(--spacing-lg) 0;
+        }
+        .highlight-box h3 {
+            color: var(--primary-orange);
+            margin-bottom: var(--spacing-md);
+        }
+        .progression-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: var(--spacing-lg);
+            margin: var(--spacing-lg) 0;
+        }
+        .progression-card {
+            background: var(--bg-medium);
+            border: 1px solid var(--border-gray);
+            padding: var(--spacing-lg);
+            transition: all 0.3s ease;
+        }
+        .progression-card:hover {
+            border-color: var(--primary-cyan);
+            background: var(--bg-light);
+        }
+        .progression-card h3 {
+            color: var(--primary-cyan);
+            margin-bottom: var(--spacing-md);
+            font-size: 18px;
+        }
+        .progression-card h4 {
+            color: var(--primary-orange);
+            margin-bottom: var(--spacing-sm);
+            font-size: 14px;
+        }
+        .faction-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--spacing-md);
+            margin: var(--spacing-lg) 0;
+        }
+        .faction-card {
+            background: var(--bg-dark);
+            padding: var(--spacing-lg);
+            border: 1px solid var(--border-gray);
+            transition: all 0.3s ease;
+        }
+        .faction-card:hover {
+            border-color: var(--primary-cyan);
+        }
+        .faction-card h4 {
+            margin-bottom: var(--spacing-sm);
+            font-size: 16px;
+        }
+        .faction-darkspur { border-color: #607D8B; }
+        .faction-darkspur h4 { color: #607D8B; }
+        .faction-card { border-color: #2196F3; }
+        .faction-card h4 { color: #2196F3; }
+        .faction-ashen { border-color: #795548; }
+        .faction-ashen h4 { color: #795548; }
+        .faction-can { border-color: #4CAF50; }
+        .faction-can h4 { color: #4CAF50; }
+        .toc {
+            background: var(--bg-medium);
+            border: 1px solid var(--border-gray);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+        .toc h3 {
+            color: var(--primary-cyan);
+            margin-bottom: var(--spacing-md);
+        }
+        .toc ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        .toc li {
+            margin-bottom: var(--spacing-sm);
+        }
+        .toc a {
+            color: var(--text-normal);
+            text-decoration: none;
+            font-size: 13px;
+        }
+        .toc a:hover {
+            color: var(--primary-cyan);
+        }
+        .paragon-example {
+            background: var(--bg-dark);
+            border: 1px solid var(--primary-cyan);
+            padding: var(--spacing-md);
+            margin: var(--spacing-md) 0;
+            font-family: monospace;
+        }
+        .paragon-example h4 {
+            color: var(--primary-cyan);
+            margin-bottom: var(--spacing-sm);
+        }
+        .currency-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--spacing-md);
+            margin: var(--spacing-lg) 0;
+        }
+        .currency-item {
+            background: var(--bg-medium);
+            padding: var(--spacing-md);
+            border: 1px solid var(--border-gray);
+        }
+        .currency-item h4 {
+            color: var(--primary-orange);
+            margin-bottom: var(--spacing-sm);
+            font-size: 14px;
+        }
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--spacing-md);
+            margin: var(--spacing-lg) 0;
+        }
+        .metrics-item {
+            background: var(--bg-dark);
+            padding: var(--spacing-md);
+            border: 1px solid var(--border-gray);
+        }
+        .metrics-item h4 {
+            color: var(--primary-orange);
+            margin-bottom: var(--spacing-sm);
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Header -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <div class="nav-logo"></div>
+            <div>
+                <div class="nav-username">COURIER SPECIFICATIONS</div>
+                <div class="nav-level">PROGRESSION & ECONOMY</div>
+            </div>
+        </div>
+        <div class="nav-menu">
+            <a href="../game/dashboard.html" class="nav-item">CHARACTER</a>
+            <a href="../inventory.html" class="nav-item">INVENTORY</a>
+            <a href="../missions.html" class="nav-item">MISSIONS</a>
+            <a href="../skills.html" class="nav-item">SKILLS</a>
+            <a href="../build-planner.html" class="nav-item">BUILD PLANNER</a>
+            <a href="../marketplace.html" class="nav-item">MARKET</a>
+            <a href="../crafting.html" class="nav-item">CRAFTING</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="page-container">
+        <div class="breadcrumb">
+            <a href="index.html">SPECS</a> > PROGRESSION & ECONOMY
+        </div>
+
+        <div class="page-header">
+            <h1 class="page-title">PROGRESSION & ECONOMY</h1>
+            <p style="color: var(--text-normal); margin-top: var(--spacing-md);">Long-term Advancement & Faction Systems</p>
+        </div>
+
+        <!-- Table of Contents -->
+        <div class="toc">
+            <h3>📋 TABLE OF CONTENTS</h3>
+            <ul>
+                <li><a href="#philosophy">Progression Philosophy</a></li>
+                <li><a href="#timeline">Character Progression Timeline</a></li>
+                <li><a href="#paragon-system">Paragon System</a></li>
+                <li><a href="#currency-system">Currency System</a></li>
+                <li><a href="#faction-system">Faction System</a></li>
+                <li><a href="#endgame-goals">Endgame Progression Goals</a></li>
+                <li><a href="#metrics">Progression Metric Tracking</a></li>
+            </ul>
+        </div>
+
+        <!-- Progression Philosophy Section -->
+        <div class="card content-section" id="philosophy">
+            <div class="card-header">
+                <h2 class="card-title">PROGRESSION PHILOSOPHY</h2>
+            </div>
+            <div class="card-accent"></div>
+            
+            <p style="color: var(--text-normal); line-height: 1.6; margin-bottom: var(--spacing-lg);">
+                Courier's progression system provides meaningful advancement from character creation through hundreds of hours 
+                of play. The combination of base level progression, paragon levels, faction reputation, and power budget 
+                optimization creates multiple parallel advancement paths that remain engaging throughout the game's lifespan.
+            </p>
+
+            <div class="highlight-box">
+                <h3>Core Principles</h3>
+                <ul style="color: var(--text-normal); margin: 0; padding-left: 20px;">
+                    <li><strong>Multiple Progression Paths:</strong> Character, gear, faction, and mastery advancement</li>
+                    <li><strong>Meaningful Choices:</strong> Every advancement decision has trade-offs and strategy</li>
+                    <li><strong>Long-term Engagement:</strong> Progression remains valuable at all stages</li>
+                    <li><strong>Player Agency:</strong> Multiple ways to advance toward personal goals</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Character Progression Timeline Section -->
+        <div class="card content-section" id="timeline">
+            <div class="card-header">
+                <h2 class="card-title">CHARACTER PROGRESSION TIMELINE</h2>
+            </div>
+            <div class="card-accent"></div>
+            
+            <div class="progression-grid">
+                <div class="progression-card">
+                    <h3>Early Game (Levels 1-19)</h3>
+                    <h4>Duration: 10-20 hours</h4>
+                    <p style="color: var(--text-normal); font-size: 13px; margin-bottom: var(--spacing-md);">
+                        <strong>Focus:</strong> Learning core mechanics and class identity
+                    </p>
+
+                    <h4>Progression Goals:</h4>
+                    <ul style="color: var(--text-normal); font-size: 12px; margin: 0 0 var(--spacing-md) 0; padding-left: 20px;">
+                        <li>Master basic weapon types and combat mechanics</li>
+                        <li>Understand attribute point allocation impacts</li>
+                        <li>Experiment with different playstyles</li>
+                        <li>Build foundation gear collection</li>
+                    </ul>
+
+                    <div style="background: var(--bg-dark); padding: var(--spacing-sm); border: 1px solid var(--border-gray); margin-top: var(--spacing-md);">
+                        <p style="color: var(--text-normal); font-size: 12px; margin: 0;">
+                            <strong>Power Budget:</strong> 120-480 total budget<br>
+                            <strong>Gear Strategy:</strong> Accept any upgrades, focus on learning itemization<br>
+                            <strong>Skill Points:</strong> Invest in core class abilities
+                        </p>
+                    </div>
+                </div>
+
+                <div class="progression-card">
+                    <h3>Mid Game (Levels 20-39)</h3>
+                    <h4>Duration: 20-40 hours</h4>
+                    <p style="color: var(--text-normal); font-size: 13px; margin-bottom: var(--spacing-md);">
+                        <strong>Focus:</strong> First elemental specialization and build identity
+                    </p>
+
+                    <h4>Progression Milestones:</h4>
+                    <ul style="color: var(--text-normal); font-size: 12px; margin: 0 0 var(--spacing-md) 0; padding-left: 20px;">
+                        <li><strong>Level 20:</strong> First elemental choice (game-changing moment)</li>
+                        <li>Begin integrating elemental effects with class abilities</li>
+                        <li>Develop preferred weapon combinations and modification strategies</li>
+                        <li>Start faction reputation building</li>
+                    </ul>
+
+                    <div style="background: var(--bg-dark); padding: var(--spacing-sm); border: 1px solid var(--border-gray); margin-top: var(--spacing-md);">
+                        <p style="color: var(--text-normal); font-size: 12px; margin: 0;">
+                            <strong>Power Budget:</strong> 500-880 total budget<br>
+                            <strong>Gear Strategy:</strong> Begin optimizing for elemental synergy<br>
+                            <strong>Skill Points:</strong> Balance class tree with first elemental tree
+                        </p>
+                    </div>
+                </div>
+
+                <div class="progression-card">
+                    <h3>Advanced Game (Levels 40-59)</h3>
+                    <h4>Duration: 40-80 hours</h4>
+                    <p style="color: var(--text-normal); font-size: 13px; margin-bottom: var(--spacing-md);">
+                        <strong>Focus:</strong> Dual elemental mastery and optimization
+                    </p>
+
+                    <h4>Progression Milestones:</h4>
+                    <ul style="color: var(--text-normal); font-size: 12px; margin: 0 0 var(--spacing-md) 0; padding-left: 20px;">
+                        <li><strong>Level 40:</strong> Second elemental choice (strategic depth explosion)</li>
+                        <li>Master elemental combination mechanics</li>
+                        <li>Optimize power budget efficiency across all gear</li>
+                        <li>Achieve high faction reputation tiers</li>
+                    </ul>
+
+                    <div style="background: var(--bg-dark); padding: var(--spacing-sm); border: 1px solid var(--border-gray); margin-top: var(--spacing-md);">
+                        <p style="color: var(--text-normal); font-size: 12px; margin: 0;">
+                            <strong>Power Budget:</strong> 900-1,280 total budget<br>
+                            <strong>Gear Strategy:</strong> Focus on rarity efficiency and perfect stat combinations<br>
+                            <strong>Skill Points:</strong> Advanced builds with dual elemental investment
+                        </p>
+                    </div>
+                </div>
+
+                <div class="progression-card">
+                    <h3>End Game (Level 60+)</h3>
+                    <h4>Duration: Hundreds of hours</h4>
+                    <p style="color: var(--text-normal); font-size: 13px; margin-bottom: var(--spacing-md);">
+                        <strong>Focus:</strong> Paragon progression and perfect optimization
+                    </p>
+
+                    <h4>Progression Goals:</h4>
+                    <ul style="color: var(--text-normal); font-size: 12px; margin: 0 0 var(--spacing-md) 0; padding-left: 20px;">
+                        <li><strong>Paragon Levels:</strong> +1 power budget per level (infinite progression)</li>
+                        <li>Perfect gear optimization within power budget constraints</li>
+                        <li>Master multiple builds for different affix weeks</li>
+                        <li>Achieve maximum faction standing across all groups</li>
+                    </ul>
+
+                    <div style="background: var(--bg-dark); padding: var(--spacing-sm); border: 1px solid var(--border-gray); margin-top: var(--spacing-md);">
+                        <p style="color: var(--text-normal); font-size: 12px; margin: 0;">
+                            <strong>Power Budget:</strong> 1,300+ total budget (grows slowly with paragon)<br>
+                            <strong>Gear Strategy:</strong> Hunt for Primal items and perfect combinations<br>
+                            <strong>Skill Points:</strong> Experiment with alternative builds and respec options
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Paragon System Section -->
+        <div class="card content-section" id="paragon-system">
+            <div class="card-header">
+                <h2 class="card-title">PARAGON SYSTEM</h2>
+            </div>
+            <div class="card-accent"></div>
+            
+            <div class="highlight-box">
+                <h3>Mechanics</h3>
+                <ul style="color: var(--text-normal); margin: 0; padding-left: 20px;">
+                    <li><strong>Activation:</strong> Available immediately upon reaching level 60</li>
+                    <li><strong>Progression Rate:</strong> Slower than base levels, designed for long-term engagement</li>
+                    <li><strong>Power Gain:</strong> +1 power budget per paragon level</li>
+                    <li><strong>No Level Cap:</strong> Infinite progression for dedicated players</li>
+                </ul>
+            </div>
+
+            <h3 style="color: var(--primary-cyan); margin-bottom: var(--spacing-md);">Paragon Progression Examples</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minima(250px, 1fr)); gap: var(--spacing-md);">
+                <div class="paragon-example">
+                    <h4>Level 60 + 10 Paragon</h4>
+                    <p style="color: var(--text-normal); font-size: 12px; margin: 0;">
+                        1,310 total power budget (+0.7% increase)
+                    </p>
+                </div>
+                <div class="paragon-example">
+                    <h4>Level 60 + 50 Paragon</h4>
+                    <p style="color: var(--text-normal); font-size: 12px; margin: 0;">
+                        1,350 total power budget (+3.8% increase)
+                    </p>
+                </div>
+                <div class="paragon-example">
+                    <h4>Level 60 + 100 Paragon</h4>
+                    <p style="color: var(--text-normal); font-size: 12px; margin: 0;">
+                        1,400 total power budget (+7.7% increase)
+                    </p>
+                </div>
+            </div>
+
+            <div class="progression-grid">
+                <div class="progression-card">
+                    <h3>Strategic Impact</h3>
+                    <h4>Gear Flexibility</h4>
+                    <p style="color: var(--text-normal); font-size: 13px; margin-bottom: var(--spacing-sm);">
+                        Additional power budget allows for:
+                    </p>
+                    <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 20px;">
+                        <li>More gear slots filled simultaneously</li>
+                        <li>Higher-power gear combinations</li>
+                        <li>Experimental builds with power budget to spare</li>
+                        <li>Gradual optimization improvements</li>
+                    </ul>
+                </div>
+
+                <div class="progression-card">
+                    <h3>Long-term Value</h3>
+                    <h4>Paragon progression provides:</h4>
+                    <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 20px;">
+                        <li>Measurable character improvement over hundreds of hours</li>
+                        <li>Incremental power increases that compound over time</li>
+                        <li>Reason to continue playing beyond base level cap</li>
+                        <li>Competitive advantage in highest-tier content</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Currency System Section -->
+        <div class="card content-section" id="currency-system">
+            <div class="card-header">
+                <h2 class="card-title">CURRENCY SYSTEM (SIMPLIFIED)</h2>
+            </div>
+            <div class="card-accent"></div>
+            
+            <p style="color: var(--text-normal); font-style: italic; margin-bottom: var(--spacing-lg);">
+                Note: Designed as simplified foundation for future expansion
+            </p>
+
+            <div class="currency-grid">
+                <div class="currency-item">
+                    <h4>Credits</h4>
+                    <p style="color: var(--text-normal); font-size: 12px; margin-bottom: var(--spacing-sm);">
+                        <strong>Primary Use:</strong> Basic transactions and equipment maintenance
+                    </p>
+                    <p style="color: var(--text-normal); font-size: 11px; margin-bottom: var(--spacing-sm);">
+                        <strong>Sources:</strong> Mission completion, item sales, daily activities
+                    </p>
+                    <p style="color: var(--text-normal); font-size: 11px; margin-bottom: var(--spacing-sm);">
+                        <strong>Sinks:</strong> Vendor purchases, repair costs, basic upgrades
+                    </p>
+                    <p style="color: var(--text-normal); font-size: 11px;">
+                        <strong>Design Goal:</strong> Universal currency for common needs
+                    </p>
+                </div>
+
+                <div class="currency-item">
+                    <h4>Components</h4>
+                    <p style="color: var(--text-normal); font-size: 12px; margin-bottom: var(--spacing-sm);">
+                        <strong>Primary Use:</strong> Crafting and equipment modification
+                    </p>
+                    <p style="color: var(--text-normal); font-size: 11px; margin-bottom: var(--spacing-sm);">
+                        <strong>Sources:</strong> Item dismantling, resource gathering, mission rewards
+                    </p>
+                    <p style="color: var(--text-normal); font-size: 11px; margin-bottom: var(--spacing-sm);">
+                        <strong>Sinks:</strong> Weapon modifications, armor enhancements, consumable creation
+                    </p>
+                    <p style="color: var(--text-normal); font-size: 11px;">
+                        <strong>Design Goal:</strong> Progression currency for equipment optimization
+                    </p>
+                </div>
+
+                <div class="currency-item">
+                    <h4>Essences</h4>
+                    <p style="color: var(--text-normal); font-size: 12px; margin-bottom: var(--spacing-sm);">
+                        <strong>Primary Use:</strong> Character respecialization
+                    </p>
+                    <p style="color: var(--text-normal); font-size: 11px; margin-bottom: var(--spacing-sm);">
+                        <strong>Sources:</strong> Rare mission rewards, high-tier content, special achievements
+                    </p>
+                    <p style="color: var(--text-normal); font-size: 11px; margin-bottom: var(--spacing-sm);">
+                        <strong>Sinks:</strong> Attribute point reset, skill point reallocation, elemental choice changes
+                    </p>
+                    <p style="color: var(--text-normal); font-size: 11px;">
+                        <strong>Design Goal:</strong> Strategic flexibility currency for build experimentation
+                    </p>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <h3>Economic Balance Principles</h3>
+                <ul style="color: var(--text-normal); margin: 0; padding-left: 20px;">
+                    <li><strong>Currency Flow:</strong> Each currency has multiple sources and sinks to prevent hoarding</li>
+                    <li><strong>Scarcity Management:</strong> Essences remain rare to make respec decisions meaningful</li>
+                    <li><strong>Inflation Prevention:</strong> Regular sinks ensure currency maintains value over time</li>
+                    <li><strong>Player Choice:</strong> Multiple progression paths prevent single currency dominance</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Faction System Section -->
+        <div class="card content-section" id="faction-system">
+            <div class="card-header">
+                <h2 class="card-title">FACTION SYSTEM</h2>
+            </div>
+            <div class="card-accent"></div>
+            
+            <h3 style="color: var(--primary-cyan); margin-bottom: var(--spacing-lg);">The Four Factions</h3>
+
+            <div class="faction-grid">
+                <div class="faction-card faction-darkspur">
+                    <h4>🏭 Darkspur Corporation</h4>
+                    <p style="color: var(--text-normal); font-size: 13px; margin-bottom: var(--spacing-md);">
+                        <strong>Philosophy:</strong> "Fortune Favors the Bold"<br>
+                        <strong>Focus:</strong> Military-industrial efficiency and profit
+                    </p>
+
+                    <h4 style="font-size: 12px; margin-bottom: var(--spacing-sm);">Reputation Benefits:</h4>
+                    <ul style="color: var(--text-normal); font-size: 11px; margin: 0 0 var(--spacing-md) 0; padding-left: 15px;">
+                        <li><strong>Friendly:</strong> 10% discount on weapon modifications</li>
+                        <li><strong>Honored:</strong> Access to military-grade weapon blueprints</li>
+                        <li><strong>Revered:</strong> Exclusive assault rifle variants and heavy armor</li>
+                        <li><strong>Exalted:</strong> Corporate backing provides mission success bonuses</li>
+                    </ul>
+
+                    <h4 style="font-size: 12px; margin-bottom: var(--spacing-sm);">Faction-Specific Rewards:</h4>
+                    <ul style="color: var(--text-normal); font-size: 11px; margin: 0; padding-left: 15px;">
+                        <li>Advanced weapon modification blueprints</li>
+                        <li>Heavy armor designs optimized for combat</li>
+                        <li>Damage-focused skill enhancements</li>
+                        <li>Bulk ammunition and resource packages</li>
+                    </ul>
+                </div>
+
+                <div class="faction-card">
+                    <h4>🔬 CARD (Colonial Armed Response Division)</h4>
+                    <p style="color: var(--text-normal); font-size: 13px; margin-bottom: var(--spacing-md);">
+                        <strong>Philosophy:</strong> "Order Through Strength"<br>
+                        <strong>Focus:</strong> Security, research, and technological advancement
+                    </p>
+
+                    <h4 style="font-size: 12px; margin-bottom: var(--spacing-sm);">Reputation Benefits:</h4>
+                    <ul style="color: var(--text-normal); font-size: 11px; margin: 0 0 var(--spacing-md) 0; padding-left: 15px;">
+                        <li><strong>Friendly:</strong> Access to scanning equipment and analysis tools</li>
+                        <li><strong>Honored:</strong> Energy weapon specialization blueprints</li>
+                        <li><strong>Revered:</strong> Advanced shield technology and defensive systems</li>
+                        <li><strong>Exalted:</strong> Research backing provides knowledge bonuses</li>
+                    </ul>
+
+                    <h4 style="font-size: 12px; margin-bottom: var(--spacing-sm);">Faction-Specific Rewards:</h4>
+                    <ul style="color: var(--text-normal); font-size: 11px; margin: 0; padding-left: 15px;">
+                        <li>Energy weapon modification systems</li>
+                        <li>Shield and defensive gear optimization</li>
+                        <li>Scanning and detection equipment</li>
+                        <li>Research-based skill bonuses and knowledge</li>
+                    </ul>
+                </div>
+
+                <div class="faction-card faction-ashen">
+                    <h4>🌫️ Ashen Collective</h4>
+                    <p style="color: var(--text-normal); font-size: 13px; margin-bottom: var(--spacing-md);">
+                        <strong>Philosophy:</strong> "Knowledge is Power"<br>
+                        <strong>Focus:</strong> Progenitor research and mysterious technologies
+                    </p>
+
+                    <h4 style="font-size: 12px; margin-bottom: var(--spacing-sm);">Reputation Benefits:</h4>
+                    <ul style="color: var(--text-normal); font-size: 11px; margin: 0 0 var(--spacing-md) 0; padding-left: 15px;">
+                        <li><strong>Friendly:</strong> Access to stealth-focused equipment</li>
+                        <li><strong>Honored:</strong> Unique modification combinations unavailable elsewhere</li>
+                        <li><strong>Revered:</strong> Hidden skill tree nodes and secret techniques</li>
+                        <li><strong>Exalted:</strong> Mysterious backing provides unique bonuses</li>
+                    </ul>
+
+                    <h4 style="font-size: 12px; margin-bottom: var(--spacing-sm);">Faction-Specific Rewards:</h4>
+                    <ul style="color: var(--text-normal); font-size: 11px; margin: 0; padding-left: 15px;">
+                        <li>Stealth and infiltration equipment</li>
+                        <li>Unique modification combinations</li>
+                        <li>Access to secret skill tree branches</li>
+                        <li>Progenitor technology insights</li>
+                    </ul>
+                </div>
+
+                <div class="faction-card faction-can">
+                    <h4>🏃 CAN (Citizen Advocacy Network)</h4>
+                    <p style="color: var(--text-normal); font-size: 13px; margin-bottom: var(--spacing-md);">
+                        <strong>Philosophy:</strong> "People First"<br>
+                        <strong>Focus:</strong> Colony wellbeing and competitive excellence
+                    </p>
+
+                    <h4 style="font-size: 12px; margin-bottom: var(--spacing-sm);">Reputation Benefits:</h4>
+                    <ul style="color: var(--text-normal); font-size: 11px; margin: 0 0 var(--spacing-md) 0; padding-left: 15px;">
+                        <li><strong>Friendly:</strong> Healing and support equipment improvements</li>
+                        <li><strong>Honored:</strong> Team buff enhancements and cooperative bonuses</li>
+                        <li><strong>Revered:</strong> Performance-optimized gear for competitive play</li>
+                        <li><strong>Exalted:</strong> Community backing provides social bonuses</li>
+                    </ul>
+
+                    <h4 style="font-size: 12px; margin-bottom: var(--spacing-sm);">Faction-Specific Rewards:</h4>
+                    <ul style="color: var(--text-normal); font-size: 11px; margin: 0; padding-left: 15px;">
+                        <li>Team support and healing equipment</li>
+                        <li>Performance-optimized modifications</li>
+                        <li>Competitive play enhancements</li>
+                        <li>Social and cooperative bonuses</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <h3>Reputation Progression System</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minima(250px, 1fr)); gap: var(--spacing-md);">
+                    <div>
+                        <h4 style="color: var(--primary-cyan); margin-bottom: var(--spacing-sm);">Reputation Tiers</h4>
+                        <ol style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 20px;">
+                            <li><strong>Neutral</strong> (0 points): Basic access to faction areas</li>
+                            <li><strong>Friendly</strong> (1,000 points): Vendor access and basic benefits</li>
+                            <li><strong>Honored</strong> (5,000 points): Advanced gear and modification access</li>
+                            <li><strong>Revered</strong> (15,000 points): Exclusive blueprints and equipment</li>
+                            <li><strong>Exalted</strong> (35,000 points): Maximum benefits and unique rewards</li>
+                        </ol>
+                    </div>
+                    <div>
+                        <h4 style="color: var(--primary-cyan); margin-bottom: var(--spacing-sm);">Reputation Sources</h4>
+                        <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 20px;">
+                            <li><strong>Daily Missions:</strong> 50-200 points per completion</li>
+                            <li><strong>Weekly Objectives:</strong> 200-500 points per completion</li>
+                            <li><strong>Major Faction Storylines:</strong> 500-2000 points per completion</li>
+                            <li><strong>Special Events:</strong> 100-1000 points during faction-specific events</li>
+                            <li><strong>Discovery Bonuses:</strong> 100-300 points for faction-relevant finds</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Endgame Progression Goals Section -->
+        <div class="card content-section" id="endgame-goals">
+            <div class="card-header">
+                <h2 class="card-title">ENDGAME PROGRESSION GOALS</h2>
+            </div>
+            <div class="card-accent"></div>
+            
+            <div class="progression-grid">
+                <div class="progression-card">
+                    <h3>Gear Optimization</h3>
+                    <ul style="color: var(--text-normal); font-size: 13px; margin: 0; padding-left: 20px;">
+                        <li><strong>Power Budget Mastery:</strong> Perfect allocation of 1,300+ power budget</li>
+                        <li><strong>Primal Collection:</strong> Acquire Primal items for maximum efficiency</li>
+                        <li><strong>Build Diversity:</strong> Develop multiple gear sets for different content types</li>
+                        <li><strong>Modification Mastery:</strong> Perfect weapon modification combinations</li>
+                    </ul>
+                </div>
+
+                <div class="progression-card">
+                    <h3>Combat Mastery</h3>
+                    <ul style="color: var(--text-normal); font-size: 13px; margin: 0; padding-left: 20px;">
+                        <li><strong>Elemental Expertise:</strong> Master all elemental combinations and applications</li>
+                        <li><strong>Affix Adaptation:</strong> Develop strategies for all weekly affix combinations</li>
+                        <li><strong>Difficulty Progression:</strong> Successfully complete highest-tier mission content</li>
+                        <li><strong>Tactical Development:</strong> Perfect positioning, timing, and resource management</li>
+                    </ul>
+                </div>
+
+                <div class="progression-card">
+                    <h3>Faction Achievement</h3>
+                    <ul style="color: var(--text-normal); font-size: 13px; margin: 0; padding-left: 20px;">
+                        <li><strong>Maximum Standing:</strong> Achieve Exalted status with preferred factions</li>
+                        <li><strong>Exclusive Access:</strong> Unlock all faction-specific content and rewards</li>
+                        <li><strong>Storyline Completion:</strong> Experience all faction narrative content</li>
+                        <li><strong>Social Integration:</strong> Participate in faction-based community events</li>
+                    </ul>
+                </div>
+
+                <div class="progression-card">
+                    <h3>Collection & Discovery</h3>
+                    <ul style="color: var(--text-normal); font-size: 13px; margin: 0; padding-left: 20px;">
+                        <li><strong>Comprehensive Arsenal:</strong> Collect examples of all weapon archetypes and variants</li>
+                        <li><strong>Modification Library:</strong> Unlock all modification types and combinations</li>
+                        <li><strong>Achievement Completion:</strong> Pursue challenging gameplay achievements</li>
+                        <li><strong>Lore Discovery:</strong> Uncover all aspects of the Progenitor mystery</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progression Metric Tracking Section -->
+        <div class="card content-section" id="metrics">
+            <div class="card-header">
+                <h2 class="card-title">PROGRESSION METRIC TRACKING</h2>
+            </div>
+            <div class="card-accent"></div>
+            
+            <div class="metrics-grid">
+                <div class="metrics-item">
+                    <h4>Character Development</h4>
+                    <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 15px;">
+                        <li>Base level progression (1-60)</li>
+                        <li>Paragon level advancement (infinite)</li>
+                        <li>Attribute point optimization efficiency</li>
+                        <li>Skill point allocation effectiveness</li>
+                    </ul>
+                </div>
+
+                <div class="metrics-item">
+                    <h4>Equipment Progression</h4>
+                    <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 15px;">
+                        <li>Total power budget utilization percentage</li>
+                        <li>Average item rarity across all equipped gear</li>
+                        <li>Power budget efficiency rating</li>
+                        <li>Modification optimization score</li>
+                    </ul>
+                </div>
+
+                <div class="metrics-item">
+                    <h4>Faction Advancement</h4>
+                    <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 15px;">
+                        <li>Reputation points across all four factions</li>
+                        <li>Unlocked faction-specific content percentage</li>
+                        <li>Faction storyline completion status</li>
+                        <li>Faction reward collection progress</li>
+                    </ul>
+                </div>
+
+                <div class="metrics-item">
+                    <h4>Content Mastery</h4>
+                    <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 15px;">
+                        <li>Highest successfully completed mission tier</li>
+                        <li>Weekly affix adaptation success rate</li>
+                        <li>Elemental combination proficiency</li>
+                        <li>Build diversity development</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <h3>System Impact</h3>
+                <p style="color: var(--text-normal);">
+                    The progression system ensures that dedicated players always have meaningful advancement opportunities 
+                    while maintaining the strategic depth that makes each choice consequential.
+                </p>
+            </div>
+        </div>
+
+        <!-- Document Navigation -->
+        <div class="doc-nav-bottom">
+            <a href="07-mission-content.html">← Previous: Mission Content</a>
+            <div style="color: var(--text-dim); font-size: 12px; text-align: center;">
+                <strong>NEXT:</strong> <a href="09-technical-implementation.html" style="color: var(--primary-cyan);">Technical Implementation</a><br>
+                <span style="color: var(--text-dim);">Core formulas & system integration</span>
+            </div>
+            <a href="09-technical-implementation.html">Next: Technical Implementation →</a>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer style="padding: 20px; text-align: center; font-size: 10px; color: #666; border-top: 1px solid #333; margin-top: 40px;">
+        <a href="../changelog.html" style="color: #666; text-decoration: none; border-bottom: 1px dotted #666;">CHANGELOG</a> • 
+        <a href="index.html" style="color: #666; text-decoration: none; border-bottom: 1px dotted #666;">SPECS</a> • 
+        RELATED: <a href="01-executive-summary.html" style="color: #666; text-decoration: none;">Executive Summary</a> • 
+        <a href="09-technical-implementation.html" style="color: #666; text-decoration: none;">Technical Implementation</a>
+    </footer>
+
+    <script src="../assets/js/main.js"></script>
+    <script src="../assets/js/navigation.js"></script>
+</body>
+</html>

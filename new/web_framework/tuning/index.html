@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stat Tuning - Courier</title>
+    <link rel="stylesheet" href="../assets/css/design-system.css?v=13">
+    <link rel="stylesheet" href="../assets/css/main.css?v=13">
+    <style>
+        .tuning-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .stat-table {
+            background: var(--bg-dark);
+            border: 1px solid var(--border-gray);
+            border-radius: 4px;
+            margin-bottom: var(--spacing-xl);
+            overflow: hidden;
+        }
+
+        .table-header {
+            background: var(--bg-medium);
+            padding: var(--spacing-md);
+            border-bottom: 1px solid var(--border-gray);
+        }
+
+        .table-title {
+            font-size: 18px;
+            color: var(--primary-cyan);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .table-content {
+            padding: var(--spacing-md);
+        }
+
+        .stat-row {
+            display: grid;
+            grid-template-columns: 120px 1fr auto;
+            gap: var(--spacing-md);
+            padding: var(--spacing-sm) 0;
+            border-bottom: 1px solid var(--border-gray);
+            align-items: center;
+        }
+
+        .stat-row:last-child {
+            border-bottom: none;
+        }
+
+        .core-stat {
+            font-weight: 600;
+            color: var(--primary-orange);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .secondary-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-sm);
+        }
+
+        .secondary-stat {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-medium);
+            padding: var(--spacing-xs) var(--spacing-sm);
+            border-radius: 4px;
+            border: 1px solid var(--border-gray);
+        }
+
+        .stat-name {
+            color: var(--text-normal);
+            font-size: 13px;
+        }
+
+        .stat-value {
+            color: var(--text-bright);
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .tuning-controls {
+            display: flex;
+            gap: var(--spacing-xs);
+            align-items: center;
+        }
+
+        .tuning-input {
+            width: 60px;
+            background: var(--bg-black);
+            border: 1px solid var(--border-gray);
+            color: var(--text-bright);
+            padding: 4px 8px;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 12px;
+        }
+
+        .tuning-input:focus {
+            border-color: var(--primary-cyan);
+            outline: none;
+        }
+
+        .tuning-button {
+            background: var(--bg-medium);
+            border: 1px solid var(--border-gray);
+            color: var(--text-normal);
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .tuning-button:hover {
+            background: var(--primary-cyan);
+            color: var(--bg-black);
+            border-color: var(--primary-cyan);
+        }
+
+        .reset-button {
+            background: transparent;
+            border: 1px solid var(--border-gray);
+            color: var(--text-dim);
+            padding: var(--spacing-xs) var(--spacing-sm);
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+        }
+
+        .reset-button:hover {
+            background: var(--primary-orange);
+            color: var(--bg-black);
+            border-color: var(--primary-orange);
+        }
+
+        .save-controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            gap: var(--spacing-sm);
+            background: var(--bg-dark);
+            padding: var(--spacing-md);
+            border: 1px solid var(--border-gray);
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+        }
+
+        .save-button {
+            background: var(--primary-cyan);
+            color: var(--bg-black);
+            border: 1px solid var(--primary-cyan);
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+        }
+
+        .save-button:hover {
+            background: transparent;
+            color: var(--primary-cyan);
+        }
+
+        .export-button {
+            background: transparent;
+            color: var(--text-normal);
+            border: 1px solid var(--border-gray);
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+        }
+
+        .export-button:hover {
+            background: var(--bg-light);
+            color: var(--text-bright);
+            border-color: var(--text-bright);
+        }
+
+        .back-button {
+            position: fixed;
+            top: 80px;
+            left: 20px;
+            z-index: 1000;
+        }
+
+        .status-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--bg-dark);
+            border: 1px solid var(--border-gray);
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: 4px;
+            font-size: 11px;
+            color: var(--text-dim);
+            z-index: 1000;
+        }
+
+        .status-indicator.changed {
+            border-color: var(--primary-orange);
+            color: var(--primary-orange);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Header -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <div class="nav-logo"></div>
+            <div>
+                <div class="nav-username">AGENT RECON-7</div>
+                <div class="nav-level">LEVEL 60 • PARAGON 40</div>
+            </div>
+        </div>
+        <div class="nav-menu">
+            <a href="../game/dashboard.html" class="nav-item">CHARACTER</a>
+            <a href="../inventory.html" class="nav-item">INVENTORY</a>
+            <a href="../missions.html" class="nav-item">MISSIONS</a>
+            <a href="../skills.html" class="nav-item">SKILLS</a>
+            <a href="../loadouts.html" class="nav-item">LOADOUTS</a>
+            <a href="../build-planner.html" class="nav-item">BUILD PLANNER</a>
+            <a href="../marketplace.html" class="nav-item">MARKET</a>
+            <a href="../crafting.html" class="nav-item">CRAFTING</a>
+        </div>
+    </nav>
+
+    <!-- Status Indicator -->
+    <div class="status-indicator" id="statusIndicator">No changes</div>
+
+    <!-- Back Button -->
+    <button class="btn back-button" onclick="history.back()">← BACK</button>
+
+    <!-- Main Content -->
+    <div class="page-container">
+        <div class="page-header">
+            <h1 class="page-title">STAT TUNING SYSTEM</h1>
+            <p style="color: var(--text-dim); font-size: 14px; margin-top: var(--spacing-sm);">
+                Adjust secondary stat ratios per core attribute point. Changes affect all character calculations in real-time.
+            </p>
+        </div>
+
+        <div class="tuning-container">
+            <!-- Vigor Stats -->
+            <div class="stat-table">
+                <div class="table-header">
+                    <div class="table-title">🔥 VIGOR - Health & Regeneration</div>
+                </div>
+                <div class="table-content">
+                    <div class="stat-row">
+                        <div class="core-stat">VIGOR</div>
+                        <div class="secondary-stats">
+                            <div class="secondary-stat">
+                                <span class="stat-name">Health per point</span>
+                                <span class="stat-value" id="vigor-health-value">50</span>
+                            </div>
+                            <div class="secondary-stat">
+                                <span class="stat-name">Health Regen per point</span>
+                                <span class="stat-value" id="vigor-regen-value">2.5</span>
+                            </div>
+                            <div class="secondary-stat">
+                                <span class="stat-name">Status Resistance per point</span>
+                                <span class="stat-value" id="vigor-resist-value">1%</span>
+                            </div>
+                        </div>
+                        <div class="tuning-controls">
+                            <button class="reset-button" onclick="resetStat('vigor')">Reset</button>
+                        </div>
+                    </div>
+                    <div class="stat-row">
+                        <div></div>
+                        <div class="secondary-stats">
+                            <div class="tuning-controls">
+                                <button class="tuning-button" onclick="adjustStat('vigor', 'health', -1)">-</button>
+                                <input type="number" class="tuning-input" id="vigor-health-input" value="50" onchange="updateStat('vigor', 'health', this.value)">
+                                <button class="tuning-button" onclick="adjustStat('vigor', 'health', 1)">+</button>
+                            </div>
+                            <div class="tuning-controls">
+                                <button class="tuning-button" onclick="adjustStat('vigor', 'regen', -0.1)">-</button>
+                                <input type="number" step="0.1" class="tuning-input" id="vigor-regen-input" value="2.5" onchange="updateStat('vigor', 'regen', this.value)">
+                                <button class="tuning-button" onclick="adjustStat('vigor', 'regen', 0.1)">+</button>
+                            </div>
+                            <div class="tuning-controls">
+                                <button class="tuning-button" onclick="adjustStat('vigor', 'resist', -0.1)">-</button>
+                                <input type="number" step="0.1" class="tuning-input" id="vigor-resist-input" value="1" onchange="updateStat('vigor', 'resist', this.value)">
+                                <button class="tuning-button" onclick="adjustStat('vigor', 'resist', 0.1)">+</button>
+                            </div>
+                        </div>
+                        <div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Focus Stats -->
+            <div class="stat-table">
+                <div class="table-header">
+                    <div class="table-title">⚡ FOCUS - Energy & Ability Power</div>
+                </div>
+                <div class="table-content">
+                    <div class="stat-row">
+                        <div class="core-stat">FOCUS</div>
+                        <div class="secondary-stats">
+                            <div class="secondary-stat">
+                                <span class="stat-name">Energy per point</span>
+                                <span class="stat-value" id="focus-energy-value">15</span>
+                            </div>
+                            <div class="secondary-stat">
+                                <span class="stat-name">Energy Regen per point</span>
+                                <span class="stat-value" id="focus-regen-value">0.8</span>
+                            </div>
+                            <div class="secondary-stat">
+                                <span class="stat-name">Ability Power per point</span>
+                                <span class="stat-value" id="focus-power-value">3%</span>
+                            </div>
+                        </div>
+                        <div class="tuning-controls">
+                            <button class="reset-button" onclick="resetStat('focus')">Reset</button>
+                        </div>
+                    </div>
+                    <div class="stat-row">
+                        <div></div>
+                        <div class="secondary-stats">
+                            <div class="tuning-controls">
+                                <button class="tuning-button" onclick="adjustStat('focus', 'energy', -1)">-</button>
+                                <input type="number" class="tuning-input" id="focus-energy-input" value="15" onchange="updateStat('focus', 'energy', this.value)">
+                                <button class="tuning-button" onclick="adjustStat('focus', 'energy', 1)">+</button>
+                            </div>
+                            <div class="tuning-controls">
+                                <button class="tuning-button" onclick="adjustStat('focus', 'regen', -0.1)">-</button>
+                                <input type="number" step="0.1" class="tuning-input" id="focus-regen-input" value="0.8" onchange="updateStat('focus', 'regen', this.value)">
+                                <button class="tuning-button" onclick="adjustStat('focus', 'regen', 0.1)">+</button>
+                            </div>
+                            <div class="tuning-controls">
+                                <button class="tuning-button" onclick="adjustStat('focus', 'power', -0.1)">-</button>
+                                <input type="number" step="0.1" class="tuning-input" id="focus-power-input" value="3" onchange="updateStat('focus', 'power', this.value)">
+                                <button class="tuning-button" onclick="adjustStat('focus', 'power', 0.1)">+</button>
+                            </div>
+                        </div>
+                        <div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Force Stats -->
+            <div class="stat-table">
+                <div class="table-header">
+                    <div class="table-title">💪 FORCE - Physical Power & Critical Hits</div>
+                </div>
+                <div class="table-content">
+                    <div class="stat-row">
+                        <div class="core-stat">FORCE</div>
+                        <div class="secondary-stats">
+                            <div class="secondary-stat">
+                                <span class="stat-name">Weapon Damage per point</span>
+                                <span class="stat-value" id="force-damage-value">2%</span>
+                            </div>
+                            <div class="secondary-stat">
+                                <span class="stat-name">Critical Chance per point</span>
+                                <span class="stat-value" id="force-crit-value">0.5%</span>
+                            </div>
+                            <div class="secondary-stat">
+                                <span class="stat-name">Melee Damage per point</span>
+                                <span class="stat-value" id="force-melee-value">4%</span>
+                            </div>
+                        </div>
+                        <div class="tuning-controls">
+                            <button class="reset-button" onclick="resetStat('force')">Reset</button>
+                        </div>
+                    </div>
+                    <div class="stat-row">
+                        <div></div>
+                        <div class="secondary-stats">
+                            <div class="tuning-controls">
+                                <button class="tuning-button" onclick="adjustStat('force', 'damage', -0.1)">-</button>
+                                <input type="number" step="0.1" class="tuning-input" id="force-damage-input" value="2" onchange="updateStat('force', 'damage', this.value)">
+                                <button class="tuning-button" onclick="adjustStat('force', 'damage', 0.1)">+</button>
+                            </div>
+                            <div class="tuning-controls">
+                                <button class="tuning-button" onclick="adjustStat('force', 'crit', -0.1)">-</button>
+                                <input type="number" step="0.1" class="tuning-input" id="force-crit-input" value="0.5" onchange="updateStat('force', 'crit', this.value)">
+                                <button class="tuning-button" onclick="adjustStat('force', 'crit', 0.1)">+</button>
+                            </div>
+                            <div class="tuning-controls">
+                                <button class="tuning-button" onclick="adjustStat('force', 'melee', -0.1)">-</button>
+                                <input type="number" step="0.1" class="tuning-input" id="force-melee-input" value="4" onchange="updateStat('force', 'melee', this.value)">
+                                <button class="tuning-button" onclick="adjustStat('force', 'melee', 0.1)">+</button>
+                            </div>
+                        </div>
+                        <div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Momentum Stats -->
+            <div class="stat-table">
+                <div class="table-header">
+                    <div class="table-title">⚡ MOMENTUM - Speed & Agility</div>
+                </div>
+                <div class="table-content">
+                    <div class="stat-row">
+                        <div class="core-stat">MOMENTUM</div>
+                        <div class="secondary-stats">
+                            <div class="secondary-stat">
+                                <span class="stat-name">Movement Speed per point</span>
+                                <span class="stat-value" id="momentum-speed-value">1%</span>
+                            </div>
+                            <div class="secondary-stat">
+                                <span class="stat-name">Attack Speed per point</span>
+                                <span class="stat-value" id="momentum-attack-value">1.5%</span>
+                            </div>
+                            <div class="secondary-stat">
+                                <span class="stat-name">Dodge Chance per point</span>
+                                <span class="stat-value" id="momentum-dodge-value">0.3%</span>
+                            </div>
+                        </div>
+                        <div class="tuning-controls">
+                            <button class="reset-button" onclick="resetStat('momentum')">Reset</button>
+                        </div>
+                    </div>
+                    <div class="stat-row">
+                        <div></div>
+                        <div class="secondary-stats">
+                            <div class="tuning-controls">
+                                <button class="tuning-button" onclick="adjustStat('momentum', 'speed', -0.1)">-</button>
+                                <input type="number" step="0.1" class="tuning-input" id="momentum-speed-input" value="1" onchange="updateStat('momentum', 'speed', this.value)">
+                                <button class="tuning-button" onclick="adjustStat('momentum', 'speed', 0.1)">+</button>
+                            </div>
+                            <div class="tuning-controls">
+                                <button class="tuning-button" onclick="adjustStat('momentum', 'attack', -0.1)">-</button>
+                                <input type="number" step="0.1" class="tuning-input" id="momentum-attack-input" value="1.5" onchange="updateStat('momentum', 'attack', this.value)">
+                                <button class="tuning-button" onclick="adjustStat('momentum', 'attack', 0.1)">+</button>
+                            </div>
+                            <div class="tuning-controls">
+                                <button class="tuning-button" onclick="adjustStat('momentum', 'dodge', -0.1)">-</button>
+                                <input type="number" step="0.1" class="tuning-input" id="momentum-dodge-input" value="0.3" onchange="updateStat('momentum', 'dodge', this.value)">
+                                <button class="tuning-button" onclick="adjustStat('momentum', 'dodge', 0.1)">+</button>
+                            </div>
+                        </div>
+                        <div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resonance Stats -->
+            <div class="stat-table">
+                <div class="table-header">
+                    <div class="table-title">🌊 RESONANCE - Elemental Mastery</div>
+                </div>
+                <div class="table-content">
+                    <div class="stat-row">
+                        <div class="core-stat">RESONANCE</div>
+                        <div class="secondary-stats">
+                            <div class="secondary-stat">
+                                <span class="stat-name">Elemental Damage per point</span>
+                                <span class="stat-value" id="resonance-damage-value">2.5%</span>
+                            </div>
+                            <div class="secondary-stat">
+                                <span class="stat-name">Effect Duration per point</span>
+                                <span class="stat-value" id="resonance-duration-value">2%</span>
+                            </div>
+                            <div class="secondary-stat">
+                                <span class="stat-name">Combo Chance per point</span>
+                                <span class="stat-value" id="resonance-combo-value">0.8%</span>
+                            </div>
+                        </div>
+                        <div class="tuning-controls">
+                            <button class="reset-button" onclick="resetStat('resonance')">Reset</button>
+                        </div>
+                    </div>
+                    <div class="stat-row">
+                        <div></div>
+                        <div class="secondary-stats">
+                            <div class="tuning-controls">
+                                <button class="tuning-button" onclick="adjustStat('resonance', 'damage', -0.1)">-</button>
+                                <input type="number" step="0.1" class="tuning-input" id="resonance-damage-input" value="2.5" onchange="updateStat('resonance', 'damage', this.value)">
+                                <button class="tuning-button" onclick="adjustStat('resonance', 'damage', 0.1)">+</button>
+                            </div>
+                            <div class="tuning-controls">
+                                <button class="tuning-button" onclick="adjustStat('resonance', 'duration', -0.1)">-</button>
+                                <input type="number" step="0.1" class="tuning-input" id="resonance-duration-input" value="2" onchange="updateStat('resonance', 'duration', this.value)">
+                                <button class="tuning-button" onclick="adjustStat('resonance', 'duration', 0.1)">+</button>
+                            </div>
+                            <div class="tuning-controls">
+                                <button class="tuning-button" onclick="adjustStat('resonance', 'combo', -0.1)">-</button>
+                                <input type="number" step="0.1" class="tuning-input" id="resonance-combo-input" value="0.8" onchange="updateStat('resonance', 'combo', this.value)">
+                                <button class="tuning-button" onclick="adjustStat('resonance', 'combo', 0.1)">+</button>
+                            </div>
+                        </div>
+                        <div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Defense Stats -->
+            <div class="stat-table">
+                <div class="table-header">
+                    <div class="table-title">🛡️ DEFENSE - Protection & Mitigation</div>
+                </div>
+                <div class="table-content">
+                    <div class="stat-row">
+                        <div class="core-stat">DEFENSE</div>
+                        <div class="secondary-stats">
+                            <div class="secondary-stat">
+                                <span class="stat-name">Damage Reduction per point</span>
+                                <span class="stat-value" id="defense-reduction-value">1%</span>
+                            </div>
+                            <div class="secondary-stat">
+                                <span class="stat-name">Armor per point</span>
+                                <span class="stat-value" id="defense-armor-value">8</span>
+                            </div>
+                            <div class="secondary-stat">
+                                <span class="stat-name">Block Chance per point</span>
+                                <span class="stat-value" id="defense-block-value">0.4%</span>
+                            </div>
+                        </div>
+                        <div class="tuning-controls">
+                            <button class="reset-button" onclick="resetStat('defense')">Reset</button>
+                        </div>
+                    </div>
+                    <div class="stat-row">
+                        <div></div>
+                        <div class="secondary-stats">
+                            <div class="tuning-controls">
+                                <button class="tuning-button" onclick="adjustStat('defense', 'reduction', -0.1)">-</button>
+                                <input type="number" step="0.1" class="tuning-input" id="defense-reduction-input" value="1" onchange="updateStat('defense', 'reduction', this.value)">
+                                <button class="tuning-button" onclick="adjustStat('defense', 'reduction', 0.1)">+</button>
+                            </div>
+                            <div class="tuning-controls">
+                                <button class="tuning-button" onclick="adjustStat('defense', 'armor', -1)">-</button>
+                                <input type="number" class="tuning-input" id="defense-armor-input" value="8" onchange="updateStat('defense', 'armor', this.value)">
+                                <button class="tuning-button" onclick="adjustStat('defense', 'armor', 1)">+</button>
+                            </div>
+                            <div class="tuning-controls">
+                                <button class="tuning-button" onclick="adjustStat('defense', 'block', -0.1)">-</button>
+                                <input type="number" step="0.1" class="tuning-input" id="defense-block-input" value="0.4" onchange="updateStat('defense', 'block', this.value)">
+                                <button class="tuning-button" onclick="adjustStat('defense', 'block', 0.1)">+</button>
+                            </div>
+                        </div>
+                        <div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Save Controls -->
+    <div class="save-controls">
+        <button class="save-button" onclick="saveChanges()">Save Changes</button>
+        <button class="export-button" onclick="exportConfig()">Export Config</button>
+    </div>
+
+    <!-- Footer -->
+    <footer style="padding: 20px; text-align: center; font-size: 10px; color: #666; border-top: 1px solid #333; margin-top: 40px;">
+        <a href="../changelog.html" style="color: #666; text-decoration: none; border-bottom: 1px dotted #666;">CHANGELOG</a> • 
+        <a href="../specs/index.html" style="color: #666; text-decoration: none; border-bottom: 1px dotted #666;">SPECS</a> • 
+        <a href="index.html" style="color: #666; text-decoration: none; border-bottom: 1px dotted #666;">TUNING</a> • 
+        LAST UPDATED: 2025-08-17 02:15 CST • TUNING: Real-time stat adjustment system • BALANCE: Core and secondary stat ratios
+    </footer>
+
+    <script src="../assets/js/main.js"></script>
+    <script src="../assets/js/navigation.js"></script>
+    <script>
+        // Default stat values
+        const defaultStats = {
+            vigor: { health: 50, regen: 2.5, resist: 1 },
+            focus: { energy: 15, regen: 0.8, power: 3 },
+            force: { damage: 2, crit: 0.5, melee: 4 },
+            momentum: { speed: 1, attack: 1.5, dodge: 0.3 },
+            resonance: { damage: 2.5, duration: 2, combo: 0.8 },
+            defense: { reduction: 1, armor: 8, block: 0.4 }
+        };
+
+        // Current stat values (copy of defaults)
+        let currentStats = JSON.parse(JSON.stringify(defaultStats));
+        let hasChanges = false;
+
+        // Update status indicator
+        function updateStatus() {
+            const indicator = document.getElementById('statusIndicator');
+            if (hasChanges) {
+                indicator.textContent = 'Unsaved changes';
+                indicator.classList.add('changed');
+            } else {
+                indicator.textContent = 'No changes';
+                indicator.classList.remove('changed');
+            }
+        }
+
+        // Adjust stat value
+        function adjustStat(category, stat, delta) {
+            const currentValue = parseFloat(currentStats[category][stat]);
+            const newValue = Math.max(0, currentValue + delta);
+            updateStat(category, stat, newValue);
+        }
+
+        // Update stat value
+        function updateStat(category, stat, value) {
+            const numValue = parseFloat(value);
+            if (isNaN(numValue) || numValue < 0) return;
+
+            currentStats[category][stat] = numValue;
+            
+            // Update display value
+            const valueElement = document.getElementById(`${category}-${stat}-value`);
+            const inputElement = document.getElementById(`${category}-${stat}-input`);
+            
+            if (stat.includes('damage') || stat.includes('power') || stat.includes('speed') || 
+                stat.includes('crit') || stat.includes('resist') || stat.includes('duration') || 
+                stat.includes('combo') || stat.includes('dodge') || stat.includes('reduction') || 
+                stat.includes('block')) {
+                valueElement.textContent = numValue.toFixed(1) + '%';
+            } else {
+                valueElement.textContent = numValue.toString();
+            }
+            
+            inputElement.value = numValue;
+            
+            // Mark as changed
+            hasChanges = true;
+            updateStatus();
+        }
+
+        // Reset stat category to defaults
+        function resetStat(category) {
+            const categoryDefaults = defaultStats[category];
+            for (const [stat, value] of Object.entries(categoryDefaults)) {
+                updateStat(category, stat, value);
+            }
+        }
+
+        // Save changes to localStorage
+        function saveChanges() {
+            localStorage.setItem('courierStatTuning', JSON.stringify(currentStats));
+            hasChanges = false;
+            updateStatus();
+            
+            // Visual feedback
+            const saveButton = document.querySelector('.save-button');
+            const originalText = saveButton.textContent;
+            saveButton.textContent = 'Saved!';
+            saveButton.style.background = 'var(--primary-orange)';
+            
+            setTimeout(() => {
+                saveButton.textContent = originalText;
+                saveButton.style.background = 'var(--primary-cyan)';
+            }, 1500);
+        }
+
+        // Export configuration as JSON
+        function exportConfig() {
+            const config = {
+                version: "1.0",
+                timestamp: new Date().toISOString(),
+                stats: currentStats
+            };
+            
+            const dataStr = JSON.stringify(config, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = 'courier-stat-tuning.json';
+            link.click();
+        }
+
+        // Load saved configuration on page load
+        function loadSavedConfig() {
+            const saved = localStorage.getItem('courierStatTuning');
+            if (saved) {
+                try {
+                    const savedStats = JSON.parse(saved);
+                    currentStats = savedStats;
+                    
+                    // Update all displays
+                    for (const [category, stats] of Object.entries(currentStats)) {
+                        for (const [stat, value] of Object.entries(stats)) {
+                            updateStat(category, stat, value);
+                        }
+                    }
+                    
+                    hasChanges = false;
+                    updateStatus();
+                } catch (e) {
+                    console.warn('Failed to load saved stat configuration:', e);
+                }
+            }
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSavedConfig();
+            updateStatus();
+        });
+
+        // Warn before leaving with unsaved changes
+        window.addEventListener('beforeunload', function(e) {
+            if (hasChanges) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
+    </script>
+</body>
+</html>

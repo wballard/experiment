@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Courier Specifications - Table of Contents</title>
+    <link rel="stylesheet" href="../assets/css/design-system.css?v=12">
+    <link rel="stylesheet" href="../assets/css/main.css?v=12">
+    <link rel="stylesheet" href="../assets/css/game.css?v=12">
+    <style>
+        .doc-nav {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: var(--spacing-md);
+            margin: var(--spacing-xl) 0;
+        }
+        .doc-card {
+            background: var(--bg-medium);
+            border: 1px solid var(--border-gray);
+            padding: var(--spacing-lg);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+        }
+        .doc-card:hover {
+            border-color: var(--primary-cyan);
+            background: var(--bg-light);
+        }
+        .doc-title {
+            color: var(--primary-cyan);
+            font-size: 16px;
+            margin-bottom: var(--spacing-sm);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .doc-description {
+            color: var(--text-normal);
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        .reading-order {
+            background: var(--bg-dark);
+            border: 1px solid var(--primary-orange);
+            padding: var(--spacing-lg);
+            margin: var(--spacing-xl) 0;
+        }
+        .reading-order h3 {
+            color: var(--primary-orange);
+            margin-bottom: var(--spacing-md);
+        }
+        .reading-list {
+            list-style: none;
+            counter-reset: reading-counter;
+        }
+        .reading-list li {
+            counter-increment: reading-counter;
+            margin-bottom: var(--spacing-sm);
+            padding-left: var(--spacing-lg);
+            position: relative;
+        }
+        .reading-list li::before {
+            content: counter(reading-counter);
+            position: absolute;
+            left: 0;
+            color: var(--primary-orange);
+            font-weight: bold;
+            width: 20px;
+        }
+        .reading-list a {
+            color: var(--text-bright);
+            text-decoration: none;
+        }
+        .reading-list a:hover {
+            color: var(--primary-cyan);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Header -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <div class="nav-logo"></div>
+            <div>
+                <div class="nav-username">COURIER SPECIFICATIONS</div>
+                <div class="nav-level">DESIGN DOCUMENTS</div>
+            </div>
+        </div>
+        <div class="nav-menu">
+            <a href="../game/dashboard.html" class="nav-item">CHARACTER</a>
+            <a href="../inventory.html" class="nav-item">INVENTORY</a>
+            <a href="../missions.html" class="nav-item">MISSIONS</a>
+            <a href="../skills.html" class="nav-item">SKILLS</a>
+            <a href="../build-planner.html" class="nav-item">BUILD PLANNER</a>
+            <a href="../marketplace.html" class="nav-item">MARKET</a>
+            <a href="../crafting.html" class="nav-item">CRAFTING</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="page-container">
+        <div class="page-header">
+            <h1 class="page-title">COURIER SPECIFICATIONS</h1>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Unified Game Design Documents</h2>
+            </div>
+            <div class="card-accent"></div>
+            
+            <p style="color: var(--text-normal); margin-bottom: var(--spacing-lg); line-height: 1.6;">
+                This directory contains the unified and organized game design documents for Courier, a sci-fi ARPG/looter shooter. 
+                All conflicts between previous documents have been resolved and integrated into a coherent design.
+            </p>
+
+            <div class="doc-nav">
+                <a href="01-executive-summary.html" class="doc-card">
+                    <div class="doc-title">01 - Executive Summary</div>
+                    <div class="doc-description">High-level game overview, core innovations, and design pillars. Includes the Power Budget System concept and game identity.</div>
+                </a>
+
+                <a href="02-player-onboarding.html" class="doc-card">
+                    <div class="doc-title">02 - Player Onboarding</div>
+                    <div class="doc-description">New player experience and web-based tutorial system. Web-first gameplay design and browser optimization.</div>
+                </a>
+
+                <a href="03-character-systems.html" class="doc-card">
+                    <div class="doc-title">03 - Character Systems</div>
+                    <div class="doc-description">Complete character progression system including level progression, 6 primary attributes, and 5 character classes.</div>
+                </a>
+
+                <a href="04-elemental-combat.html" class="doc-card">
+                    <div class="doc-title">04 - Elemental Combat</div>
+                    <div class="doc-description">Five-element system with status effects, element wheel, and adjacency rules.</div>
+                </a>
+
+                <a href="04-elemental-skills.html" class="doc-card">
+                    <div class="doc-title">04 - Elemental Skills</div>
+                    <div class="doc-description">Comprehensive elemental skill trees with tier-based progression system and combination mastery.</div>
+                </a>
+
+                <a href="elemental-system.html" class="doc-card">
+                    <div class="doc-title">Elemental System</div>
+                    <div class="doc-description">Primary elemental mechanics and Ice tree design with damage modifiers and freeze mechanics.</div>
+                </a>
+
+                <a href="05-equipment-itemization.html" class="doc-card">
+                    <div class="doc-title">05 - Equipment & Itemization</div>
+                    <div class="doc-description">Power Budget system and equipment structure with rarity efficiency and strategic choices.</div>
+                </a>
+
+                <a href="06-weapon-systems.html" class="doc-card">
+                    <div class="doc-title">06 - Weapon Systems</div>
+                    <div class="doc-description">Weapon archetypes and modification system with 5 base archetypes and variant creation.</div>
+                </a>
+
+                <a href="07-mission-content.html" class="doc-card">
+                    <div class="doc-title">07 - Mission Content</div>
+                    <div class="doc-description">Mission categories and affix system with 3 mission types and weekly rotating modifiers.</div>
+                </a>
+
+                <a href="08-progression-economy.html" class="doc-card">
+                    <div class="doc-title">08 - Progression & Economy</div>
+                    <div class="doc-description">Character advancement and faction systems with currency and long-term progression goals.</div>
+                </a>
+
+                <a href="09-technical-implementation.html" class="doc-card">
+                    <div class="doc-title">09 - Technical Implementation</div>
+                    <div class="doc-description">Core formulas and calculation methods for power budget validation and system integration.</div>
+                </a>
+
+                <a href="10-implementation-plan.html" class="doc-card">
+                    <div class="doc-title">10 - Implementation Plan</div>
+                    <div class="doc-description">Development roadmap and implementation strategies for the game systems.</div>
+                </a>
+
+                <a href="11-web-page-inventory.html" class="doc-card">
+                    <div class="doc-title">11 - Web Page Inventory</div>
+                    <div class="doc-description">Complete inventory of required web pages and their functions with design document references.</div>
+                </a>
+
+                <a href="12-class-skills.html" class="doc-card">
+                    <div class="doc-title">12 - Class Skills System</div>
+                    <div class="doc-description">Complete class-specific skill trees with Outlaw class implementation and tier progression mechanics.</div>
+                </a>
+
+                <a href="13-skill-progression-rules.html" class="doc-card">
+                    <div class="doc-title">13 - Skill Progression Rules</div>
+                    <div class="doc-description">Detailed rules for skill tree progression, tier-gating, prerequisites, and visual connection systems.</div>
+                </a>
+
+                <a href="14-loadouts-skill-assignment.html" class="doc-card">
+                    <div class="doc-title">14 - Loadouts & Skill Assignment</div>
+                    <div class="doc-description">Build management system for organizing and deploying skill configurations with predefined templates.</div>
+                </a>
+            </div>
+        </div>
+
+        <div class="reading-order">
+            <h3>📖 RECOMMENDED READING ORDER</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--spacing-lg);">
+                <div>
+                    <h4 style="color: var(--primary-cyan); margin-bottom: var(--spacing-sm);">For New Team Members:</h4>
+                    <ol class="reading-list">
+                        <li><a href="01-executive-summary.html">Executive Summary</a> - Game vision</li>
+                        <li><a href="02-player-onboarding.html">Player Onboarding</a> - Web platform</li>
+                        <li><a href="03-character-systems.html">Character Systems</a> - Core progression</li>
+                        <li><a href="12-class-skills.html">Class Skills</a> - Class-specific abilities</li>
+                        <li><a href="13-skill-progression-rules.html">Skill Progression</a> - Tier unlocking rules</li>
+                        <li><a href="04-elemental-skills.html">Elemental Skills</a> - Elemental skill trees</li>
+                        <li><a href="14-loadouts-skill-assignment.html">Loadouts</a> - Build management</li>
+                        <li><a href="elemental-system.html">Elemental System</a> - Damage mechanics</li>
+                        <li><a href="05-elemental-combat.html">Elemental Combat</a> - Status effects</li>
+                    </ol>
+                </div>
+                <div>
+                    <h4 style="color: var(--primary-cyan); margin-bottom: var(--spacing-sm);">By Development Team:</h4>
+                    <div style="font-size: 12px;">
+                        <p style="margin-bottom: var(--spacing-sm);"><strong>Programming:</strong> Technical Implementation + relevant systems</p>
+                        <p style="margin-bottom: var(--spacing-sm);"><strong>Design:</strong> All documents with focus on affected systems</p>
+                        <p style="margin-bottom: var(--spacing-sm);"><strong>Art:</strong> Character Systems, Weapon Systems for visual requirements</p>
+                        <p style="margin-bottom: var(--spacing-sm);"><strong>QA:</strong> Mission Content, Technical Implementation for testing</p>
+                        <p><strong>UX/UI:</strong> Player Onboarding for tutorial flow and web optimization</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Key Design Decisions Resolved</h3>
+            </div>
+            <div class="card-accent"></div>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--spacing-md);">
+                <div>
+                    <h4 style="color: var(--primary-orange); margin-bottom: var(--spacing-sm);">Character Progression</h4>
+                    <p style="font-size: 12px; color: var(--text-normal);">Level cap 60 with Paragon levels, 6 attributes, 60 skill points total</p>
+                </div>
+                <div>
+                    <h4 style="color: var(--primary-orange); margin-bottom: var(--spacing-sm);">Power Budget</h4>
+                    <p style="font-size: 12px; color: var(--text-normal);">Formula-based equipment limitation system with rarity efficiency multipliers</p>
+                </div>
+                <div>
+                    <h4 style="color: var(--primary-orange); margin-bottom: var(--spacing-sm);">Elemental System</h4>
+                    <p style="font-size: 12px; color: var(--text-normal);">5 elements with adjacent-only dual selection, percentage-based status buildup</p>
+                </div>
+                <div>
+                    <h4 style="color: var(--primary-orange); margin-bottom: var(--spacing-sm);">Mission System</h4>
+                    <p style="font-size: 12px; color: var(--text-normal);">3 categories with weekly rotating affixes, removed Raid category</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer style="padding: 20px; text-align: center; font-size: 10px; color: #666; border-top: 1px solid #333; margin-top: 40px;">
+        <a href="../changelog.html" style="color: #666; text-decoration: none; border-bottom: 1px dotted #666;">CHANGELOG</a> • 
+        <a href="index.html" style="color: #666; text-decoration: none; border-bottom: 1px dotted #666;">SPECS</a> • 
+        LAST UPDATED: 2025-08-16 11:52 PM CST • SPECS: Complete game design documentation system • Navigation between all specification documents
+    </footer>
+
+    <script src="../assets/js/main.js"></script>
+    <script src="../assets/js/navigation.js"></script>
+</body>
+</html>

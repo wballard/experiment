@@ -1,0 +1,330 @@
+/* Game Dashboard Styles */
+
+/* Equipment slot styles */
+.equipment-slot {
+    width: 80px;
+    height: 80px;
+    background: rgba(40, 40, 40, 0.8);
+    border: 2px solid #555;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.equipment-slot:hover {
+    border-color: #00ffff;
+    box-shadow: 0 2px 8px rgba(0, 255, 255, 0.3);
+}
+
+.equipment-slot.equipped {
+    border-color: #ff6600;
+    background: rgba(255, 102, 0, 0.1);
+}
+
+.equipped-item {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 2px;
+    position: relative;
+}
+
+.equipped-item .item-icon {
+    font-size: 20px;
+    margin-bottom: 2px;
+}
+
+.equipped-item .item-name {
+    font-size: 7px;
+    color: #ffffff;
+    text-align: center;
+    line-height: 1;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.equipped-item.rarity-common { background: rgba(157, 157, 157, 0.2); }
+.equipped-item.rarity-uncommon { background: rgba(30, 255, 0, 0.2); }
+.equipped-item.rarity-rare { background: rgba(0, 112, 221, 0.2); }
+.equipped-item.rarity-epic { background: rgba(163, 53, 238, 0.2); }
+.equipped-item.rarity-legendary { background: rgba(255, 128, 0, 0.2); }
+.equipped-item.rarity-mythic { background: rgba(230, 204, 128, 0.2); }
+.equipped-item.rarity-primal { background: rgba(0, 255, 255, 0.2); }
+
+.equipment-placeholder {
+    color: #888;
+    font-size: 9px;
+    text-align: center;
+    line-height: 1.2;
+}
+
+.character-container {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 30px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.character-overview {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.character-portrait {
+    background: rgba(20, 20, 20, 0.8);
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.portrait-placeholder {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.character-icon {
+    font-size: 48px;
+    width: 64px;
+    height: 64px;
+    background: rgba(0, 255, 255, 0.1);
+    border: 2px solid #00ffff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.character-info h3 {
+    color: #00ffff;
+    margin-bottom: 5px;
+    font-size: 18px;
+}
+
+.character-info p {
+    color: #888;
+    font-size: 12px;
+    margin-bottom: 3px;
+}
+
+.power-budget-display {
+    background: rgba(20, 20, 20, 0.8);
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.power-budget-display h3 {
+    color: #ff6600;
+    margin-bottom: 15px;
+    font-size: 16px;
+    text-transform: uppercase;
+}
+
+.power-meter {
+    position: relative;
+    background: rgba(40, 40, 40, 0.8);
+    border: 1px solid #555;
+    border-radius: 4px;
+    height: 24px;
+    margin-bottom: 10px;
+}
+
+.power-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #00ff00, #ffff00, #ff6600);
+    border-radius: 3px;
+    transition: width 0.3s;
+}
+
+.power-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #000;
+    font-weight: bold;
+    font-size: 12px;
+    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.3);
+}
+
+.power-efficiency {
+    color: #00ff00;
+    font-size: 12px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.character-stats-equipment {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.core-stats {
+    background: rgba(20, 20, 20, 0.8);
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.core-stats h3 {
+    color: #00ffff;
+    margin-bottom: 15px;
+    font-size: 16px;
+    text-transform: uppercase;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 15px;
+}
+
+.stat-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    background: rgba(40, 40, 40, 0.5);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.stat-item:hover {
+    background: rgba(0, 255, 255, 0.1);
+    border: 1px solid #00ffff;
+}
+
+.stat-name {
+    color: #ccc;
+    font-size: 12px;
+    text-transform: uppercase;
+}
+
+.stat-value {
+    color: #00ffff;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.equipment-panel {
+    background: rgba(20, 20, 20, 0.8);
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.equipment-panel h3 {
+    color: #00ffff;
+    margin-bottom: 15px;
+    font-size: 16px;
+    text-transform: uppercase;
+}
+
+.equipment-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+.equipment-slot {
+    aspect-ratio: 1;
+    background: rgba(40, 40, 40, 0.8);
+    border: 2px solid #555;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+}
+
+.equipment-slot:hover {
+    border-color: #00ffff;
+    background: rgba(0, 255, 255, 0.1);
+    transform: translateY(-2px);
+}
+
+.equipment-slot.equipped {
+    border-color: #00ff00;
+    background: rgba(0, 255, 0, 0.1);
+}
+
+.slot-icon {
+    font-size: 24px;
+    margin-bottom: 5px;
+}
+
+.slot-label {
+    color: #888;
+    font-size: 10px;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+.page-loader {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 400px;
+    color: #888;
+    font-size: 16px;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .character-container {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .character-overview {
+        order: 2;
+    }
+    
+    .character-stats-equipment {
+        order: 1;
+    }
+}
+
+@media (max-width: 768px) {
+    .portrait-placeholder {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .equipment-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+    
+    .slot-icon {
+        font-size: 20px;
+    }
+    
+    .slot-label {
+        font-size: 9px;
+    }
+}
+
+@media (max-width: 480px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+}

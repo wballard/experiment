@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Equipment & Itemization - Courier Specifications</title>
+    <link rel="stylesheet" href="../assets/css/design-system.css?v=13">
+    <link rel="stylesheet" href="../assets/css/main.css?v=13">
+    <link rel="stylesheet" href="../assets/css/game.css?v=13">
+    <style>
+        .breadcrumb {
+            color: var(--text-dim);
+            font-size: 12px;
+            margin-bottom: var(--spacing-lg);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .breadcrumb a {
+            color: var(--primary-cyan);
+            text-decoration: none;
+        }
+        .breadcrumb a:hover {
+            color: var(--text-bright);
+        }
+        .doc-nav-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: var(--spacing-xl);
+            padding: var(--spacing-lg);
+            background: var(--bg-dark);
+            border: 1px solid var(--border-gray);
+        }
+        .doc-nav-bottom a {
+            color: var(--primary-cyan);
+            text-decoration: none;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border: 1px solid var(--border-gray);
+            background: var(--bg-medium);
+            transition: all 0.3s ease;
+        }
+        .doc-nav-bottom a:hover {
+            border-color: var(--primary-cyan);
+            background: var(--bg-light);
+        }
+        .content-section {
+            margin-bottom: var(--spacing-xl);
+        }
+        .highlight-box {
+            background: var(--bg-dark);
+            border: 1px solid var(--primary-orange);
+            padding: var(--spacing-lg);
+            margin: var(--spacing-lg) 0;
+        }
+        .highlight-box h3 {
+            color: var(--primary-orange);
+            margin-bottom: var(--spacing-md);
+        }
+        .equipment-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--spacing-lg);
+            margin: var(--spacing-lg) 0;
+        }
+        .equipment-card {
+            background: var(--bg-medium);
+            border: 1px solid var(--border-gray);
+            padding: var(--spacing-lg);
+            transition: all 0.3s ease;
+        }
+        .equipment-card:hover {
+            border-color: var(--primary-cyan);
+            background: var(--bg-light);
+        }
+        .equipment-card h3 {
+            color: var(--primary-cyan);
+            margin-bottom: var(--spacing-md);
+            font-size: 16px;
+        }
+        .equipment-card h4 {
+            color: var(--primary-orange);
+            margin-bottom: var(--spacing-sm);
+            font-size: 14px;
+        }
+        .rarity-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--spacing-md);
+            margin: var(--spacing-lg) 0;
+        }
+        .rarity-item {
+            background: var(--bg-dark);
+            padding: var(--spacing-md);
+            border: 1px solid var(--border-gray);
+        }
+        .rarity-item h4 {
+            margin-bottom: var(--spacing-sm);
+            font-size: 14px;
+        }
+        .rarity-common { border-color: #888; }
+        .rarity-common h4 { color: #888; }
+        .rarity-uncommon { border-color: #4CAF50; }
+        .rarity-uncommon h4 { color: #4CAF50; }
+        .rarity-rare { border-color: #2196F3; }
+        .rarity-rare h4 { color: #2196F3; }
+        .rarity-epic { border-color: #9C27B0; }
+        .rarity-epic h4 { color: #9C27B0; }
+        .rarity-legendary { border-color: #FF9800; }
+        .rarity-legendary h4 { color: #FF9800; }
+        .rarity-mythic { border-color: #F44336; }
+        .rarity-mythic h4 { color: #F44336; }
+        .rarity-primal { border-color: var(--primary-cyan); }
+        .rarity-primal h4 { color: var(--primary-cyan); }
+        .toc {
+            background: var(--bg-medium);
+            border: 1px solid var(--border-gray);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+        .toc h3 {
+            color: var(--primary-cyan);
+            margin-bottom: var(--spacing-md);
+        }
+        .toc ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        .toc li {
+            margin-bottom: var(--spacing-sm);
+        }
+        .toc a {
+            color: var(--text-normal);
+            text-decoration: none;
+            font-size: 13px;
+        }
+        .toc a:hover {
+            color: var(--primary-cyan);
+        }
+        .formula-box {
+            background: var(--bg-dark);
+            border: 1px solid var(--primary-cyan);
+            padding: var(--spacing-lg);
+            margin: var(--spacing-lg) 0;
+            font-family: monospace;
+            text-align: center;
+        }
+        .formula-box h4 {
+            color: var(--primary-cyan);
+            margin-bottom: var(--spacing-md);
+        }
+        .strategy-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--spacing-md);
+            margin: var(--spacing-lg) 0;
+        }
+        .strategy-item {
+            background: var(--bg-medium);
+            padding: var(--spacing-md);
+            border: 1px solid var(--border-gray);
+        }
+        .strategy-item h4 {
+            color: var(--primary-orange);
+            margin-bottom: var(--spacing-sm);
+            font-size: 14px;
+        }
+        .enhancement-levels {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-md);
+            margin: var(--spacing-lg) 0;
+        }
+        .enhancement-item {
+            background: var(--bg-dark);
+            padding: var(--spacing-md);
+            border: 2px solid #FFD700;
+        }
+        .enhancement-item h4 {
+            color: #FFD700;
+            margin-bottom: var(--spacing-sm);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Header -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <div class="nav-logo"></div>
+            <div>
+                <div class="nav-username">COURIER SPECIFICATIONS</div>
+                <div class="nav-level">EQUIPMENT & ITEMIZATION</div>
+            </div>
+        </div>
+        <div class="nav-menu">
+            <a href="../game/dashboard.html" class="nav-item">CHARACTER</a>
+            <a href="../inventory.html" class="nav-item">INVENTORY</a>
+            <a href="../missions.html" class="nav-item">MISSIONS</a>
+            <a href="../skills.html" class="nav-item">SKILLS</a>
+            <a href="../build-planner.html" class="nav-item">BUILD PLANNER</a>
+            <a href="../marketplace.html" class="nav-item">MARKET</a>
+            <a href="../crafting.html" class="nav-item">CRAFTING</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="page-container">
+        <div class="breadcrumb">
+            <a href="index.html">SPECS</a> > EQUIPMENT & ITEMIZATION
+        </div>
+
+        <div class="page-header">
+            <h1 class="page-title">EQUIPMENT & ITEMIZATION</h1>
+            <p style="color: var(--text-normal); margin-top: var(--spacing-md);">Power Budget System & Item Strategy</p>
+        </div>
+
+        <!-- Table of Contents -->
+        <div class="toc">
+            <h3>📋 TABLE OF CONTENTS</h3>
+            <ul>
+                <li><a href="#power-budget">Power Budget System</a></li>
+                <li><a href="#rarity-efficiency">Rarity Efficiency System</a></li>
+                <li><a href="#equipment-slots">Equipment Slot Structure</a></li>
+                <li><a href="#rarity-system">Rarity System (7 Tiers)</a></li>
+                <li><a href="#strategic-itemization">Strategic Itemization</a></li>
+                <li><a href="#modification-system">Item Modification System</a></li>
+                <li><a href="#economic-implications">Economic Implications</a></li>
+            </ul>
+        </div>
+
+        <!-- Power Budget System Section -->
+        <div class="card content-section" id="power-budget">
+            <div class="card-header">
+                <h2 class="card-title">POWER BUDGET SYSTEM</h2>
+            </div>
+            <div class="card-accent"></div>
+            
+            <div class="highlight-box">
+                <h3>Core Innovation</h3>
+                <p style="color: var(--text-normal); margin-bottom: var(--spacing-md);">
+                    The Power Budget System is Courier's primary solution to power creep and meaningless loot progression. 
+                    Instead of constantly increasing numbers, the system creates a strategic puzzle where players must optimize 
+                    limited "power budget" across all equipment.
+                </p>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--spacing-md);">
+                    <div>
+                        <h4 style="color: var(--primary-cyan); margin-bottom: var(--spacing-sm);">The Problem Solved</h4>
+                        <ul style="color: var(--text-normal); font-size: 13px; margin: 0; padding-left: 20px;">
+                            <li>Traditional ARPGs inflate numbers endlessly (10 damage → 10,000 damage)</li>
+                            <li>Eventually, all items become vendor trash except slight upgrades</li>
+                            <li>Power progression becomes about bigger numbers, not interesting choices</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 style="color: var(--primary-cyan); margin-bottom: var(--spacing-sm);">Our Solution</h4>
+                        <ul style="color: var(--text-normal); font-size: 13px; margin: 0; padding-left: 20px;">
+                            <li>Every character has finite total power budget based on level</li>
+                            <li>Items consume budget based on stats provided</li>
+                            <li>Higher rarity = same stats for less budget cost</li>
+                            <li>Every item drop creates strategic decisions</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="formula-box">
+                <h4>Base Formula</h4>
+                <div style="color: var(--text-bright); font-size: 16px;">
+                    Total Power Budget = 100 + (Level × 20) + Paragon Levels
+                </div>
+            </div>
+
+            <div class="strategy-grid">
+                <div class="strategy-item">
+                    <h4>Level 1</h4>
+                    <p style="color: var(--text-normal); font-size: 12px;">120 total power budget</p>
+                </div>
+                <div class="strategy-item">
+                    <h4>Level 30</h4>
+                    <p style="color: var(--text-normal); font-size: 12px;">700 total power budget</p>
+                </div>
+                <div class="strategy-item">
+                    <h4>Level 60</h4>
+                    <p style="color: var(--text-normal); font-size: 12px;">1,300 total power budget</p>
+                </div>
+                <div class="strategy-item">
+                    <h4>Level 60 + 50 Paragon</h4>
+                    <p style="color: var(--text-normal); font-size: 12px;">1,350 total power budget</p>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <h3>Budget Consumption</h3>
+                <p style="color: var(--text-normal); margin-bottom: var(--spacing-md);">
+                    Every equipped item consumes power budget based on:
+                </p>
+                <ol style="color: var(--text-normal); margin: 0; padding-left: 20px;">
+                    <li><strong>Base Stats:</strong> Attributes, flat bonuses</li>
+                    <li><strong>Percentage Modifiers:</strong> Damage%, resistance%, etc.</li>
+                    <li><strong>Special Effects:</strong> Unique abilities and triggers</li>
+                    <li><strong>Rarity Efficiency:</strong> Higher rarity = lower budget cost</li>
+                </ol>
+            </div>
+
+            <div class="equipment-grid">
+                <div class="equipment-card">
+                    <h3>Flat Stats</h3>
+                    <ul style="color: var(--text-normal); font-size: 13px; margin: 0; padding-left: 20px;">
+                        <li>+1 Attribute = 1 power</li>
+                        <li>+10 Health = 1 power</li>
+                        <li>+5 Shield = 1 power</li>
+                    </ul>
+                </div>
+                <div class="equipment-card">
+                    <h3>Percentage Stats</h3>
+                    <ul style="color: var(--text-normal); font-size: 13px; margin: 0; padding-left: 20px;">
+                        <li>+1% Damage = 5 power</li>
+                        <li>+1% Resistance = 3 power</li>
+                        <li>+1% Critical Chance = 8 power</li>
+                    </ul>
+                </div>
+                <div class="equipment-card">
+                    <h3>Special Effects</h3>
+                    <ul style="color: var(--text-normal); font-size: 13px; margin: 0; padding-left: 20px;">
+                        <li>Unique abilities = 50-200 power</li>
+                        <li>Legendary effects = 100-300 power</li>
+                        <li>Set bonuses = varies by power level</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rarity Efficiency System Section -->
+        <div class="card content-section" id="rarity-efficiency">
+            <div class="card-header">
+                <h2 class="card-title">RARITY EFFICIENCY SYSTEM</h2>
+            </div>
+            <div class="card-accent"></div>
+            
+            <p style="color: var(--text-normal); line-height: 1.6; margin-bottom: var(--spacing-lg);">
+                Higher rarity items provide the same stats for less power budget:
+            </p>
+
+            <div class="rarity-grid">
+                <div class="rarity-item rarity-common">
+                    <h4>Common (Gray)</h4>
+                    <p style="color: var(--text-normal); font-size: 12px;">1.3× power cost (30% penalty)</p>
+                </div>
+                <div class="rarity-item rarity-uncommon">
+                    <h4>Uncommon (Green)</h4>
+                    <p style="color: var(--text-normal); font-size: 12px;">1.15× power cost (15% penalty)</p>
+                </div>
+                <div class="rarity-item rarity-rare">
+                    <h4>Rare (Blue)</h4>
+                    <p style="color: var(--text-normal); font-size: 12px;">1.0× power cost (baseline)</p>
+                </div>
+                <div class="rarity-item rarity-epic">
+                    <h4>Epic (Purple)</h4>
+                    <p style="color: var(--text-normal); font-size: 12px;">0.9× power cost (10% discount)</p>
+                </div>
+                <div class="rarity-item rarity-legendary">
+                    <h4>Legendary (Orange)</h4>
+                    <p style="color: var(--text-normal); font-size: 12px;">0.8× power cost (20% discount)</p>
+                </div>
+                <div class="rarity-item rarity-mythic">
+                    <h4>Mythic (Red)</h4>
+                    <p style="color: var(--text-normal); font-size: 12px;">0.8× power cost (20% discount)</p>
+                </div>
+                <div class="rarity-item rarity-primal">
+                    <h4>Primal (Cyan)</h4>
+                    <p style="color: var(--text-normal); font-size: 12px;">0.75× power cost (25% discount)</p>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <h3>Strategic Examples</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--spacing-md);">
+                    <div>
+                        <h4 style="color: var(--primary-cyan); margin-bottom: var(--spacing-sm);">Common Weapon Example</h4>
+                        <ul style="color: var(--text-normal); font-size: 13px; margin: 0; padding-left: 20px;">
+                            <li>Base stats worth 200 power</li>
+                            <li>Common efficiency: 200 × 1.3 = 260 power cost</li>
+                            <li>Uses 20% of level 60 budget (260/1300)</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 style="color: var(--primary-cyan); margin-bottom: var(--spacing-sm);">Primal Weapon Example</h4>
+                        <ul style="color: var(--text-normal); font-size: 13px; margin: 0; padding-left: 20px;">
+                            <li>Same base stats worth 200 power</li>
+                            <li>Primal efficiency: 200 × 0.75 = 150 power cost</li>
+                            <li>Uses 11.5% of level 60 budget (150/1300)</li>
+                        </ul>
+                    </div>
+                </div>
+                <p style="color: var(--text-normal); margin-top: var(--spacing-md);">
+                    <strong>The Choice:</strong> Use the efficient Primal weapon and have budget for other gear, 
+                    or use multiple Common items for different stat combinations?
+                </p>
+            </div>
+        </div>
+
+        <!-- Equipment Slot Structure Section -->
+        <div class="card content-section" id="equipment-slots">
+            <div class="card-header">
+                <h2 class="card-title">EQUIPMENT SLOT STRUCTURE</h2>
+            </div>
+            <div class="card-accent"></div>
+            
+            <div class="highlight-box">
+                <h3>Weapon Slots (2 Total)</h3>
+                <p style="color: var(--text-normal); margin-bottom: var(--spacing-md);">
+                    <strong>Maximum Flexibility:</strong> Any weapon archetype can be equipped in either slot
+                </p>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--spacing-md);">
+                    <div>
+                        <h4 style="color: var(--primary-cyan); margin-bottom: var(--spacing-sm);">1. Primary Weapon</h4>
+                        <ul style="color: var(--text-normal); font-size: 13px; margin: 0; padding-left: 20px;">
+                            <li>Any of 5 weapon archetypes</li>
+                            <li>Higher modification budget available</li>
+                            <li>Primary combat tool</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 style="color: var(--primary-cyan); margin-bottom: var(--spacing-sm);">2. Secondary Weapon</h4>
+                        <ul style="color: var(--text-normal); font-size: 13px; margin: 0; padding-left: 20px;">
+                            <li>Any of 5 weapon archetypes</li>
+                            <li>Situational or specialized use</li>
+                            <li>Tactical flexibility</li>
+                        </ul>
+                    </div>
+                </div>
+                <p style="color: var(--text-normal); margin-top: var(--spacing-md);">
+                    <strong>No Restrictions:</strong> Players can dual-wield shotguns, pair sniper+SMG, 
+                    or any combination that fits their build and power budget.
+                </p>
+            </div>
+
+            <div class="equipment-grid">
+                <div class="equipment-card">
+                    <h3>1. Head</h3>
+                    <h4>Power Budget Range: 100-150</h4>
+                    <p style="color: var(--text-normal); font-size: 13px; margin-bottom: var(--spacing-sm);">
+                        <strong>Focus:</strong> Precision, utility, ability enhancement
+                    </p>
+                    <p style="color: var(--text-normal); font-size: 12px;">
+                        <strong>Common Stats:</strong> Critical chance, accuracy, ability cooldowns<br>
+                        <strong>Cannot Roll:</strong> Movement stats, life steal
+                    </p>
+                </div>
+
+                <div class="equipment-card">
+                    <h3>2. Shoulders</h3>
+                    <h4>Power Budget Range: 125-175</h4>
+                    <p style="color: var(--text-normal); font-size: 13px; margin-bottom: var(--spacing-sm);">
+                        <strong>Focus:</strong> Balanced offense/defense
+                    </p>
+                    <p style="color: var(--text-normal); font-size: 12px;">
+                        <strong>Common Stats:</strong> Weapon damage, armor, ammo reserves<br>
+                        <strong>Cannot Roll:</strong> Movement stats, critical stats
+                    </p>
+                </div>
+
+                <div class="equipment-card">
+                    <h3>3. Chest</h3>
+                    <h4>Power Budget Range: 200-300 (highest)</h4>
+                    <p style="color: var(--text-normal); font-size: 13px; margin-bottom: var(--spacing-sm);">
+                        <strong>Focus:</strong> Core survivability
+                    </p>
+                    <p style="color: var(--text-normal); font-size: 12px;">
+                        <strong>Common Stats:</strong> Health, shields, resistances, damage reduction<br>
+                        <strong>Cannot Roll:</strong> Weapon-specific performance stats
+                    </p>
+                </div>
+
+                <div class="equipment-card">
+                    <h3>4. Gloves</h3>
+                    <h4>Power Budget Range: 150-200</h4>
+                    <p style="color: var(--text-normal); font-size: 13px; margin-bottom: var(--spacing-sm);">
+                        <strong>Focus:</strong> Weapon performance
+                    </p>
+                    <p style="color: var(--text-normal); font-size: 12px;">
+                        <strong>Common Stats:</strong> Reload speed, weapon damage, critical damage<br>
+                        <strong>Cannot Roll:</strong> Movement stats, resistances
+                    </p>
+                </div>
+
+                <div class="equipment-card">
+                    <h3>5. Legs</h3>
+                    <h4>Power Budget Range: 175-225</h4>
+                    <p style="color: var(--text-normal); font-size: 13px; margin-bottom: var(--spacing-sm);">
+                        <strong>Focus:</strong> Movement and mobility
+                    </p>
+                    <p style="color: var(--text-normal); font-size: 12px;">
+                        <strong>Exclusive Access:</strong> Movement speed, sprint speed, slide bonuses<br>
+                        <strong>Cannot Roll:</strong> Weapon damage, critical stats
+                    </p>
+                </div>
+
+                <div class="equipment-card">
+                    <h3>6. Back</h3>
+                    <h4>Power Budget Range: 150-200</h4>
+                    <p style="color: var(--text-normal); font-size: 13px; margin-bottom: var(--spacing-sm);">
+                        <strong>Focus:</strong> Resistance specialization
+                    </p>
+                    <p style="color: var(--text-normal); font-size: 12px;">
+                        <strong>Common Stats:</strong> Multiple resistances, shield regeneration<br>
+                        <strong>Cannot Roll:</strong> Weapon-specific stats
+                    </p>
+                </div>
+
+                <div class="equipment-card">
+                    <h3>7. Bracers (Class Item)</h3>
+                    <h4>Power Budget Range: 100-150 (lowest)</h4>
+                    <p style="color: var(--text-normal); font-size: 13px; margin-bottom: var(--spacing-sm);">
+                        <strong>Focus:</strong> Class-specific bonuses
+                    </p>
+                    <p style="color: var(--text-normal); font-size: 12px;">
+                        <strong>Common Stats:</strong> Class abilities, ability damage, energy<br>
+                        <strong>Restriction:</strong> Cannot trade between classes
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Strategic Itemization Section -->
+        <div class="card content-section" id="strategic-itemization">
+            <div class="card-header">
+                <h2 class="card-title">STRATEGIC ITEMIZATION</h2>
+            </div>
+            <div class="card-accent"></div>
+            
+            <div class="strategy-grid">
+                <div class="strategy-item">
+                    <h4>Glass Cannon Strategy</h4>
+                    <p style="color: var(--text-normal); font-size: 12px; margin-bottom: var(--spacing-sm);">
+                        <strong>Goal:</strong> Maximum damage output
+                    </p>
+                    <ul style="color: var(--text-normal); font-size: 11px; margin: 0; padding-left: 15px;">
+                        <li>1-2 Primal weapons (high efficiency damage)</li>
+                        <li>Minimal armor (budget saved for weapon power)</li>
+                        <li>Accept low survivability for maximum offense</li>
+                        <li><strong>Power Budget:</strong> 80% weapons, 20% armor</li>
+                    </ul>
+                </div>
+
+                <div class="strategy-item">
+                    <h4>Balanced Optimization</h4>
+                    <p style="color: var(--text-normal); font-size: 12px; margin-bottom: var(--spacing-sm);">
+                        <strong>Goal:</strong> Well-rounded effectiveness
+                    </p>
+                    <ul style="color: var(--text-normal); font-size: 11px; margin: 0; padding-left: 15px;">
+                        <li>Mix of Epic/Legendary items across all slots</li>
+                        <li>Balanced stat distribution</li>
+                        <li>Good efficiency without extreme specialization</li>
+                        <li><strong>Power Budget:</strong> 40% weapons, 60% armor</li>
+                    </ul>
+                </div>
+
+                <div class="strategy-item">
+                    <h4>Defensive Specialist</h4>
+                    <p style="color: var(--text-normal); font-size: 12px; margin-bottom: var(--spacing-sm);">
+                        <strong>Goal:</strong> Maximum survivability
+                    </p>
+                    <ul style="color: var(--text-normal); font-size: 11px; margin: 0; padding-left: 15px;">
+                        <li>Primal armor for efficient defensive stats</li>
+                        <li>Basic weapons (budget saved for defense)</li>
+                        <li>Focus on resistances and health</li>
+                        <li><strong>Power Budget:</strong> 20% weapons, 80% armor</li>
+                    </ul>
+                </div>
+
+                <div class="strategy-item">
+                    <h4>Elemental Master</h4>
+                    <p style="color: var(--text-normal); font-size: 12px; margin-bottom: var(--spacing-sm);">
+                        <strong>Goal:</strong> Status effect optimization
+                    </p>
+                    <ul style="color: var(--text-normal); font-size: 11px; margin: 0; padding-left: 15px;">
+                        <li>High elemental damage weapons</li>
+                        <li>Gear supporting status effect generation</li>
+                        <li>Balanced investment for sustained effects</li>
+                        <li><strong>Power Budget:</strong> 50% weapons, 50% supporting armor</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <h3>Empty Slot Strategy</h3>
+                <p style="color: var(--text-normal); margin-bottom: var(--spacing-md);">
+                    <strong>Valid Tactic:</strong> Sometimes leaving slots empty is optimal
+                </p>
+                <p style="color: var(--text-normal); font-size: 13px;">
+                    <strong>Example:</strong> Level 60 player with 1,300 power budget - 3 Primal items (450 power) 
+                    may be more effective than 9 Common items (850+ power) with worse efficiency. 
+                    Remaining budget saved for future upgrades.
+                </p>
+            </div>
+        </div>
+
+        <!-- Item Modification System Section -->
+        <div class="card content-section" id="modification-system">
+            <div class="card-header">
+                <h2 class="card-title">ITEM MODIFICATION SYSTEM</h2>
+            </div>
+            <div class="card-accent"></div>
+            
+            <div class="enhancement-levels">
+                <div class="enhancement-item">
+                    <h4>+1 Enhancement</h4>
+                    <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 15px;">
+                        <li>+25% to all stat bonuses</li>
+                        <li>Costs: Common Enhancement Cores + Credits</li>
+                        <li>Success Rate: 100%</li>
+                        <li>Visual: Golden glow effect</li>
+                    </ul>
+                </div>
+
+                <div class="enhancement-item">
+                    <h4>+2 Enhancement</h4>
+                    <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 15px;">
+                        <li>+50% to all stat bonuses</li>
+                        <li>Costs: Rare Enhancement Cores + Components</li>
+                        <li>Success Rate: 85% (failure destroys materials)</li>
+                        <li>Visual: Bright golden aura</li>
+                    </ul>
+                </div>
+
+                <div class="enhancement-item">
+                    <h4>+3 Enhancement</h4>
+                    <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 15px;">
+                        <li>+75% to all stat bonuses</li>
+                        <li>Costs: Exotic Enhancement Cores + rare materials</li>
+                        <li>Success Rate: 60% (failure can destroy item)</li>
+                        <li>Visual: Intense golden radiance</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <h3>Enhancement Strategy</h3>
+                <ul style="color: var(--text-normal); margin: 0; padding-left: 20px;">
+                    <li><strong>Risk vs Reward:</strong> Higher enhancement levels provide more power but risk item destruction</li>
+                    <li><strong>Budget Impact:</strong> Enhanced items provide more stats for same power budget cost</li>
+                    <li><strong>Investment Decision:</strong> Enhance current gear or save materials for better base items?</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Economic Implications Section -->
+        <div class="card content-section" id="economic-implications">
+            <div class="card-header">
+                <h2 class="card-title">ECONOMIC IMPLICATIONS</h2>
+            </div>
+            <div class="card-accent"></div>
+            
+            <div class="strategy-grid">
+                <div class="strategy-item">
+                    <h4>Market Dynamics</h4>
+                    <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 15px;">
+                        <li><strong>Primal Items:</strong> Ultra-rare, extremely valuable for budget efficiency</li>
+                        <li><strong>Perfect Stat Rolls:</strong> High value regardless of rarity due to efficiency</li>
+                        <li><strong>Build-Specific Items:</strong> Value varies based on current meta and player needs</li>
+                        <li><strong>Enhancement Materials:</strong> Valuable for optimizing budget efficiency</li>
+                    </ul>
+                </div>
+
+                <div class="strategy-item">
+                    <h4>Power Budget Optimization</h4>
+                    <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 15px;">
+                        <li><strong>Early Game:</strong> Accept inefficiency, focus on having any gear</li>
+                        <li><strong>Mid Game:</strong> Begin optimizing for efficiency, mix rarities strategically</li>
+                        <li><strong>Late Game:</strong> Pursue perfect efficiency, every power point matters</li>
+                        <li><strong>End Game:</strong> Min-max optimization, empty slots may be optimal</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <h3>System Impact</h3>
+                <p style="color: var(--text-normal);">
+                    The Power Budget System transforms itemization from simple number increases into strategic optimization puzzles, 
+                    ensuring every piece of loot has potential value throughout the game's lifespan.
+                </p>
+            </div>
+        </div>
+
+        <!-- Document Navigation -->
+        <div class="doc-nav-bottom">
+            <a href="elemental-system.html">← Previous: Elemental System</a>
+            <div style="color: var(--text-dim); font-size: 12px; text-align: center;">
+                <strong>NEXT:</strong> <a href="06-weapon-systems.html" style="color: var(--primary-cyan);">Weapon Systems</a><br>
+                <span style="color: var(--text-dim);">Weapon archetypes & modification system</span>
+            </div>
+            <a href="06-weapon-systems.html">Next: Weapon Systems →</a>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer style="padding: 20px; text-align: center; font-size: 10px; color: #666; border-top: 1px solid #333; margin-top: 40px;">
+        <a href="../changelog.html" style="color: #666; text-decoration: none; border-bottom: 1px dotted #666;">CHANGELOG</a> • 
+        <a href="index.html" style="color: #666; text-decoration: none; border-bottom: 1px dotted #666;">SPECS</a> • 
+        RELATED: <a href="01-executive-summary.html" style="color: #666; text-decoration: none;">Executive Summary</a> • 
+        <a href="09-technical-implementation.html" style="color: #666; text-decoration: none;">Technical Implementation</a>
+    </footer>
+
+    <script src="../assets/js/main.js"></script>
+    <script src="../assets/js/navigation.js"></script>
+</body>
+</html>

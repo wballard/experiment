@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Implementation Plan - Courier Specifications</title>
+    <link rel="stylesheet" href="../assets/css/design-system.css?v=13">
+    <link rel="stylesheet" href="../assets/css/main.css?v=13">
+    <link rel="stylesheet" href="../assets/css/game.css?v=13">
+    <style>
+        .breadcrumb {
+            color: var(--text-dim);
+            font-size: 12px;
+            margin-bottom: var(--spacing-lg);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .breadcrumb a {
+            color: var(--primary-cyan);
+            text-decoration: none;
+        }
+        .breadcrumb a:hover {
+            color: var(--text-bright);
+        }
+        .doc-nav-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: var(--spacing-xl);
+            padding: var(--spacing-lg);
+            background: var(--bg-dark);
+            border: 1px solid var(--border-gray);
+        }
+        .doc-nav-bottom a {
+            color: var(--primary-cyan);
+            text-decoration: none;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border: 1px solid var(--border-gray);
+            background: var(--bg-medium);
+            transition: all 0.3s ease;
+        }
+        .doc-nav-bottom a:hover {
+            border-color: var(--primary-cyan);
+            background: var(--bg-light);
+        }
+        .content-section {
+            margin-bottom: var(--spacing-xl);
+        }
+        .highlight-box {
+            background: var(--bg-dark);
+            border: 1px solid var(--primary-orange);
+            padding: var(--spacing-lg);
+            margin: var(--spacing-lg) 0;
+        }
+        .highlight-box h3 {
+            color: var(--primary-orange);
+            margin-bottom: var(--spacing-md);
+        }
+        .toc {
+            background: var(--bg-medium);
+            border: 1px solid var(--border-gray);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+        .toc h3 {
+            color: var(--primary-cyan);
+            margin-bottom: var(--spacing-md);
+        }
+        .toc ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        .toc li {
+            margin-bottom: var(--spacing-sm);
+        }
+        .toc a {
+            color: var(--text-normal);
+            text-decoration: none;
+            font-size: 13px;
+        }
+        .toc a:hover {
+            color: var(--primary-cyan);
+        }
+        .phase-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: var(--spacing-lg);
+            margin: var(--spacing-lg) 0;
+        }
+        .phase-card {
+            background: var(--bg-medium);
+            border: 1px solid var(--border-gray);
+            padding: var(--spacing-lg);
+            transition: all 0.3s ease;
+        }
+        .phase-card:hover {
+            border-color: var(--primary-cyan);
+            background: var(--bg-light);
+        }
+        .phase-card h3 {
+            color: var(--primary-cyan);
+            margin-bottom: var(--spacing-md);
+            font-size: 18px;
+        }
+        .phase-card h4 {
+            color: var(--primary-orange);
+            margin-bottom: var(--spacing-sm);
+            font-size: 14px;
+        }
+        .tech-stack {
+            background: var(--bg-dark);
+            border: 1px solid var(--primary-cyan);
+            padding: var(--spacing-lg);
+            margin: var(--spacing-lg) 0;
+        }
+        .tech-stack h3 {
+            color: var(--primary-cyan);
+            margin-bottom: var(--spacing-md);
+        }
+        .code-block {
+            background: #1a1a1a;
+            border: 1px solid var(--border-gray);
+            padding: var(--spacing-lg);
+            margin: var(--spacing-lg) 0;
+            font-family: 'Courier New', Consolas, monospace;
+            overflow-x: auto;
+            border-radius: 4px;
+        }
+        .code-block pre {
+            margin: 0;
+            color: #f8f8f2;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+        .code-block .code-comment {
+            color: #6272a4;
+        }
+        .code-block .code-string {
+            color: #f1fa8c;
+        }
+        .code-block .code-keyword {
+            color: #ff79c6;
+        }
+        .code-block .code-function {
+            color: #50fa7b;
+        }
+        .code-block .code-number {
+            color: #bd93f9;
+        }
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--spacing-md);
+            margin: var(--spacing-lg) 0;
+        }
+        .metrics-item {
+            background: var(--bg-medium);
+            padding: var(--spacing-md);
+            border: 1px solid var(--border-gray);
+        }
+        .metrics-item h4 {
+            color: var(--primary-orange);
+            margin-bottom: var(--spacing-sm);
+            font-size: 14px;
+        }
+        .api-section {
+            background: var(--bg-medium);
+            border: 1px solid var(--border-gray);
+            padding: var(--spacing-lg);
+            margin: var(--spacing-lg) 0;
+        }
+        .api-section h3 {
+            color: var(--primary-cyan);
+            margin-bottom: var(--spacing-md);
+        }
+        .endpoint-list {
+            background: var(--bg-dark);
+            padding: var(--spacing-md);
+            margin: var(--spacing-sm) 0;
+            font-family: monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Header -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <div class="nav-logo"></div>
+            <div>
+                <div class="nav-username">COURIER SPECIFICATIONS</div>
+                <div class="nav-level">IMPLEMENTATION PLAN</div>
+            </div>
+        </div>
+        <div class="nav-menu">
+            <a href="../game/dashboard.html" class="nav-item">CHARACTER</a>
+            <a href="../inventory.html" class="nav-item">INVENTORY</a>
+            <a href="../missions.html" class="nav-item">MISSIONS</a>
+            <a href="../skills.html" class="nav-item">SKILLS</a>
+            <a href="../build-planner.html" class="nav-item">BUILD PLANNER</a>
+            <a href="../marketplace.html" class="nav-item">MARKET</a>
+            <a href="../crafting.html" class="nav-item">CRAFTING</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="page-container">
+        <div class="breadcrumb">
+            <a href="index.html">SPECS</a> > IMPLEMENTATION PLAN
+        </div>
+
+        <div class="page-header">
+            <h1 class="page-title">WEB VERSION IMPLEMENTATION PLAN</h1>
+            <p style="color: var(--text-normal); margin-top: var(--spacing-md);">Development Roadmap & Technical Architecture</p>
+        </div>
+
+        <!-- Table of Contents -->
+        <div class="toc">
+            <h3>📋 TABLE OF CONTENTS</h3>
+            <ul>
+                <li><a href="#overview">Implementation Overview</a></li>
+                <li><a href="#architecture">Technical Architecture</a></li>
+                <li><a href="#phases">Development Phases</a></li>
+                <li><a href="#api-design">API Design</a></li>
+                <li><a href="#testing">Testing Strategy</a></li>
+                <li><a href="#deployment">Deployment Strategy</a></li>
+                <li><a href="#security">Security Considerations</a></li>
+                <li><a href="#metrics">Success Metrics</a></li>
+            </ul>
+        </div>
+
+        <!-- Implementation Overview Section -->
+        <div class="card content-section" id="overview">
+            <div class="card-header">
+                <h2 class="card-title">IMPLEMENTATION OVERVIEW</h2>
+            </div>
+            <div class="card-accent"></div>
+            
+            <p style="color: var(--text-normal); line-height: 1.6; margin-bottom: var(--spacing-lg);">
+                This document outlines the development plan for Courier's web-based version, focusing on the asynchronous 
+                timer-based mission system with statistical outcomes. The implementation prioritizes rapid iteration, 
+                scalable architecture, and progressive feature delivery.
+            </p>
+
+            <div class="highlight-box">
+                <h3>Core Philosophy</h3>
+                <p style="color: var(--text-normal);">
+                    Build the minimum viable product that demonstrates the Power Budget System innovation, then iterate 
+                    based on player feedback and engagement metrics.
+                </p>
+            </div>
+        </div>
+
+        <!-- Technical Architecture Section -->
+        <div class="card content-section" id="architecture">
+            <div class="card-header">
+                <h2 class="card-title">TECHNICAL ARCHITECTURE</h2>
+            </div>
+            <div class="card-accent"></div>
+            
+            <div class="tech-stack">
+                <h3>Frontend Stack</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--spacing-md);">
+                    <div>
+                        <h4 style="color: var(--primary-orange); margin-bottom: var(--spacing-sm);">Core Technologies</h4>
+                        <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 15px;">
+                            <li><strong>React 18+:</strong> Component-based UI with modern hooks</li>
+                            <li><strong>TypeScript:</strong> Type safety for complex calculations</li>
+                            <li><strong>Tailwind CSS:</strong> Rapid responsive design development</li>
+                            <li><strong>Vite:</strong> Fast development server and build tool</li>
+                            <li><strong>PWA Support:</strong> Offline capability and mobile experience</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 style="color: var(--primary-orange); margin-bottom: var(--spacing-sm);">State Management</h4>
+                        <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 15px;">
+                            <li><strong>Zustand:</strong> Lightweight state management for character data</li>
+                            <li><strong>React Query:</strong> Server state caching and synchronization</li>
+                            <li><strong>Local Storage:</strong> Persistent client-side data caching</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 style="color: var(--primary-orange); margin-bottom: var(--spacing-sm);">Real-time Updates</h4>
+                        <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 15px;">
+                            <li><strong>WebSocket/SSE:</strong> Mission progress notifications</li>
+                            <li><strong>Background Sync:</strong> Mission timers continue when tab inactive</li>
+                            <li><strong>Push Notifications:</strong> Mission completion alerts</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tech-stack">
+                <h3>Backend Stack</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minima(200px, 1fr)); gap: var(--spacing-md);">
+                    <div>
+                        <h4 style="color: var(--primary-orange); margin-bottom: var(--spacing-sm);">Core Services</h4>
+                        <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 15px;">
+                            <li><strong>Node.js/Express:</strong> REST API for game operations</li>
+                            <li><strong>PostgreSQL:</strong> Relational data for characters and items</li>
+                            <li><strong>Redis:</strong> Session management and real-time mission state</li>
+                            <li><strong>WebSocket Server:</strong> Real-time client communication</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 style="color: var(--primary-orange); margin-bottom: var(--spacing-sm);">Microservices</h4>
+                        <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 15px;">
+                            <li><strong>Character Service:</strong> Progression, attributes, equipment</li>
+                            <li><strong>Mission Service:</strong> Timer management, outcome calculation</li>
+                            <li><strong>Loot Service:</strong> Item generation and reward distribution</li>
+                            <li><strong>Authentication Service:</strong> User accounts and security</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tech-stack">
+                <h3>Database Schema Examples</h3>
+                
+                <div class="code-block">
+                    <pre><span class="code-comment">-- Characters Table</span>
+<span class="code-keyword">CREATE TABLE</span> characters (
+  id <span class="code-keyword">UUID PRIMARY KEY</span>,
+  user_id <span class="code-keyword">UUID REFERENCES</span> users(id),
+  name <span class="code-keyword">VARCHAR</span>(<span class="code-number">50</span>) <span class="code-keyword">NOT NULL</span>,
+  class_type <span class="code-keyword">VARCHAR</span>(<span class="code-number">20</span>) <span class="code-keyword">NOT NULL</span>,
+  level <span class="code-keyword">INTEGER DEFAULT</span> <span class="code-number">1</span>,
+  paragon_level <span class="code-keyword">INTEGER DEFAULT</span> <span class="code-number">0</span>,
+  attribute_points <span class="code-keyword">JSON</span>, <span class="code-comment">-- {vitality: 10, precision: 5, ...}</span>
+  skill_points <span class="code-keyword">JSON</span>,     <span class="code-comment">-- {class_tree: {...}, elemental_trees: {...}}</span>
+  elemental_choices <span class="code-keyword">JSON</span>, <span class="code-comment">-- {primary: "fire", secondary: null}</span>
+  faction_reputation <span class="code-keyword">JSON</span>, <span class="code-comment">-- {darkspur: 1000, card: 500, ...}</span>
+  created_at <span class="code-keyword">TIMESTAMP DEFAULT NOW</span>(),
+  updated_at <span class="code-keyword">TIMESTAMP DEFAULT NOW</span>()
+);</pre>
+                </div>
+
+                <div class="code-block">
+                    <pre><span class="code-comment">-- Missions Table</span>
+<span class="code-keyword">CREATE TABLE</span> missions (
+  id <span class="code-keyword">UUID PRIMARY KEY</span>,
+  character_id <span class="code-keyword">UUID REFERENCES</span> characters(id),
+  mission_type <span class="code-keyword">VARCHAR</span>(<span class="code-number">20</span>) <span class="code-keyword">NOT NULL</span>, <span class="code-comment">-- 'patrol', 'horde', 'expedition'</span>
+  mission_tier <span class="code-keyword">INTEGER NOT NULL</span>,
+  active_affixes <span class="code-keyword">JSON</span>, <span class="code-comment">-- Array of affix objects</span>
+  start_time <span class="code-keyword">TIMESTAMP NOT NULL</span>,
+  duration_minutes <span class="code-keyword">INTEGER NOT NULL</span>,
+  success_probability <span class="code-keyword">DECIMAL</span>(<span class="code-number">5</span>,<span class="code-number">2</span>) <span class="code-keyword">NOT NULL</span>,
+  status <span class="code-keyword">VARCHAR</span>(<span class="code-number">20</span>) <span class="code-keyword">DEFAULT</span> <span class="code-string">'active'</span>, <span class="code-comment">-- 'active', 'completed', 'failed'</span>
+  outcome <span class="code-keyword">JSON</span>, <span class="code-comment">-- Results when completed</span>
+  rewards <span class="code-keyword">JSON</span>  <span class="code-comment">-- Generated rewards</span>
+);</pre>
+                </div>
+            </div>
+
+            <div class="tech-stack">
+                <h3>Core Calculation Engine</h3>
+                
+                <div class="code-block">
+                    <pre><span class="code-keyword">interface</span> <span class="code-function">PowerBudgetCalculator</span> {
+  calculateTotalBudget(level: <span class="code-keyword">number</span>, paragonLevel: <span class="code-keyword">number</span>): <span class="code-keyword">number</span>;
+  calculateItemCost(item: <span class="code-function">EquipmentItem</span>): <span class="code-keyword">number</span>;
+  validateLoadout(character: <span class="code-function">Character</span>): {
+    isValid: <span class="code-keyword">boolean</span>;
+    usedPower: <span class="code-keyword">number</span>;
+    availablePower: <span class="code-keyword">number</span>;
+  };
+}
+
+<span class="code-keyword">class</span> <span class="code-function">PowerBudgetService</span> <span class="code-keyword">implements</span> <span class="code-function">PowerBudgetCalculator</span> {
+  calculateTotalBudget(level: <span class="code-keyword">number</span>, paragonLevel: <span class="code-keyword">number</span>): <span class="code-keyword">number</span> {
+    <span class="code-keyword">return</span> <span class="code-number">100</span> + (level * <span class="code-number">20</span>) + paragonLevel;
+  }
+
+  calculateItemCost(item: <span class="code-function">EquipmentItem</span>): <span class="code-keyword">number</span> {
+    <span class="code-keyword">let</span> baseCost = <span class="code-number">0</span>;
+    
+    <span class="code-comment">// Attribute costs (1 power per point)</span>
+    baseCost += Object.values(item.attributes).reduce((sum, val) => sum + val, <span class="code-number">0</span>);
+    
+    <span class="code-comment">// Apply rarity efficiency</span>
+    <span class="code-keyword">const</span> rarityMultipliers = {
+      common: <span class="code-number">1.3</span>, uncommon: <span class="code-number">1.15</span>, rare: <span class="code-number">1.0</span>,
+      epic: <span class="code-number">0.9</span>, legendary: <span class="code-number">0.8</span>, mythic: <span class="code-number">0.8</span>, primal: <span class="code-number">0.75</span>
+    };
+    
+    <span class="code-keyword">return</span> baseCost * rarityMultipliers[item.rarity];
+  }
+}</pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Development Phases Section -->
+        <div class="card content-section" id="phases">
+            <div class="card-header">
+                <h2 class="card-title">DEVELOPMENT PHASES</h2>
+            </div>
+            <div class="card-accent"></div>
+            
+            <div class="phase-grid">
+                <div class="phase-card">
+                    <h3>Phase 1: Core Foundation</h3>
+                    <h4>Deliverables:</h4>
+                    <ul style="color: var(--text-normal); font-size: 13px; margin: 0 0 var(--spacing-md) 0; padding-left: 20px;">
+                        <li>User authentication and account creation</li>
+                        <li>Basic character creation (class selection, naming)</li>
+                        <li>Simple equipment system (starting gear only)</li>
+                        <li>Mission launch interface with timer display</li>
+                        <li>Basic success/failure calculation</li>
+                    </ul>
+
+                    <h4>Success Criteria:</h4>
+                    <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 20px;">
+                        <li>Users can create accounts and characters</li>
+                        <li>Characters can launch 5-minute tutorial missions</li>
+                        <li>Mission timers work correctly and show completion</li>
+                        <li>Basic reward distribution functions</li>
+                    </ul>
+                </div>
+
+                <div class="phase-card">
+                    <h3>Phase 2: Power Budget System</h3>
+                    <h4>Deliverables:</h4>
+                    <ul style="color: var(--text-normal); font-size: 13px; margin: 0 0 var(--spacing-md) 0; padding-left: 20px;">
+                        <li>Complete equipment slot system (9 slots)</li>
+                        <li>Power budget calculation and validation</li>
+                        <li>Equipment comparison interface</li>
+                        <li>Basic item generation system</li>
+                        <li>Power budget optimization tutorials</li>
+                    </ul>
+
+                    <h4>Success Criteria:</h4>
+                    <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 20px;">
+                        <li>Players can equip items in all 9 slots</li>
+                        <li>Power budget prevents over-allocation</li>
+                        <li>Equipment changes affect mission success probability</li>
+                        <li>Players understand power budget through tutorial</li>
+                    </ul>
+                </div>
+
+                <div class="phase-card">
+                    <h3>Phase 3: Mission System</h3>
+                    <h4>Deliverables:</h4>
+                    <ul style="color: var(--text-normal); font-size: 13px; margin: 0 0 var(--spacing-md) 0; padding-left: 20px;">
+                        <li>All 3 mission categories (Patrol, Horde, Expedition)</li>
+                        <li>Mission tier progression (1-10)</li>
+                        <li>Basic affix system (4-5 core affixes)</li>
+                        <li>Mission outcome variety (critical/success/partial/failure)</li>
+                        <li>Reward scaling by difficulty</li>
+                    </ul>
+
+                    <h4>Success Criteria:</h4>
+                    <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 20px;">
+                        <li>Players can launch missions of varying duration and difficulty</li>
+                        <li>Mission success probability accurately reflects character optimization</li>
+                        <li>Rewards scale appropriately with difficulty and outcome</li>
+                        <li>Mission timers persist across browser sessions</li>
+                    </ul>
+                </div>
+
+                <div class="phase-card">
+                    <h3>Phase 4: Character Progression</h3>
+                    <h4>Deliverables:</h4>
+                    <ul style="color: var(--text-normal); font-size: 13px; margin: 0 0 var(--spacing-md) 0; padding-left: 20px;">
+                        <li>Complete attribute allocation system</li>
+                        <li>Level progression and experience calculation</li>
+                        <li>Elemental specialization choice (level 20/40)</li>
+                        <li>Skill point allocation interface</li>
+                        <li>Basic elemental damage calculations</li>
+                    </ul>
+
+                    <h4>Success Criteria:</h4>
+                    <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 20px;">
+                        <li>Players can allocate attribute and skill points meaningfully</li>
+                        <li>Elemental choices significantly impact mission success</li>
+                        <li>Character progression feels meaningful and impactful</li>
+                        <li>Respec functionality works correctly</li>
+                    </ul>
+                </div>
+
+                <div class="phase-card">
+                    <h3>Phase 5: Weekly Affix System</h3>
+                    <h4>Deliverables:</h4>
+                    <ul style="color: var(--text-normal); font-size: 13px; margin: 0 0 var(--spacing-md) 0; padding-left: 20px;">
+                        <li>Complete affix rotation system (4-week cycle)</li>
+                        <li>12+ unique affixes across all categories</li>
+                        <li>Affix impact on success calculations</li>
+                        <li>Weekly reset mechanism</li>
+                        <li>Affix preview and planning tools</li>
+                    </ul>
+
+                    <h4>Success Criteria:</h4>
+                    <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 20px;">
+                        <li>Weekly affixes change automatically and affect all missions</li>
+                        <li>Players can see how different builds perform against current affixes</li>
+                        <li>Affix explanations are clear and actionable</li>
+                        <li>Players adapt their builds to weekly changes</li>
+                    </ul>
+                </div>
+
+                <div class="phase-card">
+                    <h3>Phase 6: Faction System</h3>
+                    <h4>Deliverables:</h4>
+                    <ul style="color: var(--text-normal); font-size: 13px; margin: 0 0 var(--spacing-md) 0; padding-left: 20px;">
+                        <li>4 faction implementation with reputation tracking</li>
+                        <li>Faction-specific mission rewards</li>
+                        <li>Faction vendor systems</li>
+                        <li>Faction choice consequences</li>
+                        <li>Faction storyline integration</li>
+                    </ul>
+
+                    <h4>Success Criteria:</h4>
+                    <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 20px;">
+                        <li>Players can build reputation with chosen factions</li>
+                        <li>Faction benefits provide meaningful progression</li>
+                        <li>Faction choices create strategic decisions</li>
+                        <li>Faction vendors offer valuable unique items</li>
+                    </ul>
+                </div>
+
+                <div class="phase-card">
+                    <h3>Phase 7: Advanced Systems</h3>
+                    <h4>Deliverables:</h4>
+                    <ul style="color: var(--text-normal); font-size: 13px; margin: 0 0 var(--spacing-md) 0; padding-left: 20px;">
+                        <li>Paragon level progression (post-60)</li>
+                        <li>Advanced item rarity tiers (Legendary, Mythic, Primal)</li>
+                        <li>Weapon modification system</li>
+                        <li>Advanced mission affixes and keystones</li>
+                        <li>Social features (build sharing, leaderboards)</li>
+                    </ul>
+
+                    <h4>Success Criteria:</h4>
+                    <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 20px;">
+                        <li>Endgame progression remains engaging indefinitely</li>
+                        <li>High-tier items feel appropriately rare and impactful</li>
+                        <li>Social features encourage community engagement</li>
+                        <li>System performance scales with complexity</li>
+                    </ul>
+                </div>
+
+                <div class="phase-card">
+                    <h3>Phase 8: Polish & Optimization</h3>
+                    <h4>Deliverables:</h4>
+                    <ul style="color: var(--text-normal); font-size: 13px; margin: 0 0 var(--spacing-md) 0; padding-left: 20px;">
+                        <li>Mobile-responsive interface improvements</li>
+                        <li>Performance optimization and caching</li>
+                        <li>Advanced analytics and player behavior tracking</li>
+                        <li>Tutorial improvements based on player data</li>
+                        <li>Accessibility features implementation</li>
+                    </ul>
+
+                    <h4>Success Criteria:</h4>
+                    <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 20px;">
+                        <li>Game performs well on all target devices</li>
+                        <li>Player retention metrics meet targets</li>
+                        <li>New player onboarding optimized through data</li>
+                        <li>Technical infrastructure scales reliably</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- API Design Section -->
+        <div class="card content-section" id="api-design">
+            <div class="card-header">
+                <h2 class="card-title">API DESIGN</h2>
+            </div>
+            <div class="card-accent"></div>
+            
+            <div class="api-section">
+                <h3>Character Management</h3>
+                <div class="endpoint-list">
+                    <div style="color: var(--primary-cyan);">GET    /api/characters           # List user's characters</div>
+                    <div style="color: var(--primary-cyan);">POST   /api/characters           # Create new character</div>
+                    <div style="color: var(--primary-cyan);">GET    /api/characters/:id       # Get character details</div>
+                    <div style="color: var(--primary-cyan);">PUT    /api/characters/:id       # Update character (attributes, etc.)</div>
+                    <div style="color: var(--primary-cyan);">DELETE /api/characters/:id       # Delete character</div>
+                    <br>
+                    <div style="color: var(--primary-cyan);">GET    /api/characters/:id/equipment    # Get character equipment</div>
+                    <div style="color: var(--primary-cyan);">PUT    /api/characters/:id/equipment    # Update equipment loadout</div>
+                    <div style="color: var(--primary-cyan);">POST   /api/characters/:id/equipment    # Equip item</div>
+                    <div style="color: var(--primary-cyan);">DELETE /api/characters/:id/equipment/:slot # Unequip item</div>
+                </div>
+            </div>
+
+            <div class="api-section">
+                <h3>Mission System</h3>
+                <div class="endpoint-list">
+                    <div style="color: var(--primary-cyan);">GET    /api/missions/available          # Get available missions</div>
+                    <div style="color: var(--primary-cyan);">POST   /api/missions/launch             # Launch mission</div>
+                    <div style="color: var(--primary-cyan);">GET    /api/missions/active             # Get active missions</div>
+                    <div style="color: var(--primary-cyan);">GET    /api/missions/:id                # Get mission details</div>
+                    <div style="color: var(--primary-cyan);">POST   /api/missions/:id/complete       # Force complete mission</div>
+                    <div style="color: var(--primary-cyan);">GET    /api/missions/:id/progress       # Get real-time progress</div>
+                    <br>
+                    <div style="color: var(--primary-cyan);">GET    /api/affixes/current             # Get current week's affixes</div>
+                    <div style="color: var(--primary-cyan);">GET    /api/affixes/schedule            # Get upcoming affix rotations</div>
+                </div>
+            </div>
+
+            <div class="api-section">
+                <h3>WebSocket Events</h3>
+                
+                <div class="code-block">
+                    <pre><span class="code-comment">// Client → Server</span>
+<span class="code-keyword">interface</span> <span class="code-function">LaunchMissionEvent</span> {
+  type: <span class="code-string">'mission:launch'</span>;
+  missionId: <span class="code-keyword">string</span>;
+  characterId: <span class="code-keyword">string</span>;
+}
+
+<span class="code-comment">// Server → Client</span>
+<span class="code-keyword">interface</span> <span class="code-function">MissionProgressEvent</span> {
+  type: <span class="code-string">'mission:progress'</span>;
+  missionId: <span class="code-keyword">string</span>;
+  percentComplete: <span class="code-keyword">number</span>;
+  estimatedCompletion: <span class="code-keyword">string</span>;
+}
+
+<span class="code-keyword">interface</span> <span class="code-function">MissionCompleteEvent</span> {
+  type: <span class="code-string">'mission:complete'</span>;
+  missionId: <span class="code-keyword">string</span>;
+  outcome: <span class="code-string">'critical'</span> | <span class="code-string">'success'</span> | <span class="code-string">'partial'</span> | <span class="code-string">'failure'</span>;
+  rewards: <span class="code-function">Reward</span>[];
+}</pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Testing Strategy Section -->
+        <div class="card content-section" id="testing">
+            <div class="card-header">
+                <h2 class="card-title">TESTING STRATEGY</h2>
+            </div>
+            <div class="card-accent"></div>
+            
+            <div class="metrics-grid">
+                <div class="metrics-item">
+                    <h4>Unit Testing</h4>
+                    <p style="color: var(--text-normal); font-size: 12px; margin-bottom: var(--spacing-sm);">
+                        <strong>Core Calculation Logic:</strong>
+                    </p>
+                    <ul style="color: var(--text-normal); font-size: 11px; margin: 0; padding-left: 15px;">
+                        <li>Power budget validation algorithms</li>
+                        <li>Mission success probability calculations</li>
+                        <li>Item generation and rarity systems</li>
+                        <li>Elemental damage and status effect calculations</li>
+                    </ul>
+                    <p style="color: var(--text-normal); font-size: 12px; margin-top: var(--spacing-sm);">
+                        <strong>Coverage Targets:</strong> Calculation engines: 100%, API endpoints: 90%, React components: 80%
+                    </p>
+                </div>
+
+                <div class="metrics-item">
+                    <h4>Integration Testing</h4>
+                    <p style="color: var(--text-normal); font-size: 12px; margin-bottom: var(--spacing-sm);">
+                        <strong>Mission Flow Testing:</strong>
+                    </p>
+                    <ul style="color: var(--text-normal); font-size: 11px; margin: 0; padding-left: 15px;">
+                        <li>Complete mission lifecycle from launch to reward collection</li>
+                        <li>Character progression integration</li>
+                        <li>Equipment optimization impact validation</li>
+                        <li>Affix system integration</li>
+                    </ul>
+                </div>
+
+                <div class="metrics-item">
+                    <h4>Performance Testing</h4>
+                    <p style="color: var(--text-normal); font-size: 12px; margin-bottom: var(--spacing-sm);">
+                        <strong>Load Testing Scenarios:</strong>
+                    </p>
+                    <ul style="color: var(--text-normal); font-size: 11px; margin: 0; padding-left: 15px;">
+                        <li>1000+ concurrent users launching missions</li>
+                        <li>Database performance under character optimization load</li>
+                        <li>WebSocket connection scaling for real-time updates</li>
+                        <li>Mission timer accuracy under server load</li>
+                    </ul>
+                </div>
+
+                <div class="metrics-item">
+                    <h4>User Experience Testing</h4>
+                    <p style="color: var(--text-normal); font-size: 12px; margin-bottom: var(--spacing-sm);">
+                        <strong>Playtesting Focus Areas:</strong>
+                    </p>
+                    <ul style="color: var(--text-normal); font-size: 11px; margin: 0; padding-left: 15px;">
+                        <li>New player onboarding completion rates</li>
+                        <li>Equipment optimization understanding</li>
+                        <li>Mission selection decision-making</li>
+                        <li>Weekly affix adaptation behavior</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Deployment Strategy Section -->
+        <div class="card content-section" id="deployment">
+            <div class="card-header">
+                <h2 class="card-title">DEPLOYMENT STRATEGY</h2>
+            </div>
+            <div class="card-accent"></div>
+            
+            <div class="metrics-grid">
+                <div class="metrics-item">
+                    <h4>Infrastructure</h4>
+                    <p style="color: var(--text-normal); font-size: 12px; margin-bottom: var(--spacing-sm);">
+                        <strong>Production Environment:</strong>
+                    </p>
+                    <ul style="color: var(--text-normal); font-size: 11px; margin: 0; padding-left: 15px;">
+                        <li><strong>Cloud Platform:</strong> AWS/GCP for scalability</li>
+                        <li><strong>Container Orchestration:</strong> Kubernetes for service management</li>
+                        <li><strong>Database:</strong> PostgreSQL with read replicas</li>
+                        <li><strong>Caching:</strong> Redis cluster for session and mission state</li>
+                        <li><strong>CDN:</strong> CloudFlare for global performance</li>
+                    </ul>
+                </div>
+
+                <div class="metrics-item">
+                    <h4>CI/CD Pipeline</h4>
+                    <p style="color: var(--text-normal); font-size: 12px; margin-bottom: var(--spacing-sm);">
+                        <strong>Automated Deployment:</strong>
+                    </p>
+                    <ul style="color: var(--text-normal); font-size: 11px; margin: 0; padding-left: 15px;">
+                        <li>GitHub Actions for build and test automation</li>
+                        <li>Automated testing on pull requests</li>
+                        <li>Staging environment for integration testing</li>
+                        <li>Blue-green deployment for zero-downtime releases</li>
+                    </ul>
+                </div>
+
+                <div class="metrics-item">
+                    <h4>Technical Monitoring</h4>
+                    <ul style="color: var(--text-normal); font-size: 11px; margin: 0; padding-left: 15px;">
+                        <li>Application performance monitoring (APM)</li>
+                        <li>Database query performance tracking</li>
+                        <li>WebSocket connection health monitoring</li>
+                        <li>Error tracking and alerting</li>
+                    </ul>
+                </div>
+
+                <div class="metrics-item">
+                    <h4>Player Analytics</h4>
+                    <ul style="color: var(--text-normal); font-size: 11px; margin: 0; padding-left: 15px;">
+                        <li>Mission completion rates by difficulty</li>
+                        <li>Equipment optimization patterns</li>
+                        <li>Weekly affix engagement metrics</li>
+                        <li>Player retention and progression tracking</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Security Considerations Section -->
+        <div class="card content-section" id="security">
+            <div class="card-header">
+                <h2 class="card-title">SECURITY CONSIDERATIONS</h2>
+            </div>
+            <div class="card-accent"></div>
+            
+            <div class="metrics-grid">
+                <div class="metrics-item">
+                    <h4>Authentication & Authorization</h4>
+                    <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 15px;">
+                        <li>JWT-based authentication with refresh tokens</li>
+                        <li>Rate limiting on API endpoints</li>
+                        <li>Input validation and sanitization</li>
+                        <li>CORS configuration for web security</li>
+                    </ul>
+                </div>
+
+                <div class="metrics-item">
+                    <h4>Data Protection</h4>
+                    <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 15px;">
+                        <li>Character data encryption at rest</li>
+                        <li>Secure WebSocket connections (WSS)</li>
+                        <li>Regular security audits and penetration testing</li>
+                        <li>GDPR compliance for EU users</li>
+                    </ul>
+                </div>
+
+                <div class="metrics-item">
+                    <h4>Anti-Cheat Measures</h4>
+                    <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 15px;">
+                        <li>Server-side validation of all character changes</li>
+                        <li>Mission outcome verification</li>
+                        <li>Statistical analysis for impossible progression</li>
+                        <li>Audit logging for suspicious activities</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Success Metrics Section -->
+        <div class="card content-section" id="metrics">
+            <div class="card-header">
+                <h2 class="card-title">SUCCESS METRICS</h2>
+            </div>
+            <div class="card-accent"></div>
+            
+            <div class="metrics-grid">
+                <div class="metrics-item">
+                    <h4>Technical Metrics</h4>
+                    <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 15px;">
+                        <li><strong>Performance:</strong> 95% of requests under 200ms response time</li>
+                        <li><strong>Availability:</strong> 99.9% uptime for mission services</li>
+                        <li><strong>Scalability:</strong> Support 10,000+ concurrent users</li>
+                        <li><strong>Reliability:</strong> Mission timer accuracy within 1 second</li>
+                    </ul>
+                </div>
+
+                <div class="metrics-item">
+                    <h4>Player Engagement Metrics</h4>
+                    <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 15px;">
+                        <li><strong>Onboarding:</strong> 60%+ tutorial completion rate</li>
+                        <li><strong>Retention:</strong> 40%+ 7-day retention rate</li>
+                        <li><strong>Engagement:</strong> 30+ minutes average session length</li>
+                        <li><strong>Progression:</strong> 80%+ of players reach level 20 (first elemental choice)</li>
+                    </ul>
+                </div>
+
+                <div class="metrics-item">
+                    <h4>Business Metrics</h4>
+                    <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 15px;">
+                        <li><strong>User Acquisition:</strong> Organic growth through word-of-mouth</li>
+                        <li><strong>Community:</strong> Active forums and build-sharing community</li>
+                        <li><strong>Content Engagement:</strong> 70%+ players adapt builds to weekly affixes</li>
+                        <li><strong>Long-term Retention:</strong> 20%+ players remain active after 3 months</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <h3>Implementation Priority</h3>
+                <p style="color: var(--text-normal);">
+                    The implementation plan prioritizes rapid iteration and player feedback integration while building 
+                    toward the full vision of Courier's innovative Power Budget System and strategic depth.
+                </p>
+            </div>
+        </div>
+
+        <!-- Document Navigation -->
+        <div class="doc-nav-bottom">
+            <a href="09-technical-implementation.html">← Previous: Technical Implementation</a>
+            <div style="color: var(--text-dim); font-size: 12px; text-align: center;">
+                <strong>NEXT:</strong> <a href="11-web-page-inventory.html" style="color: var(--primary-cyan);">Web Page Inventory</a><br>
+                <span style="color: var(--text-dim);">Complete page structure & function reference</span>
+            </div>
+            <a href="11-web-page-inventory.html">Next: Web Page Inventory →</a>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer style="padding: 20px; text-align: center; font-size: 10px; color: #666; border-top: 1px solid #333; margin-top: 40px;">
+        <a href="../changelog.html" style="color: #666; text-decoration: none; border-bottom: 1px dotted #666;">CHANGELOG</a> • 
+        <a href="index.html" style="color: #666; text-decoration: none; border-bottom: 1px dotted #666;">SPECS</a> • 
+        RELATED: <a href="09-technical-implementation.html" style="color: #666; text-decoration: none;">Technical Implementation</a> • 
+        <a href="11-web-page-inventory.html" style="color: #666; text-decoration: none;">Web Page Inventory</a>
+    </footer>
+
+    <script src="../assets/js/main.js"></script>
+    <script src="../assets/js/navigation.js"></script>
+</body>
+</html>

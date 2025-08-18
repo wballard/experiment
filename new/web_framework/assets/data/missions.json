@@ -1,0 +1,120 @@
+{
+  "patrol": [
+    {
+      "id": "patrol-1",
+      "name": "Sector 7 Reconnaissance",
+      "type": "patrol",
+      "difficulty": "Normal",
+      "duration": "18 minutes",
+      "successRate": 92,
+      "rewards": ["Credits: 450", "XP: 850", "Items: 2-3"],
+      "affixes": ["Frozen"],
+      "description": "Investigate anomalous energy readings in the abandoned industrial sector. Reports indicate possible Void entity presence.",
+      "objectives": [
+        "Scan 8 energy signatures",
+        "Eliminate any hostile entities",
+        "Upload collected data to Command"
+      ]
+    },
+    {
+      "id": "patrol-2", 
+      "name": "Comm Relay Repair",
+      "type": "patrol",
+      "difficulty": "Easy",
+      "duration": "15 minutes",
+      "successRate": 96,
+      "rewards": ["Credits: 320", "XP: 600", "Items: 1-2"],
+      "affixes": [],
+      "description": "Restore communication relay stations knocked offline by recent storm activity. Essential for maintaining sector coverage.",
+      "objectives": [
+        "Repair 3 communication arrays",
+        "Test signal strength",
+        "Establish connection with Command"
+      ]
+    },
+    {
+      "id": "patrol-3",
+      "name": "Mining Platform Defense",
+      "type": "patrol", 
+      "difficulty": "Hard",
+      "duration": "25 minutes",
+      "successRate": 78,
+      "rewards": ["Credits: 680", "XP: 1200", "Items: 3-4"],
+      "affixes": ["Electric", "Scorched"],
+      "description": "Defend automated mining platform from increased Void creature activity. Platform contains valuable quantum materials.",
+      "objectives": [
+        "Eliminate 15+ hostile entities",
+        "Protect mining equipment (>80% integrity)",
+        "Secure quantum material extraction"
+      ]
+    }
+  ],
+  "horde": [
+    {
+      "id": "horde-1",
+      "name": "Void Incursion Alpha",
+      "type": "horde",
+      "difficulty": "Hard",
+      "duration": "65 minutes",
+      "successRate": 71,
+      "rewards": ["Credits: 1450", "XP: 2800", "Items: 5-7"],
+      "affixes": ["Electric", "Frozen"],
+      "description": "Major Void incursion detected in residential district. Massive entity presence requires extended engagement.",
+      "objectives": [
+        "Survive 12 waves of increasing intensity",
+        "Eliminate Void Commander entity",
+        "Evacuate 50+ civilians to safety"
+      ]
+    },
+    {
+      "id": "horde-2",
+      "name": "Swarm Extermination",
+      "type": "horde",
+      "difficulty": "Normal", 
+      "duration": "52 minutes",
+      "successRate": 84,
+      "rewards": ["Credits: 980", "XP: 1900", "Items: 4-5"],
+      "affixes": ["Scorched"],
+      "description": "Eliminate massive swarm infestation in agricultural sector before they spread to populated areas.",
+      "objectives": [
+        "Clear 8 infestation zones",
+        "Destroy Queen entity",
+        "Prevent swarm escape (0 entities)"
+      ]
+    }
+  ],
+  "expedition": [
+    {
+      "id": "expedition-1",
+      "name": "Deep Void Expedition",
+      "type": "expedition",
+      "difficulty": "Extreme",
+      "duration": "3.5 hours",
+      "successRate": 45,
+      "rewards": ["Credits: 3200", "XP: 8500", "Items: 8-12"],
+      "affixes": ["Electric", "Frozen", "Scorched"],
+      "description": "Deep reconnaissance into Void-controlled territory. High risk, maximum reward mission for experienced operatives only.",
+      "objectives": [
+        "Penetrate 15km into Void territory",
+        "Locate and analyze Void nexus",
+        "Extract with critical intelligence data"
+      ]
+    },
+    {
+      "id": "expedition-2",
+      "name": "Ancient Facility Exploration",
+      "type": "expedition",
+      "difficulty": "Hard",
+      "duration": "2.8 hours", 
+      "successRate": 62,
+      "rewards": ["Credits: 2400", "XP: 5200", "Items: 6-8"],
+      "affixes": ["Frozen"],
+      "description": "Explore recently discovered pre-war research facility. Advanced technology and unknown dangers await.",
+      "objectives": [
+        "Map facility layout (100% coverage)",
+        "Recover research data archives",
+        "Neutralize automated defense systems"
+      ]
+    }
+  ]
+}

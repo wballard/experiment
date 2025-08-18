@@ -1,0 +1,312 @@
+<!-- Skills Page Component -->
+<div class="skills-container">
+    <div class="skills-header">
+        <h2>ELEMENTAL SKILLS</h2>
+        <div class="skill-points-info">
+            <span class="points-available">Skill Points: <span id="availablePoints">15</span></span>
+            <span class="points-total">Total: <span id="totalPoints">60</span></span>
+        </div>
+    </div>
+
+    <div class="element-selector">
+        <button class="element-tab active" data-element="fire">🔥 FIRE</button>
+        <button class="element-tab" data-element="ice">❄️ ICE</button>
+        <button class="element-tab" data-element="electric">⚡ ELECTRIC</button>
+        <button class="element-tab" data-element="earth">🌍 EARTH</button>
+        <button class="element-tab" data-element="nature">🌿 NATURE</button>
+    </div>
+
+    <div class="skill-tree-container">
+        <!-- Fire Skill Tree -->
+        <div class="skill-tree" id="fire-tree" style="display: block;">
+            <div class="tier-section">
+                <h3 class="tier-title">TIER 1 - IGNITION FOUNDATION</h3>
+                <div class="skills-row">
+                    <div class="skill-node" data-skill="combustion-mastery" style="grid-column: 1;">
+                        <div class="skill-icon">🔥</div>
+                        <div class="skill-points">0/3</div>
+                    </div>
+                    <div class="skill-node" data-skill="flame-weapon" style="grid-column: 3;">
+                        <div class="skill-icon">⚔️</div>
+                        <div class="skill-points">0/5</div>
+                    </div>
+                    <div class="skill-node" data-skill="heat-resistance" style="grid-column: 5;">
+                        <div class="skill-icon">🛡️</div>
+                        <div class="skill-points">0/2</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tier-section">
+                <h3 class="tier-title">TIER 2 - INFERNO SPECIALIZATION</h3>
+                <div class="skills-row">
+                    <div class="skill-node locked" data-skill="fireball" style="grid-column: 1;">
+                        <div class="skill-connection vertical"></div>
+                        <div class="skill-icon">💥</div>
+                        <div class="skill-points">0/3</div>
+                    </div>
+                    <div class="skill-node locked" data-skill="flame-wall" style="grid-column: 3;">
+                        <div class="skill-connection vertical"></div>
+                        <div class="skill-icon">🧱</div>
+                        <div class="skill-points">0/4</div>
+                    </div>
+                    <div class="skill-node locked" data-skill="burning-ground" style="grid-column: 5;">
+                        <div class="skill-connection vertical"></div>
+                        <div class="skill-icon">🌋</div>
+                        <div class="skill-points">0/3</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tier-section">
+                <h3 class="tier-title">TIER 3 - CONFLAGRATION MASTERY</h3>
+                <div class="skills-row">
+                    <div class="skill-node locked" data-skill="phoenix-surge" style="grid-column: 2;">
+                        <div class="skill-connection vertical"></div>
+                        <div class="skill-icon">🔥</div>
+                        <div class="skill-points">0/5</div>
+                    </div>
+                    <div class="skill-node locked" data-skill="fire-combination" style="grid-column: 4;">
+                        <div class="skill-connection vertical"></div>
+                        <div class="skill-icon">⚡</div>
+                        <div class="skill-points">0/2</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ice Skill Tree -->
+        <div class="skill-tree" id="ice-tree" style="display: none;">
+            <div class="tier-section">
+                <h3 class="tier-title">TIER 1 - FROST FOUNDATION</h3>
+                <div class="skills-row">
+                    <div class="skill-node" data-skill="cryogenic-mastery" style="grid-column: 1;">
+                        <div class="skill-icon">❄️</div>
+                        <div class="skill-points">0/3</div>
+                    </div>
+                    <div class="skill-node" data-skill="frost-weapon" style="grid-column: 3;">
+                        <div class="skill-icon">⚔️</div>
+                        <div class="skill-points">0/5</div>
+                    </div>
+                    <div class="skill-node" data-skill="cold-resistance" style="grid-column: 5;">
+                        <div class="skill-icon">🛡️</div>
+                        <div class="skill-points">0/2</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tier-section">
+                <h3 class="tier-title">TIER 2 - BLIZZARD SPECIALIZATION</h3>
+                <div class="skills-row">
+                    <div class="skill-node locked" data-skill="ice-shard" style="grid-column: 1;">
+                        <div class="skill-connection vertical"></div>
+                        <div class="skill-icon">🧊</div>
+                        <div class="skill-points">0/3</div>
+                    </div>
+                    <div class="skill-node locked" data-skill="ice-barrier" style="grid-column: 3;">
+                        <div class="skill-connection vertical"></div>
+                        <div class="skill-icon">🧱</div>
+                        <div class="skill-points">0/4</div>
+                    </div>
+                    <div class="skill-node locked" data-skill="frozen-zone" style="grid-column: 5;">
+                        <div class="skill-connection vertical"></div>
+                        <div class="skill-icon">🌀</div>
+                        <div class="skill-points">0/3</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tier-section">
+                <h3 class="tier-title">TIER 3 - ABSOLUTE ZERO MASTERY</h3>
+                <div class="skills-row">
+                    <div class="skill-node locked" data-skill="winters-embrace" style="grid-column: 2;">
+                        <div class="skill-connection vertical"></div>
+                        <div class="skill-icon">❄️</div>
+                        <div class="skill-points">0/5</div>
+                    </div>
+                    <div class="skill-node locked" data-skill="ice-combination" style="grid-column: 4;">
+                        <div class="skill-connection vertical"></div>
+                        <div class="skill-icon">⚡</div>
+                        <div class="skill-points">0/2</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Electric Skill Tree -->
+        <div class="skill-tree" id="electric-tree" style="display: none;">
+            <div class="tier-section">
+                <h3 class="tier-title">TIER 1 - CURRENT FOUNDATION</h3>
+                <div class="skills-row">
+                    <div class="skill-node" data-skill="electrical-mastery" style="grid-column: 1;">
+                        <div class="skill-icon">⚡</div>
+                        <div class="skill-points">0/3</div>
+                    </div>
+                    <div class="skill-node" data-skill="shock-weapon" style="grid-column: 3;">
+                        <div class="skill-icon">⚔️</div>
+                        <div class="skill-points">0/5</div>
+                    </div>
+                    <div class="skill-node" data-skill="conductivity" style="grid-column: 5;">
+                        <div class="skill-icon">🛡️</div>
+                        <div class="skill-points">0/2</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tier-section">
+                <h3 class="tier-title">TIER 2 - STORM SPECIALIZATION</h3>
+                <div class="skills-row">
+                    <div class="skill-node locked" data-skill="lightning-bolt" style="grid-column: 1;">
+                        <div class="skill-connection vertical"></div>
+                        <div class="skill-icon">⚡</div>
+                        <div class="skill-points">0/3</div>
+                    </div>
+                    <div class="skill-node locked" data-skill="tesla-coil" style="grid-column: 3;">
+                        <div class="skill-connection vertical"></div>
+                        <div class="skill-icon">🔌</div>
+                        <div class="skill-points">0/4</div>
+                    </div>
+                    <div class="skill-node locked" data-skill="electric-field" style="grid-column: 5;">
+                        <div class="skill-connection vertical"></div>
+                        <div class="skill-icon">⚡</div>
+                        <div class="skill-points">0/3</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tier-section">
+                <h3 class="tier-title">TIER 3 - TEMPEST MASTERY</h3>
+                <div class="skills-row">
+                    <div class="skill-node locked" data-skill="storm-lord" style="grid-column: 2;">
+                        <div class="skill-connection vertical"></div>
+                        <div class="skill-icon">🌩️</div>
+                        <div class="skill-points">0/5</div>
+                    </div>
+                    <div class="skill-node locked" data-skill="electric-combination" style="grid-column: 4;">
+                        <div class="skill-connection vertical"></div>
+                        <div class="skill-icon">⚡</div>
+                        <div class="skill-points">0/2</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Earth Skill Tree -->
+        <div class="skill-tree" id="earth-tree" style="display: none;">
+            <div class="tier-section">
+                <h3 class="tier-title">TIER 1 - STONE FOUNDATION</h3>
+                <div class="skills-row">
+                    <div class="skill-node" data-skill="geological-mastery" style="grid-column: 1;">
+                        <div class="skill-icon">🌍</div>
+                        <div class="skill-points">0/3</div>
+                    </div>
+                    <div class="skill-node" data-skill="stone-weapon" style="grid-column: 3;">
+                        <div class="skill-icon">⚔️</div>
+                        <div class="skill-points">0/5</div>
+                    </div>
+                    <div class="skill-node" data-skill="seismic-stability" style="grid-column: 5;">
+                        <div class="skill-icon">🛡️</div>
+                        <div class="skill-points">0/2</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tier-section">
+                <h3 class="tier-title">TIER 2 - TERRAIN SPECIALIZATION</h3>
+                <div class="skills-row">
+                    <div class="skill-node locked" data-skill="earth-spike" style="grid-column: 1;">
+                        <div class="skill-connection vertical"></div>
+                        <div class="skill-icon">⛰️</div>
+                        <div class="skill-points">0/3</div>
+                    </div>
+                    <div class="skill-node locked" data-skill="stone-wall" style="grid-column: 3;">
+                        <div class="skill-connection vertical"></div>
+                        <div class="skill-icon">🧱</div>
+                        <div class="skill-points">0/4</div>
+                    </div>
+                    <div class="skill-node locked" data-skill="earthquake" style="grid-column: 5;">
+                        <div class="skill-connection vertical"></div>
+                        <div class="skill-icon">🌋</div>
+                        <div class="skill-points">0/3</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tier-section">
+                <h3 class="tier-title">TIER 3 - TECTONIC MASTERY</h3>
+                <div class="skills-row">
+                    <div class="skill-node locked" data-skill="mountains-fury" style="grid-column: 2;">
+                        <div class="skill-connection vertical"></div>
+                        <div class="skill-icon">⛰️</div>
+                        <div class="skill-points">0/5</div>
+                    </div>
+                    <div class="skill-node locked" data-skill="earth-combination" style="grid-column: 4;">
+                        <div class="skill-connection vertical"></div>
+                        <div class="skill-icon">⚡</div>
+                        <div class="skill-points">0/2</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Nature Skill Tree -->
+        <div class="skill-tree" id="nature-tree" style="display: none;">
+            <div class="tier-section">
+                <h3 class="tier-title">TIER 1 - GROWTH FOUNDATION</h3>
+                <div class="skills-row">
+                    <div class="skill-node" data-skill="natural-mastery" style="grid-column: 1;">
+                        <div class="skill-icon">🌿</div>
+                        <div class="skill-points">0/3</div>
+                    </div>
+                    <div class="skill-node" data-skill="living-weapon" style="grid-column: 3;">
+                        <div class="skill-icon">⚔️</div>
+                        <div class="skill-points">0/5</div>
+                    </div>
+                    <div class="skill-node" data-skill="natural-resistance" style="grid-column: 5;">
+                        <div class="skill-icon">🛡️</div>
+                        <div class="skill-points">0/2</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tier-section">
+                <h3 class="tier-title">TIER 2 - VERDANT SPECIALIZATION</h3>
+                <div class="skills-row">
+                    <div class="skill-node locked" data-skill="healing-burst" style="grid-column: 1;">
+                        <div class="skill-connection vertical"></div>
+                        <div class="skill-icon">💚</div>
+                        <div class="skill-points">0/3</div>
+                    </div>
+                    <div class="skill-node locked" data-skill="thorn-barrier" style="grid-column: 3;">
+                        <div class="skill-connection vertical"></div>
+                        <div class="skill-icon">🌹</div>
+                        <div class="skill-points">0/4</div>
+                    </div>
+                    <div class="skill-node locked" data-skill="natures-blessing" style="grid-column: 5;">
+                        <div class="skill-connection vertical"></div>
+                        <div class="skill-icon">✨</div>
+                        <div class="skill-points">0/3</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tier-section">
+                <h3 class="tier-title">TIER 3 - PRIMAL MASTERY</h3>
+                <div class="skills-row">
+                    <div class="skill-node locked" data-skill="world-tree" style="grid-column: 2;">
+                        <div class="skill-connection vertical"></div>
+                        <div class="skill-icon">🌳</div>
+                        <div class="skill-points">0/5</div>
+                    </div>
+                    <div class="skill-node locked" data-skill="nature-combination" style="grid-column: 4;">
+                        <div class="skill-connection vertical"></div>
+                        <div class="skill-icon">⚡</div>
+                        <div class="skill-points">0/2</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<link rel="stylesheet" href="../../assets/css/skills.css">

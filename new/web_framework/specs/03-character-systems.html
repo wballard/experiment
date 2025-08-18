@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Character Systems - Courier Specifications</title>
+    <link rel="stylesheet" href="../assets/css/design-system.css?v=12">
+    <link rel="stylesheet" href="../assets/css/main.css?v=12">
+    <link rel="stylesheet" href="../assets/css/game.css?v=12">
+    <style>
+        .breadcrumb {
+            color: var(--text-dim);
+            font-size: 12px;
+            margin-bottom: var(--spacing-lg);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .breadcrumb a {
+            color: var(--primary-cyan);
+            text-decoration: none;
+        }
+        .breadcrumb a:hover {
+            color: var(--text-bright);
+        }
+        .doc-nav-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: var(--spacing-xl);
+            padding: var(--spacing-lg);
+            background: var(--bg-dark);
+            border: 1px solid var(--border-gray);
+        }
+        .doc-nav-bottom a {
+            color: var(--primary-cyan);
+            text-decoration: none;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border: 1px solid var(--border-gray);
+            background: var(--bg-medium);
+            transition: all 0.3s ease;
+        }
+        .doc-nav-bottom a:hover {
+            border-color: var(--primary-cyan);
+            background: var(--bg-light);
+        }
+        .content-section {
+            margin-bottom: var(--spacing-xl);
+        }
+        .attribute-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--spacing-lg);
+            margin: var(--spacing-lg) 0;
+        }
+        .attribute-card {
+            background: var(--bg-medium);
+            border: 1px solid var(--border-gray);
+            padding: var(--spacing-lg);
+        }
+        .attribute-card h3 {
+            color: var(--primary-cyan);
+            margin-bottom: var(--spacing-md);
+        }
+        .attribute-effects {
+            background: var(--bg-dark);
+            padding: var(--spacing-sm);
+            border: 1px solid var(--border-gray);
+            margin: var(--spacing-sm) 0;
+        }
+        .class-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: var(--spacing-lg);
+            margin: var(--spacing-lg) 0;
+        }
+        .class-card {
+            background: var(--bg-medium);
+            border: 1px solid var(--border-gray);
+            padding: var(--spacing-lg);
+        }
+        .class-card h3 {
+            color: var(--primary-cyan);
+            margin-bottom: var(--spacing-md);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+        .class-icon {
+            font-size: 24px;
+        }
+        .stat-breakdown {
+            background: var(--bg-dark);
+            padding: var(--spacing-sm);
+            border: 1px solid var(--border-gray);
+            margin: var(--spacing-sm) 0;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .progression-table {
+            background: var(--bg-dark);
+            border: 1px solid var(--border-gray);
+            padding: var(--spacing-md);
+            margin: var(--spacing-lg) 0;
+        }
+        .progression-table h4 {
+            color: var(--primary-orange);
+            margin-bottom: var(--spacing-sm);
+        }
+        .milestone-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-md);
+            margin: var(--spacing-lg) 0;
+        }
+        .milestone-item {
+            background: var(--bg-dark);
+            padding: var(--spacing-sm);
+            border: 1px solid var(--border-gray);
+            text-align: center;
+        }
+        .milestone-item h4 {
+            color: var(--primary-orange);
+            margin-bottom: var(--spacing-xs);
+            font-size: 13px;
+        }
+        .toc {
+            background: var(--bg-medium);
+            border: 1px solid var(--border-gray);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+        .toc h3 {
+            color: var(--primary-cyan);
+            margin-bottom: var(--spacing-md);
+        }
+        .toc ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        .toc li {
+            margin-bottom: var(--spacing-sm);
+        }
+        .toc a {
+            color: var(--text-normal);
+            text-decoration: none;
+            font-size: 13px;
+        }
+        .toc a:hover {
+            color: var(--primary-cyan);
+        }
+        .build-example {
+            background: var(--bg-dark);
+            border: 1px solid var(--primary-orange);
+            padding: var(--spacing-md);
+            margin: var(--spacing-md) 0;
+        }
+        .build-example h4 {
+            color: var(--primary-orange);
+            margin-bottom: var(--spacing-sm);
+        }
+        .build-stats {
+            font-family: monospace;
+            font-size: 11px;
+            color: var(--text-normal);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Header -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <div class="nav-logo"></div>
+            <div>
+                <div class="nav-username">COURIER SPECIFICATIONS</div>
+                <div class="nav-level">CHARACTER SYSTEMS</div>
+            </div>
+        </div>
+        <div class="nav-menu">
+            <a href="../game/dashboard.html" class="nav-item">CHARACTER</a>
+            <a href="../inventory.html" class="nav-item">INVENTORY</a>
+            <a href="../missions.html" class="nav-item">MISSIONS</a>
+            <a href="../skills.html" class="nav-item">SKILLS</a>
+            <a href="../build-planner.html" class="nav-item">BUILD PLANNER</a>
+            <a href="../marketplace.html" class="nav-item">MARKET</a>
+            <a href="../crafting.html" class="nav-item">CRAFTING</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="page-container">
+        <div class="breadcrumb">
+            <a href="index.html">SPECS</a> > CHARACTER SYSTEMS
+        </div>
+
+        <div class="page-header">
+            <h1 class="page-title">COURIER - CHARACTER SYSTEMS</h1>
+            <p style="color: var(--text-normal); margin-top: var(--spacing-md);">Progression, Attributes & Classes</p>
+        </div>
+
+        <!-- Table of Contents -->
+        <div class="toc">
+            <h3>📋 TABLE OF CONTENTS</h3>
+            <ul>
+                <li><a href="#character-progression">Character Progression</a></li>
+                <li><a href="#primary-attributes">Primary Attributes (6 Total)</a></li>
+                <li><a href="#character-classes">Character Classes (5 Total)</a></li>
+                <li><a href="#skill-system">Skill System Structure</a></li>
+                <li><a href="#progression-milestones">Progression Milestones</a></li>
+                <li><a href="#attribute-scaling">Attribute Scaling Examples</a></li>
+            </ul>
+        </div>
+
+        <!-- Character Progression Section -->
+        <div class="card content-section" id="character-progression">
+            <div class="card-header">
+                <h2 class="card-title">CHARACTER PROGRESSION</h2>
+            </div>
+            <div class="card-accent"></div>
+            
+            <div class="class-grid">
+                <div class="class-card">
+                    <h3>Level System</h3>
+                    <div class="stat-breakdown">
+                        <div><strong>Base Level Cap:</strong> 60</div>
+                        <div><strong>Paragon Levels:</strong> Infinite post-60 progression</div>
+                        <div style="margin-top: var(--spacing-sm);">
+                            • +1 power budget per paragon level<br>
+                            • Slow but meaningful advancement<br>
+                            • No level cap on paragon progression
+                        </div>
+                    </div>
+                </div>
+
+                <div class="class-card">
+                    <h3>Point Allocation</h3>
+                    <div class="stat-breakdown">
+                        <div><strong>Attribute Points:</strong> 2 per level (120 total at level 60)</div>
+                        <div><strong>Skill Points:</strong> 1 per level (60 total at level 60)</div>
+                        <div><strong>Elemental Unlocks:</strong> Levels 20 and 40</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Primary Attributes Section -->
+        <div class="card content-section" id="primary-attributes">
+            <div class="card-header">
+                <h2 class="card-title">PRIMARY ATTRIBUTES (6 Total)</h2>
+            </div>
+            <div class="card-accent"></div>
+            
+            <p style="color: var(--text-normal); line-height: 1.6; margin-bottom: var(--spacing-lg);">
+                Characters can freely allocate 120 attribute points across 6 attributes. Each point provides multiple benefits to encourage specialization while maintaining flexibility.
+            </p>
+
+            <div class="attribute-grid">
+                <div class="attribute-card">
+                    <h3>1. Vitality - Health & Survivability</h3>
+                    <div class="attribute-effects">
+                        <h4 style="color: var(--primary-orange); margin-bottom: var(--spacing-xs);">Effects per point:</h4>
+                        <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 15px;">
+                            <li>+5 Health</li>
+                            <li>+2 Shield Capacity</li>
+                            <li>+0.1 Health Regeneration per second</li>
+                        </ul>
+                    </div>
+                    <p style="color: var(--text-dim); font-size: 12px; margin-top: var(--spacing-sm);">
+                        <strong>Build Focus:</strong> Tank builds, survivability, team support roles<br>
+                        <strong>Scaling:</strong> Linear scaling encourages heavy investment for tank roles
+                    </p>
+                </div>
+
+                <div class="attribute-card">
+                    <h3>2. Precision - Critical & Accuracy</h3>
+                    <div class="attribute-effects">
+                        <h4 style="color: var(--primary-orange); margin-bottom: var(--spacing-xs);">Effects per point:</h4>
+                        <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 15px;">
+                            <li>+0.5% Critical Chance (cap: 50%)</li>
+                            <li>+1% Accuracy</li>
+                            <li>+0.2% Critical Damage</li>
+                        </ul>
+                    </div>
+                    <p style="color: var(--text-dim); font-size: 12px; margin-top: var(--spacing-sm);">
+                        <strong>Build Focus:</strong> Sniper builds, burst damage, weakspot exploitation<br>
+                        <strong>Scaling:</strong> Diminishing returns on crit chance encourage balanced investment
+                    </p>
+                </div>
+
+                <div class="attribute-card">
+                    <h3>3. Potency - Raw Damage & Status Effects</h3>
+                    <div class="attribute-effects">
+                        <h4 style="color: var(--primary-orange); margin-bottom: var(--spacing-xs);">Effects per point:</h4>
+                        <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 15px;">
+                            <li>+0.8% All Damage</li>
+                            <li>+0.3% Status Effect Chance</li>
+                            <li>+0.1% Status Effect Duration</li>
+                        </ul>
+                    </div>
+                    <p style="color: var(--text-dim); font-size: 12px; margin-top: var(--spacing-sm);">
+                        <strong>Build Focus:</strong> Elemental builds, status effect specialists, general damage<br>
+                        <strong>Scaling:</strong> Universal damage scaling makes this valuable for all builds
+                    </p>
+                </div>
+
+                <div class="attribute-card">
+                    <h3>4. Alacrity - Speed & Agility</h3>
+                    <div class="attribute-effects">
+                        <h4 style="color: var(--primary-orange); margin-bottom: var(--spacing-xs);">Effects per point:</h4>
+                        <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 15px;">
+                            <li>+0.4% Attack Speed</li>
+                            <li>+0.4% Movement Speed</li>
+                            <li>+0.2% Cooldown Reduction</li>
+                        </ul>
+                    </div>
+                    <p style="color: var(--text-dim); font-size: 12px; margin-top: var(--spacing-sm);">
+                        <strong>Build Focus:</strong> Mobile builds, rapid-fire weapons, ability-focused gameplay<br>
+                        <strong>Scaling:</strong> Multiple speed bonuses encourage hit-and-run tactics
+                    </p>
+                </div>
+
+                <div class="attribute-card">
+                    <h3>5. Capacity - Resources & Abilities</h3>
+                    <div class="attribute-effects">
+                        <h4 style="color: var(--primary-orange); margin-bottom: var(--spacing-xs);">Effects per point:</h4>
+                        <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 15px;">
+                            <li>+3 Maximum Energy</li>
+                            <li>+0.5% Ability Damage</li>
+                            <li>+0.2% Energy Regeneration per second</li>
+                        </ul>
+                    </div>
+                    <p style="color: var(--text-dim); font-size: 12px; margin-top: var(--spacing-sm);">
+                        <strong>Build Focus:</strong> Caster builds, elemental specialists, support roles<br>
+                        <strong>Scaling:</strong> Energy scaling enables ability-heavy playstyles
+                    </p>
+                </div>
+
+                <div class="attribute-card">
+                    <h3>6. Defense - Defense & Resistances</h3>
+                    <div class="attribute-effects">
+                        <h4 style="color: var(--primary-orange); margin-bottom: var(--spacing-xs);">Effects per point:</h4>
+                        <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 15px;">
+                            <li>+0.2% All Resistance (cap: 75%)</li>
+                            <li>+1 Armor</li>
+                            <li>+0.1% Damage Reduction</li>
+                        </ul>
+                    </div>
+                    <p style="color: var(--text-dim); font-size: 12px; margin-top: var(--spacing-sm);">
+                        <strong>Build Focus:</strong> Tank builds, affix resistance, defensive specialists<br>
+                        <strong>Scaling:</strong> Broad defensive bonuses complement Vitality investment
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Character Classes Section -->
+        <div class="card content-section" id="character-classes">
+            <div class="card-header">
+                <h2 class="card-title">CHARACTER CLASSES (5 Total)</h2>
+            </div>
+            <div class="card-accent"></div>
+            
+            <p style="color: var(--text-normal); line-height: 1.6; margin-bottom: var(--spacing-lg);">
+                Each class has different starting attribute distributions and unique mechanics, but all can access the same elemental trees and equipment types.
+            </p>
+
+            <div class="class-grid">
+                <div class="class-card">
+                    <h3><span class="class-icon">🛡️</span> Sentinel - Heavy Combat Tank</h3>
+                    
+                    <div class="stat-breakdown">
+                        <h4 style="color: var(--primary-orange); margin-bottom: var(--spacing-xs);">Starting Attribute Focus:</h4>
+                        <div>• Vitality: 15 points</div>
+                        <div>• Defense: 12 points</div>
+                        <div>• Potency: 8 points</div>
+                        <div>• Others: 3-4 points each</div>
+                    </div>
+
+                    <p style="color: var(--text-normal); font-size: 13px; margin: var(--spacing-sm) 0;">
+                        <strong>Core Identity:</strong> Front-line fighter with energy shields and defensive capabilities
+                    </p>
+
+                    <div class="attribute-effects">
+                        <h4 style="color: var(--primary-orange); margin-bottom: var(--spacing-xs);">Starting Bonuses:</h4>
+                        <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 15px;">
+                            <li><strong>Health:</strong> 150 + (Vitality × 5) = 225 base</li>
+                            <li><strong>Shields:</strong> 100 + (Vitality × 2) = 130 base</li>
+                            <li><strong>Unique Ability:</strong> Shield Overcharge (temporary damage immunity)</li>
+                        </ul>
+                    </div>
+
+                    <p style="color: var(--text-dim); font-size: 12px;">
+                        <strong>Playstyle:</strong> Absorb damage for team, control enemy positioning, provide defensive buffs<br>
+                        <strong>Elemental Access:</strong> Any 2 adjacent elements at levels 20 and 40
+                    </p>
+                </div>
+
+                <div class="class-card">
+                    <h3><span class="class-icon">🔧</span> Technomancer - Tech Support Specialist</h3>
+                    
+                    <div class="stat-breakdown">
+                        <h4 style="color: var(--primary-orange); margin-bottom: var(--spacing-xs);">Starting Attribute Focus:</h4>
+                        <div>• Capacity: 15 points</div>
+                        <div>• Precision: 10 points</div>
+                        <div>• Vitality: 8 points</div>
+                        <div>• Others: 4-5 points each</div>
+                    </div>
+
+                    <p style="color: var(--text-normal); font-size: 13px; margin: var(--spacing-sm) 0;">
+                        <strong>Core Identity:</strong> Technology-enhanced support with drone companions
+                    </p>
+
+                    <div class="attribute-effects">
+                        <h4 style="color: var(--primary-orange); margin-bottom: var(--spacing-xs);">Starting Bonuses:</h4>
+                        <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 15px;">
+                            <li><strong>Energy:</strong> 120 + (Capacity × 3) = 165 base</li>
+                            <li><strong>Health:</strong> 100 + (Vitality × 5) = 140 base</li>
+                            <li><strong>Unique Ability:</strong> Drone Companion System</li>
+                        </ul>
+                    </div>
+
+                    <p style="color: var(--text-dim); font-size: 12px;">
+                        <strong>Playstyle:</strong> Support team with technology, provide buffs and utility, indirect combat<br>
+                        <strong>Elemental Access:</strong> Any 2 adjacent elements at levels 20 and 40<br>
+                        <strong>Elemental Synergy:</strong> Drone attacks benefit from elemental infusion
+                    </p>
+                </div>
+
+                <div class="class-card">
+                    <h3><span class="class-icon">🥷</span> Infiltrator - Stealth Assassin</h3>
+                    
+                    <div class="stat-breakdown">
+                        <h4 style="color: var(--primary-orange); margin-bottom: var(--spacing-xs);">Starting Attribute Focus:</h4>
+                        <div>• Alacrity: 15 points</div>
+                        <div>• Precision: 12 points</div>
+                        <div>• Potency: 8 points</div>
+                        <div>• Others: 3-4 points each</div>
+                    </div>
+
+                    <p style="color: var(--text-normal); font-size: 13px; margin: var(--spacing-sm) 0;">
+                        <strong>Core Identity:</strong> Fast, precise strikes from concealment
+                    </p>
+
+                    <div class="attribute-effects">
+                        <h4 style="color: var(--primary-orange); margin-bottom: var(--spacing-xs);">Starting Bonuses:</h4>
+                        <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 15px;">
+                            <li><strong>Movement Speed:</strong> 110% + (Alacrity × 0.4%) = 116% base</li>
+                            <li><strong>Critical Chance:</strong> 5% + (Precision × 0.5%) = 11% base</li>
+                            <li><strong>Unique Ability:</strong> Active Camouflage System</li>
+                        </ul>
+                    </div>
+
+                    <p style="color: var(--text-dim); font-size: 12px;">
+                        <strong>Playstyle:</strong> Hit-and-run tactics, critical strike focus, stealth positioning<br>
+                        <strong>Elemental Access:</strong> Any 2 adjacent elements at levels 20 and 40<br>
+                        <strong>Stealth Interaction:</strong> Some elemental effects may compromise stealth
+                    </p>
+                </div>
+
+                <div class="class-card">
+                    <h3><span class="class-icon">⚔️</span> Vanguard - Balanced Combatant</h3>
+                    
+                    <div class="stat-breakdown">
+                        <h4 style="color: var(--primary-orange); margin-bottom: var(--spacing-xs);">Starting Attribute Focus:</h4>
+                        <div>• Balanced: 20 points in each attribute</div>
+                    </div>
+
+                    <p style="color: var(--text-normal); font-size: 13px; margin: var(--spacing-sm) 0;">
+                        <strong>Core Identity:</strong> Adaptable fighter with versatile combat options
+                    </p>
+
+                    <div class="attribute-effects">
+                        <h4 style="color: var(--primary-orange); margin-bottom: var(--spacing-xs);">Starting Bonuses:</h4>
+                        <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 15px;">
+                            <li><strong>Balanced Stats:</strong> No specialization penalties</li>
+                            <li><strong>Adaptability Points:</strong> 10 (can temporarily boost any attribute)</li>
+                            <li><strong>Unique Ability:</strong> Stance System (Assault/Defense/Utility modes)</li>
+                        </ul>
+                    </div>
+
+                    <p style="color: var(--text-dim); font-size: 12px;">
+                        <strong>Playstyle:</strong> Flexible approach, can fill multiple roles, adapts to situations<br>
+                        <strong>Elemental Access:</strong> Any 2 adjacent elements at levels 20 and 40<br>
+                        <strong>Stance Integration:</strong> Stances can modify elemental effect intensity
+                    </p>
+                </div>
+
+                <div class="class-card">
+                    <h3><span class="class-icon">🎯</span> Engineer - Ranged Control Specialist</h3>
+                    
+                    <div class="stat-breakdown">
+                        <h4 style="color: var(--primary-orange); margin-bottom: var(--spacing-xs);">Starting Attribute Focus:</h4>
+                        <div>• Precision: 15 points</div>
+                        <div>• Capacity: 10 points</div>
+                        <div>• Alacrity: 8 points</div>
+                        <div>• Others: 4-5 points each</div>
+                    </div>
+
+                    <p style="color: var(--text-normal); font-size: 13px; margin: var(--spacing-sm) 0;">
+                        <strong>Core Identity:</strong> Long-range combat with environmental manipulation
+                    </p>
+
+                    <div class="attribute-effects">
+                        <h4 style="color: var(--primary-orange); margin-bottom: var(--spacing-xs);">Starting Bonuses:</h4>
+                        <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 15px;">
+                            <li><strong>Weapon Accuracy:</strong> 95% + (Precision × 1%) = 110% base</li>
+                            <li><strong>Ability Damage:</strong> +10% + (Capacity × 0.5%) = +15% base</li>
+                            <li><strong>Unique Ability:</strong> Deployable Cover and Barriers</li>
+                        </ul>
+                    </div>
+
+                    <p style="color: var(--text-dim); font-size: 12px;">
+                        <strong>Playstyle:</strong> Long-range engagement, battlefield control, precision damage<br>
+                        <strong>Elemental Access:</strong> Any 2 adjacent elements at levels 20 and 40<br>
+                        <strong>Deployable Interaction:</strong> Barriers can conduct/block elemental effects
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Skill System Section -->
+        <div class="card content-section" id="skill-system">
+            <div class="card-header">
+                <h2 class="card-title">SKILL SYSTEM STRUCTURE</h2>
+            </div>
+            <div class="card-accent"></div>
+            
+            <div class="class-grid">
+                <div class="class-card">
+                    <h3>Skill Point Distribution</h3>
+                    <div class="stat-breakdown">
+                        <div><strong>Total Available:</strong> 60 skill points (1 per level)</div>
+                        <div style="margin-top: var(--spacing-sm);">
+                            <strong>Allocation Options:</strong><br>
+                            • <strong>Class Tree:</strong> Core class abilities and passives<br>
+                            • <strong>Elemental Trees:</strong> Unlocked based on element choices<br>
+                            • <strong>Player Choice:</strong> Freely allocate between available trees
+                        </div>
+                    </div>
+                </div>
+
+                <div class="class-card">
+                    <h3>Class Tree Focus</h3>
+                    <p style="color: var(--text-normal); font-size: 13px; margin-bottom: var(--spacing-md);">Each class has access to a skill tree focused on their core identity:</p>
+                    <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 15px;">
+                        <li><strong>Passive Bonuses:</strong> Enhance class strengths</li>
+                        <li><strong>Active Abilities:</strong> Signature moves and ultimate abilities</li>
+                        <li><strong>Synergy Nodes:</strong> Improve interaction with elemental systems</li>
+                        <li><strong>Utility Skills:</strong> Quality of life and team support abilities</li>
+                    </ul>
+                    <p style="color: var(--text-dim); font-size: 11px; margin-top: var(--spacing-sm); font-style: italic;">
+                        *Note: Detailed class skill trees require additional development phase
+                    </p>
+                </div>
+
+                <div class="class-card">
+                    <h3>Elemental Tree Access</h3>
+                    <div class="milestone-grid">
+                        <div class="milestone-item">
+                            <h4>Level 20</h4>
+                            <p style="color: var(--text-normal); font-size: 11px;">Choose first element (unlocks that elemental skill tree)</p>
+                        </div>
+                        <div class="milestone-item">
+                            <h4>Level 40</h4>
+                            <p style="color: var(--text-normal); font-size: 11px;">Choose second element (must be adjacent, unlocks second tree)</p>
+                        </div>
+                        <div class="milestone-item">
+                            <h4>Point Investment</h4>
+                            <p style="color: var(--text-normal); font-size: 11px;">Can invest in both elemental trees simultaneously</p>
+                        </div>
+                        <div class="milestone-item">
+                            <h4>Skill Depth</h4>
+                            <p style="color: var(--text-normal); font-size: 11px;">Each elemental tree offers 4 tiers of progression</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="class-card">
+                    <h3>Strategic Considerations</h3>
+                    <div class="build-example">
+                        <h4>Focused Build (Deep Specialization)</h4>
+                        <div class="build-stats">
+                            • Heavy class tree investment (40+ points)<br>
+                            • Moderate elemental investment (20 points total)<br>
+                            • Maximum class identity expression
+                        </div>
+                    </div>
+                    <div class="build-example">
+                        <h4>Hybrid Build (Elemental Focus)</h4>
+                        <div class="build-stats">
+                            • Moderate class tree investment (20-30 points)<br>
+                            • Heavy elemental investment (30-40 points)<br>
+                            • Maximum elemental synergy
+                        </div>
+                    </div>
+                    <div class="build-example">
+                        <h4>Balanced Build</h4>
+                        <div class="build-stats">
+                            • Even distribution across all available trees<br>
+                            • Flexible but may lack specialization power<br>
+                            • Good for experimenting with combinations
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progression Milestones Section -->
+        <div class="card content-section" id="progression-milestones">
+            <div class="card-header">
+                <h2 class="card-title">PROGRESSION MILESTONES</h2>
+            </div>
+            <div class="card-accent"></div>
+            
+            <div class="milestone-grid">
+                <div class="milestone-item">
+                    <h4>Early Game (Levels 1-19)</h4>
+                    <div style="color: var(--text-normal); font-size: 11px;">
+                        <strong>Focus:</strong> Learn class mechanics and basic combat<br>
+                        <strong>Goals:</strong> Experiment with weapons and basic builds<br>
+                        <strong>Constraints:</strong> Single skill tree (class only)
+                    </div>
+                </div>
+                <div class="milestone-item">
+                    <h4>Mid Game (Levels 20-39)</h4>
+                    <div style="color: var(--text-normal); font-size: 11px;">
+                        <strong>Focus:</strong> First elemental specialization<br>
+                        <strong>Goals:</strong> Develop elemental synergies with class abilities<br>
+                        <strong>Milestone:</strong> Level 20 elemental unlock significantly changes gameplay
+                    </div>
+                </div>
+                <div class="milestone-item">
+                    <h4>Advanced Game (Levels 40-59)</h4>
+                    <div style="color: var(--text-normal); font-size: 11px;">
+                        <strong>Focus:</strong> Dual elemental mastery<br>
+                        <strong>Goals:</strong> Perfect elemental combinations and min-max builds<br>
+                        <strong>Milestone:</strong> Level 40 second elemental unlock enables complex strategies
+                    </div>
+                </div>
+                <div class="milestone-item">
+                    <h4>End Game (Level 60+)</h4>
+                    <div style="color: var(--text-normal); font-size: 11px;">
+                        <strong>Focus:</strong> Paragon progression and perfect optimization<br>
+                        <strong>Goals:</strong> Incremental power increases through paragon levels<br>
+                        <strong>Progression:</strong> +1 power budget per paragon level for gear flexibility
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Attribute Scaling Examples Section -->
+        <div class="card content-section" id="attribute-scaling">
+            <div class="card-header">
+                <h2 class="card-title">ATTRIBUTE SCALING EXAMPLES</h2>
+            </div>
+            <div class="card-accent"></div>
+            
+            <div class="class-grid">
+                <div class="class-card">
+                    <h3>Tank Build (Sentinel)</h3>
+                    <div class="build-example">
+                        <h4>Investment: Vitality 50, Defense 40, Potency 20, Others 10</h4>
+                        <div class="build-stats">
+                            • Health: 150 + (65×5) = 475<br>
+                            • Shields: 100 + (65×2) = 230<br>
+                            • All Resistance: (52×0.2%) = 10.4%<br>
+                            • Damage: (30×0.8%) = 24%
+                        </div>
+                    </div>
+                </div>
+
+                <div class="class-card">
+                    <h3>Glass Cannon (Engineer)</h3>
+                    <div class="build-example">
+                        <h4>Investment: Precision 45, Potency 35, Capacity 25, Others 15</h4>
+                        <div class="build-stats">
+                            • Critical Chance: (60×0.5%) = 30%<br>
+                            • Critical Damage: (60×0.2%) = 12%<br>
+                            • All Damage: (50×0.8%) = 40%<br>
+                            • Energy: Base + (40×3) = +120
+                        </div>
+                    </div>
+                </div>
+
+                <div class="class-card">
+                    <h3>Speed Build (Infiltrator)</h3>
+                    <div class="build-example">
+                        <h4>Investment: Alacrity 50, Precision 35, Potency 25, Others 10</h4>
+                        <div class="build-stats">
+                            • Attack Speed: (65×0.4%) = 26%<br>
+                            • Movement Speed: (65×0.4%) = 26%<br>
+                            • Cooldown Reduction: (65×0.2%) = 13%<br>
+                            • Critical Chance: (50×0.5%) = 25%
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="progression-table">
+                <h4>System Foundation</h4>
+                <p style="color: var(--text-normal); font-size: 13px;">
+                    The attribute system provides clear progression paths while maintaining flexibility for hybrid builds and experimentation.
+                </p>
+            </div>
+        </div>
+
+        <!-- Document Navigation -->
+        <div class="doc-nav-bottom">
+            <a href="02-player-onboarding.html">← Previous: Player Onboarding</a>
+            <div style="color: var(--text-dim); font-size: 12px; text-align: center;">
+                <strong>NEXT:</strong> <a href="04-elemental-skills.html" style="color: var(--primary-cyan);">Elemental Skills</a><br>
+                <span style="color: var(--text-dim);">Skill Trees & Ability Progression</span>
+            </div>
+            <a href="04-elemental-skills.html">Next: Elemental Skills →</a>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer style="padding: 20px; text-align: center; font-size: 10px; color: #666; border-top: 1px solid #333; margin-top: 40px;">
+        <a href="../changelog.html" style="color: #666; text-decoration: none; border-bottom: 1px dotted #666;">CHANGELOG</a> • 
+        <a href="index.html" style="color: #666; text-decoration: none; border-bottom: 1px dotted #666;">SPECS</a> • 
+        RELATED: <a href="04-elemental-skills.html" style="color: #666; text-decoration: none;">Elemental Skills</a> • 
+        <a href="06-equipment-itemization.html" style="color: #666; text-decoration: none;">Equipment & Itemization</a> • 
+        <a href="02-player-onboarding.html" style="color: #666; text-decoration: none;">Player Onboarding</a>
+    </footer>
+
+    <script src="../assets/js/main.js"></script>
+    <script src="../assets/js/navigation.js"></script>
+</body>
+</html>

@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory - Courier</title>
+    <link rel="stylesheet" href="assets/css/design-system.css?v=11">
+    <link rel="stylesheet" href="assets/css/main.css?v=11">
+    <link rel="stylesheet" href="assets/css/inventory.css?v=11">
+    <style>
+        /* Power Budget Progress Bar Styles */
+        .power-progress-bar {
+            width: 100% !important;
+            height: 12px !important;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.8) 0%, rgba(20, 20, 20, 0.8) 100%) !important;
+            border: 1px solid #444 !important;
+            border-radius: 6px !important;
+            overflow: hidden !important;
+            position: relative !important;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+            display: block !important;
+        }
+
+        .power-progress-fill {
+            height: 100% !important;
+            background: linear-gradient(135deg, #ff6600 0%, #ffaa44 50%, #ff8800 100%) !important;
+            transition: width 0.8s ease !important;
+            border-radius: 4px !important;
+            position: relative !important;
+            box-shadow: 0 0 8px rgba(255, 102, 0, 0.4) !important;
+            display: block !important;
+        }
+
+        .power-progress-fill::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 40%;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(255, 255, 255, 0.3) 50%, 
+                transparent 100%);
+            border-radius: 4px 4px 0 0;
+        }
+
+        .power-progress-fill.over-capacity {
+            background: linear-gradient(135deg, #ff0000 0%, #ff4444 50%, #cc0000 100%) !important;
+            box-shadow: 0 0 12px rgba(255, 0, 0, 0.6) !important;
+            animation: power-warning 1.5s ease-in-out infinite;
+        }
+
+        @keyframes power-warning {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Header -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <div class="nav-logo"></div>
+            <div>
+                <div class="nav-username">AGENT RECON-7</div>
+                <div class="nav-level">LEVEL 60 • PARAGON 40</div>
+            </div>
+        </div>
+        <div class="nav-menu">
+            <a href="game/dashboard.html" class="nav-item">CHARACTER</a>
+            <a href="inventory.html" class="nav-item active">INVENTORY</a>
+            <a href="missions.html" class="nav-item">MISSIONS</a>
+            <a href="skills.html" class="nav-item">SKILLS</a>
+            <a href="loadouts.html" class="nav-item">LOADOUTS</a>
+            <a href="build-planner.html" class="nav-item">BUILD PLANNER</a>
+            <a href="marketplace.html" class="nav-item">MARKET</a>
+            <a href="crafting.html" class="nav-item">CRAFTING</a>
+        </div>
+    </nav>
+
+    <!-- Inventory Content -->
+    <div class="page-container">
+        <div class="page-header">
+            <h1 class="page-title">EQUIPMENT INVENTORY</h1>
+        </div>
+            
+        <div class="layout-sidebar">
+            <!-- Power Budget Sidebar -->
+            <div class="sidebar">
+                <div class="card-header">
+                    <h2 class="card-title">Power Budget</h2>
+                </div>
+                <div class="card-accent"></div>
+                
+                <div style="margin-bottom: var(--spacing-lg);">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: var(--spacing-xs);">
+                        <span class="text-dim">USED</span>
+                        <span class="text-cyan"><span class="power-used">0</span> / <span class="power-max">2140</span></span>
+                    </div>
+                    <div class="power-progress-bar">
+                        <div class="power-progress-fill" style="width: 0%;"></div>
+                    </div>
+                </div>
+
+                <!-- Equipment Slots -->
+                <div class="card-header">
+                    <h3 class="card-title">Equipped Items</h3>
+                </div>
+                <div class="card-accent"></div>
+                
+                <div class="equipment-grid">
+                    <div class="equipment-slot" data-slot="primary">
+                        <div class="equipment-placeholder">Primary</div>
+                    </div>
+                    <div class="equipment-slot" data-slot="secondary">
+                        <div class="equipment-placeholder">Secondary</div>
+                    </div>
+                    <div class="equipment-slot" data-slot="head">
+                        <div class="equipment-placeholder">Head</div>
+                    </div>
+                    <div class="equipment-slot" data-slot="shoulders">
+                        <div class="equipment-placeholder">Shoulders</div>
+                    </div>
+                    <div class="equipment-slot" data-slot="chest">
+                        <div class="equipment-placeholder">Chest</div>
+                    </div>
+                    <div class="equipment-slot" data-slot="gloves">
+                        <div class="equipment-placeholder">Gloves</div>
+                    </div>
+                    <div class="equipment-slot" data-slot="legs">
+                        <div class="equipment-placeholder">Legs</div>
+                    </div>
+                    <div class="equipment-slot" data-slot="back">
+                        <div class="equipment-placeholder">Back</div>
+                    </div>
+                    <div class="equipment-slot" data-slot="bracers">
+                        <div class="equipment-placeholder">Bracers</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Main Inventory -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Available Equipment</h2>
+                    <button class="btn btn-primary">SORT BY POWER</button>
+                </div>
+                <div class="card-accent"></div>
+                
+                <!-- Inventory Filters -->
+                <div class="inventory-filters" style="padding: var(--spacing-md); border-bottom: 1px solid var(--border-gray);">
+                    <div style="display: flex; gap: var(--spacing-sm); align-items: center;">
+                        <span style="font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px;">FILTER:</span>
+                        <button class="filter-btn active" data-filter="all">ALL</button>
+                        <button class="filter-btn" data-filter="weapon">WEAPON</button>
+                        <button class="filter-btn" data-filter="armor">ARMOR</button>
+                        <button class="filter-btn" data-filter="slot">SLOT</button>
+                    </div>
+                    <div id="slot-filters" class="slot-filters" style="display: none; margin-top: var(--spacing-sm); margin-left: 45px;">
+                        <select class="slot-dropdown" id="slot-dropdown" style="
+                            padding: 6px 12px; 
+                            background-color: var(--bg-medium); 
+                            border: 1px solid var(--border-gray); 
+                            color: var(--text-normal); 
+                            font-size: 10px; 
+                            text-transform: uppercase; 
+                            letter-spacing: 1px;
+                        ">
+                            <option value="">SELECT SLOT</option>
+                            <option value="primary">PRIMARY</option>
+                            <option value="secondary">SECONDARY</option>
+                            <option value="head">HEAD</option>
+                            <option value="shoulders">SHOULDERS</option>
+                            <option value="chest">CHEST</option>
+                            <option value="gloves">GLOVES</option>
+                            <option value="legs">LEGS</option>
+                            <option value="back">BACK</option>
+                            <option value="bracers">BRACERS</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="inventory-grid" id="inventory-grid">
+                    <div class="page-loader">
+                        <p>Loading inventory items...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer style="padding: 20px; text-align: center; font-size: 10px; color: #666; border-top: 1px solid #333; margin-top: 40px;">
+        <a href="changelog.html" style="color: #666; text-decoration: none; border-bottom: 1px dotted #666;">CHANGELOG</a> • 
+        <a href="specs/index.html" style="color: #666; text-decoration: none; border-bottom: 1px dotted #666;">SPECS</a> • 
+        <a href="tuning/index.html" style="color: #666; text-decoration: none; border-bottom: 1px dotted #666;">TUNING</a> • 
+        LAST UPDATED: 2025-08-16 11:52 PM CST • FILTERS: [ALL] [WEAPON] [ARMOR] [SLOT] with dropdown selection • SPECS: Complete documentation system
+    </footer>
+
+    <!-- Initialize global game state -->
+    <script>
+        window.CourierGame = {
+            data: {
+                items: {},
+                playerLevel: 60,
+                paragonLevel: 40,
+                equippedItems: {
+                    primary: null,
+                    secondary: null,
+                    head: null,
+                    shoulders: null,
+                    chest: null,
+                    gloves: null,
+                    legs: null,
+                    back: null,
+                    bracers: null
+                }
+            }
+        };
+    </script>
+    <script src="assets/js/main.js"></script>
+    <script src="assets/js/tooltips.js"></script>
+    <script src="assets/js/inventory.js"></script>
+    <script>
+        // Initialize inventory directly
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('Standalone inventory page loaded');
+            if (window.InventorySystem) {
+                window.InventorySystem.init();
+            }
+            
+            // Debug and force icon sizes after everything loads
+            setTimeout(() => {
+                console.log('=== DEBUGGING INVENTORY ===');
+                
+                // Check if items are loaded
+                const inventoryItems = document.querySelectorAll('.inventory-item');
+                console.log('Inventory items found:', inventoryItems.length);
+                
+                // Check equipment slots
+                const equipmentSlots = document.querySelectorAll('.equipment-slot');
+                console.log('Equipment slots found:', equipmentSlots.length);
+                
+                // Check filter system
+                console.log('InventorySystem.allItems:', window.InventorySystem?.allItems?.length || 'undefined');
+                console.log('Sample items:', window.InventorySystem?.allItems?.slice(0, 3));
+                console.log('Current filter:', window.InventorySystem?.currentFilter);
+                
+                // Check filter buttons
+                const filterBtns = document.querySelectorAll('.filter-btn');
+                console.log('Filter buttons found:', filterBtns.length);
+                filterBtns.forEach((btn, i) => {
+                    console.log(`Filter button ${i}: ${btn.textContent} - active: ${btn.classList.contains('active')}`);
+                });
+                
+                // Check all icons
+                const icons = document.querySelectorAll('.item-icon, .equipment-slot-icon, .equipped-item .item-icon');
+                console.log('Total icons found:', icons.length);
+                
+                // Force 56x56 pixel icons
+                icons.forEach((icon, index) => {
+                    const computedStyle = window.getComputedStyle(icon);
+                    console.log(`Icon ${index}: width=${computedStyle.width}, height=${computedStyle.height}, content="${icon.textContent || icon.innerHTML}"`);
+                    
+                    // Force 56x56 pixel sizing
+                    icon.style.width = '56px';
+                    icon.style.height = '56px';
+                    icon.style.fontSize = '32px';
+                    icon.style.lineHeight = '1';
+                    icon.style.display = 'flex';
+                    icon.style.alignItems = 'center';
+                    icon.style.justifyContent = 'center';
+                    icon.style.flexShrink = '0';
+                    icon.style.border = '1px solid red'; // Temporary debug border
+                });
+                
+                console.log('=== END DEBUG ===');
+                
+                // Add manual test functions to window for console testing
+                window.testFilters = {
+                    testWeapon: () => {
+                        console.log('Manual test: weapon filter');
+                        if (window.InventorySystem) {
+                            window.InventorySystem.setMainFilter('weapon');
+                        }
+                    },
+                    testArmor: () => {
+                        console.log('Manual test: armor filter');
+                        if (window.InventorySystem) {
+                            window.InventorySystem.setMainFilter('armor');
+                        }
+                    },
+                    testAll: () => {
+                        console.log('Manual test: all filter');
+                        if (window.InventorySystem) {
+                            window.InventorySystem.setMainFilter('all');
+                        }
+                    },
+                    showItems: () => {
+                        console.log('All items:', window.InventorySystem?.allItems);
+                        console.log('Current filter:', window.InventorySystem?.currentFilter);
+                    }
+                };
+                
+                console.log('=== TEST FUNCTIONS AVAILABLE ===');
+                console.log('Use these in console: testFilters.testWeapon(), testFilters.testArmor(), testFilters.showItems()');
+                
+                // Test manual filter trigger
+                setTimeout(() => {
+                    console.log('=== TESTING MANUAL FILTER ===');
+                    if (window.InventorySystem && window.InventorySystem.setMainFilter) {
+                        console.log('Testing weapon filter...');
+                        window.InventorySystem.setMainFilter('weapon');
+                    } else {
+                        console.log('InventorySystem filter methods not available');
+                    }
+                }, 3000);
+                
+            }, 2000);
+        });
+    </script>
+</body>
+</html>

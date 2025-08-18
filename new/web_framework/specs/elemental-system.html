@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elemental System - Courier Specifications</title>
+    <link rel="stylesheet" href="../assets/css/design-system.css?v=13">
+    <link rel="stylesheet" href="../assets/css/main.css?v=13">
+    <link rel="stylesheet" href="../assets/css/game.css?v=13">
+    <style>
+        .breadcrumb {
+            color: var(--text-dim);
+            font-size: 12px;
+            margin-bottom: var(--spacing-lg);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .breadcrumb a {
+            color: var(--primary-cyan);
+            text-decoration: none;
+        }
+        .breadcrumb a:hover {
+            color: var(--text-bright);
+        }
+        .doc-nav-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: var(--spacing-xl);
+            padding: var(--spacing-lg);
+            background: var(--bg-dark);
+            border: 1px solid var(--border-gray);
+        }
+        .doc-nav-bottom a {
+            color: var(--primary-cyan);
+            text-decoration: none;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border: 1px solid var(--border-gray);
+            background: var(--bg-medium);
+            transition: all 0.3s ease;
+        }
+        .doc-nav-bottom a:hover {
+            border-color: var(--primary-cyan);
+            background: var(--bg-light);
+        }
+        .content-section {
+            margin-bottom: var(--spacing-xl);
+        }
+        .highlight-box {
+            background: var(--bg-dark);
+            border: 1px solid var(--primary-orange);
+            padding: var(--spacing-lg);
+            margin: var(--spacing-lg) 0;
+        }
+        .highlight-box h3 {
+            color: var(--primary-orange);
+            margin-bottom: var(--spacing-md);
+        }
+        .skill-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--spacing-lg);
+            margin: var(--spacing-lg) 0;
+        }
+        .skill-card {
+            background: var(--bg-medium);
+            border: 1px solid var(--border-gray);
+            padding: var(--spacing-lg);
+            transition: all 0.3s ease;
+        }
+        .skill-card:hover {
+            border-color: var(--primary-cyan);
+            background: var(--bg-light);
+        }
+        .skill-card h3 {
+            color: var(--primary-cyan);
+            margin-bottom: var(--spacing-md);
+            font-size: 16px;
+        }
+        .skill-card h4 {
+            color: var(--primary-orange);
+            margin-bottom: var(--spacing-sm);
+            font-size: 14px;
+        }
+        .tier-section {
+            background: var(--bg-dark);
+            border: 1px solid var(--primary-cyan);
+            padding: var(--spacing-lg);
+            margin: var(--spacing-xl) 0;
+        }
+        .tier-section h3 {
+            color: var(--primary-cyan);
+            margin-bottom: var(--spacing-lg);
+            text-align: center;
+            font-size: 20px;
+            text-transform: uppercase;
+        }
+        .build-path {
+            background: var(--bg-medium);
+            border: 1px solid var(--border-gray);
+            padding: var(--spacing-md);
+            margin: var(--spacing-sm) 0;
+        }
+        .build-path h4 {
+            color: var(--primary-orange);
+            margin-bottom: var(--spacing-sm);
+        }
+        .toc {
+            background: var(--bg-medium);
+            border: 1px solid var(--border-gray);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+        .toc h3 {
+            color: var(--primary-cyan);
+            margin-bottom: var(--spacing-md);
+        }
+        .toc ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        .toc li {
+            margin-bottom: var(--spacing-sm);
+        }
+        .toc a {
+            color: var(--text-normal);
+            text-decoration: none;
+            font-size: 13px;
+        }
+        .toc a:hover {
+            color: var(--primary-cyan);
+        }
+        .damage-modifier {
+            background: var(--bg-dark);
+            border: 1px solid var(--primary-cyan);
+            padding: var(--spacing-md);
+            margin: var(--spacing-md) 0;
+            font-family: monospace;
+        }
+        .damage-modifier h4 {
+            color: var(--primary-cyan);
+            margin-bottom: var(--spacing-sm);
+        }
+        .mechanics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--spacing-md);
+            margin: var(--spacing-lg) 0;
+        }
+        .mechanics-item {
+            background: var(--bg-dark);
+            padding: var(--spacing-md);
+            border: 1px solid var(--border-gray);
+        }
+        .mechanics-item h4 {
+            color: var(--primary-orange);
+            margin-bottom: var(--spacing-sm);
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Header -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <div class="nav-logo"></div>
+            <div>
+                <div class="nav-username">COURIER SPECIFICATIONS</div>
+                <div class="nav-level">ELEMENTAL SYSTEM</div>
+            </div>
+        </div>
+        <div class="nav-menu">
+            <a href="../game/dashboard.html" class="nav-item">CHARACTER</a>
+            <a href="../inventory.html" class="nav-item">INVENTORY</a>
+            <a href="../missions.html" class="nav-item">MISSIONS</a>
+            <a href="../skills.html" class="nav-item">SKILLS</a>
+            <a href="../build-planner.html" class="nav-item">BUILD PLANNER</a>
+            <a href="../marketplace.html" class="nav-item">MARKET</a>
+            <a href="../crafting.html" class="nav-item">CRAFTING</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="page-container">
+        <div class="breadcrumb">
+            <a href="index.html">SPECS</a> > ELEMENTAL SYSTEM
+        </div>
+
+        <div class="page-header">
+            <h1 class="page-title">ELEMENTAL SYSTEM</h1>
+            <p style="color: var(--text-normal); margin-top: var(--spacing-md);">Primary Element Mechanics & Ice Elemental Tree</p>
+        </div>
+
+        <!-- Table of Contents -->
+        <div class="toc">
+            <h3>📋 TABLE OF CONTENTS</h3>
+            <ul>
+                <li><a href="#damage-modifiers">Primary Element Damage Modifiers</a></li>
+                <li><a href="#ice-tree">Ice Elemental Tree</a></li>
+                <li><a href="#freeze-mechanics">Freeze Mechanics Details</a></li>
+                <li><a href="#build-paths">Build Paths</a></li>
+                <li><a href="#gear-synergies">Synergies with Gear</a></li>
+                <li><a href="#pvp-considerations">PvP Considerations</a></li>
+            </ul>
+        </div>
+
+        <!-- Primary Element Damage Modifiers Section -->
+        <div class="card content-section" id="damage-modifiers">
+            <div class="card-header">
+                <h2 class="card-title">PRIMARY ELEMENT DAMAGE MODIFIERS</h2>
+            </div>
+            <div class="card-accent"></div>
+            
+            <div class="damage-modifier">
+                <h4>"+X% Damage as Y Element"</h4>
+                <p style="color: var(--text-normal); font-size: 13px;">
+                    Takes whatever damage would have occurred and adds X% as element Y damage. 
+                    Example: 100 physical damage + "25% Damage as Ice" = 100 physical + 25 ice damage.
+                </p>
+            </div>
+
+            <div class="damage-modifier">
+                <h4>"+X Y Damage"</h4>
+                <p style="color: var(--text-normal); font-size: 13px;">
+                    Fixed addition to the damage of the attack as elemental damage type Y.
+                    Example: "+10 Ice Damage" adds 10 ice damage to each hit.
+                </p>
+            </div>
+
+            <div class="damage-modifier">
+                <h4>"+X% Y Damage"</h4>
+                <p style="color: var(--text-normal); font-size: 13px;">
+                    Modifies existing damage of the matching elemental type.
+                    Example: "+100% Ice Damage" doubles existing ice damage.
+                </p>
+            </div>
+
+            <div class="highlight-box">
+                <h3>Universal Rules</h3>
+                <ul style="color: var(--text-normal); margin: 0; padding-left: 20px;">
+                    <li><strong>Resistances still work:</strong> Enemy resistances affect elemental damage normally</li>
+                    <li><strong>Status effects build up:</strong> All elemental damage contributes to status buildup</li>
+                    <li><strong>Calculation order:</strong> Base damage → elemental conversion → resistance → status buildup</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Ice Elemental Tree Section -->
+        <div class="card content-section" id="ice-tree">
+            <div class="card-header">
+                <h2 class="card-title">❄️ ICE ELEMENTAL TREE - COMPLETE DESIGN</h2>
+            </div>
+            <div class="card-accent"></div>
+            
+            <div class="highlight-box">
+                <h3>Overview</h3>
+                <p style="color: var(--text-normal); margin-bottom: var(--spacing-md);">
+                    The Ice tree focuses on crowd control through freeze buildup, defensive capabilities, and burst damage through shatter mechanics. 
+                    All Ice damage applies Freeze buildup, with enemies becoming Frozen at 100% buildup.
+                </p>
+
+                <h4 style="color: var(--primary-cyan); margin-bottom: var(--spacing-sm);">Core Mechanic: Freeze Buildup</h4>
+                <ul style="color: var(--text-normal); margin: 0; padding-left: 20px;">
+                    <li><strong>All Ice damage</strong> applies Freeze buildup (fixed amount per damage, can be accelerated with modifiers)</li>
+                    <li><strong>At 100% Freeze:</strong> Enemy becomes Frozen (immobilized) for 2 seconds base</li>
+                    <li><strong>Frozen enemies</strong> can be Shattered for massive damage</li>
+                    <li><strong>Freeze decays</strong> at 20% per second when not taking Ice damage</li>
+                    <li><strong>Movement reduction:</strong> 1% per 1% Freeze buildup (50% Freeze = 50% slow)</li>
+                </ul>
+            </div>
+
+            <!-- Tier 1 Skills -->
+            <div class="tier-section">
+                <h3>Tier 1 Skills (0 Points Required)</h3>
+                
+                <div class="skill-grid">
+                    <div class="skill-card">
+                        <h3>Frost Rounds (Active Ability)</h3>
+                        <p style="color: var(--text-normal); font-size: 13px; margin-bottom: var(--spacing-md);">
+                            Enhance your weapons with ice, adding frost damage and freeze buildup to all shots
+                        </p>
+                        <div class="mechanics-grid">
+                            <div class="mechanics-item">
+                                <h4>Base Stats</h4>
+                                <p style="color: var(--text-normal); font-size: 12px;">
+                                    Duration: 10s<br>
+                                    Cooldown: 15s<br>
+                                    Energy: 30<br>
+                                    Effect: +50 Ice damage, 3% freeze buildup
+                                </p>
+                            </div>
+                            <div class="mechanics-item">
+                                <h4>Max Rank (5)</h4>
+                                <p style="color: var(--text-normal); font-size: 12px;">
+                                    +150 Ice damage per shot<br>
+                                    8% freeze buildup<br>
+                                    Penetrating rounds
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="skill-card">
+                        <h3>Ice Spike (Active Ability)</h3>
+                        <p style="color: var(--text-normal); font-size: 13px; margin-bottom: var(--spacing-md);">
+                            Launch a fast ice projectile that pierces enemies and leaves frozen ground
+                        </p>
+                        <div class="mechanics-grid">
+                            <div class="mechanics-item">
+                                <h4>Base Stats</h4>
+                                <p style="color: var(--text-normal); font-size: 12px;">
+                                    Cooldown: 8s<br>
+                                    Energy: 40<br>
+                                    Damage: 300 Ice<br>
+                                    Freeze: 30% direct, 10%/s ground
+                                </p>
+                            </div>
+                            <div class="mechanics-item">
+                                <h4>Max Rank (5)</h4>
+                                <p style="color: var(--text-normal); font-size: 12px;">
+                                    +400 damage<br>
+                                    Unlimited pierce<br>
+                                    Frozen ground spreads on death
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="skill-card">
+                        <h3>Frozen Resolve (Passive)</h3>
+                        <p style="color: var(--text-normal); font-size: 13px; margin-bottom: var(--spacing-md);">
+                            Gain Ice Resistance and reduce freeze buildup taken
+                        </p>
+                        <div class="mechanics-item">
+                            <h4>Progression</h4>
+                            <p style="color: var(--text-normal); font-size: 12px;">
+                                Rank 1: +10% Ice Resistance<br>
+                                Rank 5: +50% Ice Resistance, immune to freeze from enemies 5+ levels below
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="skill-card">
+                        <h3>Flash Freeze (Passive)</h3>
+                        <p style="color: var(--text-normal); font-size: 13px; margin-bottom: var(--spacing-md);">
+                            Your critical strikes apply bonus freeze buildup
+                        </p>
+                        <div class="mechanics-item">
+                            <h4>Progression</h4>
+                            <p style="color: var(--text-normal); font-size: 12px;">
+                                Base: +10% freeze buildup on crits<br>
+                                Max Rank: +30% freeze buildup, critical kills spread freeze
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tier 2 Skills -->
+            <div class="tier-section">
+                <h3>Tier 2 Skills (5 Points Required)</h3>
+                
+                <div class="skill-grid">
+                    <div class="skill-card">
+                        <h3>Cryo Shield (Active Ability)</h3>
+                        <p style="color: var(--text-normal); font-size: 13px; margin-bottom: var(--spacing-md);">
+                            Surround yourself with protective ice that damages and freezes attackers
+                        </p>
+                        <div class="mechanics-grid">
+                            <div class="mechanics-item">
+                                <h4>Base Stats</h4>
+                                <p style="color: var(--text-normal); font-size: 12px;">
+                                    Duration: 8s<br>
+                                    Cooldown: 20s<br>
+                                    Shield: 200% max health<br>
+                                    Reflect: 50 Ice damage, 5% freeze
+                                </p>
+                            </div>
+                            <div class="mechanics-item">
+                                <h4>Max Rank (5)</h4>
+                                <p style="color: var(--text-normal); font-size: 12px;">
+                                    +200% shield health<br>
+                                    +50 reflection damage<br>
+                                    Explodes on expiry for AoE freeze
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="skill-card">
+                        <h3>Blizzard (Active Ability)</h3>
+                        <p style="color: var(--text-normal); font-size: 13px; margin-bottom: var(--spacing-md);">
+                            Create a persistent ice storm that follows your crosshair
+                        </p>
+                        <div class="mechanics-grid">
+                            <div class="mechanics-item">
+                                <h4>Base Stats</h4>
+                                <p style="color: var(--text-normal); font-size: 12px;">
+                                    Duration: 8s<br>
+                                    Cooldown: 25s<br>
+                                    Radius: 10m<br>
+                                    DPS: 100 Ice, 8% freeze/s
+                                </p>
+                            </div>
+                            <div class="mechanics-item">
+                                <h4>Max Rank (5)</h4>
+                                <p style="color: var(--text-normal); font-size: 12px;">
+                                    +100 damage per second<br>
+                                    20% freeze per second<br>
+                                    Leaves frozen ground
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tier 3 Skills -->
+            <div class="tier-section">
+                <h3>Tier 3 Skills (10 Points Required)</h3>
+                
+                <div class="skill-grid">
+                    <div class="skill-card">
+                        <h3>Absolute Zero (Ultimate Ability)</h3>
+                        <p style="color: var(--text-normal); font-size: 13px; margin-bottom: var(--spacing-md);">
+                            Unleash a massive freeze nova, instantly applying heavy freeze to all nearby enemies
+                        </p>
+                        <div class="mechanics-item">
+                            <h4>Ultimate Stats</h4>
+                            <p style="color: var(--text-normal); font-size: 12px;">
+                                Cooldown: 90s • Energy: 100 • Radius: 15m<br>
+                                Instant: 80% freeze buildup • Damage: 500 Ice<br>
+                                Special: Freeze immunity + 50% movement speed for 3s
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="skill-card">
+                        <h3>Avalanche (Ultimate Ability)</h3>
+                        <p style="color: var(--text-normal); font-size: 13px; margin-bottom: var(--spacing-md);">
+                            Call down a devastating ice avalanche that rolls forward, growing larger
+                        </p>
+                        <div class="mechanics-item">
+                            <h4>Ultimate Stats</h4>
+                            <p style="color: var(--text-normal); font-size: 12px;">
+                                Cooldown: 90s • Energy: 100 • Range: 30m<br>
+                                Width: 5m → 15m • Damage: 300 Ice per hit<br>
+                                Special: Frozen enemies take 3x damage and shatter
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tier 4 Capstone -->
+            <div class="tier-section">
+                <h3>Tier 4 Skills (15 Points Required)</h3>
+                
+                <div class="skill-card">
+                    <h3>Cryogenic Master (Capstone Passive)</h3>
+                    <p style="color: var(--text-normal); font-size: 13px; margin-bottom: var(--spacing-md);">
+                        Become the ultimate master of Ice and Freeze
+                    </p>
+                    <div class="highlight-box">
+                        <h3>Master Effects</h3>
+                        <ul style="color: var(--text-normal); margin: 0; padding-left: 20px;">
+                            <li>+100% Ice Potency</li>
+                            <li>+50% Ice Resistance</li>
+                            <li>All Ice abilities ignore 50% of enemy Ice Resistance</li>
+                            <li>+50% freeze buildup rate on all Ice damage</li>
+                            <li>Freeze decay reduced to 10% per second (from 20%)</li>
+                            <li>Frozen duration +2 seconds</li>
+                            <li>Shatters deal 100% more damage and guarantee freeze nearby enemies</li>
+                            <li>Your freeze cannot be cleansed by enemies</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Build Paths Section -->
+        <div class="card content-section" id="build-paths">
+            <div class="card-header">
+                <h2 class="card-title">BUILD PATHS</h2>
+            </div>
+            <div class="card-accent"></div>
+            
+            <div class="skill-grid">
+                <div class="build-path">
+                    <h4>1. Gunslinger Frost</h4>
+                    <p style="color: var(--text-normal); font-size: 13px; margin-bottom: var(--spacing-sm);">
+                        <strong>Focus:</strong> Weapon enhancement with Frost Rounds
+                    </p>
+                    <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 20px;">
+                        <li><strong>Priority:</strong> Frost Rounds → Flash Freeze → Glacial Empowerment → Avalanche</li>
+                        <li><strong>Playstyle:</strong> Rapid fire freeze buildup with enhanced weapons</li>
+                        <li><strong>Stats:</strong> Attack Speed > Ice Damage > Crit Chance</li>
+                    </ul>
+                </div>
+
+                <div class="build-path">
+                    <h4>2. Shatter Burst</h4>
+                    <p style="color: var(--text-normal); font-size: 13px; margin-bottom: var(--spacing-sm);">
+                        <strong>Focus:</strong> Maximize freeze into shatter combos
+                    </p>
+                    <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 20px;">
+                        <li><strong>Priority:</strong> Ice Spike → Shatter Expert → Absolute Zero → Cryogenic Master</li>
+                        <li><strong>Playstyle:</strong> Burst freeze enemies then detonate</li>
+                        <li><strong>Stats:</strong> Ice Potency > Freeze Buildup > Crit Chance</li>
+                    </ul>
+                </div>
+
+                <div class="build-path">
+                    <h4>3. Defensive Controller</h4>
+                    <p style="color: var(--text-normal); font-size: 13px; margin-bottom: var(--spacing-sm);">
+                        <strong>Focus:</strong> Tank build with area control
+                    </p>
+                    <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 20px;">
+                        <li><strong>Priority:</strong> Cryo Shield → Blizzard → Frozen Resolve → Permafrost Mastery</li>
+                        <li><strong>Playstyle:</strong> Control space while being hard to kill</li>
+                        <li><strong>Stats:</strong> Health > Ice Resistance > Cooldown Reduction</li>
+                    </ul>
+                </div>
+
+                <div class="build-path">
+                    <h4>4. Ability Spammer</h4>
+                    <p style="color: var(--text-normal); font-size: 13px; margin-bottom: var(--spacing-sm);">
+                        <strong>Focus:</strong> Constant ability usage with all 4 actives
+                    </p>
+                    <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 20px;">
+                        <li><strong>Priority:</strong> All active abilities → Icy Veins → Superconductor</li>
+                        <li><strong>Playstyle:</strong> Rotate through abilities for constant freeze</li>
+                        <li><strong>Stats:</strong> Cooldown Reduction > Energy > Ice Potency</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gear Synergies Section -->
+        <div class="card content-section" id="gear-synergies">
+            <div class="card-header">
+                <h2 class="card-title">SYNERGIES WITH GEAR</h2>
+            </div>
+            <div class="card-accent"></div>
+            
+            <div class="mechanics-grid">
+                <div class="mechanics-item">
+                    <h4>Recommended Legendary Effects</h4>
+                    <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 15px;">
+                        <li>"Your freeze buildup cannot decay"</li>
+                        <li>"Frozen enemies take +X% freeze buildup (can exceed 100%)"</li>
+                        <li>"Shattering an enemy resets all cooldowns"</li>
+                        <li>"Gain 1% damage per 10% freeze on any enemy"</li>
+                    </ul>
+                </div>
+                <div class="mechanics-item">
+                    <h4>Recommended Mythic Perks</h4>
+                    <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 15px;">
+                        <li>"All damage applies 10% freeze buildup"</li>
+                        <li>"Enemies at 50%+ freeze take all damage as Ice"</li>
+                        <li>"Your shatters instantly freeze all enemies on screen"</li>
+                    </ul>
+                </div>
+                <div class="mechanics-item">
+                    <h4>Stat Priorities</h4>
+                    <ol style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 15px;">
+                        <li><strong>Primary:</strong> Ice Potency, Freeze Buildup Rate</li>
+                        <li><strong>Secondary:</strong> Crit Chance, Attack Speed</li>
+                        <li><strong>Defensive:</strong> Ice Resistance, Freeze Resistance</li>
+                        <li><strong>Utility:</strong> Frozen Duration, Status Effect Power</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+
+        <!-- PvP Considerations Section -->
+        <div class="card content-section" id="pvp-considerations">
+            <div class="card-header">
+                <h2 class="card-title">PVP CONSIDERATIONS</h2>
+            </div>
+            <div class="card-accent"></div>
+            
+            <div class="highlight-box">
+                <h3>Adjustments vs Players</h3>
+                <ul style="color: var(--text-normal); margin: 0; padding-left: 20px;">
+                    <li>Freeze buildup capped at 50% from single ability</li>
+                    <li>Frozen duration: 1 second (instead of 2)</li>
+                    <li>Freeze decay: 40% per second (instead of 20%)</li>
+                    <li>Shatter damage capped at 30% of player max health</li>
+                    <li>Players gain 2 second freeze immunity after being frozen</li>
+                </ul>
+            </div>
+
+            <div class="mechanics-grid">
+                <div class="mechanics-item">
+                    <h4>PvP Strategies</h4>
+                    <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 15px;">
+                        <li>Focus on repeated hits for buildup rather than one-shots</li>
+                        <li>Use terrain to control freeze decay timing</li>
+                        <li>Coordinate with teammates for shatter setups</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Document Navigation -->
+        <div class="doc-nav-bottom">
+            <a href="04-elemental-combat.html">← Previous: Elemental Combat</a>
+            <div style="color: var(--text-dim); font-size: 12px; text-align: center;">
+                <strong>NEXT:</strong> <a href="05-equipment-itemization.html" style="color: var(--primary-cyan);">Equipment & Itemization</a><br>
+                <span style="color: var(--text-dim);">Power Budget system & equipment structure</span>
+            </div>
+            <a href="05-equipment-itemization.html">Next: Equipment & Itemization →</a>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer style="padding: 20px; text-align: center; font-size: 10px; color: #666; border-top: 1px solid #333; margin-top: 40px;">
+        <a href="../changelog.html" style="color: #666; text-decoration: none; border-bottom: 1px dotted #666;">CHANGELOG</a> • 
+        <a href="index.html" style="color: #666; text-decoration: none; border-bottom: 1px dotted #666;">SPECS</a> • 
+        RELATED: <a href="04-elemental-combat.html" style="color: #666; text-decoration: none;">Elemental Combat</a> • 
+        <a href="04-elemental-skills.html" style="color: #666; text-decoration: none;">Elemental Skills</a>
+    </footer>
+
+    <script src="../assets/js/main.js"></script>
+    <script src="../assets/js/navigation.js"></script>
+</body>
+</html>

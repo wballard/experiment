@@ -1,0 +1,953 @@
+{
+  "class": {
+    "dead-eye": {
+      "name": "Dead Eye",
+      "description": "Enhanced critical hit chance through precise aim and steady hands.",
+      "maxPoints": 3,
+      "tier": 1,
+      "requirements": "None",
+      "effects": [
+        "+5% base critical hit chance",
+        "+10% base critical hit chance", 
+        "+15% base critical hit chance"
+      ]
+    },
+    "quick-hands": {
+      "name": "Quick Hands", 
+      "description": "Faster reload speed and weapon handling through muscle memory.",
+      "maxPoints": 3,
+      "tier": 1,
+      "requirements": "None",
+      "effects": [
+        "+10% reload speed, +5% weapon swap speed",
+        "+20% reload speed, +10% weapon swap speed",
+        "+30% reload speed, +15% weapon swap speed"
+      ]
+    },
+    "lucky-charm": {
+      "name": "Lucky Charm",
+      "description": "Fortune favors the bold - chance to conserve ammunition.",
+      "maxPoints": 2,
+      "tier": 1,
+      "requirements": "None", 
+      "effects": [
+        "5% chance to not consume ammo on shot",
+        "10% chance to not consume ammo on shot"
+      ]
+    },
+    "handgun-specialist": {
+      "name": "Handgun Specialist",
+      "description": "Master of precision sidearms with enhanced control and accuracy.",
+      "maxPoints": 2,
+      "tier": 2,
+      "requirements": "Dead Eye (1 point)",
+      "effects": [
+        "Handgun shots have no recoil and +25% accuracy while moving",
+        "Handgun headshots refund 1 bullet to magazine"
+      ]
+    },
+    "sniper-specialist": {
+      "name": "Sniper Specialist", 
+      "description": "Long-range precision shooting with devastating opening shots.",
+      "maxPoints": 2,
+      "tier": 2,
+      "requirements": "Dead Eye (1 point)",
+      "effects": [
+        "First shot from cover deals 200% damage",
+        "Sniper shots have 25% chance to pierce through enemies"
+      ]
+    },
+    "shotgun-specialist": {
+      "name": "Shotgun Specialist",
+      "description": "Close-quarters combat expertise with spread weapons.",
+      "maxPoints": 2, 
+      "tier": 2,
+      "requirements": "Quick Hands (1 point)",
+      "effects": [
+        "Shotgun pellets have tighter spread and +2 pellets",
+        "Point-blank shots have 50% chance to knock back enemies"
+      ]
+    },
+    "steady-aim": {
+      "name": "Steady Aim",
+      "description": "Improved accuracy and effective range through breathing control.",
+      "maxPoints": 3,
+      "tier": 2, 
+      "requirements": "Quick Hands (1 point)",
+      "effects": [
+        "+8% accuracy and +10% optimal range",
+        "+16% accuracy and +20% optimal range", 
+        "+24% accuracy and +30% optimal range"
+      ]
+    },
+    "hair-trigger": {
+      "name": "Hair Trigger",
+      "description": "Lightning-fast reflexes increase fire rate while reducing recoil.",
+      "maxPoints": 3,
+      "tier": 2,
+      "requirements": "Lucky Charm (1 point)", 
+      "effects": [
+        "+7% fire rate and -5% recoil",
+        "+14% fire rate and -10% recoil",
+        "+21% fire rate and -15% recoil"
+      ]
+    },
+    "gunslinger-focus": {
+      "name": "Gunslinger Focus",
+      "description": "Active ability: Channel focus for enhanced critical chance.",
+      "maxPoints": 2,
+      "tier": 2,
+      "requirements": "Lucky Charm (1 point)",
+      "effects": [
+        "Next 3 shots have +50% critical chance (25s cooldown)",
+        "Next 5 shots have +75% critical chance and pierce armor (25s cooldown)"
+      ]
+    },
+    "ricochet-roulette": {
+      "name": "Ricochet Roulette",
+      "description": "Gambler's path: Shots bounce unpredictably for chain damage.",
+      "maxPoints": 5,
+      "tier": 3,
+      "requirements": "Handgun Specialist (1 point)",
+      "effects": [
+        "Next 3 shots have 50% chance to ricochet (20s cooldown)",
+        "Next 4 shots have 60% chance to ricochet (20s cooldown)",
+        "Next 5 shots have 70% chance to ricochet (20s cooldown)",
+        "Next 6 shots have 80% chance to ricochet (20s cooldown)",
+        "Next 7 shots have 90% chance to ricochet (20s cooldown)"
+      ]
+    },
+    "fan-hammer": {
+      "name": "Fan the Hammer",
+      "description": "Gunslinger's path: Rapid-fire technique for overwhelming firepower.",
+      "maxPoints": 5,
+      "tier": 3,
+      "requirements": "Sniper Specialist (1 point) and Shotgun Specialist (1 point)",
+      "effects": [
+        "Fire 3 shots at 150% fire rate (25s cooldown)",
+        "Fire 4 shots at 175% fire rate (25s cooldown)",
+        "Fire 5 shots at 200% fire rate (25s cooldown)", 
+        "Fire 6 shots at 225% fire rate (25s cooldown)",
+        "Fire 6 shots at 250% fire rate (25s cooldown)"
+      ]
+    },
+    "mark-death": {
+      "name": "Mark for Death",
+      "description": "Schemer's path: Mark targets for enhanced damage vulnerability.",
+      "maxPoints": 5,
+      "tier": 3,
+      "requirements": "Shotgun Specialist (1 point) and Steady Aim (1 point)",
+      "effects": [
+        "Mark target for +10% damage for 5 seconds (15s cooldown)",
+        "Mark target for +15% damage for 6 seconds (15s cooldown)",
+        "Mark target for +20% damage for 7 seconds (15s cooldown)",
+        "Mark target for +25% damage for 8 seconds (15s cooldown)",
+        "Mark target for +30% damage for 10 seconds (15s cooldown)"
+      ]
+    },
+    "run-gun": {
+      "name": "Run & Gun",
+      "description": "Mobile combat expertise with enhanced accuracy while moving.",
+      "maxPoints": 4,
+      "tier": 3,
+      "requirements": "Steady Aim (1 point)",
+      "effects": [
+        "+10% accuracy while sliding or jumping",
+        "+20% accuracy while sliding or jumping",
+        "+30% accuracy while sliding or jumping", 
+        "+40% accuracy while sliding or jumping"
+      ]
+    },
+    "quick-draw": {
+      "name": "Quick Draw",
+      "description": "Lightning-fast weapon transitions with damage bonus.",
+      "maxPoints": 3,
+      "tier": 3,
+      "requirements": "Hair Trigger (1 point)",
+      "effects": [
+        "First shot after weapon swap deals +50% damage",
+        "First shot after weapon swap deals +75% damage",
+        "First shot after weapon swap deals +100% damage"
+      ]
+    },
+    "lucky-streak": {
+      "name": "Lucky Streak", 
+      "description": "Fortune builds momentum - kills may reset ability cooldowns.",
+      "maxPoints": 4,
+      "tier": 3,
+      "requirements": "Gunslinger Focus (1 point)",
+      "effects": [
+        "Each kill gives 5% chance for no ability cooldown",
+        "Each kill gives 10% chance for no ability cooldown",
+        "Each kill gives 15% chance for no ability cooldown",
+        "Each kill gives 20% chance for no ability cooldown"
+      ]
+    },
+    "all-in": {
+      "name": "All In",
+      "description": "Gambler's ultimate risk - massive damage or complete miss.",
+      "maxPoints": 4,
+      "tier": 4,
+      "requirements": "Ricochet Roulette (1 point)",
+      "effects": [
+        "Next shot has 25% chance for 500% damage (or miss) (35s cooldown)",
+        "Next shot has 40% chance for 500% damage (or miss) (35s cooldown)",
+        "Next shot has 55% chance for 500% damage (or miss) (35s cooldown)",
+        "Next shot has 70% chance for 500% damage (or miss) (35s cooldown)"
+      ]
+    },
+    "bullet-time": {
+      "name": "Bullet Time",
+      "description": "Gunslinger's focus - slow time to line up perfect shots.",
+      "maxPoints": 4,
+      "tier": 4,
+      "requirements": "Fan the Hammer (1 point)",
+      "effects": [
+        "Slow time by 25% for 2 seconds (40s cooldown)",
+        "Slow time by 35% for 2.5 seconds (40s cooldown)",
+        "Slow time by 45% for 3 seconds (40s cooldown)",
+        "Slow time by 50% for 3 seconds (40s cooldown)"
+      ]
+    },
+    "explosive-rounds": {
+      "name": "Explosive Rounds",
+      "description": "Schemer's preparation - critical hits create explosive damage.",
+      "maxPoints": 4,
+      "tier": 4,
+      "requirements": "Mark for Death (1 point)",
+      "effects": [
+        "Crits have 10% chance to explode (3m radius)",
+        "Crits have 20% chance to explode (3m radius)",
+        "Crits have 30% chance to explode (3m radius)",
+        "Crits have 40% chance to explode (3m radius)"
+      ]
+    },
+    "desperado": {
+      "name": "Desperado",
+      "description": "Adrenaline builds with danger - more enemies means faster shooting.",
+      "maxPoints": 4,
+      "tier": 4,
+      "requirements": "Run & Gun (1 point)",
+      "effects": [
+        "+5% fire rate per enemy in sight (max 100%)",
+        "+10% fire rate per enemy in sight (max 100%)",
+        "+15% fire rate per enemy in sight (max 100%)",
+        "+20% fire rate per enemy in sight (max 100%)"
+      ]
+    },
+    "vanish": {
+      "name": "Vanish",
+      "description": "Schemer's escape - brief invisibility with guaranteed critical hit.",
+      "maxPoints": 4,
+      "tier": 4,
+      "requirements": "Quick Draw (1 point)",
+      "effects": [
+        "Invisible for 0.5 seconds, next shot crits (35s cooldown)",
+        "Invisible for 0.75 seconds, next shot crits (35s cooldown)",
+        "Invisible for 1 second, next shot crits (35s cooldown)",
+        "Invisible for 1.25 seconds, next shot crits (35s cooldown)"
+      ]
+    },
+    "roll-dice": {
+      "name": "Roll the Dice",
+      "description": "Gambler's luck - random chance for double damage on any shot.",
+      "maxPoints": 3,
+      "tier": 4,
+      "requirements": "Lucky Streak (1 point)",
+      "effects": [
+        "10% chance for any shot to deal double damage",
+        "20% chance for any shot to deal double damage",
+        "30% chance for any shot to deal double damage"
+      ]
+    },
+    "never-miss": {
+      "name": "Never Miss",
+      "description": "Master marksmanship - missed shots find their target.",
+      "maxPoints": 3,
+      "tier": 5,
+      "requirements": "All In (1 point) and Bullet Time (1 point)",
+      "effects": [
+        "10% chance missed shots redirect to nearest enemy",
+        "20% chance missed shots redirect to nearest enemy",
+        "30% chance missed shots redirect to nearest enemy"
+      ]
+    },
+    "ace-hole": {
+      "name": "Ace in the Hole",
+      "description": "Always keep one bullet in reserve for emergencies.",
+      "maxPoints": 2,
+      "tier": 5,
+      "requirements": "Explosive Rounds (1 point) and Desperado (1 point)",
+      "effects": [
+        "Always have 1 emergency bullet dealing 300% damage",
+        "Emergency bullet regenerates every 20 seconds"
+      ]
+    },
+    "master-gunslinger": {
+      "name": "Master Gunslinger",
+      "description": "Legendary skill - multiple projectiles per trigger pull.",
+      "maxPoints": 3,
+      "tier": 5,
+      "requirements": "Vanish (1 point) and Roll the Dice (1 point)",
+      "effects": [
+        "+1 bullet per shot (shotgun gets +3 pellets)",
+        "+2 bullets per shot (shotgun gets +6 pellets)",
+        "+3 bullets per shot (shotgun gets +9 pellets)"
+      ]
+    },
+    "high-noon": {
+      "name": "High Noon",
+      "description": "Ultimate ability: Brief period of perfect gunfighting prowess.",
+      "maxPoints": 5,
+      "tier": 6,
+      "requirements": "Never Miss (1 point) and Ace in the Hole (1 point)",
+      "effects": [
+        "For 6 seconds: All shots crit, unlimited ammo, kills extend by 1s, +25% speed (120s cooldown)",
+        "For 7 seconds: All shots crit, unlimited ammo, kills extend by 1s, +25% speed (120s cooldown)",
+        "For 8 seconds: All shots crit, unlimited ammo, kills extend by 1s, +25% speed (120s cooldown)",
+        "For 9 seconds: All shots crit, unlimited ammo, kills extend by 1s, +25% speed (120s cooldown)",
+        "For 10 seconds: All shots crit, unlimited ammo, kills extend by 1s, +25% speed (120s cooldown)"
+      ]
+    },
+    "dead-mans-hand": {
+      "name": "Dead Man's Hand",
+      "description": "Ultimate ability: Draw ethereal cards with different shot effects.",
+      "maxPoints": 5,
+      "tier": 6,
+      "requirements": "Ace in the Hole (1 point)",
+      "effects": [
+        "Draw 5 cards: explosion, pierce, ricochet, freeze, execute (120s cooldown)",
+        "Draw 6 cards: explosion, pierce, ricochet, freeze, execute, stun (120s cooldown)",
+        "Draw 7 cards: explosion, pierce, ricochet, freeze, execute, stun, heal (120s cooldown)",
+        "Draw 8 cards: explosion, pierce, ricochet, freeze, execute, stun, heal, shield (120s cooldown)",
+        "Draw 9 cards: explosion, pierce, ricochet, freeze, execute, stun, heal, shield, time (120s cooldown)"
+      ]
+    },
+    "perfect-shot": {
+      "name": "Perfect Shot", 
+      "description": "Ultimate ability: One shot to end everything.",
+      "maxPoints": 5,
+      "tier": 6,
+      "requirements": "Ace in the Hole (1 point) and Master Gunslinger (1 point)",
+      "effects": [
+        "Next shot deals 1000% damage, pierces all, explodes, ignores resistance (90s cooldown)",
+        "Next shot deals 1500% damage, pierces all, explodes, ignores resistance (90s cooldown)",
+        "Next shot deals 2000% damage, pierces all, explodes, ignores resistance (90s cooldown)",
+        "Next shot deals 2500% damage, pierces all, explodes, ignores resistance (90s cooldown)",
+        "Next shot deals 3000% damage, pierces all, explodes, ignores resistance (90s cooldown)"
+      ]
+    },
+    "legendary-outlaw": {
+      "name": "Legendary Outlaw",
+      "description": "Capstone: Become the ultimate gunslinger of legend.",
+      "maxPoints": 3,
+      "tier": 6,
+      "requirements": "High Noon (1 point), Dead Man's Hand (1 point), and Perfect Shot (1 point)",
+      "effects": [
+        "All chance-based effects minimum 25% proc rate",
+        "Critical hits chain to nearest enemy at 50% damage",
+        "Become the ultimate Outlaw - all bullets ricochet once"
+      ]
+    }
+  },
+  "fire": {
+    "combustion-mastery": {
+      "name": "Combustion Mastery",
+      "icon": "🔥",
+      "tier": 1,
+      "maxPoints": 3,
+      "description": "Increases fire damage and burn effects.",
+      "effects": [
+        "+10% fire damage, burn duration +1 second",
+        "+20% fire damage, burn spreads to 1 nearby enemy",
+        "+30% fire damage, burn spreads to 2 nearby enemies"
+      ],
+      "requirements": "None"
+    },
+    "flame-weapon": {
+      "name": "Flame Weapon",
+      "icon": "⚔️",
+      "tier": 1,
+      "maxPoints": 5,
+      "description": "Weapons deal fire damage with ignite chance.",
+      "effects": [
+        "Weapons deal fire damage, 10% chance to ignite",
+        "Ignite chance +20%, fire damage +15%",
+        "Ignite chance +30%, fire damage +25%",
+        "Ignite chance +40%, fire damage +35%",
+        "Ignite chance +50%, fire damage +50%"
+      ],
+      "requirements": "None"
+    },
+    "heat-resistance": {
+      "name": "Heat Resistance",
+      "icon": "🛡️",
+      "tier": 1,
+      "maxPoints": 2,
+      "description": "Provides fire resistance and immunity to self-inflicted fire damage.",
+      "effects": [
+        "+25% fire resistance, immunity to self-inflicted fire damage",
+        "+50% fire resistance, fire heals for 10% of damage"
+      ],
+      "requirements": "None"
+    },
+    "fireball": {
+      "name": "Fireball",
+      "icon": "💥",
+      "tier": 2,
+      "maxPoints": 3,
+      "description": "Launch explosive fireball projectile.",
+      "effects": [
+        "Launch explosive fireball (30 power cost)",
+        "+50% explosion radius, +25% damage",
+        "Fireball pierces through enemies"
+      ],
+      "requirements": "5 points in Tier 1"
+    },
+    "flame-wall": {
+      "name": "Flame Wall",
+      "icon": "🧱",
+      "tier": 2,
+      "maxPoints": 4,
+      "description": "Create wall of fire blocking passage.",
+      "effects": [
+        "Create wall of fire blocking passage (40 power cost)",
+        "Wall duration +100%, damage +50%",
+        "Wall width +50%, spreads fire on contact",
+        "Can create multiple walls simultaneously"
+      ],
+      "requirements": "5 points in Tier 1"
+    },
+    "burning-ground": {
+      "name": "Burning Ground",
+      "icon": "🌋",
+      "tier": 2,
+      "maxPoints": 3,
+      "description": "Create area of burning ground.",
+      "effects": [
+        "Create area of burning ground (25 power cost)",
+        "Area size +100%, duration +50%",
+        "Burning ground follows enemies"
+      ],
+      "requirements": "5 points in Tier 1"
+    },
+    "phoenix-surge": {
+      "name": "Phoenix Surge",
+      "icon": "🔥",
+      "tier": 3,
+      "maxPoints": 5,
+      "description": "Ultimate fire transformation ability.",
+      "effects": [
+        "Become fire elemental for 10 seconds (100 power cost)",
+        "Duration +5 seconds, fire immunity",
+        "All attacks create fire explosions",
+        "Movement leaves burning trail",
+        "Resurrection on death during surge"
+      ],
+      "requirements": "10 points in Tier 2"
+    },
+    "fire-combination": {
+      "name": "Combination Mastery",
+      "icon": "⚡",
+      "tier": 3,
+      "maxPoints": 2,
+      "description": "Enhances fire combination abilities.",
+      "effects": [
+        "Combination abilities cost -25% power",
+        "Combination effects last +50% longer"
+      ],
+      "requirements": "10 points in Tier 2"
+    },
+    "pyroclasm-lord": {
+      "name": "Pyroclasm Lord",
+      "icon": "🔥",
+      "tier": 4,
+      "maxPoints": 1,
+      "description": "Become the ultimate master of Fire and destruction. This capstone ability grants incredible fire mastery and resistance.",
+      "effects": [
+        "+100% Fire Potency • +50% Fire Resistance • All Fire abilities ignore 50% of enemy Fire Resistance • Burn buildup decays 50% slower (5% per second)"
+      ],
+      "requirements": "15 points in Tier 3"
+    }
+  },
+  "ice": {
+    "cryogenic-mastery": {
+      "name": "Cryogenic Mastery",
+      "icon": "❄️",
+      "tier": 1,
+      "maxPoints": 3,
+      "description": "Increases ice damage and slow effects.",
+      "effects": [
+        "+10% ice damage, slow effects +50% duration",
+        "+20% ice damage, chance to freeze on critical hits",
+        "+30% ice damage, frozen enemies take +100% damage"
+      ],
+      "requirements": "None"
+    },
+    "frost-weapon": {
+      "name": "Frost Weapon",
+      "icon": "⚔️",
+      "tier": 1,
+      "maxPoints": 5,
+      "description": "Weapons deal ice damage with slow chance.",
+      "effects": [
+        "Weapons deal ice damage, 10% chance to slow",
+        "Slow chance +20%, ice damage +15%",
+        "Slow chance +30%, ice damage +25%, chance to freeze",
+        "Freeze chance +15%, ice damage +35%",
+        "Freeze chance +25%, ice damage +50%"
+      ],
+      "requirements": "None"
+    },
+    "cold-resistance": {
+      "name": "Cold Resistance",
+      "icon": "🛡️",
+      "tier": 1,
+      "maxPoints": 2,
+      "description": "Provides ice resistance and immunity to slowing effects.",
+      "effects": [
+        "+25% ice resistance, immunity to slowing effects",
+        "+50% ice resistance, ice damage restores energy"
+      ],
+      "requirements": "None"
+    },
+    "ice-shard": {
+      "name": "Ice Shard",
+      "icon": "🧊",
+      "tier": 2,
+      "maxPoints": 3,
+      "description": "Launch piercing ice projectile.",
+      "effects": [
+        "Launch piercing ice projectile (25 power cost)",
+        "Shard splits into 3 on impact",
+        "Each shard can freeze targets"
+      ],
+      "requirements": "5 points in Tier 1"
+    },
+    "ice-barrier": {
+      "name": "Ice Barrier",
+      "icon": "🧱",
+      "tier": 2,
+      "maxPoints": 4,
+      "description": "Create defensive ice wall.",
+      "effects": [
+        "Create defensive ice wall (35 power cost)",
+        "Barrier reflects projectiles",
+        "Barrier explodes when destroyed",
+        "Multiple barriers can be maintained"
+      ],
+      "requirements": "5 points in Tier 1"
+    },
+    "frozen-zone": {
+      "name": "Frozen Zone",
+      "icon": "🌀",
+      "tier": 2,
+      "maxPoints": 3,
+      "description": "Create area that slows enemies.",
+      "effects": [
+        "Create area that slows enemies (30 power cost)",
+        "Zone also damages enemies over time",
+        "Zone moves with caster"
+      ],
+      "requirements": "5 points in Tier 1"
+    },
+    "winters-embrace": {
+      "name": "Winter's Embrace",
+      "icon": "❄️",
+      "tier": 3,
+      "maxPoints": 5,
+      "description": "Freeze all enemies in large area.",
+      "effects": [
+        "Freeze all enemies in large area (120 power cost)",
+        "Frozen enemies take +200% damage",
+        "Area spreads outward over time",
+        "Allies gain ice immunity and damage bonus",
+        "Effect can be maintained by spending power over time"
+      ],
+      "requirements": "10 points in Tier 2"
+    },
+    "ice-combination": {
+      "name": "Combination Mastery",
+      "icon": "⚡",
+      "tier": 3,
+      "maxPoints": 2,
+      "description": "Enhances ice combination abilities.",
+      "effects": [
+        "Combination abilities cost -25% power",
+        "Ice combinations have +50% area of effect"
+      ],
+      "requirements": "10 points in Tier 2"
+    },
+    "cryogenic-master": {
+      "name": "Cryogenic Master",
+      "icon": "❄️",
+      "tier": 4,
+      "maxPoints": 1,
+      "description": "Become the ultimate master of Ice and Freeze. This capstone ability grants incredible ice mastery and control.",
+      "effects": [
+        "+100% Ice Potency • +50% Ice Resistance • All Ice abilities ignore 50% of enemy Ice Resistance • +50% freeze buildup rate on all Ice damage"
+      ],
+      "requirements": "15 points in Tier 3"
+    }
+  },
+  "electric": {
+    "electrical-mastery": {
+      "name": "Electrical Mastery",
+      "icon": "⚡",
+      "tier": 1,
+      "maxPoints": 3,
+      "description": "Increases electric damage and chain effects.",
+      "effects": [
+        "+10% electric damage, attacks chain to 1 enemy",
+        "+20% electric damage, chain to 2 enemies",
+        "+30% electric damage, chain to 3 enemies"
+      ],
+      "requirements": "None"
+    },
+    "shock-weapon": {
+      "name": "Shock Weapon",
+      "icon": "⚔️",
+      "tier": 1,
+      "maxPoints": 5,
+      "description": "Weapons deal electric damage with stun chance.",
+      "effects": [
+        "Weapons deal electric damage, 10% chance to stun",
+        "Stun chance +20%, electric damage +15%",
+        "Stun chance +30%, electric damage +25%",
+        "Stun chance +40%, electric damage +35%",
+        "Stun chance +50%, electric damage +50%"
+      ],
+      "requirements": "None"
+    },
+    "conductivity": {
+      "name": "Conductivity",
+      "icon": "🛡️",
+      "tier": 1,
+      "maxPoints": 2,
+      "description": "Provides electric resistance and energy gain.",
+      "effects": [
+        "+25% electric resistance, gain energy when taking electric damage",
+        "+50% electric resistance, electric damage restores 25% energy"
+      ],
+      "requirements": "None"
+    },
+    "lightning-bolt": {
+      "name": "Lightning Bolt",
+      "icon": "⚡",
+      "tier": 2,
+      "maxPoints": 3,
+      "description": "Instant electric attack.",
+      "effects": [
+        "Instant electric attack (20 power cost)",
+        "Bolt chains through all enemies in line",
+        "Each chain increases damage"
+      ],
+      "requirements": "5 points in Tier 1"
+    },
+    "tesla-coil": {
+      "name": "Tesla Coil",
+      "icon": "🔌",
+      "tier": 2,
+      "maxPoints": 4,
+      "description": "Deploy electrical generator.",
+      "effects": [
+        "Deploy electrical generator (45 power cost)",
+        "Coil damage and range +100%",
+        "Coil chains between multiple targets",
+        "Multiple coils can be deployed"
+      ],
+      "requirements": "5 points in Tier 1"
+    },
+    "electric-field": {
+      "name": "Electric Field",
+      "icon": "⚡",
+      "tier": 2,
+      "maxPoints": 3,
+      "description": "Create damaging electric area.",
+      "effects": [
+        "Create damaging electric area (35 power cost)",
+        "Field stuns enemies who enter",
+        "Field follows caster movement"
+      ],
+      "requirements": "5 points in Tier 1"
+    },
+    "storm-lord": {
+      "name": "Storm Lord",
+      "icon": "🌩️",
+      "tier": 3,
+      "maxPoints": 5,
+      "description": "Continuous lightning strikes in area.",
+      "effects": [
+        "Continuous lightning strikes in area (100 power cost)",
+        "Lightning targets prioritize strongest enemies",
+        "Each strike increases subsequent damage",
+        "Allies gain electric damage bonus",
+        "Storm can be guided and redirected"
+      ],
+      "requirements": "10 points in Tier 2"
+    },
+    "electric-combination": {
+      "name": "Combination Mastery",
+      "icon": "⚡",
+      "tier": 3,
+      "maxPoints": 2,
+      "description": "Enhances electric combination abilities.",
+      "effects": [
+        "Combination abilities cost -25% power",
+        "Electric combinations chain +100% more times"
+      ],
+      "requirements": "10 points in Tier 2"
+    },
+    "storm-god": {
+      "name": "Storm God",
+      "icon": "⚡",
+      "tier": 4,
+      "maxPoints": 1,
+      "description": "Become the ultimate master of lightning and storms. This capstone ability grants incredible electric mastery and unlimited power.",
+      "effects": [
+        "+100% Electric Potency • +50% Electric Resistance • All Electric abilities ignore 50% of enemy Electric Resistance • Chain damage no longer diminishes with jumps"
+      ],
+      "requirements": "15 points in Tier 3"
+    }
+  },
+  "earth": {
+    "geological-mastery": {
+      "name": "Geological Mastery",
+      "icon": "🌍",
+      "tier": 1,
+      "maxPoints": 3,
+      "description": "Increases earth damage and damage reduction.",
+      "effects": [
+        "+15% earth damage, +20% damage reduction",
+        "+25% earth damage, +35% damage reduction",
+        "+35% earth damage, +50% damage reduction"
+      ],
+      "requirements": "None"
+    },
+    "stone-weapon": {
+      "name": "Stone Weapon",
+      "icon": "⚔️",
+      "tier": 1,
+      "maxPoints": 5,
+      "description": "Weapons deal earth damage with knockdown chance.",
+      "effects": [
+        "Weapons deal earth damage, 10% chance to knockdown",
+        "Knockdown chance +20%, earth damage +15%",
+        "Knockdown chance +30%, earth damage +25%",
+        "Knockdown chance +40%, earth damage +35%",
+        "Knockdown chance +50%, earth damage +50%"
+      ],
+      "requirements": "None"
+    },
+    "seismic-stability": {
+      "name": "Seismic Stability",
+      "icon": "🛡️",
+      "tier": 1,
+      "maxPoints": 2,
+      "description": "Immunity to displacement and standing damage bonus.",
+      "effects": [
+        "Immunity to knockback and displacement effects",
+        "Standing still for 3+ seconds grants +25% damage"
+      ],
+      "requirements": "None"
+    },
+    "earth-spike": {
+      "name": "Earth Spike",
+      "icon": "⛰️",
+      "tier": 2,
+      "maxPoints": 3,
+      "description": "Summon damaging stone spike.",
+      "effects": [
+        "Summon damaging stone spike (25 power cost)",
+        "Spike creates line of smaller spikes",
+        "Spikes remain as terrain obstacles"
+      ],
+      "requirements": "5 points in Tier 1"
+    },
+    "stone-wall": {
+      "name": "Stone Wall",
+      "icon": "🧱",
+      "tier": 2,
+      "maxPoints": 4,
+      "description": "Create defensive earth barrier.",
+      "effects": [
+        "Create defensive earth barrier (40 power cost)",
+        "Wall grants cover bonus to allies",
+        "Wall can be climbed for elevation advantage",
+        "Multiple walls can be maintained"
+      ],
+      "requirements": "5 points in Tier 1"
+    },
+    "earthquake": {
+      "name": "Earthquake",
+      "icon": "🌋",
+      "tier": 2,
+      "maxPoints": 3,
+      "description": "Create damaging ground tremor.",
+      "effects": [
+        "Create damaging ground tremor (50 power cost)",
+        "Earthquake knocks down all enemies",
+        "Effect spreads outward in waves"
+      ],
+      "requirements": "5 points in Tier 1"
+    },
+    "mountains-fury": {
+      "name": "Mountain's Fury",
+      "icon": "⛰️",
+      "tier": 3,
+      "maxPoints": 5,
+      "description": "Reshape battlefield terrain.",
+      "effects": [
+        "Reshape battlefield terrain (150 power cost)",
+        "Create elevated positions and cover",
+        "Terrain changes are permanent",
+        "Allies gain movement bonuses on earth terrain",
+        "Can create massive walls and chasms"
+      ],
+      "requirements": "10 points in Tier 2"
+    },
+    "earth-combination": {
+      "name": "Combination Mastery",
+      "icon": "⚡",
+      "tier": 3,
+      "maxPoints": 2,
+      "description": "Enhances earth combination abilities.",
+      "effects": [
+        "Combination abilities cost -25% power",
+        "Earth combinations create permanent terrain"
+      ],
+      "requirements": "10 points in Tier 2"
+    },
+    "earthquake-god": {
+      "name": "Earthquake God",
+      "icon": "🌍",
+      "tier": 4,
+      "maxPoints": 1,
+      "description": "Become the ultimate master of Earth and stone. This capstone ability grants incredible earth mastery and permanence.",
+      "effects": [
+        "+100% Earth Potency • +50% Earth Resistance • All Earth abilities ignore 50% of enemy Earth Resistance • Fracture buildup never decays"
+      ],
+      "requirements": "15 points in Tier 3"
+    }
+  },
+  "nature": {
+    "natural-mastery": {
+      "name": "Natural Mastery",
+      "icon": "🌿",
+      "tier": 1,
+      "maxPoints": 3,
+      "description": "Increases nature damage and healing effectiveness.",
+      "effects": [
+        "+10% nature damage, +25% healing effectiveness",
+        "+20% nature damage, +50% healing effectiveness",
+        "+30% nature damage, +75% healing effectiveness"
+      ],
+      "requirements": "None"
+    },
+    "living-weapon": {
+      "name": "Living Weapon",
+      "icon": "⚔️",
+      "tier": 1,
+      "maxPoints": 5,
+      "description": "Weapons deal nature damage with heal chance.",
+      "effects": [
+        "Weapons deal nature damage, 10% chance to heal on hit",
+        "Heal chance +20%, nature damage +15%",
+        "Heal chance +30%, nature damage +25%",
+        "Heal chance +40%, nature damage +35%",
+        "Heal chance +50%, nature damage +50%"
+      ],
+      "requirements": "None"
+    },
+    "natural-resistance": {
+      "name": "Natural Resistance",
+      "icon": "🛡️",
+      "tier": 1,
+      "maxPoints": 2,
+      "description": "Provides nature resistance and regeneration.",
+      "effects": [
+        "+25% nature resistance, regenerate health over time",
+        "+50% nature resistance, regenerate energy over time"
+      ],
+      "requirements": "None"
+    },
+    "healing-burst": {
+      "name": "Healing Burst",
+      "icon": "💚",
+      "tier": 2,
+      "maxPoints": 3,
+      "description": "Instant area healing.",
+      "effects": [
+        "Instant area healing (30 power cost)",
+        "Also removes negative status effects",
+        "Grants temporary damage resistance"
+      ],
+      "requirements": "5 points in Tier 1"
+    },
+    "thorn-barrier": {
+      "name": "Thorn Barrier",
+      "icon": "🌹",
+      "tier": 2,
+      "maxPoints": 4,
+      "description": "Create damaging plant wall.",
+      "effects": [
+        "Create damaging plant wall (35 power cost)",
+        "Barrier heals allies who touch it",
+        "Barrier grows larger over time",
+        "Multiple barriers can be maintained"
+      ],
+      "requirements": "5 points in Tier 1"
+    },
+    "natures-blessing": {
+      "name": "Nature's Blessing",
+      "icon": "✨",
+      "tier": 2,
+      "maxPoints": 3,
+      "description": "Create healing area over time.",
+      "effects": [
+        "Create healing area over time (25 power cost)",
+        "Area also boosts ally damage",
+        "Effect follows allies"
+      ],
+      "requirements": "5 points in Tier 1"
+    },
+    "world-tree": {
+      "name": "World Tree",
+      "icon": "🌳",
+      "tier": 3,
+      "maxPoints": 5,
+      "description": "Summon massive healing tree.",
+      "effects": [
+        "Summon massive healing tree (120 power cost)",
+        "Tree provides cover and elevation",
+        "Tree spreads healing aura continuously",
+        "Allies gain nature damage bonus near tree",
+        "Tree can move and attack enemies"
+      ],
+      "requirements": "10 points in Tier 2"
+    },
+    "nature-combination": {
+      "name": "Combination Mastery",
+      "icon": "⚡",
+      "tier": 3,
+      "maxPoints": 2,
+      "description": "Enhances nature combination abilities.",
+      "effects": [
+        "Combination abilities cost -25% power",
+        "Nature combinations provide continuous healing"
+      ],
+      "requirements": "10 points in Tier 2"
+    },
+    "plague-god": {
+      "name": "Plague God",
+      "icon": "🌿",
+      "tier": 4,
+      "maxPoints": 1,
+      "description": "Become the ultimate master of toxins and life. This capstone ability grants incredible nature mastery and spreading power.",
+      "effects": [
+        "+100% Nature Potency • +50% Nature Resistance • All Nature abilities ignore 50% of enemy Nature Resistance • Toxin buildup spreads on any damage, not just contact"
+      ],
+      "requirements": "15 points in Tier 3"
+    }
+  }
+}

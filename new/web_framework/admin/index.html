@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Console - Courier</title>
+    <link rel="stylesheet" href="../assets/css/design-system.css?v=1">
+    <link rel="stylesheet" href="../assets/css/main.css?v=1">
+    <style>
+        .admin-container {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: var(--spacing-lg);
+            margin-top: var(--spacing-lg);
+        }
+        .admin-sidebar {
+            background: var(--bg-medium);
+            border: 1px solid var(--border-gray);
+            padding: var(--spacing-lg);
+            height: fit-content;
+        }
+        .admin-nav {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .admin-nav li {
+            margin-bottom: var(--spacing-sm);
+        }
+        .admin-nav button {
+            width: 100%;
+            background: var(--bg-dark);
+            border: 1px solid var(--border-gray);
+            color: var(--text-normal);
+            padding: var(--spacing-sm);
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .admin-nav button:hover {
+            border-color: var(--primary-cyan);
+            background: var(--bg-light);
+        }
+        .admin-nav button.active {
+            border-color: var(--primary-cyan);
+            background: var(--primary-cyan);
+            color: var(--bg-dark);
+        }
+        .admin-content {
+            background: var(--bg-medium);
+            border: 1px solid var(--border-gray);
+            padding: var(--spacing-lg);
+            min-height: 600px;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--spacing-lg);
+            margin: var(--spacing-lg) 0;
+        }
+        .form-section {
+            background: var(--bg-dark);
+            border: 1px solid var(--border-gray);
+            padding: var(--spacing-lg);
+        }
+        .form-section h3 {
+            color: var(--primary-cyan);
+            margin-bottom: var(--spacing-md);
+            font-size: 14px;
+        }
+        .form-group {
+            margin-bottom: var(--spacing-md);
+        }
+        .form-label {
+            color: var(--text-dim);
+            font-size: 11px;
+            margin-bottom: var(--spacing-xs);
+            text-transform: uppercase;
+            display: block;
+        }
+        .form-input {
+            background: var(--bg-medium);
+            border: 1px solid var(--border-gray);
+            color: var(--text-normal);
+            padding: var(--spacing-sm);
+            border-radius: 4px;
+            width: 100%;
+            font-size: 13px;
+        }
+        .form-input:focus {
+            border-color: var(--primary-cyan);
+            outline: none;
+        }
+        .form-textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        .item-preview {
+            background: var(--bg-black);
+            border: 1px solid var(--border-gray);
+            padding: var(--spacing-lg);
+            margin: var(--spacing-lg) 0;
+            font-family: var(--font-mono);
+            font-size: 12px;
+        }
+        .item-preview h4 {
+            color: var(--primary-orange);
+            margin-bottom: var(--spacing-sm);
+        }
+        .rarity-common { border-left: 4px solid #888; }
+        .rarity-uncommon { border-left: 4px solid #4CAF50; }
+        .rarity-rare { border-left: 4px solid #2196F3; }
+        .rarity-epic { border-left: 4px solid #9C27B0; }
+        .rarity-legendary { border-left: 4px solid #FF9800; }
+        .rarity-exotic { border-left: 4px solid #E91E63; }
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            margin: var(--spacing-xs) 0;
+            font-size: 11px;
+        }
+        .stat-name {
+            color: var(--text-dim);
+        }
+        .stat-value {
+            color: var(--text-bright);
+        }
+        .action-buttons {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-lg);
+        }
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-xs);
+        }
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            font-size: 12px;
+        }
+        .item-type-tabs {
+            display: flex;
+            gap: var(--spacing-xs);
+            margin-bottom: var(--spacing-lg);
+            border-bottom: 1px solid var(--border-gray);
+        }
+        .type-tab {
+            background: var(--bg-dark);
+            border: 1px solid var(--border-gray);
+            border-bottom: none;
+            color: var(--text-normal);
+            padding: var(--spacing-sm) var(--spacing-md);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .type-tab:hover {
+            background: var(--bg-light);
+        }
+        .type-tab.active {
+            background: var(--primary-cyan);
+            color: var(--bg-dark);
+            border-color: var(--primary-cyan);
+        }
+        .power-budget-display {
+            background: var(--bg-dark);
+            border: 1px solid var(--border-gray);
+            padding: var(--spacing-md);
+            margin: var(--spacing-md) 0;
+            text-align: center;
+        }
+        .power-budget-bar {
+            background: var(--bg-black);
+            height: 20px;
+            margin: var(--spacing-sm) 0;
+            position: relative;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .power-budget-fill {
+            background: linear-gradient(90deg, var(--primary-green), var(--primary-yellow), var(--primary-orange), var(--primary-red));
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+        .power-budget-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 11px;
+            color: var(--text-bright);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Header -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <div class="nav-logo"></div>
+            <div>
+                <div class="nav-username">ADMIN CONSOLE</div>
+                <div class="nav-level">ITEM CREATION TOOLS</div>
+            </div>
+        </div>
+        <div class="nav-menu">
+            <a href="../game/dashboard.html" class="nav-item">CHARACTER</a>
+            <a href="../inventory.html" class="nav-item">INVENTORY</a>
+            <a href="../missions.html" class="nav-item">MISSIONS</a>
+            <a href="../skills.html" class="nav-item">SKILLS</a>
+            <a href="../loadouts.html" class="nav-item">LOADOUTS</a>
+            <a href="../sim/index.html" class="nav-item">SIMULATOR</a>
+            <a href="../specs/index.html" class="nav-item">SPECS</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="page-container">
+        <div class="page-header">
+            <h1 class="page-title">ADMIN CONSOLE</h1>
+            <p style="color: var(--text-normal);">Create and manage game items, weapons, and equipment</p>
+        </div>
+
+        <div class="admin-container">
+            <!-- Sidebar Navigation -->
+            <div class="admin-sidebar">
+                <h3 style="color: var(--primary-cyan); margin-bottom: var(--spacing-md); font-size: 14px;">TOOLS</h3>
+                <ul class="admin-nav">
+                    <li><button class="active" data-section="item-creator">Item Creator</button></li>
+                    <li><button data-section="item-database">Item Database</button></li>
+                    <li><button data-section="power-calculator">Power Calculator</button></li>
+                    <li><button data-section="batch-tools">Batch Tools</button></li>
+                    <li><button data-section="export-import">Export/Import</button></li>
+                </ul>
+            </div>
+
+            <!-- Main Content Area -->
+            <div class="admin-content">
+                <!-- Item Creator Section -->
+                <div id="item-creator" class="admin-section">
+                    <h2 style="color: var(--primary-cyan); margin-bottom: var(--spacing-md);">ITEM CREATOR</h2>
+                    
+                    <!-- Item Type Tabs -->
+                    <div class="item-type-tabs">
+                        <button class="type-tab active" data-type="weapon">🔫 Weapons</button>
+                        <button class="type-tab" data-type="armor">🛡️ Armor</button>
+                        <button class="type-tab" data-type="accessory">💍 Accessories</button>
+                        <button class="type-tab" data-type="consumable">🧪 Consumables</button>
+                        <button class="type-tab" data-type="modification">🔧 Modifications</button>
+                        <button class="type-tab" data-type="modifier">⚡ Modifiers</button>
+                    </div>
+
+                    <!-- Power Budget Display -->
+                    <div class="power-budget-display">
+                        <div style="color: var(--text-dim); font-size: 11px; margin-bottom: var(--spacing-xs);">POWER BUDGET</div>
+                        <div style="color: var(--text-bright); font-size: 14px; margin-bottom: var(--spacing-sm);">
+                            <span id="currentPower">0</span> / <span id="maxPower">175</span>
+                        </div>
+                        <div class="power-budget-bar">
+                            <div class="power-budget-fill" id="powerBudgetFill" style="width: 0%;"></div>
+                            <div class="power-budget-text" id="powerBudgetText">0%</div>
+                        </div>
+                    </div>
+
+                    <!-- Form Content -->
+                    <div id="item-form-content">
+                        <!-- Forms will be loaded dynamically based on item type -->
+                    </div>
+
+                    <!-- Item Preview -->
+                    <div class="item-preview" id="itemPreview">
+                        <h4>Item Preview</h4>
+                        <div id="previewContent">Create an item to see preview...</div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="action-buttons">
+                        <button class="btn btn-success" id="saveItemBtn">Save Item</button>
+                        <button class="btn btn-primary" id="exportItemBtn">Export JSON</button>
+                        <button class="btn btn-secondary" id="resetFormBtn">Reset Form</button>
+                        <button class="btn btn-warning" id="testItemBtn">Test Item</button>
+                        <button class="btn" id="randomItemBtn" style="background: var(--primary-purple); color: var(--text-bright); border: 1px solid var(--primary-purple);">🎲 Random Item</button>
+                    </div>
+                </div>
+
+                <!-- Other admin sections (hidden initially) -->
+                <div id="item-database" class="admin-section" style="display: none;">
+                    <h2 style="color: var(--primary-cyan); margin-bottom: var(--spacing-md);">ITEM DATABASE</h2>
+                    <p style="color: var(--text-normal);">Browse and manage existing items...</p>
+                </div>
+
+                <div id="power-calculator" class="admin-section" style="display: none;">
+                    <h2 style="color: var(--primary-cyan); margin-bottom: var(--spacing-md);">POWER CALCULATOR</h2>
+                    <p style="color: var(--text-normal);">Calculate power budget values for items...</p>
+                </div>
+
+                <div id="batch-tools" class="admin-section" style="display: none;">
+                    <h2 style="color: var(--primary-cyan); margin-bottom: var(--spacing-md);">BATCH TOOLS</h2>
+                    <p style="color: var(--text-normal);">Bulk create and modify items...</p>
+                </div>
+
+                <div id="export-import" class="admin-section" style="display: none;">
+                    <h2 style="color: var(--primary-cyan); margin-bottom: var(--spacing-md);">EXPORT/IMPORT</h2>
+                    <p style="color: var(--text-normal);">Import/export item databases...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer style="padding: 20px; text-align: center; font-size: 10px; color: #666; border-top: 1px solid #333; margin-top: 40px;">
+        <a href="../changelog.html" style="color: #666; text-decoration: none; border-bottom: 1px dotted #666;">CHANGELOG</a> • 
+        <a href="../specs/index.html" style="color: #666; text-decoration: none; border-bottom: 1px dotted #666;">SPECS</a> • 
+        LAST UPDATED: 2025-08-17 CST • ADMIN: Item creation and management console
+    </footer>
+
+    <script src="admin-console.js"></script>
+</body>
+</html>

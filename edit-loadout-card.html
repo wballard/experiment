@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Loadout Interface</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0e1a;
+            color: #ffffff;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .edit-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        /* Left Panel - Available Abilities */
+        .available-panel {
+            background: #151922;
+            border: 2px solid #2a3142;
+            border-radius: 12px;
+            padding: 25px;
+        }
+
+        .panel-header {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #ffffff;
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .filter-tab {
+            background: #1a1f2e;
+            border: 1px solid #2a3142;
+            color: #8892a8;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .filter-tab:hover {
+            background: #242936;
+            border-color: #3a4152;
+        }
+
+        .filter-tab.active {
+            background: #667eea;
+            border-color: #667eea;
+            color: #ffffff;
+        }
+
+        /* Ability Pool */
+        .ability-pool {
+            max-height: 600px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .ability-category {
+            margin-bottom: 25px;
+        }
+
+        .category-title {
+            font-size: 14px;
+            color: #8892a8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .ability-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 10px;
+        }
+
+        .ability-item {
+            background: #0f1419;
+            border: 2px solid #2a3142;
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+            cursor: grab;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .ability-item:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        .ability-item.dragging {
+            opacity: 0.5;
+            cursor: grabbing;
+        }
+
+        .ability-item.ultimate {
+            border-color: #f6ad55;
+        }
+
+        .ability-item.aura {
+            border-color: #a78bfa;
+        }
+
+        .ability-icon {
+            width: 40px;
+            height: 40px;
+            background: #2a3142;
+            border-radius: 6px;
+            margin: 0 auto 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .ability-name {
+            font-size: 11px;
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        .ability-type {
+            font-size: 9px;
+            color: #8892a8;
+            margin-top: 4px;
+        }
+
+        /* Right Panel - Current Loadout */
+        .loadout-panel {
+            background: #151922;
+            border: 2px solid #2a3142;
+            border-radius: 12px;
+            padding: 25px;
+        }
+
+        .loadout-name-input {
+            width: 100%;
+            background: #0f1419;
+            border: 2px solid #2a3142;
+            border-radius: 6px;
+            padding: 12px;
+            color: #ffffff;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 25px;
+        }
+
+        .loadout-name-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        /* Slot Sections */
+        .slot-section {
+            margin-bottom: 25px;
+        }
+
+        .slot-grid {
+            display: grid;
+            gap: 12px;
+        }
+
+        .slot-container {
+            background: #0f1419;
+            border: 3px dashed #3a4152;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .slot-container.drag-over {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .slot-container.filled {
+            border-style: solid;
+            border-color: #2a3142;
+        }
+
+        .slot-container.ultimate-slot {
+            border-color: #f6ad55;
+            background: rgba(246, 173, 85, 0.05);
+        }
+
+        .slot-container.aura-slot {
+            border-color: #a78bfa;
+            background: rgba(167, 139, 250, 0.05);
+        }
+
+        .empty-slot-text {
+            color: #4a5568;
+            font-size: 14px;
+        }
+
+        .active-slots-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        /* Include Options */
+        .include-options {
+            background: #0f1419;
+            border: 1px solid #2a3142;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        .option-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .option-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .option-checkbox {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            cursor: pointer;
+        }
+
+        .option-label {
+            font-size: 14px;
+            color: #8892a8;
+            cursor: pointer;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-save {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-cancel {
+            background: #2a3142;
+            color: #8892a8;
+            border: 1px solid #3a4152;
+        }
+
+        .btn-cancel:hover {
+            background: #3a4152;
+            color: #ffffff;
+        }
+
+        .btn-clear {
+            background: #dc2626;
+            color: white;
+        }
+
+        .btn-clear:hover {
+            background: #b91c1c;
+        }
+
+        /* Remove button for filled slots */
+        .remove-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 24px;
+            height: 24px;
+            background: #dc2626;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .slot-container:hover .remove-btn {
+            opacity: 1;
+        }
+
+        /* Custom Scrollbar */
+        .ability-pool::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .ability-pool::-webkit-scrollbar-track {
+            background: #0f1419;
+            border-radius: 4px;
+        }
+
+        .ability-pool::-webkit-scrollbar-thumb {
+            background: #2a3142;
+            border-radius: 4px;
+        }
+
+        .ability-pool::-webkit-scrollbar-thumb:hover {
+            background: #3a4152;
+        }
+    </style>
+</head>
+<body>
+    <div class="edit-container">
+        <!-- Left Panel - Available Abilities -->
+        <div class="available-panel">
+            <h2 class="panel-header">Available Abilities</h2>
+            
+            <div class="filter-tabs">
+                <button class="filter-tab active" data-filter="all">All</button>
+                <button class="filter-tab" data-filter="class">Class</button>
+                <button class="filter-tab" data-filter="fire">Fire</button>
+                <button class="filter-tab" data-filter="ice">Ice</button>
+            </div>
+
+            <div class="ability-pool">
+                <!-- Ultimate Abilities -->
+                <div class="ability-category">
+                    <h3 class="category-title">Ultimate Abilities</h3>
+                    <div class="ability-grid">
+                        <div class="ability-item ultimate" draggable="true" data-ability="high-noon">
+                            <div class="ability-icon">🎯</div>
+                            <div class="ability-name">High Noon</div>
+                            <div class="ability-type">Class Ultimate</div>
+                        </div>
+                        <div class="ability-item ultimate" draggable="true" data-ability="fire-storm">
+                            <div class="ability-icon">🔥</div>
+                            <div class="ability-name">Fire Storm</div>
+                            <div class="ability-type">Fire Ultimate</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Active Abilities -->
+                <div class="ability-category">
+                    <h3 class="category-title">Active Abilities</h3>
+                    <div class="ability-grid">
+                        <div class="ability-item" draggable="true" data-ability="fan-hammer">
+                            <div class="ability-icon">🔫</div>
+                            <div class="ability-name">Fan Hammer</div>
+                            <div class="ability-type">Class</div>
+                        </div>
+                        <div class="ability-item" draggable="true" data-ability="ricochet">
+                            <div class="ability-icon">💫</div>
+                            <div class="ability-name">Ricochet</div>
+                            <div class="ability-type">Class</div>
+                        </div>
+                        <div class="ability-item" draggable="true" data-ability="all-in">
+                            <div class="ability-icon">🎲</div>
+                            <div class="ability-name">All In</div>
+                            <div class="ability-type">Class</div>
+                        </div>
+                        <div class="ability-item" draggable="true" data-ability="fireball">
+                            <div class="ability-icon">🔥</div>
+                            <div class="ability-name">Fireball</div>
+                            <div class="ability-type">Fire</div>
+                        </div>
+                        <div class="ability-item" draggable="true" data-ability="ice-shard">
+                            <div class="ability-icon">❄️</div>
+                            <div class="ability-name">Ice Shard</div>
+                            <div class="ability-type">Ice</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Auras -->
+                <div class="ability-category">
+                    <h3 class="category-title">Auras</h3>
+                    <div class="ability-grid">
+                        <div class="ability-item aura" draggable="true" data-ability="sharpshooter">
+                            <div class="ability-icon">✨</div>
+                            <div class="ability-name">Sharpshooter's Eye</div>
+                            <div class="ability-type">Class Aura</div>
+                        </div>
+                        <div class="ability-item aura" draggable="true" data-ability="gambler">
+                            <div class="ability-icon">🎰</div>
+                            <div class="ability-name">Gambler's Fortune</div>
+                            <div class="ability-type">Class Aura</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Weapon Passives -->
+                <div class="ability-category">
+                    <h3 class="category-title">Weapon Passives</h3>
+                    <div class="ability-grid">
+                        <div class="ability-item" draggable="true" data-ability="handgun-master">
+                            <div class="ability-icon">🔫</div>
+                            <div class="ability-name">Handgun Master</div>
+                            <div class="ability-type">Weapon</div>
+                        </div>
+                        <div class="ability-item" draggable="true" data-ability="sniper-specialist">
+                            <div class="ability-icon">🎯</div>
+                            <div class="ability-name">Sniper Specialist</div>
+                            <div class="ability-type">Weapon</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Panel - Current Loadout -->
+        <div class="loadout-panel">
+            <h2 class="panel-header">Edit Loadout</h2>
+            
+            <input type="text" class="loadout-name-input" value="Boss Killer" placeholder="Enter loadout name...">
+
+            <!-- Ultimate Slot -->
+            <div class="slot-section">
+                <h3 class="category-title">Ultimate Ability</h3>
+                <div class="slot-grid">
+                    <div class="slot-container ultimate-slot" data-slot-type="ultimate">
+                        <span class="empty-slot-text">Drag Ultimate Here</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Ability Slots -->
+            <div class="slot-section">
+                <h3 class="category-title">Active Abilities (4 Slots)</h3>
+                <div class="active-slots-grid">
+                    <div class="slot-container" data-slot-type="active" data-slot-index="1">
+                        <span class="empty-slot-text">Slot 1</span>
+                    </div>
+                    <div class="slot-container" data-slot-type="active" data-slot-index="2">
+                        <span class="empty-slot-text">Slot 2</span>
+                    </div>
+                    <div class="slot-container" data-slot-type="active" data-slot-index="3">
+                        <span class="empty-slot-text">Slot 3</span>
+                    </div>
+                    <div class="slot-container" data-slot-type="active" data-slot-index="4">
+                        <span class="empty-slot-text">Slot 4</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Aura Slot -->
+            <div class="slot-section">
+                <h3 class="category-title">Aura</h3>
+                <div class="slot-grid">
+                    <div class="slot-container aura-slot" data-slot-type="aura">
+                        <span class="empty-slot-text">Drag Aura Here</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Weapon Passive Slot -->
+            <div class="slot-section">
+                <h3 class="category-title">Weapon Passive</h3>
+                <div class="slot-grid">
+                    <div class="slot-container" data-slot-type="weapon">
+                        <span class="empty-slot-text">Drag Weapon Passive Here</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Include Options -->
+            <div class="include-options">
+                <h3 class="category-title">Include in Loadout</h3>
+                <div class="option-item">
+                    <input type="checkbox" id="include-equipment" class="option-checkbox" checked>
+                    <label for="include-equipment" class="option-label">All Equipment</label>
+                </div>
+                <div class="option-item">
+                    <input type="checkbox" id="include-skills" class="option-checkbox" checked>
+                    <label for="include-skills" class="option-label">Skill Point Allocation</label>
+                </div>
+                <div class="option-item">
+                    <input type="checkbox" id="include-cosmetics" class="option-checkbox">
+                    <label for="include-cosmetics" class="option-label">Cosmetic Appearance</label>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <button class="btn btn-clear">Clear All</button>
+                <button class="btn btn-cancel">Cancel</button>
+                <button class="btn btn-save">Save Loadout</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Drag and Drop functionality
+        let draggedElement = null;
+
+        // Add drag listeners to ability items
+        document.querySelectorAll('.ability-item').forEach(item => {
+            item.addEventListener('dragstart', handleDragStart);
+            item.addEventListener('dragend', handleDragEnd);
+        });
+
+        // Add drop listeners to slot containers
+        document.querySelectorAll('.slot-container').forEach(slot => {
+            slot.addEventListener('dragover', handleDragOver);
+            slot.addEventListener('drop', handleDrop);
+            slot.addEventListener('dragleave', handleDragLeave);
+        });
+
+        function handleDragStart(e) {
+            draggedElement = this;
+            this.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'copy';
+        }
+
+        function handleDragEnd(e) {
+            this.classList.remove('dragging');
+        }
+
+        function handleDragOver(e) {
+            if (e.preventDefault) {
+                e.preventDefault();
+            }
+            this.classList.add('drag-over');
+            return false;
+        }
+
+        function handleDragLeave(e) {
+            this.classList.remove('drag-over');
+        }
+
+        function handleDrop(e) {
+            if (e.stopPropagation) {
+                e.stopPropagation();
+            }
+            
+            this.classList.remove('drag-over');
+            
+            // Check if slot type matches ability type
+            const slotType = this.dataset.slotType;
+            const abilityElement = draggedElement.cloneNode(true);
+            
+            // Validate drop
+            if (slotType === 'ultimate' && !draggedElement.classList.contains('ultimate')) {
+                return false;
+            }
+            if (slotType === 'aura' && !draggedElement.classList.contains('aura')) {
+                return false;
+            }
+            
+            // Clear slot and add new ability
+            this.innerHTML = '';
+            this.appendChild(abilityElement);
+            this.classList.add('filled');
+            
+            // Add remove button
+            const removeBtn = document.createElement('button');
+            removeBtn.className = 'remove-btn';
+            removeBtn.innerHTML = '×';
+            removeBtn.onclick = () => clearSlot(this);
+            this.appendChild(removeBtn);
+            
+            return false;
+        }
+
+        function clearSlot(slot) {
+            slot.innerHTML = '<span class="empty-slot-text">' + 
+                (slot.dataset.slotIndex ? `Slot ${slot.dataset.slotIndex}` : 'Drag Here') + 
+                '</span>';
+            slot.classList.remove('filled');
+        }
+
+        // Filter functionality
+        document.querySelectorAll('.filter-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                // Add filter logic here
+            });
+        });
+
+        // Clear all button
+        document.querySelector('.btn-clear').addEventListener('click', function() {
+            if (confirm('Clear all abilities from this loadout?')) {
+                document.querySelectorAll('.slot-container').forEach(slot => {
+                    clearSlot(slot);
+                });
+            }
+        });
+
+        // Save button
+        document.querySelector('.btn-save').addEventListener('click', function() {
+            alert('Loadout saved!');
+        });
+
+        // Cancel button
+        document.querySelector('.btn-cancel').addEventListener('click', function() {
+            if (confirm('Discard changes?')) {
+                window.history.back();
+            }
+        });
+    </script>
+</body>
+</html>

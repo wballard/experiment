@@ -1,0 +1,763 @@
+/* Skills System Styles */
+
+/* Bonus Cards Styles */
+.summary-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md);
+}
+
+.bonus-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-sm) 0;
+    border-bottom: 1px solid rgba(51, 51, 51, 0.5);
+}
+
+.bonus-item:last-child {
+    border-bottom: none;
+}
+
+.bonus-name {
+    font-size: 11px;
+    color: var(--text-normal);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.bonus-value {
+    font-size: 12px;
+    color: var(--primary-cyan);
+    font-family: var(--font-mono);
+    font-weight: bold;
+}
+
+/* Capstone Skill Styling */
+.skill-node.capstone {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.2) 0%, rgba(255, 165, 0, 0.1) 100%);
+    border: 2px solid #ffd700;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+    position: relative;
+}
+
+.skill-node.capstone::before {
+    content: '★';
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    font-size: 16px;
+    color: #ffd700;
+    text-shadow: 0 0 4px rgba(255, 215, 0, 0.8);
+}
+
+.skill-node.capstone:hover {
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+    transform: scale(1.05);
+}
+
+.skill-node.capstone.locked {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 165, 0, 0.05) 100%);
+    border-color: rgba(255, 215, 0, 0.5);
+}
+.skills-container {
+    padding: 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.skills-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #333;
+}
+
+.skills-header h2 {
+    color: #00ffff;
+    font-size: 24px;
+    margin: 0;
+}
+
+.skill-points-info {
+    display: flex;
+    gap: 20px;
+    font-size: 14px;
+}
+
+.points-available {
+    color: #00ff00;
+    font-weight: bold;
+}
+
+.points-total {
+    color: #888;
+}
+
+.element-selector {
+    display: flex;
+    gap: 0;
+    margin-bottom: 30px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #333;
+}
+
+.element-tab {
+    flex: 1;
+    padding: 15px 20px;
+    background: rgba(20, 20, 20, 0.8);
+    border: none;
+    color: #888;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-family: inherit;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-right: 1px solid #333;
+}
+
+.element-tab:last-child {
+    border-right: none;
+}
+
+.element-tab.active {
+    background: linear-gradient(45deg, #00ffff, #0099cc);
+    color: #000;
+    font-weight: bold;
+}
+
+.element-tab:not(.active):hover {
+    background: rgba(0, 255, 255, 0.1);
+    color: #00ffff;
+}
+
+.skill-tree-container {
+    min-height: 600px;
+    position: relative;
+    padding: 20px;
+    background: rgba(10, 10, 10, 0.6);
+    border-radius: 8px;
+}
+
+.skill-tree {
+    display: none;
+    position: relative;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.tier-section {
+    margin-bottom: 60px;
+    position: relative;
+}
+
+.tier-title {
+    color: #ff6600;
+    font-size: 14px;
+    margin-bottom: 30px;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: bold;
+    padding: 8px 16px;
+    background: rgba(255, 102, 0, 0.1);
+    border: 1px solid #ff6600;
+    border-radius: 4px;
+    display: inline-block;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.skills-row {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 30px 40px;
+    justify-items: center;
+    margin: 0 auto;
+    max-width: 600px;
+    position: relative;
+}
+
+.skill-node {
+    width: 64px;
+    height: 64px;
+    background: linear-gradient(135deg, #2a2a2a, #1a1a1a);
+    border: 3px solid #444;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: visible;
+}
+
+.skill-node:hover {
+    border-color: #00ffff;
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
+    z-index: 10;
+}
+
+.skill-node.locked {
+    opacity: 0.4;
+    cursor: not-allowed;
+    border-color: #333;
+    background: linear-gradient(135deg, #1a1a1a, #0a0a0a);
+}
+
+.skill-node.locked:hover {
+    border-color: #333;
+    transform: none;
+    box-shadow: none;
+}
+
+.skill-node.invested {
+    border-color: #ffd700;
+    background: linear-gradient(135deg, #4a4a00, #2a2a00);
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+}
+
+.skill-node.available {
+    border-color: #00ff00;
+    background: linear-gradient(135deg, #003300, #001100);
+    animation: available-pulse 2s infinite;
+}
+
+@keyframes available-pulse {
+    0%, 100% { box-shadow: 0 0 5px rgba(0, 255, 0, 0.3); }
+    50% { box-shadow: 0 0 15px rgba(0, 255, 0, 0.6); }
+}
+
+.skill-icon {
+    font-size: 28px;
+    margin-bottom: 2px;
+    line-height: 1;
+}
+
+.skill-points {
+    color: #00ffff;
+    font-size: 8px;
+    font-weight: bold;
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 1px 3px;
+    border-radius: 2px;
+    min-width: 16px;
+    text-align: center;
+}
+
+.skill-node.invested .skill-points {
+    color: #ffd700;
+    background: rgba(0, 0, 0, 0.9);
+}
+
+.skill-node.maxed .skill-points {
+    color: #ff6600;
+    background: rgba(255, 102, 0, 0.2);
+}
+
+/* Connection Lines */
+.skill-connection {
+    position: absolute;
+    background: #888;
+    z-index: 1;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 3px rgba(136, 136, 136, 0.4);
+}
+
+.skill-connection.active {
+    background: #ffd700;
+    box-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+}
+
+.skill-connection.available {
+    background: #00ff00;
+    box-shadow: 0 0 3px rgba(0, 255, 0, 0.4);
+}
+
+/* SVG Connection Layer for dynamic lines */
+.skill-connections-svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.skill-connection-path {
+    stroke: #404040;
+    stroke-width: 2.5;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    opacity: 0.6;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.skill-connection-path.available {
+    stroke: #00ff88;
+    stroke-width: 3;
+    opacity: 0.9;
+    filter: drop-shadow(0 0 4px rgba(0, 255, 136, 0.3));
+    animation: connection-pulse 2s ease-in-out infinite alternate;
+}
+
+.skill-connection-path.active {
+    stroke: #ffad00;
+    stroke-width: 3.5;
+    opacity: 1;
+    filter: drop-shadow(0 0 6px rgba(255, 173, 0, 0.4));
+}
+
+@keyframes connection-pulse {
+    0% {
+        stroke-width: 3;
+        filter: drop-shadow(0 0 4px rgba(0, 255, 136, 0.3));
+    }
+    100% {
+        stroke-width: 3.5;
+        filter: drop-shadow(0 0 8px rgba(0, 255, 136, 0.5));
+    }
+}
+
+/* Default connection styles for elemental trees */
+.skill-connection.vertical {
+    width: 3px;
+    height: 50px;
+    top: -52px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.skill-connection.horizontal {
+    height: 3px;
+    width: 50px;
+    top: 50%;
+    left: -52px;
+    transform: translateY(-50%);
+}
+
+.skill-connection.diagonal {
+    width: 3px;
+    height: 60px;
+    top: -62px;
+    left: 50%;
+    transform: translateX(-50%) rotate(45deg);
+    transform-origin: bottom;
+}
+
+.skill-connection.diagonal.left {
+    transform: translateX(-50%) rotate(-45deg);
+}
+
+.skill-connection.diagonal.right {
+    transform: translateX(-50%) rotate(45deg);
+}
+
+/* Skill Names */
+.skill-name {
+    font-size: 9px;
+    color: var(--text-dim);
+    text-align: center;
+    margin-top: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    line-height: 1.1;
+    max-width: 100%;
+    word-wrap: break-word;
+}
+
+/* Skill Tooltip */
+.skill-tooltip {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.95);
+    border: 2px solid #00ffff;
+    border-radius: 6px;
+    padding: 12px;
+    max-width: 350px;
+    z-index: 1000;
+    pointer-events: none;
+    font-size: 11px;
+    line-height: 1.4;
+    color: #fff;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.8);
+}
+
+.skill-tooltip .tooltip-title {
+    color: #00ffff;
+    font-weight: bold;
+    font-size: 13px;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+}
+
+.skill-tooltip .tooltip-description {
+    color: #ccc;
+    margin-bottom: 8px;
+}
+
+.skill-tooltip .tooltip-rank {
+    color: #ffd700;
+    font-weight: bold;
+    margin-bottom: 6px;
+}
+
+.skill-tooltip .tooltip-effect {
+    color: #00ff00;
+    margin-bottom: 8px;
+    padding: 6px;
+    background: rgba(0, 255, 0, 0.1);
+    border-radius: 4px;
+    border-left: 3px solid #00ff00;
+}
+
+.skill-tooltip .tooltip-progression {
+    color: #fff;
+    font-weight: bold;
+    margin: 8px 0 4px 0;
+    padding-top: 6px;
+    border-top: 1px solid #333;
+}
+
+.skill-tooltip .tooltip-progression-rank {
+    margin: 3px 0;
+    padding: 4px 6px;
+    border-radius: 3px;
+    font-size: 10px;
+}
+
+.skill-tooltip .tooltip-progression-rank.invested-rank {
+    color: #ffd700;
+    background: rgba(255, 215, 0, 0.1);
+    border-left: 3px solid #ffd700;
+}
+
+.skill-tooltip .tooltip-progression-rank.current-rank {
+    color: #00ff00;
+    background: rgba(0, 255, 0, 0.2);
+    border-left: 3px solid #00ff00;
+}
+
+.skill-tooltip .tooltip-progression-rank.next-rank {
+    color: #00ffff;
+    background: rgba(0, 255, 255, 0.1);
+    border-left: 3px solid #00ffff;
+}
+
+.skill-tooltip .tooltip-progression-rank.future-rank {
+    color: #888;
+    background: rgba(40, 40, 40, 0.3);
+    border-left: 3px solid #444;
+}
+
+.skill-tooltip .tooltip-requirements {
+    color: #ff6600;
+    font-size: 10px;
+    margin-top: 8px;
+    padding-top: 6px;
+    border-top: 1px solid #333;
+}
+
+.skill-tooltip .tooltip-status {
+    margin-top: 8px;
+    padding-top: 6px;
+    border-top: 1px solid #333;
+    font-weight: bold;
+    text-align: center;
+}
+
+/* Class Tree Specific Styles */
+.tier-requirement {
+    color: #888;
+    font-size: 12px;
+    font-weight: normal;
+    text-transform: none;
+    letter-spacing: normal;
+}
+
+.specialization-paths {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+    margin-top: var(--spacing-md);
+}
+
+.path-section {
+    background: rgba(255, 102, 0, 0.05);
+    border: 1px solid rgba(255, 102, 0, 0.2);
+    border-radius: 8px;
+    padding: var(--spacing-md);
+}
+
+.path-title {
+    color: #ff6600;
+    font-size: 14px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: var(--spacing-sm);
+    text-align: center;
+}
+
+.aura-section, .ultimate-section, .capstone-section {
+    margin-top: var(--spacing-lg);
+    padding-top: var(--spacing-md);
+    border-top: 2px solid #444;
+}
+
+.aura-title, .ultimate-title, .capstone-title {
+    color: #00ffff;
+    font-size: 14px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: var(--spacing-md);
+    text-align: center;
+}
+
+.ultimate-title {
+    color: #ff6600;
+}
+
+.capstone-title {
+    color: #ffd700;
+}
+
+.skill-node.ultimate {
+    border-color: #ff6600;
+    background: linear-gradient(135deg, #330000, #220000);
+    box-shadow: 0 0 15px rgba(255, 102, 0, 0.3);
+}
+
+.skill-node.ultimate:hover {
+    border-color: #ff6600;
+    box-shadow: 0 0 25px rgba(255, 102, 0, 0.5);
+}
+
+.skill-node.capstone {
+    border-color: #ffd700;
+    background: linear-gradient(135deg, #333300, #222200);
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+}
+
+.skill-node.capstone:hover {
+    border-color: #ffd700;
+    box-shadow: 0 0 25px rgba(255, 215, 0, 0.5);
+}
+
+/* Unified Skill Grid for Class Tree */
+.unified-skill-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: repeat(7, auto);
+    gap: var(--spacing-lg) var(--spacing-md);
+    padding: var(--spacing-xl);
+    max-width: 800px;
+    margin: 0 auto;
+    position: relative;
+}
+
+/* Modern flat skill nodes with Destiny 2 inspired design */
+#class-tree .skill-node {
+    width: 72px;
+    height: 72px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: linear-gradient(145deg, #1e2328, #0f1419);
+    border: 2px solid #3c3c41;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    position: relative;
+    overflow: visible;
+    cursor: pointer;
+    box-shadow: 
+        0 4px 12px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+#class-tree .skill-node:hover {
+    transform: translateY(-2px) scale(1.05);
+    border-color: #00d4ff;
+    box-shadow: 
+        0 8px 25px rgba(0, 212, 255, 0.3),
+        0 0 20px rgba(0, 212, 255, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    z-index: 10;
+}
+
+#class-tree .skill-node.locked {
+    opacity: 0.3;
+    cursor: not-allowed;
+    border-color: #2d2d30;
+    background: linear-gradient(145deg, #0a0d10, #05070a);
+    box-shadow: 
+        0 2px 6px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+#class-tree .skill-node.locked:hover {
+    transform: none;
+    border-color: #2d2d30;
+    box-shadow: 
+        0 2px 6px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+#class-tree .skill-node.available {
+    border-color: #00ff88;
+    background: linear-gradient(145deg, #0d2818, #061810);
+    box-shadow: 
+        0 4px 15px rgba(0, 255, 136, 0.3),
+        0 0 20px rgba(0, 255, 136, 0.15),
+        inset 0 1px 0 rgba(0, 255, 136, 0.1);
+    animation: available-glow 2s ease-in-out infinite alternate;
+}
+
+#class-tree .skill-node.invested {
+    border-color: #ffad00;
+    background: linear-gradient(145deg, #2d1f00, #1a1100);
+    box-shadow: 
+        0 6px 20px rgba(255, 173, 0, 0.4),
+        0 0 25px rgba(255, 173, 0, 0.2),
+        inset 0 1px 0 rgba(255, 173, 0, 0.15);
+}
+
+@keyframes available-glow {
+    0% {
+        box-shadow: 
+            0 4px 15px rgba(0, 255, 136, 0.3),
+            0 0 20px rgba(0, 255, 136, 0.15),
+            inset 0 1px 0 rgba(0, 255, 136, 0.1);
+    }
+    100% {
+        box-shadow: 
+            0 6px 20px rgba(0, 255, 136, 0.5),
+            0 0 30px rgba(0, 255, 136, 0.25),
+            inset 0 1px 0 rgba(0, 255, 136, 0.2);
+    }
+}
+
+#class-tree .skill-icon {
+    font-size: 28px;
+    margin: 0;
+    line-height: 1;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+    transition: all 0.3s ease;
+}
+
+#class-tree .skill-node:hover .skill-icon {
+    transform: scale(1.1);
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
+}
+
+#class-tree .skill-points {
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    font-size: 10px;
+    color: #ffffff;
+    background: linear-gradient(145deg, #1a1d23, #0f1419);
+    border: 1px solid #3c3c41;
+    padding: 2px 6px;
+    border-radius: 8px;
+    font-weight: 600;
+    min-width: 20px;
+    text-align: center;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+#class-tree .skill-node.available .skill-points {
+    color: #ffffff;
+    background: linear-gradient(145deg, #0d2818, #061810);
+    border-color: #00ff88;
+    box-shadow: 0 0 8px rgba(0, 255, 136, 0.3);
+}
+
+#class-tree .skill-node.invested .skill-points {
+    color: #ffffff;
+    background: linear-gradient(145deg, #2d1f00, #1a1100);
+    border-color: #ffad00;
+    box-shadow: 0 0 8px rgba(255, 173, 0, 0.3);
+}
+
+#class-tree .skill-name {
+    display: none;
+}
+
+/* Tier Progress Indicators */
+.tier-indicator {
+    font-size: 10px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: 1px solid;
+    transition: all 0.3s ease;
+}
+
+.tier-indicator.tier-locked {
+    background: #1a1d23;
+    border-color: #2d2d30;
+    color: #666;
+}
+
+.tier-indicator.tier-available {
+    background: linear-gradient(145deg, #0d2818, #061810);
+    border-color: #00ff88;
+    color: #00ff88;
+    box-shadow: 0 0 8px rgba(0, 255, 136, 0.2);
+}
+
+.tier-indicator.tier-complete {
+    background: linear-gradient(145deg, #2d1f00, #1a1100);
+    border-color: #ffad00;
+    color: #ffad00;
+    box-shadow: 0 0 8px rgba(255, 173, 0, 0.2);
+}
+
+/* Responsive adjustments for class tree */
+@media (max-width: 1200px) {
+    .specialization-paths {
+        gap: var(--spacing-md);
+    }
+    
+    .path-section {
+        padding: var(--spacing-sm);
+    }
+    
+    #class-tree .skills-row {
+        grid-template-columns: repeat(6, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .specialization-paths {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+    }
+    
+    #class-tree .skills-row {
+        grid-template-columns: repeat(4, 1fr);
+    }
+    
+    .path-title, .aura-title, .ultimate-title, .capstone-title {
+        font-size: 12px;
+    }
+}

@@ -1,0 +1,33 @@
+<!-- Inventory Page Component -->
+<div class="inventory-container">
+    <div class="inventory-header">
+        <h2>INVENTORY</h2>
+        <div class="inventory-filters">
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="weapons">Weapons</button>
+            <button class="filter-btn" data-filter="armor">Armor</button>
+            <button class="filter-btn" data-filter="legendary">Legendary</button>
+        </div>
+    </div>
+
+    <div class="inventory-content">
+        <div class="inventory-grid" id="inventoryGrid">
+            <!-- Items will be loaded dynamically -->
+        </div>
+
+        <div class="inventory-actions">
+            <div class="selected-item-info" id="selectedItemInfo">
+                <h3>Select an item to view details</h3>
+            </div>
+            
+            <div class="action-buttons">
+                <button class="btn btn-primary" id="equipButton" disabled>Equip</button>
+                <button class="btn btn-secondary" id="enhanceButton" disabled>Enhance</button>
+                <button class="btn btn-secondary" id="modifyButton" disabled>Modify</button>
+                <button class="btn btn-danger" id="sellButton" disabled>Sell</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<link rel="stylesheet" href="../../assets/css/inventory.css">

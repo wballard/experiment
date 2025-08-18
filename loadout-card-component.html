@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loadout Card Component</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0e1a;
+            color: #ffffff;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .loadout-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Loadout Preset Buttons */
+        .loadout-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .loadout-tab {
+            background: #1a1f2e;
+            border: 2px solid #2a3142;
+            color: #8892a8;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            font-weight: 600;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .loadout-tab:hover {
+            background: #242936;
+            border-color: #3a4152;
+            transform: translateY(-1px);
+        }
+
+        .loadout-tab.active {
+            background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+            border-color: #667eea;
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .loadout-tab.empty {
+            border-style: dashed;
+            opacity: 0.6;
+        }
+
+        .loadout-tab.empty:hover {
+            opacity: 0.8;
+        }
+
+        /* Main Loadout Card */
+        .loadout-card {
+            background: linear-gradient(135deg, #1a1f2e 0%, #151922 100%);
+            border: 2px solid #2a3142;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .loadout-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .loadout-title {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .edit-button {
+            background: #2a3142;
+            border: 1px solid #3a4152;
+            color: #8892a8;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .edit-button:hover {
+            background: #3a4152;
+            color: #ffffff;
+        }
+
+        /* Ability Sections */
+        .ability-section {
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-size: 14px;
+            color: #8892a8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .abilities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 12px;
+        }
+
+        .ability-slot {
+            background: #0f1419;
+            border: 2px solid #2a3142;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .ability-slot:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        .ability-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            margin: 0 auto 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .ability-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 4px;
+        }
+
+        .ability-cooldown {
+            font-size: 11px;
+            color: #8892a8;
+        }
+
+        /* Ultimate Slot */
+        .ultimate-slot {
+            background: linear-gradient(135deg, #1a1f2e 0%, #0f1419 100%);
+            border: 3px solid #f6ad55;
+            box-shadow: 0 0 20px rgba(246, 173, 85, 0.3);
+        }
+
+        .ultimate-slot .ability-icon {
+            background: linear-gradient(135deg, #f6ad55 0%, #ed8936 100%);
+            width: 56px;
+            height: 56px;
+        }
+
+        /* Aura and Weapon Passive */
+        .passive-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .passive-slot {
+            background: #0f1419;
+            border: 2px solid #2a3142;
+            border-radius: 8px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* Aura Slot Special Styling */
+        .aura-slot {
+            background: linear-gradient(135deg, #1a1f2e 0%, #0f1419 100%);
+            border: 3px solid #a78bfa;
+            box-shadow: 0 0 20px rgba(167, 139, 250, 0.3);
+        }
+
+        .aura-slot .passive-icon {
+            background: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%);
+        }
+
+        .passive-icon {
+            width: 40px;
+            height: 40px;
+            background: #2a3142;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .passive-info {
+            flex: 1;
+        }
+
+        .passive-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .passive-desc {
+            font-size: 12px;
+            color: #8892a8;
+        }
+
+        /* Class Passives Grid */
+        .passive-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .passive-item {
+            background: #0f1419;
+            border: 1px solid #2a3142;
+            border-radius: 6px;
+            padding: 10px;
+            font-size: 13px;
+        }
+
+        .passive-item-name {
+            color: #a78bfa;
+            font-weight: 600;
+            margin-right: 5px;
+        }
+
+        .passive-item-desc {
+            color: #8892a8;
+        }
+
+        /* Equipment Preview */
+        .equipment-preview {
+            background: #0f1419;
+            border: 1px solid #2a3142;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+
+        .equipment-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .equipment-slot {
+            aspect-ratio: 1;
+            background: #1a1f2e;
+            border: 2px solid #2a3142;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: #8892a8;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #2a3142;
+            color: #8892a8;
+            border: 1px solid #3a4152;
+        }
+
+        .btn-secondary:hover {
+            background: #3a4152;
+            color: #ffffff;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #8892a8;
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="loadout-container">
+        <!-- Loadout Preset Tabs -->
+        <div class="loadout-tabs">
+            <button class="loadout-tab active" data-loadout="1">
+                Boss Killer
+            </button>
+            <button class="loadout-tab" data-loadout="2">
+                Mob Clear
+            </button>
+            <button class="loadout-tab" data-loadout="3">
+                PvP Duelist
+            </button>
+            <button class="loadout-tab" data-loadout="4">
+                Support
+            </button>
+            <button class="loadout-tab empty" data-loadout="5">
+                + Empty Slot
+            </button>
+        </div>
+
+        <!-- Main Loadout Card -->
+        <div class="loadout-card">
+            <div class="loadout-header">
+                <h1 class="loadout-title">Boss Killer</h1>
+                <button class="edit-button">Edit Loadout</button>
+            </div>
+
+            <!-- Ultimate Ability -->
+            <div class="ability-section">
+                <h3 class="section-title">Ultimate Ability</h3>
+                <div class="abilities-grid">
+                    <div class="ability-slot ultimate-slot">
+                        <div class="ability-icon">🎯</div>
+                        <div class="ability-name">High Noon</div>
+                        <div class="ability-cooldown">120s cooldown</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Abilities -->
+            <div class="ability-section">
+                <h3 class="section-title">Active Abilities</h3>
+                <div class="abilities-grid">
+                    <div class="ability-slot">
+                        <div class="ability-icon">🔫</div>
+                        <div class="ability-name">Fan Hammer</div>
+                        <div class="ability-cooldown">25s</div>
+                    </div>
+                    <div class="ability-slot">
+                        <div class="ability-icon">💫</div>
+                        <div class="ability-name">Ricochet</div>
+                        <div class="ability-cooldown">20s</div>
+                    </div>
+                    <div class="ability-slot">
+                        <div class="ability-icon">🔥</div>
+                        <div class="ability-name">Fireball</div>
+                        <div class="ability-cooldown">15s</div>
+                    </div>
+                    <div class="ability-slot">
+                        <div class="ability-icon">🎲</div>
+                        <div class="ability-name">All In</div>
+                        <div class="ability-cooldown">35s</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Passive Abilities -->
+            <div class="passive-section">
+                <div class="passive-slot aura-slot">
+                    <div class="passive-icon">✨</div>
+                    <div class="passive-info">
+                        <div class="passive-name">Sharpshooter's Eye</div>
+                        <div class="passive-desc">Team: +10% crit chance</div>
+                    </div>
+                </div>
+                <div class="passive-slot">
+                    <div class="passive-icon">🎯</div>
+                    <div class="passive-info">
+                        <div class="passive-name">Sniper Specialist</div>
+                        <div class="passive-desc">+200% first shot damage</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Class Passives -->
+            <div class="ability-section">
+                <h3 class="section-title">Class Passives</h3>
+                <div class="passive-grid">
+                    <div class="passive-item">
+                        <span class="passive-item-name">Dead Eye:</span>
+                        <span class="passive-item-desc">+25% critical hit chance</span>
+                    </div>
+                    <div class="passive-item">
+                        <span class="passive-item-name">Lucky Streak:</span>
+                        <span class="passive-item-desc">20% chance for no cooldowns on kill</span>
+                    </div>
+                    <div class="passive-item">
+                        <span class="passive-item-name">Never Miss:</span>
+                        <span class="passive-item-desc">30% missed shots redirect</span>
+                    </div>
+                    <div class="passive-item">
+                        <span class="passive-item-name">Ace in the Hole:</span>
+                        <span class="passive-item-desc">Emergency bullet (300% damage)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Equipment Preview -->
+            <div class="equipment-preview">
+                <h3 class="section-title">Equipment</h3>
+                <div class="equipment-grid">
+                    <div class="equipment-slot">🔫</div>
+                    <div class="equipment-slot">🔫</div>
+                    <div class="equipment-slot">🛡️</div>
+                    <div class="equipment-slot">🧤</div>
+                    <div class="equipment-slot">👢</div>
+                    <div class="equipment-slot">💍</div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <button class="btn btn-primary">Activate Loadout</button>
+                <button class="btn btn-secondary">Share Loadout</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Loadout switching functionality
+        const loadoutTabs = document.querySelectorAll('.loadout-tab');
+        const loadoutTitle = document.querySelector('.loadout-title');
+        
+        // Sample loadout data
+        const loadouts = {
+            1: { name: 'Boss Killer', equipped: true },
+            2: { name: 'Mob Clear', equipped: true },
+            3: { name: 'PvP Duelist', equipped: true },
+            4: { name: 'Support', equipped: true },
+            5: { name: 'Empty Slot', equipped: false }
+        };
+
+        loadoutTabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                const loadoutId = this.dataset.loadout;
+                
+                // Update active state
+                loadoutTabs.forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Update card content
+                const loadout = loadouts[loadoutId];
+                
+                if (loadout.equipped) {
+                    loadoutTitle.textContent = loadout.name;
+                    // Here you would update all the ability slots and equipment
+                    // based on the selected loadout data
+                } else {
+                    // Show empty state or redirect to create new loadout
+                    alert('Create a new loadout');
+                }
+            });
+        });
+
+        // Edit button functionality
+        document.querySelector('.edit-button').addEventListener('click', function() {
+            alert('Opening loadout editor...');
+        });
+
+        // Activate loadout button
+        document.querySelector('.btn-primary').addEventListener('click', function() {
+            this.textContent = 'Activated!';
+            setTimeout(() => {
+                this.textContent = 'Activate Loadout';
+            }, 2000);
+        });
+    </script>
+</body>
+</html>

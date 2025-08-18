@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Dashboard - Courier</title>
+    <link rel="stylesheet" href="../assets/css/design-system.css?v=13">
+    <link rel="stylesheet" href="../assets/css/main.css?v=13">
+    <link rel="stylesheet" href="../assets/css/game.css?v=13">
+    <style>
+        /* Power Budget Progress Bar Styles */
+        .power-progress-bar {
+            width: 100% !important;
+            height: 12px !important;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.8) 0%, rgba(20, 20, 20, 0.8) 100%) !important;
+            border: 1px solid #444 !important;
+            border-radius: 6px !important;
+            overflow: hidden !important;
+            position: relative !important;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+            display: block !important;
+        }
+
+        .power-progress-fill {
+            height: 100% !important;
+            background: linear-gradient(135deg, #ff6600 0%, #ffaa44 50%, #ff8800 100%) !important;
+            transition: width 0.8s ease !important;
+            border-radius: 4px !important;
+            position: relative !important;
+            box-shadow: 0 0 8px rgba(255, 102, 0, 0.4) !important;
+            display: block !important;
+        }
+
+        .power-progress-fill::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 40%;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(255, 255, 255, 0.3) 50%, 
+                transparent 100%);
+            border-radius: 4px 4px 0 0;
+        }
+
+        .power-progress-fill.over-capacity {
+            background: linear-gradient(135deg, #ff0000 0%, #ff4444 50%, #cc0000 100%) !important;
+            box-shadow: 0 0 12px rgba(255, 0, 0, 0.6) !important;
+            animation: power-warning 1.5s ease-in-out infinite;
+        }
+
+        @keyframes power-warning {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* Defense Stats Styles */
+        .defense-stats {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-lg);
+        }
+
+        .defense-category {
+            background: var(--bg-medium);
+            border: 1px solid var(--border-gray);
+            border-radius: 4px;
+            padding: var(--spacing-md);
+        }
+
+        .defense-category-title {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            font-size: 14px;
+            color: var(--primary-cyan);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: var(--spacing-md);
+            border-bottom: 1px solid var(--border-gray);
+            padding-bottom: var(--spacing-sm);
+        }
+
+        .defense-icon {
+            font-size: 16px;
+        }
+
+        .defense-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: var(--spacing-sm);
+        }
+
+        .defense-stat {
+            background: var(--bg-dark);
+            border: 1px solid var(--border-gray);
+            border-radius: 4px;
+            padding: var(--spacing-sm);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .defense-stat:hover {
+            border-color: var(--primary-cyan);
+            background: var(--bg-light);
+        }
+
+        .defense-stat-label {
+            font-size: 11px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .defense-stat-value {
+            font-size: 16px;
+            color: var(--text-bright);
+            font-weight: 600;
+        }
+
+        /* Resistance Grid */
+        .resistance-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: var(--spacing-sm);
+        }
+
+        .resistance-stat {
+            background: var(--bg-dark);
+            border: 1px solid var(--border-gray);
+            border-radius: 4px;
+            padding: var(--spacing-sm);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            transition: all 0.3s ease;
+        }
+
+        .resistance-stat:hover {
+            border-color: var(--primary-cyan);
+            background: var(--bg-light);
+        }
+
+        .resistance-icon {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        .resistance-icon.fire {
+            background: rgba(255, 102, 0, 0.2);
+            border: 1px solid rgba(255, 102, 0, 0.4);
+        }
+
+        .resistance-icon.ice {
+            background: rgba(135, 206, 235, 0.2);
+            border: 1px solid rgba(135, 206, 235, 0.4);
+        }
+
+        .resistance-icon.electric {
+            background: rgba(255, 255, 0, 0.2);
+            border: 1px solid rgba(255, 255, 0, 0.4);
+        }
+
+        .resistance-icon.earth {
+            background: rgba(139, 69, 19, 0.2);
+            border: 1px solid rgba(139, 69, 19, 0.4);
+        }
+
+        .resistance-icon.nature {
+            background: rgba(34, 139, 34, 0.2);
+            border: 1px solid rgba(34, 139, 34, 0.4);
+        }
+
+        .resistance-info {
+            flex: 1;
+        }
+
+        .resistance-label {
+            font-size: 11px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 2px;
+        }
+
+        .resistance-value {
+            font-size: 14px;
+            color: var(--text-bright);
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Header -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <div class="nav-logo"></div>
+            <div>
+                <div class="nav-username">AGENT RECON-7</div>
+                <div class="nav-level">LEVEL 60 • PARAGON 40</div>
+            </div>
+        </div>
+        <div class="nav-menu">
+            <a href="dashboard.html" class="nav-item active">CHARACTER</a>
+            <a href="../inventory.html" class="nav-item">INVENTORY</a>
+            <a href="../missions.html" class="nav-item">MISSIONS</a>
+            <a href="../skills.html" class="nav-item">SKILLS</a>
+            <a href="../loadouts.html" class="nav-item">LOADOUTS</a>
+            <a href="../build-planner.html" class="nav-item">BUILD PLANNER</a>
+            <a href="../marketplace.html" class="nav-item">MARKET</a>
+            <a href="../crafting.html" class="nav-item">CRAFTING</a>
+        </div>
+    </nav>
+
+
+    <!-- Main Content -->
+    <div class="page-container">
+        <!-- Character Page -->
+        <div class="page-header">
+            <h1 class="page-title">CHARACTER OVERVIEW</h1>
+        </div>
+
+        <div class="grid-2" style="gap: var(--spacing-lg);">
+            <!-- Power Budget & Equipment Card -->
+            <div class="sidebar" style="min-width: 300px; max-width: 350px; background: var(--bg-medium); border: 1px solid var(--border-gray); border-radius: 4px; padding: var(--spacing-md);">
+                <div class="card-header">
+                    <h2 class="card-title">Power Budget</h2>
+                </div>
+                <div class="card-accent"></div>
+                
+                <div style="margin-bottom: var(--spacing-lg);">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: var(--spacing-xs);">
+                        <span class="text-dim">USED</span>
+                        <span class="text-cyan"><span class="power-used">0</span> / <span class="power-max">2140</span></span>
+                    </div>
+                    <div class="power-progress-bar">
+                        <div class="power-progress-fill" style="width: 0%;"></div>
+                    </div>
+                </div>
+
+                <!-- Equipment Slots -->
+                <div class="card-header">
+                    <h3 class="card-title">Equipped Items</h3>
+                </div>
+                <div class="card-accent"></div>
+                
+                <div class="equipment-grid">
+                    <div class="equipment-slot" data-slot="primary">
+                        <div class="equipment-placeholder">Primary</div>
+                    </div>
+                    <div class="equipment-slot" data-slot="secondary">
+                        <div class="equipment-placeholder">Secondary</div>
+                    </div>
+                    <div class="equipment-slot" data-slot="head">
+                        <div class="equipment-placeholder">Head</div>
+                    </div>
+                    <div class="equipment-slot" data-slot="shoulders">
+                        <div class="equipment-placeholder">Shoulders</div>
+                    </div>
+                    <div class="equipment-slot" data-slot="chest">
+                        <div class="equipment-placeholder">Chest</div>
+                    </div>
+                    <div class="equipment-slot" data-slot="gloves">
+                        <div class="equipment-placeholder">Gloves</div>
+                    </div>
+                    <div class="equipment-slot" data-slot="legs">
+                        <div class="equipment-placeholder">Legs</div>
+                    </div>
+                    <div class="equipment-slot" data-slot="back">
+                        <div class="equipment-placeholder">Back</div>
+                    </div>
+                    <div class="equipment-slot" data-slot="bracers">
+                        <div class="equipment-placeholder">Bracers</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Core Stats Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Core Attributes</h2>
+                </div>
+                <div class="card-accent"></div>
+                
+                <div class="stat-group">
+                    <div class="stat-item">
+                        <div class="stat-label">
+                            <span class="stat-icon">⚡</span>
+                            VIGOR
+                        </div>
+                        <div class="stat-value">280</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">
+                            <span class="stat-icon">👁</span>
+                            FOCUS
+                        </div>
+                        <div class="stat-value">310</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">
+                            <span class="stat-icon">💪</span>
+                            FORCE
+                        </div>
+                        <div class="stat-value">245</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">
+                            <span class="stat-icon">🏃</span>
+                            MOMENTUM
+                        </div>
+                        <div class="stat-value">195</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">
+                            <span class="stat-icon">🔮</span>
+                            RESONANCE
+                        </div>
+                        <div class="stat-value">220</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">
+                            <span class="stat-icon">🛡</span>
+                            DEFENSE
+                        </div>
+                        <div class="stat-value">165</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Defense Stats Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Defensive Stats</h2>
+                </div>
+                <div class="card-accent"></div>
+                
+                <div class="defense-stats">
+                    <!-- Health & Energy -->
+                    <div class="defense-category">
+                        <h3 class="defense-category-title">
+                            <span class="defense-icon">❤️</span>
+                            Health & Energy
+                        </h3>
+                        <div class="defense-grid">
+                            <div class="defense-stat">
+                                <div class="defense-stat-label">Health</div>
+                                <div class="defense-stat-value" id="total-health">3,250</div>
+                            </div>
+                            <div class="defense-stat">
+                                <div class="defense-stat-label">Health Regen</div>
+                                <div class="defense-stat-value" id="health-regen">165/sec</div>
+                            </div>
+                            <div class="defense-stat">
+                                <div class="defense-stat-label">Energy</div>
+                                <div class="defense-stat-value" id="total-energy">1,125</div>
+                            </div>
+                            <div class="defense-stat">
+                                <div class="defense-stat-label">Energy Regen</div>
+                                <div class="defense-stat-value" id="energy-regen">58/sec</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Damage Mitigation -->
+                    <div class="defense-category">
+                        <h3 class="defense-category-title">
+                            <span class="defense-icon">🛡️</span>
+                            Damage Mitigation
+                        </h3>
+                        <div class="defense-grid">
+                            <div class="defense-stat">
+                                <div class="defense-stat-label">Armor</div>
+                                <div class="defense-stat-value" id="total-armor">1,320</div>
+                            </div>
+                            <div class="defense-stat">
+                                <div class="defense-stat-label">Damage Reduction</div>
+                                <div class="defense-stat-value" id="damage-reduction">35%</div>
+                            </div>
+                            <div class="defense-stat">
+                                <div class="defense-stat-label">Block Chance</div>
+                                <div class="defense-stat-value" id="block-chance">18%</div>
+                            </div>
+                            <div class="defense-stat">
+                                <div class="defense-stat-label">Dodge Chance</div>
+                                <div class="defense-stat-value" id="dodge-chance">12%</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Elemental Resistances -->
+                    <div class="defense-category">
+                        <h3 class="defense-category-title">
+                            <span class="defense-icon">🔥</span>
+                            Elemental Resistances
+                        </h3>
+                        <div class="resistance-grid">
+                            <div class="resistance-stat">
+                                <div class="resistance-icon fire">🔥</div>
+                                <div class="resistance-info">
+                                    <div class="resistance-label">Fire</div>
+                                    <div class="resistance-value" id="fire-resistance">15%</div>
+                                </div>
+                            </div>
+                            <div class="resistance-stat">
+                                <div class="resistance-icon ice">❄️</div>
+                                <div class="resistance-info">
+                                    <div class="resistance-label">Ice</div>
+                                    <div class="resistance-value" id="ice-resistance">12%</div>
+                                </div>
+                            </div>
+                            <div class="resistance-stat">
+                                <div class="resistance-icon electric">⚡</div>
+                                <div class="resistance-info">
+                                    <div class="resistance-label">Electric</div>
+                                    <div class="resistance-value" id="electric-resistance">18%</div>
+                                </div>
+                            </div>
+                            <div class="resistance-stat">
+                                <div class="resistance-icon earth">🌍</div>
+                                <div class="resistance-info">
+                                    <div class="resistance-label">Earth</div>
+                                    <div class="resistance-value" id="earth-resistance">8%</div>
+                                </div>
+                            </div>
+                            <div class="resistance-stat">
+                                <div class="resistance-icon nature">🌿</div>
+                                <div class="resistance-info">
+                                    <div class="resistance-label">Nature</div>
+                                    <div class="resistance-value" id="nature-resistance">22%</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Status Effects -->
+                    <div class="defense-category">
+                        <h3 class="defense-category-title">
+                            <span class="defense-icon">🌀</span>
+                            Status Resistance
+                        </h3>
+                        <div class="defense-grid">
+                            <div class="defense-stat">
+                                <div class="defense-stat-label">Stun Resistance</div>
+                                <div class="defense-stat-value" id="stun-resistance">25%</div>
+                            </div>
+                            <div class="defense-stat">
+                                <div class="defense-stat-label">Slow Resistance</div>
+                                <div class="defense-stat-value" id="slow-resistance">30%</div>
+                            </div>
+                            <div class="defense-stat">
+                                <div class="defense-stat-label">DoT Resistance</div>
+                                <div class="defense-stat-value" id="dot-resistance">20%</div>
+                            </div>
+                            <div class="defense-stat">
+                                <div class="defense-stat-label">Effect Duration</div>
+                                <div class="defense-stat-value" id="effect-duration">-15%</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer style="padding: 20px; text-align: center; font-size: 10px; color: #666; border-top: 1px solid #333; margin-top: 40px;">
+        <a href="../changelog.html" style="color: #666; text-decoration: none; border-bottom: 1px dotted #666;">CHANGELOG</a> • 
+        <a href="../specs/index.html" style="color: #666; text-decoration: none; border-bottom: 1px dotted #666;">SPECS</a> • 
+        <a href="../tuning/index.html" style="color: #666; text-decoration: none; border-bottom: 1px dotted #666;">TUNING</a> • 
+        LAST UPDATED: 2025-08-16 11:52 PM CST • INTERFACE: Streamlined dashboard layout • SPECS: Complete documentation system
+    </footer>
+
+    <!-- Load page-specific components -->
+    <script src="../assets/js/main.js"></script>
+    <script src="../assets/js/tooltips.js"></script>
+    <script src="../assets/js/inventory.js"></script>
+    <script src="../assets/js/navigation.js"></script>
+    <script src="../assets/js/character.js"></script>
+    <script>
+        // Initialize equipment display on dashboard
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log('Dashboard loaded - initializing equipment display');
+            
+            // Initialize equipment functionality
+            if (window.InventorySystem) {
+                await window.InventorySystem.loadInventoryData();
+                window.InventorySystem.loadEquippedItems();
+                window.InventorySystem.updateEquippedItemsDisplay();
+                window.InventorySystem.updatePowerBudget();
+                window.InventorySystem.setupEquipmentSlots();
+            }
+        });
+    </script>
+</body>
+</html>

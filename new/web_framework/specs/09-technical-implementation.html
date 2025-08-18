@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Technical Implementation - Courier Specifications</title>
+    <link rel="stylesheet" href="../assets/css/design-system.css?v=13">
+    <link rel="stylesheet" href="../assets/css/main.css?v=13">
+    <link rel="stylesheet" href="../assets/css/game.css?v=13">
+    <style>
+        .breadcrumb {
+            color: var(--text-dim);
+            font-size: 12px;
+            margin-bottom: var(--spacing-lg);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .breadcrumb a {
+            color: var(--primary-cyan);
+            text-decoration: none;
+        }
+        .breadcrumb a:hover {
+            color: var(--text-bright);
+        }
+        .doc-nav-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: var(--spacing-xl);
+            padding: var(--spacing-lg);
+            background: var(--bg-dark);
+            border: 1px solid var(--border-gray);
+        }
+        .doc-nav-bottom a {
+            color: var(--primary-cyan);
+            text-decoration: none;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border: 1px solid var(--border-gray);
+            background: var(--bg-medium);
+            transition: all 0.3s ease;
+        }
+        .doc-nav-bottom a:hover {
+            border-color: var(--primary-cyan);
+            background: var(--bg-light);
+        }
+        .content-section {
+            margin-bottom: var(--spacing-xl);
+        }
+        .highlight-box {
+            background: var(--bg-dark);
+            border: 1px solid var(--primary-orange);
+            padding: var(--spacing-lg);
+            margin: var(--spacing-lg) 0;
+        }
+        .highlight-box h3 {
+            color: var(--primary-orange);
+            margin-bottom: var(--spacing-md);
+        }
+        .toc {
+            background: var(--bg-medium);
+            border: 1px solid var(--border-gray);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+        .toc h3 {
+            color: var(--primary-cyan);
+            margin-bottom: var(--spacing-md);
+        }
+        .toc ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        .toc li {
+            margin-bottom: var(--spacing-sm);
+        }
+        .toc a {
+            color: var(--text-normal);
+            text-decoration: none;
+            font-size: 13px;
+        }
+        .toc a:hover {
+            color: var(--primary-cyan);
+        }
+        .code-block {
+            background: #1a1a1a;
+            border: 1px solid var(--border-gray);
+            padding: var(--spacing-lg);
+            margin: var(--spacing-lg) 0;
+            font-family: 'Courier New', Consolas, monospace;
+            overflow-x: auto;
+            border-radius: 4px;
+        }
+        .code-block pre {
+            margin: 0;
+            color: #f8f8f2;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+        .code-block .code-comment {
+            color: #6272a4;
+        }
+        .code-block .code-string {
+            color: #f1fa8c;
+        }
+        .code-block .code-keyword {
+            color: #ff79c6;
+        }
+        .code-block .code-function {
+            color: #50fa7b;
+        }
+        .code-block .code-number {
+            color: #bd93f9;
+        }
+        .formula-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--spacing-md);
+            margin: var(--spacing-lg) 0;
+        }
+        .formula-card {
+            background: var(--bg-dark);
+            border: 1px solid var(--primary-cyan);
+            padding: var(--spacing-md);
+        }
+        .formula-card h4 {
+            color: var(--primary-cyan);
+            margin-bottom: var(--spacing-sm);
+            font-size: 14px;
+        }
+        .implementation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--spacing-md);
+            margin: var(--spacing-lg) 0;
+        }
+        .implementation-item {
+            background: var(--bg-medium);
+            padding: var(--spacing-md);
+            border: 1px solid var(--border-gray);
+        }
+        .implementation-item h4 {
+            color: var(--primary-orange);
+            margin-bottom: var(--spacing-sm);
+            font-size: 14px;
+        }
+        .system-section {
+            background: var(--bg-medium);
+            border: 1px solid var(--border-gray);
+            padding: var(--spacing-lg);
+            margin: var(--spacing-lg) 0;
+        }
+        .system-section h3 {
+            color: var(--primary-cyan);
+            margin-bottom: var(--spacing-md);
+        }
+        .inline-code {
+            background: var(--bg-dark);
+            color: var(--primary-cyan);
+            padding: 2px 6px;
+            font-family: monospace;
+            font-size: 12px;
+            border: 1px solid var(--border-gray);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Header -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <div class="nav-logo"></div>
+            <div>
+                <div class="nav-username">COURIER SPECIFICATIONS</div>
+                <div class="nav-level">TECHNICAL IMPLEMENTATION</div>
+            </div>
+        </div>
+        <div class="nav-menu">
+            <a href="../game/dashboard.html" class="nav-item">CHARACTER</a>
+            <a href="../inventory.html" class="nav-item">INVENTORY</a>
+            <a href="../missions.html" class="nav-item">MISSIONS</a>
+            <a href="../skills.html" class="nav-item">SKILLS</a>
+            <a href="../build-planner.html" class="nav-item">BUILD PLANNER</a>
+            <a href="../marketplace.html" class="nav-item">MARKET</a>
+            <a href="../crafting.html" class="nav-item">CRAFTING</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="page-container">
+        <div class="breadcrumb">
+            <a href="index.html">SPECS</a> > TECHNICAL IMPLEMENTATION
+        </div>
+
+        <div class="page-header">
+            <h1 class="page-title">TECHNICAL IMPLEMENTATION</h1>
+            <p style="color: var(--text-normal); margin-top: var(--spacing-md);">Core Formulas & System Integration</p>
+        </div>
+
+        <!-- Table of Contents -->
+        <div class="toc">
+            <h3>📋 TABLE OF CONTENTS</h3>
+            <ul>
+                <li><a href="#philosophy">Implementation Philosophy</a></li>
+                <li><a href="#power-budget">Power Budget System Implementation</a></li>
+                <li><a href="#elemental-system">Elemental System Implementation</a></li>
+                <li><a href="#mission-success">Mission Success Calculation</a></li>
+                <li><a href="#attribute-system">Attribute System Calculations</a></li>
+                <li><a href="#performance">Performance Optimization</a></li>
+            </ul>
+        </div>
+
+        <!-- Implementation Philosophy Section -->
+        <div class="card content-section" id="philosophy">
+            <div class="card-header">
+                <h2 class="card-title">IMPLEMENTATION PHILOSOPHY</h2>
+            </div>
+            <div class="card-accent"></div>
+            
+            <p style="color: var(--text-normal); line-height: 1.6; margin-bottom: var(--spacing-lg);">
+                This document provides the technical foundation for implementing Courier's core systems. All formulas, 
+                validation rules, and integration points are designed to maintain game balance while providing clear, 
+                predictable behavior for both players and developers.
+            </p>
+
+            <div class="highlight-box">
+                <h3>Core Principles</h3>
+                <ul style="color: var(--text-normal); margin: 0; padding-left: 20px;">
+                    <li><strong>Deterministic Systems:</strong> Predictable outcomes from player choices</li>
+                    <li><strong>Scalable Formulas:</strong> Systems that remain balanced across all content levels</li>
+                    <li><strong>Validation Gates:</strong> Prevent exploits and maintain system integrity</li>
+                    <li><strong>Performance Optimization:</strong> Efficient calculations for real-time gameplay</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Power Budget System Implementation Section -->
+        <div class="card content-section" id="power-budget">
+            <div class="card-header">
+                <h2 class="card-title">POWER BUDGET SYSTEM IMPLEMENTATION</h2>
+            </div>
+            <div class="card-accent"></div>
+            
+            <div class="system-section">
+                <h3>Core Calculation Formula</h3>
+                
+                <div class="code-block">
+                    <pre><span class="code-keyword">def</span> <span class="code-function">calculate_total_power_budget</span>(character_level, paragon_level):
+    <span class="code-comment">"""
+    Calculate character's total available power budget
+    
+    Args:
+        character_level: Integer 1-60
+        paragon_level: Integer 0+ (infinite)
+    
+    Returns:
+        Integer representing total power budget
+    """</span>
+    base_budget = <span class="code-number">100</span>
+    level_budget = character_level * <span class="code-number">20</span>
+    paragon_budget = paragon_level  <span class="code-comment"># 1 per paragon level</span>
+    
+    <span class="code-keyword">return</span> base_budget + level_budget + paragon_budget
+
+<span class="code-comment"># Examples:
+# Level 1, 0 Paragon: 100 + 20 + 0 = 120
+# Level 60, 0 Paragon: 100 + 1200 + 0 = 1,300
+# Level 60, 50 Paragon: 100 + 1200 + 50 = 1,350</span></pre>
+                </div>
+            </div>
+
+            <div class="system-section">
+                <h3>Item Power Cost Calculation</h3>
+                
+                <div class="code-block">
+                    <pre><span class="code-keyword">def</span> <span class="code-function">calculate_item_power_cost</span>(item):
+    <span class="code-comment">"""
+    Calculate total power cost for an equipped item
+    
+    Args:
+        item: Dictionary containing item stats and rarity
+    
+    Returns:
+        Float representing adjusted power cost
+    """</span>
+    base_power = <span class="code-number">0</span>
+    
+    <span class="code-comment"># Attribute costs (1 power per point)</span>
+    <span class="code-keyword">for</span> attribute <span class="code-keyword">in</span> item.get(<span class="code-string">'attributes'</span>, {}):
+        base_power += item[<span class="code-string">'attributes'</span>][attribute]
+    
+    <span class="code-comment"># Flat stat costs (varies by stat type)</span>
+    flat_costs = {
+        <span class="code-string">'health'</span>: <span class="code-number">0.1</span>,      <span class="code-comment"># 0.1 power per point</span>
+        <span class="code-string">'shield'</span>: <span class="code-number">0.15</span>,     <span class="code-comment"># 0.15 power per point</span>
+        <span class="code-string">'armor'</span>: <span class="code-number">0.2</span>,       <span class="code-comment"># 0.2 power per point</span>
+        <span class="code-string">'elemental_damage'</span>: <span class="code-number">0.2</span>  <span class="code-comment"># 0.2 power per point</span>
+    }
+    
+    <span class="code-keyword">for</span> stat <span class="code-keyword">in</span> item.get(<span class="code-string">'flat_stats'</span>, {}):
+        cost_per_point = flat_costs.get(stat, <span class="code-number">1.0</span>)
+        base_power += item[<span class="code-string">'flat_stats'</span>][stat] * cost_per_point
+    
+    <span class="code-comment"># Apply rarity efficiency multiplier</span>
+    rarity_multipliers = {
+        <span class="code-string">'common'</span>: <span class="code-number">1.3</span>,      <span class="code-comment"># 30% penalty</span>
+        <span class="code-string">'uncommon'</span>: <span class="code-number">1.15</span>,   <span class="code-comment"># 15% penalty</span>
+        <span class="code-string">'rare'</span>: <span class="code-number">1.0</span>,        <span class="code-comment"># Baseline</span>
+        <span class="code-string">'epic'</span>: <span class="code-number">0.9</span>,        <span class="code-comment"># 10% discount</span>
+        <span class="code-string">'legendary'</span>: <span class="code-number">0.8</span>,   <span class="code-comment"># 20% discount</span>
+        <span class="code-string">'mythic'</span>: <span class="code-number">0.8</span>,      <span class="code-comment"># 20% discount</span>
+        <span class="code-string">'primal'</span>: <span class="code-number">0.75</span>      <span class="code-comment"># 25% discount</span>
+    }
+    
+    rarity = item.get(<span class="code-string">'rarity'</span>, <span class="code-string">'common'</span>)
+    multiplier = rarity_multipliers[rarity]
+    
+    <span class="code-keyword">return</span> base_power * multiplier</pre>
+                </div>
+            </div>
+
+            <div class="system-section">
+                <h3>Power Budget Validation</h3>
+                
+                <div class="code-block">
+                    <pre><span class="code-keyword">def</span> <span class="code-function">validate_equipment_loadout</span>(character):
+    <span class="code-comment">"""
+    Ensure character's equipped items don't exceed power budget
+    
+    Args:
+        character: Character object with level and equipped items
+    
+    Returns:
+        Tuple (is_valid: bool, used_power: float, available_power: int)
+    """</span>
+    total_budget = calculate_total_power_budget(
+        character.level, 
+        character.paragon_level
+    )
+    
+    used_power = <span class="code-number">0</span>
+    <span class="code-keyword">for</span> item <span class="code-keyword">in</span> character.equipped_items:
+        <span class="code-keyword">if</span> item <span class="code-keyword">is not</span> <span class="code-keyword">None</span>:
+            used_power += calculate_item_power_cost(item)
+    
+    is_valid = used_power <= total_budget
+    
+    <span class="code-keyword">return</span> is_valid, used_power, total_budget</pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Elemental System Implementation Section -->
+        <div class="card content-section" id="elemental-system">
+            <div class="card-header">
+                <h2 class="card-title">ELEMENTAL SYSTEM IMPLEMENTATION</h2>
+            </div>
+            <div class="card-accent"></div>
+            
+            <div class="system-section">
+                <h3>Status Buildup Calculation</h3>
+                
+                <div class="code-block">
+                    <pre><span class="code-keyword">def</span> <span class="code-function">calculate_status_buildup</span>(elemental_damage, enemy_max_hp, existing_buildup):
+    <span class="code-comment">"""
+    Calculate status effect buildup from elemental damage
+    
+    Args:
+        elemental_damage: Float, damage dealt after all modifiers
+        enemy_max_hp: Float, enemy's maximum health
+        existing_buildup: Float, current buildup percentage (0-100)
+    
+    Returns:
+        Float: New buildup percentage (capped at 100)
+    """</span>
+    <span class="code-comment"># Core formula: (Damage / Max HP) * 100</span>
+    buildup_increase = (elemental_damage / enemy_max_hp) * <span class="code-number">100</span>
+    
+    new_buildup = existing_buildup + buildup_increase
+    
+    <span class="code-comment"># Cap at 100%</span>
+    <span class="code-keyword">return</span> min(new_buildup, <span class="code-number">100.0</span>)</pre>
+                </div>
+            </div>
+
+            <div class="system-section">
+                <h3>Status Decay System</h3>
+                
+                <div class="code-block">
+                    <pre><span class="code-keyword">def</span> <span class="code-function">apply_status_decay</span>(current_buildup, element_type, time_delta):
+    <span class="code-comment">"""
+    Apply decay to status buildup over time
+    
+    Args:
+        current_buildup: Float, current buildup percentage
+        element_type: String, element name
+        time_delta: Float, seconds since last update
+    
+    Returns:
+        Float: New buildup after decay
+    """</span>
+    decay_rates = {
+        <span class="code-string">'earth'</span>: <span class="code-number">5.0</span>,       <span class="code-comment"># 5% per second (slowest)</span>
+        <span class="code-string">'fire'</span>: <span class="code-number">10.0</span>,       <span class="code-comment"># 10% per second</span>
+        <span class="code-string">'electric'</span>: <span class="code-number">15.0</span>,   <span class="code-comment"># 15% per second</span>
+        <span class="code-string">'nature'</span>: <span class="code-number">15.0</span>,     <span class="code-comment"># 15% per second</span>
+        <span class="code-string">'ice'</span>: <span class="code-number">20.0</span>         <span class="code-comment"># 20% per second (fastest)</span>
+    }
+    
+    decay_per_second = decay_rates.get(element_type, <span class="code-number">10.0</span>)
+    decay_amount = decay_per_second * time_delta
+    
+    new_buildup = current_buildup - decay_amount
+    
+    <span class="code-comment"># Cannot go below 0%</span>
+    <span class="code-keyword">return</span> max(new_buildup, <span class="code-number">0.0</span>)</pre>
+                </div>
+            </div>
+
+            <div class="formula-grid">
+                <div class="formula-card">
+                    <h4>Elemental Damage Types</h4>
+                    <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 15px;">
+                        <li><strong>"+X% Damage as Element":</strong> Converts base damage</li>
+                        <li><strong>"+X Element Damage":</strong> Flat elemental addition</li>
+                        <li><strong>"+X% Element Damage":</strong> Multiplies existing elemental damage</li>
+                    </ul>
+                </div>
+                <div class="formula-card">
+                    <h4>Status Trigger Conditions</h4>
+                    <p style="color: var(--text-normal); font-size: 12px; margin: 0;">
+                        Status effects trigger at 100% buildup. Each element has unique trigger effects 
+                        and immunity periods after activation.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mission Success Calculation Section -->
+        <div class="card content-section" id="mission-success">
+            <div class="card-header">
+                <h2 class="card-title">MISSION SUCCESS CALCULATION</h2>
+            </div>
+            <div class="card-accent"></div>
+            
+            <div class="system-section">
+                <h3>Character Power Rating</h3>
+                
+                <div class="code-block">
+                    <pre><span class="code-keyword">def</span> <span class="code-function">calculate_character_power_rating</span>(character, mission_requirements):
+    <span class="code-comment">"""
+    Calculate character's effective power for mission success
+    
+    Args:
+        character: Character object with full loadout
+        mission_requirements: Dict of mission stat requirements
+    
+    Returns:
+        Float: Character's effective power rating
+    """</span>
+    <span class="code-comment"># Base power from level and gear</span>
+    base_power = character.level * <span class="code-number">20</span>
+    
+    <span class="code-comment"># Gear power contribution</span>
+    gear_power = <span class="code-number">0</span>
+    <span class="code-keyword">for</span> item <span class="code-keyword">in</span> character.equipped_items:
+        <span class="code-keyword">if</span> item <span class="code-keyword">is not</span> <span class="code-keyword">None</span>:
+            gear_power += calculate_item_power_cost(item)
+    
+    <span class="code-comment"># Element match bonus</span>
+    element_bonus = <span class="code-number">1.0</span>
+    character_elements = character.get_elemental_specializations()
+    mission_elements = mission_requirements.get(<span class="code-string">'favorable_elements'</span>, [])
+    
+    <span class="code-keyword">for</span> element <span class="code-keyword">in</span> character_elements:
+        <span class="code-keyword">if</span> element <span class="code-keyword">in</span> mission_elements:
+            element_bonus = <span class="code-number">1.25</span>
+            <span class="code-keyword">break</span>
+    
+    total_power = (base_power + gear_power) * element_bonus
+    
+    <span class="code-keyword">return</span> total_power</pre>
+                </div>
+            </div>
+
+            <div class="system-section">
+                <h3>Mission Success Probability</h3>
+                
+                <div class="code-block">
+                    <pre><span class="code-keyword">def</span> <span class="code-function">calculate_mission_success_probability</span>(character_power, mission_power, modifiers):
+    <span class="code-comment">"""
+    Calculate probability of mission success
+    
+    Args:
+        character_power: Float, character's effective power rating
+        mission_power: Float, mission's required power rating
+        modifiers: Dict, additional success modifiers
+    
+    Returns:
+        Float: Success probability (0.05-0.95 range)
+    """</span>
+    <span class="code-comment"># Base success from power ratio</span>
+    power_ratio = character_power / mission_power
+    
+    <span class="code-keyword">if</span> power_ratio >= <span class="code-number">1.5</span>:
+        base_success = <span class="code-number">0.95</span>  <span class="code-comment"># Cap at 95%</span>
+    <span class="code-keyword">elif</span> power_ratio >= <span class="code-number">1.0</span>:
+        base_success = <span class="code-number">0.7</span> + (power_ratio - <span class="code-number">1.0</span>) * <span class="code-number">0.5</span>
+    <span class="code-keyword">elif</span> power_ratio >= <span class="code-number">0.8</span>:
+        base_success = <span class="code-number">0.5</span> + (power_ratio - <span class="code-number">0.8</span>) * <span class="code-number">1.0</span>
+    <span class="code-keyword">else</span>:
+        base_success = max(<span class="code-number">0.1</span>, power_ratio * <span class="code-number">0.625</span>)
+    
+    <span class="code-comment"># Apply modifiers</span>
+    final_success = base_success
+    final_success += modifiers.get(<span class="code-string">'difficulty_modifier'</span>, <span class="code-number">0</span>)
+    final_success += modifiers.get(<span class="code-string">'build_synergy_bonus'</span>, <span class="code-number">0</span>)
+    
+    <span class="code-comment"># Clamp to valid range</span>
+    <span class="code-keyword">return</span> max(<span class="code-number">0.05</span>, min(<span class="code-number">0.95</span>, final_success))</pre>
+                </div>
+            </div>
+
+            <div class="implementation-grid">
+                <div class="implementation-item">
+                    <h4>Power Ratio Thresholds</h4>
+                    <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 15px;">
+                        <li><strong>1.5+:</strong> 95% success (maximum)</li>
+                        <li><strong>1.0-1.5:</strong> 70-95% success (scaling)</li>
+                        <li><strong>0.8-1.0:</strong> 50-70% success (viable)</li>
+                        <li><strong>&lt;0.8:</strong> 5-50% success (challenging)</li>
+                    </ul>
+                </div>
+                <div class="implementation-item">
+                    <h4>Affix Success Modifiers</h4>
+                    <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 15px;">
+                        <li><strong>Environmental:</strong> -5% each</li>
+                        <li><strong>Enemy Modifier:</strong> -7% each</li>
+                        <li><strong>Player Modifier:</strong> -8% each</li>
+                        <li><strong>Reward Modifier:</strong> +2% each</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Attribute System Calculations Section -->
+        <div class="card content-section" id="attribute-system">
+            <div class="card-header">
+                <h2 class="card-title">ATTRIBUTE SYSTEM CALCULATIONS</h2>
+            </div>
+            <div class="card-accent"></div>
+            
+            <div class="system-section">
+                <h3>Derived Stat Calculation</h3>
+                
+                <div class="code-block">
+                    <pre><span class="code-keyword">def</span> <span class="code-function">calculate_derived_stats</span>(character):
+    <span class="code-comment">"""
+    Calculate all derived stats from character attributes
+    
+    Args:
+        character: Character object with allocated attributes
+    
+    Returns:
+        Dict: All calculated derived stats
+    """</span>
+    attrs = character.attributes
+    derived = {}
+    
+    <span class="code-comment"># Vitality effects</span>
+    derived[<span class="code-string">'health'</span>] = character.base_health + (attrs[<span class="code-string">'vitality'</span>] * <span class="code-number">5</span>)
+    derived[<span class="code-string">'shield_capacity'</span>] = character.base_shield + (attrs[<span class="code-string">'vitality'</span>] * <span class="code-number">2</span>)
+    derived[<span class="code-string">'health_regen'</span>] = character.base_health_regen + (attrs[<span class="code-string">'vitality'</span>] * <span class="code-number">0.1</span>)
+    
+    <span class="code-comment"># Precision effects</span>
+    derived[<span class="code-string">'critical_chance'</span>] = min(<span class="code-number">50.0</span>, attrs[<span class="code-string">'precision'</span>] * <span class="code-number">0.5</span>)  <span class="code-comment"># 50% cap</span>
+    derived[<span class="code-string">'accuracy'</span>] = <span class="code-number">100.0</span> + (attrs[<span class="code-string">'precision'</span>] * <span class="code-number">1.0</span>)
+    derived[<span class="code-string">'critical_damage'</span>] = <span class="code-number">150.0</span> + (attrs[<span class="code-string">'precision'</span>] * <span class="code-number">0.2</span>)  <span class="code-comment"># Base 150%</span>
+    
+    <span class="code-comment"># Additional attribute calculations...</span>
+    
+    <span class="code-keyword">return</span> derived</pre>
+                </div>
+            </div>
+
+            <div class="formula-grid">
+                <div class="formula-card">
+                    <h4>Vitality Scaling</h4>
+                    <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 15px;">
+                        <li><strong>Health:</strong> +5 per point</li>
+                        <li><strong>Shield:</strong> +2 per point</li>
+                        <li><strong>Regen:</strong> +0.1/sec per point</li>
+                    </ul>
+                </div>
+                <div class="formula-card">
+                    <h4>Precision Scaling</h4>
+                    <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 15px;">
+                        <li><strong>Crit Chance:</strong> +0.5% per point (50% cap)</li>
+                        <li><strong>Accuracy:</strong> +1% per point</li>
+                        <li><strong>Crit Damage:</strong> +0.2% per point</li>
+                    </ul>
+                </div>
+                <div class="formula-card">
+                    <h4>Potency Scaling</h4>
+                    <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 15px;">
+                        <li><strong>All Damage:</strong> +0.8% per point</li>
+                        <li><strong>Status Chance:</strong> +0.3% per point</li>
+                        <li><strong>Status Duration:</strong> +0.1sec per point</li>
+                    </ul>
+                </div>
+                <div class="formula-card">
+                    <h4>Defense Scaling</h4>
+                    <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 15px;">
+                        <li><strong>Resistances:</strong> +0.2% per point (75% cap)</li>
+                        <li><strong>Armor:</strong> +1 per point</li>
+                        <li><strong>Damage Reduction:</strong> +0.1% per point</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Performance Optimization Section -->
+        <div class="card content-section" id="performance">
+            <div class="card-header">
+                <h2 class="card-title">PERFORMANCE OPTIMIZATION</h2>
+            </div>
+            <div class="card-accent"></div>
+            
+            <div class="system-section">
+                <h3>Caching Strategies</h3>
+                
+                <div class="code-block">
+                    <pre><span class="code-keyword">class</span> <span class="code-function">CharacterStatsCache</span>:
+    <span class="code-comment">"""
+    Cache frequently calculated character stats to improve performance
+    """</span>
+    <span class="code-keyword">def</span> __init__(self):
+        self.cache = {}
+        self.cache_timeout = <span class="code-number">1.0</span>  <span class="code-comment"># 1 second cache validity</span>
+    
+    <span class="code-keyword">def</span> <span class="code-function">get_cached_stats</span>(self, character_id, character_hash):
+        <span class="code-comment">"""
+        Retrieve cached stats if valid
+        
+        Returns:
+            Dict or None: Cached stats if valid, None if cache miss
+        """</span>
+        <span class="code-keyword">if</span> character_id <span class="code-keyword">in</span> self.cache:
+            cached_data = self.cache[character_id]
+            <span class="code-keyword">if</span> (cached_data[<span class="code-string">'hash'</span>] == character_hash <span class="code-keyword">and</span> 
+                time.time() - cached_data[<span class="code-string">'timestamp'</span>] < self.cache_timeout):
+                <span class="code-keyword">return</span> cached_data[<span class="code-string">'stats'</span>]
+        
+        <span class="code-keyword">return</span> <span class="code-keyword">None</span></pre>
+                </div>
+            </div>
+
+            <div class="implementation-grid">
+                <div class="implementation-item">
+                    <h4>Caching Benefits</h4>
+                    <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 15px;">
+                        <li>Reduces redundant calculations</li>
+                        <li>Improves UI responsiveness</li>
+                        <li>Minimizes server load</li>
+                        <li>Maintains calculation accuracy</li>
+                    </ul>
+                </div>
+                <div class="implementation-item">
+                    <h4>Batch Processing</h4>
+                    <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 15px;">
+                        <li>Group similar calculations</li>
+                        <li>Process mission rewards in batches</li>
+                        <li>Optimize database queries</li>
+                        <li>Reduce API call overhead</li>
+                    </ul>
+                </div>
+                <div class="implementation-item">
+                    <h4>Validation Optimization</h4>
+                    <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 15px;">
+                        <li>Early validation failures</li>
+                        <li>Incremental updates only</li>
+                        <li>Lazy evaluation patterns</li>
+                        <li>Client-side pre-validation</li>
+                    </ul>
+                </div>
+                <div class="implementation-item">
+                    <h4>Scalability Considerations</h4>
+                    <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 15px;">
+                        <li>Horizontal scaling support</li>
+                        <li>Database sharding readiness</li>
+                        <li>Microservice architecture</li>
+                        <li>Load balancing compatibility</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <h3>Implementation Notes</h3>
+                <p style="color: var(--text-normal);">
+                    This technical implementation provides the foundation for all core systems while maintaining 
+                    performance and scalability requirements for a modern ARPG/looter shooter. All formulas are 
+                    designed to be deterministic, balanced, and efficient for real-time calculation.
+                </p>
+            </div>
+        </div>
+
+        <!-- Document Navigation -->
+        <div class="doc-nav-bottom">
+            <a href="08-progression-economy.html">← Previous: Progression & Economy</a>
+            <div style="color: var(--text-dim); font-size: 12px; text-align: center;">
+                <strong>NEXT:</strong> <a href="10-implementation-plan.html" style="color: var(--primary-cyan);">Implementation Plan</a><br>
+                <span style="color: var(--text-dim);">Development roadmap & strategies</span>
+            </div>
+            <a href="10-implementation-plan.html">Next: Implementation Plan →</a>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer style="padding: 20px; text-align: center; font-size: 10px; color: #666; border-top: 1px solid #333; margin-top: 40px;">
+        <a href="../changelog.html" style="color: #666; text-decoration: none; border-bottom: 1px dotted #666;">CHANGELOG</a> • 
+        <a href="index.html" style="color: #666; text-decoration: none; border-bottom: 1px dotted #666;">SPECS</a> • 
+        RELATED: <a href="01-executive-summary.html" style="color: #666; text-decoration: none;">Executive Summary</a> • 
+        <a href="05-equipment-itemization.html" style="color: #666; text-decoration: none;">Equipment & Itemization</a>
+    </footer>
+
+    <script src="../assets/js/main.js"></script>
+    <script src="../assets/js/navigation.js"></script>
+</body>
+</html>

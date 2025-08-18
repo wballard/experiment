@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Player Onboarding - Courier Specifications</title>
+    <link rel="stylesheet" href="../assets/css/design-system.css?v=12">
+    <link rel="stylesheet" href="../assets/css/main.css?v=12">
+    <link rel="stylesheet" href="../assets/css/game.css?v=12">
+    <style>
+        .breadcrumb {
+            color: var(--text-dim);
+            font-size: 12px;
+            margin-bottom: var(--spacing-lg);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .breadcrumb a {
+            color: var(--primary-cyan);
+            text-decoration: none;
+        }
+        .breadcrumb a:hover {
+            color: var(--text-bright);
+        }
+        .doc-nav-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: var(--spacing-xl);
+            padding: var(--spacing-lg);
+            background: var(--bg-dark);
+            border: 1px solid var(--border-gray);
+        }
+        .doc-nav-bottom a {
+            color: var(--primary-cyan);
+            text-decoration: none;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border: 1px solid var(--border-gray);
+            background: var(--bg-medium);
+            transition: all 0.3s ease;
+        }
+        .doc-nav-bottom a:hover {
+            border-color: var(--primary-cyan);
+            background: var(--bg-light);
+        }
+        .content-section {
+            margin-bottom: var(--spacing-xl);
+        }
+        .highlight-box {
+            background: var(--bg-dark);
+            border: 1px solid var(--primary-orange);
+            padding: var(--spacing-lg);
+            margin: var(--spacing-lg) 0;
+        }
+        .highlight-box h3 {
+            color: var(--primary-orange);
+            margin-bottom: var(--spacing-md);
+        }
+        .phase-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: var(--spacing-lg);
+            margin: var(--spacing-lg) 0;
+        }
+        .phase-card {
+            background: var(--bg-medium);
+            border: 1px solid var(--border-gray);
+            padding: var(--spacing-lg);
+        }
+        .phase-card h3 {
+            color: var(--primary-cyan);
+            margin-bottom: var(--spacing-md);
+        }
+        .tutorial-mission {
+            background: var(--bg-dark);
+            border: 1px solid var(--primary-orange);
+            padding: var(--spacing-md);
+            margin: var(--spacing-md) 0;
+        }
+        .tutorial-mission h4 {
+            color: var(--primary-orange);
+            margin-bottom: var(--spacing-sm);
+        }
+        .requirements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--spacing-md);
+            margin: var(--spacing-lg) 0;
+        }
+        .requirement-item {
+            background: var(--bg-dark);
+            padding: var(--spacing-md);
+            border: 1px solid var(--border-gray);
+        }
+        .requirement-item h4 {
+            color: var(--primary-orange);
+            margin-bottom: var(--spacing-sm);
+            font-size: 14px;
+        }
+        .toc {
+            background: var(--bg-medium);
+            border: 1px solid var(--border-gray);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+        .toc h3 {
+            color: var(--primary-cyan);
+            margin-bottom: var(--spacing-md);
+        }
+        .toc ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        .toc li {
+            margin-bottom: var(--spacing-sm);
+        }
+        .toc a {
+            color: var(--text-normal);
+            text-decoration: none;
+            font-size: 13px;
+        }
+        .toc a:hover {
+            color: var(--primary-cyan);
+        }
+        .class-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-md);
+            margin: var(--spacing-md) 0;
+        }
+        .class-card {
+            background: var(--bg-dark);
+            padding: var(--spacing-sm);
+            border: 1px solid var(--border-gray);
+            text-align: center;
+        }
+        .class-card h5 {
+            color: var(--primary-cyan);
+            font-size: 13px;
+            margin-bottom: var(--spacing-xs);
+        }
+        .timeline {
+            border-left: 2px solid var(--primary-cyan);
+            padding-left: var(--spacing-lg);
+            margin: var(--spacing-lg) 0;
+        }
+        .timeline-item {
+            margin-bottom: var(--spacing-lg);
+            position: relative;
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -27px;
+            top: 5px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--primary-cyan);
+        }
+        .timeline-item h4 {
+            color: var(--primary-orange);
+            margin-bottom: var(--spacing-sm);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Header -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <div class="nav-logo"></div>
+            <div>
+                <div class="nav-username">COURIER SPECIFICATIONS</div>
+                <div class="nav-level">PLAYER ONBOARDING</div>
+            </div>
+        </div>
+        <div class="nav-menu">
+            <a href="../game/dashboard.html" class="nav-item">CHARACTER</a>
+            <a href="../inventory.html" class="nav-item">INVENTORY</a>
+            <a href="../missions.html" class="nav-item">MISSIONS</a>
+            <a href="../skills.html" class="nav-item">SKILLS</a>
+            <a href="../build-planner.html" class="nav-item">BUILD PLANNER</a>
+            <a href="../marketplace.html" class="nav-item">MARKET</a>
+            <a href="../crafting.html" class="nav-item">CRAFTING</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="page-container">
+        <div class="breadcrumb">
+            <a href="index.html">SPECS</a> > PLAYER ONBOARDING
+        </div>
+
+        <div class="page-header">
+            <h1 class="page-title">COURIER - PLAYER ONBOARDING</h1>
+            <p style="color: var(--text-normal); margin-top: var(--spacing-md);">Web-Based Tutorial & New Player Experience</p>
+        </div>
+
+        <!-- Table of Contents -->
+        <div class="toc">
+            <h3>📋 TABLE OF CONTENTS</h3>
+            <ul>
+                <li><a href="#onboarding-philosophy">Onboarding Philosophy</a></li>
+                <li><a href="#game-access">Game Access & Platform</a></li>
+                <li><a href="#character-creation">Character Creation Experience</a></li>
+                <li><a href="#tutorial-progression">Tutorial Progression</a></li>
+                <li><a href="#web-optimizations">Web-Specific Optimizations</a></li>
+                <li><a href="#progression-gating">Progression Gating</a></li>
+                <li><a href="#retention-hooks">New Player Retention Hooks</a></li>
+                <li><a href="#success-metrics">Success Metrics & Iteration</a></li>
+            </ul>
+        </div>
+
+        <!-- Onboarding Philosophy Section -->
+        <div class="card content-section" id="onboarding-philosophy">
+            <div class="card-header">
+                <h2 class="card-title">ONBOARDING PHILOSOPHY</h2>
+            </div>
+            <div class="card-accent"></div>
+            
+            <p style="color: var(--text-normal); line-height: 1.6; margin-bottom: var(--spacing-lg);">
+                Courier's new player experience is designed to gradually introduce complex systems while providing immediate engagement through web-based gameplay. The tutorial progression ensures players understand core mechanics before encountering the deeper strategic elements that define the endgame experience.
+            </p>
+
+            <div class="requirements-grid">
+                <div class="requirement-item">
+                    <h4>Immediate Engagement</h4>
+                    <p style="color: var(--text-normal); font-size: 12px;">Players launch their first mission within 2 minutes</p>
+                </div>
+                <div class="requirement-item">
+                    <h4>Progressive Complexity</h4>
+                    <p style="color: var(--text-normal); font-size: 12px;">Introduce one system at a time through tutorial missions</p>
+                </div>
+                <div class="requirement-item">
+                    <h4>Web-First Design</h4>
+                    <p style="color: var(--text-normal); font-size: 12px;">Optimized for browser-based asynchronous gameplay</p>
+                </div>
+                <div class="requirement-item">
+                    <h4>Meaningful Choices</h4>
+                    <p style="color: var(--text-normal); font-size: 12px;">Even early decisions have long-term impact on mission success</p>
+                </div>
+                <div class="requirement-item">
+                    <h4>Guided Discovery</h4>
+                    <p style="color: var(--text-normal); font-size: 12px;">Tutorial missions reveal statistical depth and build optimization naturally</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Access Section -->
+        <div class="card content-section" id="game-access">
+            <div class="card-header">
+                <h2 class="card-title">GAME ACCESS & PLATFORM</h2>
+            </div>
+            <div class="card-accent"></div>
+            
+            <div class="phase-grid">
+                <div class="phase-card">
+                    <h3>Web-Based Primary Platform</h3>
+                    <div class="requirements-grid">
+                        <div class="requirement-item">
+                            <h4>Browser Requirements</h4>
+                            <p style="color: var(--text-normal); font-size: 12px;">Modern web browser with HTML5/CSS3/JavaScript support</p>
+                        </div>
+                        <div class="requirement-item">
+                            <h4>Supported Browsers</h4>
+                            <p style="color: var(--text-normal); font-size: 12px;">Chrome 80+, Firefox 75+, Safari 14+, Edge 80+</p>
+                        </div>
+                        <div class="requirement-item">
+                            <h4>Performance Target</h4>
+                            <p style="color: var(--text-normal); font-size: 12px;">Responsive interface optimized for web browsing</p>
+                        </div>
+                        <div class="requirement-item">
+                            <h4>Network Requirements</h4>
+                            <p style="color: var(--text-normal); font-size: 12px;">Stable internet connection for mission updates</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="phase-card">
+                    <h3>Account Creation Flow</h3>
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <h4>Landing Page</h4>
+                            <p style="color: var(--text-normal); font-size: 13px;">Game overview with "Play Now" call-to-action</p>
+                        </div>
+                        <div class="timeline-item">
+                            <h4>Quick Registration</h4>
+                            <p style="color: var(--text-normal); font-size: 13px;">Email + password, no extensive forms</p>
+                        </div>
+                        <div class="timeline-item">
+                            <h4>Email Verification</h4>
+                            <p style="color: var(--text-normal); font-size: 13px;">Simple verification link</p>
+                        </div>
+                        <div class="timeline-item">
+                            <h4>Character Creation</h4>
+                            <p style="color: var(--text-normal); font-size: 13px;">Immediate access to character builder</p>
+                        </div>
+                        <div class="timeline-item">
+                            <h4>Tutorial Launch</h4>
+                            <p style="color: var(--text-normal); font-size: 13px;">Direct transition to mission interface</p>
+                        </div>
+                    </div>
+                    <div style="background: var(--bg-dark); padding: var(--spacing-sm); border: 1px solid var(--primary-cyan); text-align: center;">
+                        <strong style="color: var(--primary-cyan);">Design Goal:</strong> From landing page to first mission launch in under 2 minutes
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Character Creation Section -->
+        <div class="card content-section" id="character-creation">
+            <div class="card-header">
+                <h2 class="card-title">CHARACTER CREATION EXPERIENCE</h2>
+            </div>
+            <div class="card-accent"></div>
+            
+            <div class="highlight-box">
+                <h3>Simplified Initial Choices</h3>
+                <div class="class-grid">
+                    <div class="class-card">
+                        <h5>Sentinel</h5>
+                        <p style="color: var(--text-normal); font-size: 11px;">"Heavy Combat Tank - Lead from the front"</p>
+                    </div>
+                    <div class="class-card">
+                        <h5>Technomancer</h5>
+                        <p style="color: var(--text-normal); font-size: 11px;">"Tech Support - Control the battlefield"</p>
+                    </div>
+                    <div class="class-card">
+                        <h5>Infiltrator</h5>
+                        <p style="color: var(--text-normal); font-size: 11px;">"Stealth Assassin - Strike from shadows"</p>
+                    </div>
+                    <div class="class-card">
+                        <h5>Vanguard</h5>
+                        <p style="color: var(--text-normal); font-size: 11px;">"Balanced Fighter - Adapt to any situation"</p>
+                    </div>
+                    <div class="class-card">
+                        <h5>Engineer</h5>
+                        <p style="color: var(--text-normal); font-size: 11px;">"Ranged Specialist - Precision at distance"</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="requirements-grid">
+                <div class="requirement-item">
+                    <h4>Visual Customization</h4>
+                    <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 15px;">
+                        <li>Gender: Male/Female/Non-binary options</li>
+                        <li>Appearance: 5 face options, 8 color schemes</li>
+                        <li>Name: Character name with uniqueness validation</li>
+                    </ul>
+                </div>
+                <div class="requirement-item">
+                    <h4>Initial Equipment</h4>
+                    <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 15px;">
+                        <li>Weapon: Class-appropriate starting weapon</li>
+                        <li>Armor: Basic gear providing protection without complexity</li>
+                        <li>No Modifications: Weapons start unmodified for simplicity</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <h3>Tutorial Integration</h3>
+                <p style="color: var(--text-normal); margin-bottom: var(--spacing-md);"><strong>No Overwhelming Choices:</strong> Advanced systems hidden until relevant</p>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <h4>Level 3: Attribute Allocation</h4>
+                        <p style="color: var(--text-normal); font-size: 13px;">Introduced at level 3</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h4>Level 10: Equipment Modification</h4>
+                        <p style="color: var(--text-normal); font-size: 13px;">Introduced at level 10</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h4>Level 15: Faction Choices</h4>
+                        <p style="color: var(--text-normal); font-size: 13px;">Introduced at level 15</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h4>Level 20: Elemental Specialization</h4>
+                        <p style="color: var(--text-normal); font-size: 13px;">Introduced at level 20</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tutorial Progression Section -->
+        <div class="card content-section" id="tutorial-progression">
+            <div class="card-header">
+                <h2 class="card-title">TUTORIAL PROGRESSION</h2>
+            </div>
+            <div class="card-accent"></div>
+            
+            <div class="phase-grid">
+                <div class="phase-card">
+                    <h3>Phase 1: First Mission (3 minutes)</h3>
+                    <p style="color: var(--text-dim); margin-bottom: var(--spacing-md);">Location: Mission interface tutorial</p>
+                    <p style="color: var(--text-dim); margin-bottom: var(--spacing-md);">Goal: Understanding asynchronous mission system</p>
+                    
+                    <div class="tutorial-mission">
+                        <h4>Tutorial Mission 1: "Training Exercise"</h4>
+                        <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 15px;">
+                            <li><strong>Objective:</strong> Complete first timed mission successfully</li>
+                            <li><strong>Duration:</strong> 5 minutes real-time</li>
+                            <li><strong>Mechanics:</strong> Mission selection, success probability, equipment loadout, mission timer</li>
+                            <li><strong>Equipment:</strong> Starting weapon and basic armor</li>
+                            <li><strong>Reward:</strong> +100 XP, mission completion interface tutorial</li>
+                        </ul>
+                    </div>
+                    <div style="background: var(--bg-dark); padding: var(--spacing-sm); border: 1px solid var(--primary-cyan);">
+                        <strong style="color: var(--primary-cyan);">Success Metrics:</strong> Player understands mission launch and completion flow
+                    </div>
+                </div>
+
+                <div class="phase-card">
+                    <h3>Phase 2: Build Optimization (10 minutes)</h3>
+                    <p style="color: var(--text-dim); margin-bottom: var(--spacing-md);">Location: Character and equipment interface</p>
+                    <p style="color: var(--text-dim); margin-bottom: var(--spacing-md);">Goal: Understanding how builds affect mission success</p>
+                    
+                    <div class="tutorial-mission">
+                        <h4>Tutorial Mission 2: "Equipment Test"</h4>
+                        <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 15px;">
+                            <li><strong>Objective:</strong> Complete two identical missions with different equipment</li>
+                            <li><strong>Duration:</strong> 2x 8-minute missions</li>
+                            <li><strong>Mechanics:</strong> Equipment comparison, success probability changes, power budget visualization</li>
+                            <li><strong>Reward:</strong> +200 XP, understanding of build impact</li>
+                        </ul>
+                    </div>
+
+                    <div class="tutorial-mission">
+                        <h4>Tutorial Mission 3: "Strategic Choices"</h4>
+                        <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 15px;">
+                            <li><strong>Objective:</strong> Choose between missions with different success rates</li>
+                            <li><strong>Duration:</strong> 12 minutes</li>
+                            <li><strong>Mechanics:</strong> Risk vs reward, difficulty assessment, failure consequences</li>
+                            <li><strong>Reward:</strong> +300 XP, first attribute point allocation</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="phase-card">
+                    <h3>Phase 3: Character Development (15 minutes)</h3>
+                    <p style="color: var(--text-dim); margin-bottom: var(--spacing-md);">Location: Personal quarters and mission briefing room</p>
+                    <p style="color: var(--text-dim); margin-bottom: var(--spacing-md);">Goal: Understanding progression systems</p>
+                    
+                    <div class="requirements-grid">
+                        <div class="requirement-item">
+                            <h4>Attribute Allocation</h4>
+                            <ul style="color: var(--text-normal); font-size: 11px; margin: 0; padding-left: 15px;">
+                                <li>Simplified explanation: "Vitality = Health, Precision = Accuracy, etc."</li>
+                                <li>Visual feedback showing stat changes</li>
+                                <li>Recommendation based on chosen class</li>
+                            </ul>
+                        </div>
+                        <div class="requirement-item">
+                            <h4>Basic Gear</h4>
+                            <ul style="color: var(--text-normal); font-size: 11px; margin: 0; padding-left: 15px;">
+                                <li>Two armor pieces offered with clear stat differences</li>
+                                <li>Explanation of power budget concept (simplified)</li>
+                                <li>Visual comparison of options</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="tutorial-mission">
+                        <h4>Tutorial Mission 4: "Power Budget Challenge"</h4>
+                        <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 15px;">
+                            <li><strong>Objective:</strong> Optimize equipment within power budget constraints</li>
+                            <li><strong>Duration:</strong> 15 minutes</li>
+                            <li><strong>Mechanics:</strong> Power budget allocation, equipment efficiency comparison</li>
+                            <li><strong>Reward:</strong> +500 XP, Level 3, understanding of core system</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="phase-card">
+                    <h3>Phase 4: Systems Introduction (20 minutes)</h3>
+                    <p style="color: var(--text-dim); margin-bottom: var(--spacing-md);">Location: Colony hub interface with faction representatives</p>
+                    <p style="color: var(--text-dim); margin-bottom: var(--spacing-md);">Goal: Introduce progression systems and choices</p>
+                    
+                    <div class="requirements-grid">
+                        <div class="requirement-item">
+                            <h4>Faction Introduction</h4>
+                            <ul style="color: var(--text-normal); font-size: 11px; margin: 0; padding-left: 15px;">
+                                <li>Overview of 4 faction representatives</li>
+                                <li>No commitment required, just awareness building</li>
+                                <li>Overview of different faction philosophies and benefits</li>
+                            </ul>
+                        </div>
+                        <div class="requirement-item">
+                            <h4>Equipment Management</h4>
+                            <ul style="color: var(--text-normal); font-size: 11px; margin: 0; padding-left: 15px;">
+                                <li>Power budget explanation (full system)</li>
+                                <li>Rarity system and efficiency scaling</li>
+                                <li>Modification preview (not yet available)</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="tutorial-mission">
+                        <h4>Tutorial Mission 5: "Supply Run"</h4>
+                        <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 15px;">
+                            <li><strong>Objective:</strong> Complete first patrol mission with full systems active</li>
+                            <li><strong>Duration:</strong> 20 minutes</li>
+                            <li><strong>Mechanics:</strong> Mission affix preview, pre-mission optimization</li>
+                            <li><strong>Reward:</strong> +750 XP, Level 5, faction reputation introduction</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Web Optimizations Section -->
+        <div class="card content-section" id="web-optimizations">
+            <div class="card-header">
+                <h2 class="card-title">WEB-SPECIFIC OPTIMIZATIONS</h2>
+            </div>
+            <div class="card-accent"></div>
+            
+            <div class="phase-grid">
+                <div class="phase-card">
+                    <h3>Performance Considerations</h3>
+                    <div class="requirements-grid">
+                        <div class="requirement-item">
+                            <h4>Lightweight Interface</h4>
+                            <p style="color: var(--text-normal); font-size: 12px;">Focus on interface elements and data visualization</p>
+                        </div>
+                        <div class="requirement-item">
+                            <h4>Real-time Updates</h4>
+                            <p style="color: var(--text-normal); font-size: 12px;">Mission progress and completion notifications</p>
+                        </div>
+                        <div class="requirement-item">
+                            <h4>Efficient Data Transfer</h4>
+                            <p style="color: var(--text-normal); font-size: 12px;">Optimized API calls for mission state</p>
+                        </div>
+                        <div class="requirement-item">
+                            <h4>Cache Strategy</h4>
+                            <p style="color: var(--text-normal); font-size: 12px;">Smart caching of character and mission data</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="phase-card">
+                    <h3>User Interface Design</h3>
+                    <div class="requirements-grid">
+                        <div class="requirement-item">
+                            <h4>Web-Optimized Interface</h4>
+                            <ul style="color: var(--text-normal); font-size: 11px; margin: 0; padding-left: 15px;">
+                                <li>Mouse Primary: All functions accessible via standard web interface</li>
+                                <li>Keyboard Shortcuts: Optional hotkeys for power users</li>
+                                <li>Mobile Responsive: Adapts to various screen sizes</li>
+                                <li>Touch Optimized: Full touch interface for mobile users</li>
+                            </ul>
+                        </div>
+                        <div class="requirement-item">
+                            <h4>Browser Integration</h4>
+                            <ul style="color: var(--text-normal); font-size: 11px; margin: 0; padding-left: 15px;">
+                                <li>Multi-tab Friendly: Game state persists across sessions</li>
+                                <li>Window Scaling: UI adapts to different window sizes</li>
+                                <li>Background Operation: Mission timers continue when tab not active</li>
+                                <li>Auto-save: Progress automatically saved to cloud servers</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="phase-card">
+                    <h3>Social Features</h3>
+                    <div class="requirements-grid">
+                        <div class="requirement-item">
+                            <h4>Web-Native Sharing</h4>
+                            <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 15px;">
+                                <li>Achievement Sharing: Direct social media integration</li>
+                                <li>Build Sharing: URL-based build sharing system</li>
+                                <li>Screenshot Tools: Built-in capture and sharing functionality</li>
+                                <li>Leaderboards: Web-integrated competitive features</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progression Gating Section -->
+        <div class="card content-section" id="progression-gating">
+            <div class="card-header">
+                <h2 class="card-title">PROGRESSION GATING</h2>
+            </div>
+            <div class="card-accent"></div>
+            
+            <div class="timeline">
+                <div class="timeline-item">
+                    <h4>Level 3</h4>
+                    <p style="color: var(--text-normal); font-size: 13px;">Attribute point allocation explained and unlocked</p>
+                </div>
+                <div class="timeline-item">
+                    <h4>Level 5</h4>
+                    <p style="color: var(--text-normal); font-size: 13px;">Faction awareness introduced, basic reputation system</p>
+                </div>
+                <div class="timeline-item">
+                    <h4>Level 10</h4>
+                    <p style="color: var(--text-normal); font-size: 13px;">Weapon modification tutorial and access</p>
+                </div>
+                <div class="timeline-item">
+                    <h4>Level 15</h4>
+                    <p style="color: var(--text-normal); font-size: 13px;">Faction commitment choice and benefits</p>
+                </div>
+                <div class="timeline-item">
+                    <h4>Level 20</h4>
+                    <p style="color: var(--text-normal); font-size: 13px;">Elemental specialization choice (major milestone)</p>
+                </div>
+                <div class="timeline-item">
+                    <h4>Level 25</h4>
+                    <p style="color: var(--text-normal); font-size: 13px;">Advanced mission types unlocked</p>
+                </div>
+                <div class="timeline-item">
+                    <h4>Level 30</h4>
+                    <p style="color: var(--text-normal); font-size: 13px;">Power budget optimization tutorial</p>
+                </div>
+                <div class="timeline-item">
+                    <h4>Level 40</h4>
+                    <p style="color: var(--text-normal); font-size: 13px;">Second elemental choice (major milestone)</p>
+                </div>
+            </div>
+
+            <div class="phase-grid">
+                <div class="phase-card">
+                    <h3>Knowledge Checks</h3>
+                    <div class="requirements-grid">
+                        <div class="requirement-item">
+                            <h4>Skill Gates</h4>
+                            <p style="color: var(--text-normal); font-size: 12px;">Cannot access advanced content without demonstrating competency</p>
+                        </div>
+                        <div class="requirement-item">
+                            <h4>Optional Tutorials</h4>
+                            <p style="color: var(--text-normal); font-size: 12px;">Additional help available for struggling players</p>
+                        </div>
+                        <div class="requirement-item">
+                            <h4>Mentor System</h4>
+                            <p style="color: var(--text-normal); font-size: 12px;">Experienced players can assist newcomers</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="phase-card">
+                    <h3>Complexity Curve</h3>
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <h4>Week 1</h4>
+                            <p style="color: var(--text-normal); font-size: 13px;">Basic combat and character progression</p>
+                        </div>
+                        <div class="timeline-item">
+                            <h4>Week 2</h4>
+                            <p style="color: var(--text-normal); font-size: 13px;">Equipment optimization and modification</p>
+                        </div>
+                        <div class="timeline-item">
+                            <h4>Week 3</h4>
+                            <p style="color: var(--text-normal); font-size: 13px;">Elemental systems and advanced tactics</p>
+                        </div>
+                        <div class="timeline-item">
+                            <h4>Week 4</h4>
+                            <p style="color: var(--text-normal); font-size: 13px;">Faction progression and endgame preparation</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Retention Hooks Section -->
+        <div class="card content-section" id="retention-hooks">
+            <div class="card-header">
+                <h2 class="card-title">NEW PLAYER RETENTION HOOKS</h2>
+            </div>
+            <div class="card-accent"></div>
+            
+            <div class="phase-grid">
+                <div class="phase-card">
+                    <h3>Immediate Gratification</h3>
+                    <h4 style="color: var(--primary-orange); margin-bottom: var(--spacing-sm);">Quick Wins: Frequent positive feedback in first session</h4>
+                    <div class="requirements-grid">
+                        <div class="requirement-item">
+                            <h4>Level Progression</h4>
+                            <p style="color: var(--text-normal); font-size: 12px;">Levels 1-5 require minimal XP</p>
+                        </div>
+                        <div class="requirement-item">
+                            <h4>Gear Upgrades</h4>
+                            <p style="color: var(--text-normal); font-size: 12px;">Guaranteed improvements every few missions</p>
+                        </div>
+                        <div class="requirement-item">
+                            <h4>Visual Feedback</h4>
+                            <p style="color: var(--text-normal); font-size: 12px;">Satisfying effects and progression indicators</p>
+                        </div>
+                        <div class="requirement-item">
+                            <h4>Achievement Unlocks</h4>
+                            <p style="color: var(--text-normal); font-size: 12px;">Regular milestone celebrations</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="phase-card">
+                    <h3>Long-term Engagement</h3>
+                    <h4 style="color: var(--primary-orange); margin-bottom: var(--spacing-sm);">Goal Setting: Clear progression paths visible from early game</h4>
+                    <div class="requirements-grid">
+                        <div class="requirement-item">
+                            <h4>Class Mastery</h4>
+                            <p style="color: var(--text-normal); font-size: 12px;">Obvious skill tree progression</p>
+                        </div>
+                        <div class="requirement-item">
+                            <h4>Elemental Preview</h4>
+                            <p style="color: var(--text-normal); font-size: 12px;">Glimpse of future elemental abilities</p>
+                        </div>
+                        <div class="requirement-item">
+                            <h4>Gear Aspirations</h4>
+                            <p style="color: var(--text-normal); font-size: 12px;">Preview of high-tier equipment</p>
+                        </div>
+                        <div class="requirement-item">
+                            <h4>Story Hooks</h4>
+                            <p style="color: var(--text-normal); font-size: 12px;">Intriguing lore and mystery elements</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="phase-card">
+                    <h3>Social Connection</h3>
+                    <h4 style="color: var(--primary-orange); margin-bottom: var(--spacing-sm);">Community Integration: Connect new players with community</h4>
+                    <div class="requirements-grid">
+                        <div class="requirement-item">
+                            <h4>Mentor Matching</h4>
+                            <p style="color: var(--text-normal); font-size: 12px;">Pair new players with experienced volunteers</p>
+                        </div>
+                        <div class="requirement-item">
+                            <h4>Guild Recruitment</h4>
+                            <p style="color: var(--text-normal); font-size: 12px;">Introduction to active community groups</p>
+                        </div>
+                        <div class="requirement-item">
+                            <h4>Help Chat</h4>
+                            <p style="color: var(--text-normal); font-size: 12px;">Dedicated channel for new player questions</p>
+                        </div>
+                        <div class="requirement-item">
+                            <h4>Streaming Integration</h4>
+                            <p style="color: var(--text-normal); font-size: 12px;">Easy viewing of expert gameplay</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Success Metrics Section -->
+        <div class="card content-section" id="success-metrics">
+            <div class="card-header">
+                <h2 class="card-title">SUCCESS METRICS & ITERATION</h2>
+            </div>
+            <div class="card-accent"></div>
+            
+            <div class="phase-grid">
+                <div class="phase-card">
+                    <h3>Player Flow Analytics</h3>
+                    <div class="requirements-grid">
+                        <div class="requirement-item">
+                            <h4>Conversion Tracking</h4>
+                            <ul style="color: var(--text-normal); font-size: 11px; margin: 0; padding-left: 15px;">
+                                <li>Registration Rate: Visitors who create accounts</li>
+                                <li>Tutorial Completion: Players who finish all tutorial phases</li>
+                                <li>Session Length: Average time spent in first session</li>
+                                <li>Return Rate: Players who return for second session</li>
+                            </ul>
+                        </div>
+                        <div class="requirement-item">
+                            <h4>Friction Points</h4>
+                            <ul style="color: var(--text-normal); font-size: 11px; margin: 0; padding-left: 15px;">
+                                <li>Drop-off Analysis: Where players stop progressing</li>
+                                <li>Help Usage: Which systems require most assistance</li>
+                                <li>Completion Times: How long each tutorial phase takes</li>
+                                <li>Error Rates: Common mistakes and confusion points</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="phase-card">
+                    <h3>Continuous Improvement</h3>
+                    <div class="requirements-grid">
+                        <div class="requirement-item">
+                            <h4>A/B Testing</h4>
+                            <ul style="color: var(--text-normal); font-size: 11px; margin: 0; padding-left: 15px;">
+                                <li>Explanation Methods: Different ways to introduce complex systems</li>
+                                <li>Pacing Adjustments: Optimal timing for system introductions</li>
+                                <li>Reward Tuning: Appropriate feedback for player actions</li>
+                                <li>Interface Optimization: Most effective UI/UX patterns</li>
+                            </ul>
+                        </div>
+                        <div class="requirement-item">
+                            <h4>Player Feedback Integration</h4>
+                            <ul style="color: var(--text-normal); font-size: 11px; margin: 0; padding-left: 15px;">
+                                <li>Exit Surveys: Brief feedback from departing players</li>
+                                <li>Success Stories: Analysis of highly engaged new players</li>
+                                <li>Community Input: Experienced player suggestions for improvements</li>
+                                <li>Data-Driven Changes: Regular updates based on analytics</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <h3>Foundation</h3>
+                <p style="color: var(--text-normal);">The onboarding experience serves as the foundation for long-term player engagement, ensuring that Courier's complex systems feel approachable and exciting rather than overwhelming to new players discovering the game through web browsers.</p>
+            </div>
+        </div>
+
+        <!-- Document Navigation -->
+        <div class="doc-nav-bottom">
+            <a href="01-executive-summary.html">← Previous: Executive Summary</a>
+            <div style="color: var(--text-dim); font-size: 12px; text-align: center;">
+                <strong>NEXT:</strong> <a href="03-character-systems.html" style="color: var(--primary-cyan);">Character Systems</a><br>
+                <span style="color: var(--text-dim);">Progression, Attributes & Classes</span>
+            </div>
+            <a href="03-character-systems.html">Next: Character Systems →</a>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer style="padding: 20px; text-align: center; font-size: 10px; color: #666; border-top: 1px solid #333; margin-top: 40px;">
+        <a href="../changelog.html" style="color: #666; text-decoration: none; border-bottom: 1px dotted #666;">CHANGELOG</a> • 
+        <a href="index.html" style="color: #666; text-decoration: none; border-bottom: 1px dotted #666;">SPECS</a> • 
+        RELATED: <a href="03-character-systems.html" style="color: #666; text-decoration: none;">Character Systems</a> • 
+        <a href="01-executive-summary.html" style="color: #666; text-decoration: none;">Executive Summary</a>
+    </footer>
+
+    <script src="../assets/js/main.js"></script>
+    <script src="../assets/js/navigation.js"></script>
+</body>
+</html>

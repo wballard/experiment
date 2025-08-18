@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Courier - Item Tooltip System</title>
+    <style>
+        /* Design System Variables */
+        :root {
+            --primary-cyan: #00ffff;
+            --primary-red: #ff0040;
+            --primary-orange: #ff6b00;
+            --primary-purple: #9945ff;
+            --secondary-blue: #0080ff;
+            
+            --bg-black: #0a0a0a;
+            --bg-dark: #141414;
+            --bg-medium: #1a1a1a;
+            --bg-light: #242424;
+            --border-gray: #333333;
+            --text-dim: #666666;
+            --text-normal: #999999;
+            --text-bright: #ffffff;
+            
+            --rarity-common: #999999;
+            --rarity-uncommon: #00ff00;
+            --rarity-rare: #0080ff;
+            --rarity-epic: #9945ff;
+            --rarity-legendary: #ff6b00;
+            --rarity-mythic: #ff0040;
+            
+            --stat-positive: #00ff00;
+            --stat-negative: #ff0040;
+            --stat-neutral: #ffff00;
+            
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: var(--bg-black);
+            color: var(--text-normal);
+            padding: var(--spacing-lg);
+            display: flex;
+            gap: var(--spacing-lg);
+            flex-wrap: wrap;
+        }
+
+        /* TOOLTIP CONTAINER */
+        .item-tooltip {
+            position: fixed;
+            background-color: var(--bg-dark);
+            border: 1px solid var(--border-gray);
+            min-width: 300px;
+            max-width: 400px;
+            z-index: 10000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+        }
+
+        .item-tooltip.active {
+            opacity: 1;
+        }
+
+        /* Rarity border colors */
+        .item-tooltip.common { border-color: var(--rarity-common); }
+        .item-tooltip.uncommon { border-color: var(--rarity-uncommon); }
+        .item-tooltip.rare { border-color: var(--rarity-rare); }
+        .item-tooltip.epic { border-color: var(--rarity-epic); }
+        .item-tooltip.legendary { border-color: var(--rarity-legendary); }
+        .item-tooltip.mythic { border-color: var(--rarity-mythic); }
+
+        /* HEADER SECTION */
+        .tooltip-header {
+            padding: var(--spacing-md);
+            border-bottom: 1px solid var(--border-gray);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Rarity background colors for header */
+        .item-tooltip.common .tooltip-header { 
+            background: linear-gradient(135deg, rgba(153, 153, 153, 0.2) 0%, rgba(153, 153, 153, 0.1) 100%);
+        }
+        .item-tooltip.uncommon .tooltip-header { 
+            background: linear-gradient(135deg, rgba(0, 255, 0, 0.2) 0%, rgba(0, 255, 0, 0.1) 100%);
+        }
+        .item-tooltip.rare .tooltip-header { 
+            background: linear-gradient(135deg, rgba(0, 128, 255, 0.2) 0%, rgba(0, 128, 255, 0.1) 100%);
+        }
+        .item-tooltip.epic .tooltip-header { 
+            background: linear-gradient(135deg, rgba(153, 69, 255, 0.2) 0%, rgba(153, 69, 255, 0.1) 100%);
+        }
+        .item-tooltip.legendary .tooltip-header { 
+            background: linear-gradient(135deg, rgba(255, 107, 0, 0.2) 0%, rgba(255, 107, 0, 0.1) 100%);
+        }
+        .item-tooltip.mythic .tooltip-header { 
+            background: linear-gradient(135deg, rgba(255, 0, 64, 0.2) 0%, rgba(255, 0, 64, 0.1) 100%);
+        }
+
+        /* Add subtle glow effect */
+        .tooltip-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .item-name {
+            font-size: 16px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: var(--spacing-xs);
+            color: var(--text-bright);
+            text-shadow: 0 0 10px currentColor;
+        }
+
+        .item-type {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-bright);
+            opacity: 0.8;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .header-stats {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+
+        .item-score {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            font-size: 14px;
+            font-weight: bold;
+            color: var(--text-bright);
+        }
+
+        .score-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .power-display {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            font-size: 12px;
+            color: var(--primary-cyan);
+            text-shadow: 0 0 5px currentColor;
+        }
+
+        .power-display .power-icon {
+            font-size: 16px;
+        }
+
+        .power-display .power-value {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        /* Remove old power cost section */
+        .power-cost {
+            display: none;
+        }
+
+        /* ELEMENT ICONS */
+        .element-icon {
+            width: 24px;
+            height: 24px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .element-icon svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* WEAPON DAMAGE SECTION */
+        .weapon-damage {
+            padding: var(--spacing-md) var(--spacing-lg);
+            background-color: rgba(255, 255, 255, 0.02);
+            border-bottom: 1px solid var(--border-gray);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-md);
+        }
+
+        .damage-content {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .damage-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .damage-value {
+            font-size: 28px;
+            font-weight: 300;
+            color: var(--text-bright);
+            font-family: 'Arial', sans-serif;
+            letter-spacing: -1px;
+        }
+
+        .damage-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-dim);
+            margin-left: var(--spacing-xs);
+        }
+        .core-stats {
+            padding: var(--spacing-md);
+            border-bottom: 1px solid var(--border-gray);
+        }
+
+        .stat-section-title {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-dim);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-xs) 0;
+            font-size: 12px;
+        }
+
+        .stat-name {
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-normal);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+        }
+
+        .stat-icon {
+            width: 14px;
+            height: 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid currentColor;
+            font-size: 10px;
+        }
+
+        .stat-value {
+            font-weight: bold;
+            color: var(--text-bright);
+        }
+
+        .stat-value.positive { color: var(--stat-positive); }
+        .stat-value.negative { color: var(--stat-negative); }
+
+        /* BUFFS SECTION */
+        .buffs-section {
+            padding: var(--spacing-md);
+            border-bottom: 1px solid var(--border-gray);
+            background-color: rgba(0, 255, 0, 0.05);
+        }
+
+        .buff-item {
+            font-size: 11px;
+            padding: var(--spacing-xs) 0;
+            color: var(--stat-positive);
+            display: flex;
+            align-items: flex-start;
+            gap: var(--spacing-xs);
+        }
+
+        .buff-item::before {
+            content: '▸';
+            color: var(--stat-positive);
+            font-size: 10px;
+            margin-top: 2px;
+        }
+
+        /* DEBUFFS SECTION */
+        .debuffs-section {
+            padding: var(--spacing-md);
+            border-bottom: 1px solid var(--border-gray);
+            background-color: rgba(255, 0, 64, 0.05);
+        }
+
+        .debuff-item {
+            font-size: 11px;
+            padding: var(--spacing-xs) 0;
+            color: var(--stat-negative);
+            display: flex;
+            align-items: flex-start;
+            gap: var(--spacing-xs);
+        }
+
+        .debuff-item::before {
+            content: '▾';
+            color: var(--stat-negative);
+            font-size: 10px;
+            margin-top: 2px;
+        }
+
+        /* SET BONUS */
+        .set-bonus {
+            padding: var(--spacing-md);
+            border-bottom: 1px solid var(--border-gray);
+            background-color: rgba(153, 69, 255, 0.05);
+        }
+
+        .set-name {
+            font-size: 12px;
+            color: var(--rarity-epic);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .set-item {
+            font-size: 11px;
+            padding: var(--spacing-xs) 0;
+            color: var(--text-dim);
+        }
+
+        .set-item.active {
+            color: var(--rarity-epic);
+        }
+
+        /* DESCRIPTION */
+        .item-description {
+            padding: var(--spacing-md);
+            font-size: 11px;
+            line-height: 1.6;
+            color: var(--text-dim);
+            font-style: italic;
+            border-bottom: 1px solid var(--border-gray);
+        }
+
+        /* REQUIREMENTS */
+        .requirements {
+            padding: var(--spacing-md);
+            font-size: 11px;
+        }
+
+        .requirement-item {
+            padding: var(--spacing-xs) 0;
+            color: var(--text-dim);
+        }
+
+        .requirement-item.not-met {
+            color: var(--stat-negative);
+        }
+
+        /* DEMO ITEMS */
+        .demo-container {
+            background-color: var(--bg-medium);
+            padding: var(--spacing-lg);
+            border: 1px solid var(--border-gray);
+        }
+
+        .demo-item {
+            display: inline-block;
+            width: 80px;
+            height: 80px;
+            background-color: var(--bg-dark);
+            border: 2px solid var(--border-gray);
+            margin: var(--spacing-sm);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .demo-item:hover {
+            transform: scale(1.05);
+        }
+
+        /* Rarity borders for items */
+        .demo-item.common { border-color: var(--rarity-common); }
+        .demo-item.uncommon { border-color: var(--rarity-uncommon); }
+        .demo-item.rare { border-color: var(--rarity-rare); }
+        .demo-item.epic { border-color: var(--rarity-epic); }
+        .demo-item.legendary { border-color: var(--rarity-legendary); }
+        .demo-item.mythic { border-color: var(--rarity-mythic); }
+
+        .item-icon {
+            font-size: 32px;
+        }
+
+        .power-indicator {
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            background-color: var(--bg-black);
+            padding: 2px 4px;
+            font-size: 10px;
+            color: var(--primary-cyan);
+            font-weight: bold;
+        }
+
+        h2 {
+            color: var(--primary-cyan);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 14px;
+            margin-bottom: var(--spacing-md);
+        }
+    </style>
+</head>
+<body>
+    <!-- WEAPON TOOLTIP TEMPLATE -->
+    <div class="item-tooltip legendary" id="weaponTooltip">
+        <div class="tooltip-header">
+            <div class="item-name">ECHO OF THE PALE</div>
+            <div class="item-type">AUTO RIFLE</div>
+            <div class="header-stats">
+                <span class="power-display">
+                    <span class="power-icon">⚡</span>
+                    <span class="power-value">550</span>
+                </span>
+            </div>
+        </div>
+
+        <div class="weapon-damage">
+            <div class="damage-content">
+                <span class="damage-icon kinetic">◆</span>
+                <span class="damage-value">999</span>
+                <span class="damage-label">DAMAGE</span>
+            </div>
+        </div>
+
+        <div class="core-stats">
+            <div class="stat-section-title">CORE STATS</div>
+            <div class="stat-item">
+                <span class="stat-name">
+                    <span class="stat-icon">◆</span>
+                    CRITICAL
+                </span>
+                <span class="stat-value">999</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-name">
+                    <span class="stat-icon">◆</span>
+                    FIRE RATE
+                </span>
+                <span class="stat-value">999</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-name">
+                    <span class="stat-icon">◆</span>
+                    RELOAD
+                </span>
+                <span class="stat-value">999</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-name">
+                    <span class="stat-icon">◆</span>
+                    MAGAZINE SIZE
+                </span>
+                <span class="stat-value">999</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-name">
+                    <span class="stat-icon">◆</span>
+                    BALANCE
+                </span>
+                <span class="stat-value">999</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-name">
+                    <span class="stat-icon">◆</span>
+                    HANDLING
+                </span>
+                <span class="stat-value">999</span>
+            </div>
+        </div>
+
+        <div class="buffs-section">
+            <div class="stat-section-title">BUFFS</div>
+            <div class="buff-item">+25% Weak Spot Damage</div>
+            <div class="buff-item">+50% Accuracy at ≥50m</div>
+            <div class="buff-item">+10% Aim Down Sights / Adds Speed</div>
+            <div class="buff-item">Recoil on Follow-up Shots</div>
+            <div class="buff-item">+10% First Shot Accuracy</div>
+        </div>
+
+        <div class="item-description">
+            Each scratch on the barrel marks a fallen tyrant, each round a vow kept.
+        </div>
+    </div>
+
+    <!-- ARMOR TOOLTIP TEMPLATE -->
+    <div class="item-tooltip epic" id="armorTooltip">
+        <div class="tooltip-header">
+            <div class="item-name">VOIDWALKER'S GRASP</div>
+            <div class="item-type">GLOVES - HEAVY</div>
+            <div class="header-stats">
+                <span class="power-display">
+                    <span class="power-icon">⚡</span>
+                    <span class="power-value">250</span>
+                </span>
+            </div>
+        </div>
+
+        <div class="core-stats">
+            <div class="stat-section-title">CORE STATS</div>
+            <div class="stat-item">
+                <span class="stat-name">
+                    <span class="stat-icon">🛡</span>
+                    ARMOR
+                </span>
+                <span class="stat-value">+485</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-name">
+                    <span class="stat-icon">♦</span>
+                    RESONANCE
+                </span>
+                <span class="stat-value positive">+320</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-name">
+                    <span class="stat-icon">⚡</span>
+                    MOMENTUM
+                </span>
+                <span class="stat-value positive">+175</span>
+            </div>
+        </div>
+
+        <div class="buffs-section">
+            <div class="stat-section-title">SPECIAL EFFECTS</div>
+            <div class="buff-item">+15% Reload Speed</div>
+            <div class="buff-item">+20% Grenade Throw Distance</div>
+            <div class="buff-item">Converts 10% Physical to Void Damage</div>
+        </div>
+
+        <div class="set-bonus">
+            <div class="set-name">VOIDWALKER SET (2/5)</div>
+            <div class="set-item active">▸ Voidwalker's Grasp</div>
+            <div class="set-item active">▸ Voidwalker's Treads</div>
+            <div class="set-item">▸ Voidwalker's Heart</div>
+            <div class="set-item">▸ Voidwalker's Sight</div>
+            <div class="set-item">▸ Voidwalker's Shroud</div>
+        </div>
+
+        <div class="requirements">
+            <div class="stat-section-title">REQUIREMENTS</div>
+            <div class="requirement-item">Level 45</div>
+            <div class="requirement-item not-met">Resonance 800</div>
+        </div>
+    </div>
+
+    <!-- CONSUMABLE TOOLTIP TEMPLATE -->
+    <div class="item-tooltip rare" id="consumableTooltip">
+        <div class="tooltip-header">
+            <div class="item-name">COMBAT STIMULANT</div>
+            <div class="item-type">CONSUMABLE - BUFF</div>
+            <div class="header-stats">
+                <span class="item-score">QUANTITY: 5</span>
+            </div>
+        </div>
+
+        <div class="buffs-section">
+            <div class="stat-section-title">EFFECTS (30 MINUTES)</div>
+            <div class="buff-item">+25% Fire Rate</div>
+            <div class="buff-item">+50% Reload Speed</div>
+            <div class="buff-item">+100 Momentum</div>
+        </div>
+
+        <div class="debuffs-section">
+            <div class="stat-section-title">SIDE EFFECTS</div>
+            <div class="debuff-item">-15% Accuracy after effect ends (5 min)</div>
+            <div class="debuff-item">Cannot stack with other stimulants</div>
+        </div>
+
+        <div class="item-description">
+            Military-grade neural accelerant. Side effects may include tunnel vision and uncontrollable aggression.
+        </div>
+    </div>
+
+    <!-- DEMO SECTION -->
+    <div class="demo-container">
+        <h2>◆ WEAPONS</h2>
+        <div class="demo-item legendary" data-tooltip="weapon">
+            <span class="item-icon">🔫</span>
+            <span class="power-indicator">550</span>
+        </div>
+        <div class="demo-item epic" data-tooltip="weapon2">
+            <span class="item-icon">🏹</span>
+            <span class="power-indicator">425</span>
+        </div>
+        <div class="demo-item rare" data-tooltip="weapon3">
+            <span class="item-icon">🔫</span>
+            <span class="power-indicator">350</span>
+        </div>
+    </div>
+
+    <div class="demo-container">
+        <h2>◆ ARMOR</h2>
+        <div class="demo-item epic" data-tooltip="armor">
+            <span class="item-icon">🧤</span>
+            <span class="power-indicator">250</span>
+        </div>
+        <div class="demo-item rare" data-tooltip="armor2">
+            <span class="item-icon">🛡️</span>
+            <span class="power-indicator">300</span>
+        </div>
+        <div class="demo-item uncommon" data-tooltip="armor3">
+            <span class="item-icon">👟</span>
+            <span class="power-indicator">200</span>
+        </div>
+    </div>
+
+    <div class="demo-container">
+        <h2>◆ CONSUMABLES</h2>
+        <div class="demo-item rare" data-tooltip="consumable">
+            <span class="item-icon">💊</span>
+        </div>
+        <div class="demo-item uncommon" data-tooltip="consumable2">
+            <span class="item-icon">🧪</span>
+        </div>
+        <div class="demo-item common" data-tooltip="consumable3">
+            <span class="item-icon">🍖</span>
+        </div>
+    </div>
+
+    <script>
+        // Sample item data
+        const itemDatabase = {
+            weapon: {
+                name: "ECHO OF THE PALE",
+                type: "AUTO RIFLE",
+                rarity: "legendary",
+                powerCost: 550,
+                damageType: "kinetic",
+                stats: {
+                    "DAMAGE": 999,
+                    "CRITICAL": 999,
+                    "FIRE RATE": 999,
+                    "RELOAD": 999,
+                    "MAGAZINE SIZE": 999,
+                    "BALANCE": 999,
+                    "HANDLING": 999
+                },
+                buffs: [
+                    "+25% Weak Spot Damage",
+                    "+50% Accuracy at ≥50m",
+                    "+10% Aim Down Sights / Adds Speed",
+                    "Recoil on Follow-up Shots",
+                    "+10% First Shot Accuracy"
+                ],
+                description: "Each scratch on the barrel marks a fallen tyrant, each round a vow kept."
+            },
+            weapon2: {
+                name: "STORM CALLER",
+                type: "SNIPER RIFLE",
+                rarity: "epic",
+                powerCost: 425,
+                damageType: "electricity",
+                stats: {
+                    "DAMAGE": 1250,
+                    "CRITICAL": 850,
+                    "FIRE RATE": 120,
+                    "RELOAD": 450,
+                    "MAGAZINE SIZE": 5,
+                    "BALANCE": 750,
+                    "HANDLING": 680
+                },
+                buffs: [
+                    "+75% Headshot Damage",
+                    "+100% Accuracy while Scoped",
+                    "Chains to 2 nearby enemies"
+                ],
+                description: "Lightning never strikes twice - it chains infinitely."
+            },
+            weapon3: {
+                name: "FROSTBITE",
+                type: "SMG",
+                rarity: "rare",
+                powerCost: 350,
+                damageType: "ice",
+                stats: {
+                    "DAMAGE": 245,
+                    "CRITICAL": 550,
+                    "FIRE RATE": 900,
+                    "RELOAD": 720,
+                    "MAGAZINE SIZE": 42,
+                    "BALANCE": 450,
+                    "HANDLING": 850
+                },
+                buffs: [
+                    "+15% Freeze Buildup",
+                    "Slows enemies on hit",
+                    "Magazine refills on freeze"
+                ],
+                description: "The cold never bothered me anyway."
+            },
+            armor: {
+                name: "VOIDWALKER'S GRASP",
+                type: "GLOVES - HEAVY",
+                rarity: "epic",
+                powerCost: 250,
+                stats: {
+                    "ARMOR": "+485",
+                    "RESONANCE": "+320",
+                    "MOMENTUM": "+175"
+                },
+                buffs: [
+                    "+15% Reload Speed",
+                    "+20% Grenade Throw Distance",
+                    "Converts 10% Physical to Void Damage"
+                ],
+                setBonus: {
+                    name: "VOIDWALKER SET",
+                    current: 2,
+                    max: 5,
+                    pieces: [
+                        { name: "Voidwalker's Grasp", equipped: true },
+                        { name: "Voidwalker's Treads", equipped: true },
+                        { name: "Voidwalker's Heart", equipped: false },
+                        { name: "Voidwalker's Sight", equipped: false },
+                        { name: "Voidwalker's Shroud", equipped: false }
+                    ]
+                },
+                requirements: [
+                    { text: "Level 45", met: true },
+                    { text: "Resonance 800", met: false }
+                ]
+            },
+            consumable: {
+                name: "COMBAT STIMULANT",
+                type: "CONSUMABLE - BUFF",
+                rarity: "rare",
+                quantity: 5,
+                buffs: [
+                    "+25% Fire Rate",
+                    "+50% Reload Speed",
+                    "+100 Momentum"
+                ],
+                debuffs: [
+                    "-15% Accuracy after effect ends (5 min)",
+                    "Cannot stack with other stimulants"
+                ],
+                description: "Military-grade neural accelerant. Side effects may include tunnel vision and uncontrollable aggression.",
+                duration: "30 MINUTES"
+            }
+        };
+
+        // Damage type icons - Custom SVG designs
+        const damageIcons = {
+            kinetic: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="8"/>
+                <circle cx="12" cy="12" r="3"/>
+                <path d="M12 1v6M12 17v6M1 12h6M17 12h6"/>
+            </svg>`,
+            ice: `<svg viewBox="0 0 24 24" fill="none" stroke="#00ffff" stroke-width="1.5">
+                <path d="M12 2v20M4 6l16 12M4 18L20 6"/>
+                <path d="M12 2l-3 5h6zM12 22l3-5h-6zM4 6l5 3v-6zM20 6l-5 3v-6zM4 18l5-3v6zM20 18l-5-3v6z" fill="#00ffff" opacity="0.3"/>
+            </svg>`,
+            fire: `<svg viewBox="0 0 24 24" fill="none">
+                <path d="M12 2C12 2 8 8 8 13C8 16 10 19 12 19C14 19 16 16 16 13C16 10 14 7 14 7C14 7 13 9 13 11C13 12 12.5 13 12 13C11.5 13 11 12 11 11C11 9 12 2 12 2Z" 
+                      fill="#ff6b00" stroke="#ff6b00" stroke-width="1" stroke-linejoin="round"/>
+                <path d="M8.5 19C7 18 6 16 6 13C6 9 9 4 9 4" stroke="#ff6b00" stroke-width="1.5" opacity="0.6"/>
+                <path d="M15.5 19C17 18 18 16 18 13C18 9 15 4 15 4" stroke="#ff6b00" stroke-width="1.5" opacity="0.6"/>
+            </svg>`,
+            electricity: `<svg viewBox="0 0 24 24" fill="none">
+                <path d="M13 2L3 14h8l-2 8l10-12h-8l2-8z" fill="#ffff00" stroke="#ffff00" stroke-width="1" stroke-linejoin="round"/>
+                <path d="M8 2l-3 6M16 2l3 6M5 18l-2 4M19 10l2 4" stroke="#ffff00" stroke-width="1" opacity="0.5"/>
+            </svg>`,
+            nature: `<svg viewBox="0 0 24 24" fill="none">
+                <path d="M12 22C12 22 8 18 8 14C8 12 9 10 12 10C15 10 16 12 16 14C16 18 12 22 12 22Z" 
+                      fill="#00ff00" stroke="#00ff00" stroke-width="1.5"/>
+                <path d="M12 10V2M9 6l3-3l3 3" stroke="#00ff00" stroke-width="1.5"/>
+                <circle cx="7" cy="7" r="2" fill="#00ff00" opacity="0.5"/>
+                <circle cx="17" cy="8" r="1.5" fill="#00ff00" opacity="0.5"/>
+            </svg>`,
+            earth: `<svg viewBox="0 0 24 24" fill="none">
+                <path d="M3 12l4-7h10l4 7l-4 7H7z" fill="#88aa44" stroke="#88aa44" stroke-width="1.5"/>
+                <path d="M7 12l2-3h6l2 3l-2 3H9z" fill="#88aa44" opacity="0.5"/>
+                <path d="M12 3v6M12 15v6M6 9l3 3M15 9l-3 3M6 15l3-3M15 15l-3-3" stroke="#88aa44" stroke-width="1" opacity="0.7"/>
+            </svg>`
+        };
+
+        // Function to create element icon HTML
+        function createElementIcon(type) {
+            const colors = {
+                kinetic: '#ffffff',
+                ice: '#00ffff',
+                fire: '#ff6b00',
+                electricity: '#ffff00',
+                nature: '#00ff00',
+                earth: '#88aa44'
+            };
+            
+            return `<span class="element-icon" style="color: ${colors[type] || colors.kinetic}">${damageIcons[type] || damageIcons.kinetic}</span>`;
+        }
+
+        // Tooltip management
+        class TooltipManager {
+            constructor() {
+                this.activeTooltip = null;
+                this.tooltipElement = null;
+                this.init();
+            }
+
+            init() {
+                // Create tooltip element
+                this.createTooltipElement();
+
+                // Add event listeners to all demo items
+                document.querySelectorAll('.demo-item').forEach(item => {
+                    item.addEventListener('mouseenter', (e) => this.showTooltip(e));
+                    item.addEventListener('mouseleave', () => this.hideTooltip());
+                    item.addEventListener('mousemove', (e) => this.updatePosition(e));
+                });
+            }
+
+            createTooltipElement() {
+                this.tooltipElement = document.createElement('div');
+                this.tooltipElement.className = 'item-tooltip';
+                document.body.appendChild(this.tooltipElement);
+            }
+
+            showTooltip(event) {
+                const itemKey = event.currentTarget.dataset.tooltip;
+                const itemData = itemDatabase[itemKey];
+
+                if (!itemData) return;
+
+                // Set rarity class
+                this.tooltipElement.className = `item-tooltip ${itemData.rarity}`;
+
+                // Build tooltip content
+                this.tooltipElement.innerHTML = this.buildTooltipContent(itemData);
+
+                // Show tooltip
+                this.tooltipElement.classList.add('active');
+                this.updatePosition(event);
+            }
+
+            hideTooltip() {
+                this.tooltipElement.classList.remove('active');
+            }
+
+            updatePosition(event) {
+                const tooltip = this.tooltipElement;
+                const x = event.clientX;
+                const y = event.clientY;
+                const windowWidth = window.innerWidth;
+                const windowHeight = window.innerHeight;
+                const tooltipRect = tooltip.getBoundingClientRect();
+
+                let left = x + 15;
+                let top = y + 15;
+
+                // Adjust if tooltip goes off right edge
+                if (left + tooltipRect.width > windowWidth) {
+                    left = x - tooltipRect.width - 15;
+                }
+
+                // Adjust if tooltip goes off bottom edge
+                if (top + tooltipRect.height > windowHeight) {
+                    top = y - tooltipRect.height - 15;
+                }
+
+                tooltip.style.left = `${left}px`;
+                tooltip.style.top = `${top}px`;
+            }
+
+            buildTooltipContent(data) {
+                let html = '';
+
+                // Header with rarity background
+                html += `
+                    <div class="tooltip-header">
+                        <div class="item-name">${data.name}</div>
+                        <div class="item-type">${data.type}</div>
+                        <div class="header-stats">
+                `;
+
+                // Quantity for consumables
+                if (data.quantity) {
+                    html += `<span class="item-score">QUANTITY: ${data.quantity}</span>`;
+                }
+
+                // Power cost in header
+                if (data.powerCost) {
+                    html += `
+                            <span class="power-display">
+                                <span class="power-icon">⚡</span>
+                                <span class="power-value">${data.powerCost}</span>
+                            </span>
+                    `;
+                }
+
+                html += `
+                        </div>
+                    </div>
+                `;
+
+                // Weapon damage display (special section for weapons)
+                if (data.stats && data.stats.DAMAGE) {
+                    const damageType = data.damageType || 'kinetic';
+                    const icon = createElementIcon(damageType);
+                    
+                    html += `
+                        <div class="weapon-damage">
+                            <div class="damage-content">
+                                ${icon}
+                                <span class="damage-value">${data.stats.DAMAGE}</span>
+                                <span class="damage-label">DAMAGE</span>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                // Core stats (if applicable)
+                if (data.stats) {
+                    html += `
+                        <div class="core-stats">
+                            <div class="stat-section-title">CORE STATS</div>
+                    `;
+
+                    for (const [stat, value] of Object.entries(data.stats)) {
+                        // Skip DAMAGE for weapons as it's shown in special section
+                        if (stat === 'DAMAGE' && data.stats.DAMAGE) continue;
+                        
+                        const isPositive = typeof value === 'string' && value.includes('+');
+                        html += `
+                            <div class="stat-item">
+                                <span class="stat-name">
+                                    <span class="stat-icon">◆</span>
+                                    ${stat}
+                                </span>
+                                <span class="stat-value${isPositive ? ' positive' : ''}">${value}</span>
+                            </div>
+                        `;
+                    }
+
+                    html += `</div>`;
+                }
+
+                // Buffs
+                if (data.buffs && data.buffs.length > 0) {
+                    const title = data.duration ? `EFFECTS (${data.duration})` : (data.type.includes('CONSUMABLE') ? 'EFFECTS' : 'BUFFS');
+                    html += `
+                        <div class="buffs-section">
+                            <div class="stat-section-title">${title}</div>
+                    `;
+
+                    data.buffs.forEach(buff => {
+                        html += `<div class="buff-item">${buff}</div>`;
+                    });
+
+                    html += `</div>`;
+                }
+
+                // Debuffs
+                if (data.debuffs && data.debuffs.length > 0) {
+                    html += `
+                        <div class="debuffs-section">
+                            <div class="stat-section-title">SIDE EFFECTS</div>
+                    `;
+
+                    data.debuffs.forEach(debuff => {
+                        html += `<div class="debuff-item">${debuff}</div>`;
+                    });
+
+                    html += `</div>`;
+                }
+
+                // Set bonus
+                if (data.setBonus) {
+                    html += `
+                        <div class="set-bonus">
+                            <div class="set-name">${data.setBonus.name} (${data.setBonus.current}/${data.setBonus.max})</div>
+                    `;
+
+                    data.setBonus.pieces.forEach(piece => {
+                        html += `<div class="set-item${piece.equipped ? ' active' : ''}">▸ ${piece.name}</div>`;
+                    });
+
+                    html += `</div>`;
+                }
+
+                // Requirements
+                if (data.requirements) {
+                    html += `
+                        <div class="requirements">
+                            <div class="stat-section-title">REQUIREMENTS</div>
+                    `;
+
+                    data.requirements.forEach(req => {
+                        html += `<div class="requirement-item${!req.met ? ' not-met' : ''}">${req.text}</div>`;
+                    });
+
+                    html += `</div>`;
+                }
+
+                // Description
+                if (data.description) {
+                    html += `
+                        <div class="item-description">
+                            ${data.description}
+                        </div>
+                    `;
+                }
+
+                return html;
+            }
+        }
+
+        // Initialize tooltip system
+        const tooltipManager = new TooltipManager();
+    </script>
+</body>
+</html>

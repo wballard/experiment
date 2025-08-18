@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Executive Summary - Courier Specifications</title>
+    <link rel="stylesheet" href="../assets/css/design-system.css?v=12">
+    <link rel="stylesheet" href="../assets/css/main.css?v=12">
+    <link rel="stylesheet" href="../assets/css/game.css?v=12">
+    <style>
+        .breadcrumb {
+            color: var(--text-dim);
+            font-size: 12px;
+            margin-bottom: var(--spacing-lg);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .breadcrumb a {
+            color: var(--primary-cyan);
+            text-decoration: none;
+        }
+        .breadcrumb a:hover {
+            color: var(--text-bright);
+        }
+        .doc-nav-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: var(--spacing-xl);
+            padding: var(--spacing-lg);
+            background: var(--bg-dark);
+            border: 1px solid var(--border-gray);
+        }
+        .doc-nav-bottom a {
+            color: var(--primary-cyan);
+            text-decoration: none;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border: 1px solid var(--border-gray);
+            background: var(--bg-medium);
+            transition: all 0.3s ease;
+        }
+        .doc-nav-bottom a:hover {
+            border-color: var(--primary-cyan);
+            background: var(--bg-light);
+        }
+        .content-section {
+            margin-bottom: var(--spacing-xl);
+        }
+        .highlight-box {
+            background: var(--bg-dark);
+            border: 1px solid var(--primary-orange);
+            padding: var(--spacing-lg);
+            margin: var(--spacing-lg) 0;
+        }
+        .highlight-box h3 {
+            color: var(--primary-orange);
+            margin-bottom: var(--spacing-md);
+        }
+        .pillar-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--spacing-lg);
+            margin: var(--spacing-lg) 0;
+        }
+        .pillar-card {
+            background: var(--bg-medium);
+            border: 1px solid var(--border-gray);
+            padding: var(--spacing-lg);
+        }
+        .pillar-card h3 {
+            color: var(--primary-cyan);
+            margin-bottom: var(--spacing-md);
+        }
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--spacing-md);
+            margin: var(--spacing-lg) 0;
+        }
+        .metric-item {
+            background: var(--bg-dark);
+            padding: var(--spacing-md);
+            border: 1px solid var(--border-gray);
+        }
+        .metric-item h4 {
+            color: var(--primary-orange);
+            margin-bottom: var(--spacing-sm);
+            font-size: 14px;
+        }
+        .toc {
+            background: var(--bg-medium);
+            border: 1px solid var(--border-gray);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+        .toc h3 {
+            color: var(--primary-cyan);
+            margin-bottom: var(--spacing-md);
+        }
+        .toc ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        .toc li {
+            margin-bottom: var(--spacing-sm);
+        }
+        .toc a {
+            color: var(--text-normal);
+            text-decoration: none;
+            font-size: 13px;
+        }
+        .toc a:hover {
+            color: var(--primary-cyan);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Header -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <div class="nav-logo"></div>
+            <div>
+                <div class="nav-username">COURIER SPECIFICATIONS</div>
+                <div class="nav-level">EXECUTIVE SUMMARY</div>
+            </div>
+        </div>
+        <div class="nav-menu">
+            <a href="../game/dashboard.html" class="nav-item">CHARACTER</a>
+            <a href="../inventory.html" class="nav-item">INVENTORY</a>
+            <a href="../missions.html" class="nav-item">MISSIONS</a>
+            <a href="../skills.html" class="nav-item">SKILLS</a>
+            <a href="../build-planner.html" class="nav-item">BUILD PLANNER</a>
+            <a href="../marketplace.html" class="nav-item">MARKET</a>
+            <a href="../crafting.html" class="nav-item">CRAFTING</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="page-container">
+        <div class="breadcrumb">
+            <a href="index.html">SPECS</a> > EXECUTIVE SUMMARY
+        </div>
+
+        <div class="page-header">
+            <h1 class="page-title">COURIER - EXECUTIVE SUMMARY</h1>
+            <p style="color: var(--text-normal); margin-top: var(--spacing-md);">Game Vision & Core Innovation</p>
+        </div>
+
+        <!-- Table of Contents -->
+        <div class="toc">
+            <h3>📋 TABLE OF CONTENTS</h3>
+            <ul>
+                <li><a href="#game-identity">Game Identity</a></li>
+                <li><a href="#power-budget">Core Innovation: Power Budget System</a></li>
+                <li><a href="#game-pillars">Game Pillars</a></li>
+                <li><a href="#target-experience">Target Experience</a></li>
+                <li><a href="#competitive-advantages">Competitive Advantages</a></li>
+                <li><a href="#success-metrics">Success Metrics</a></li>
+            </ul>
+        </div>
+
+        <!-- Game Identity Section -->
+        <div class="card content-section" id="game-identity">
+            <div class="card-header">
+                <h2 class="card-title">GAME IDENTITY</h2>
+            </div>
+            <div class="card-accent"></div>
+            
+            <p style="color: var(--text-normal); line-height: 1.6;">
+                <strong>Courier</strong> is a web-based sci-fi ARPG that combines deep character progression, strategic equipment optimization, and asynchronous mission gameplay. Players send their characters on timed missions with outcomes determined by statistical models based on character builds, equipment choices, and mission parameters. This web version focuses on the strategic depth of character building while a separate 3D action version handles real-time combat.
+            </p>
+        </div>
+
+        <!-- Power Budget System Section -->
+        <div class="card content-section" id="power-budget">
+            <div class="card-header">
+                <h2 class="card-title">CORE INNOVATION: POWER BUDGET SYSTEM</h2>
+            </div>
+            <div class="card-accent"></div>
+            
+            <div class="highlight-box">
+                <h3>The Problem</h3>
+                <p style="color: var(--text-normal);">Traditional ARPGs suffer from power creep where new content must constantly introduce higher numbers to feel meaningful, eventually leading to damage inflation and meaningless choice between items.</p>
+            </div>
+
+            <div class="highlight-box">
+                <h3>Our Solution</h3>
+                <p style="color: var(--text-normal); margin-bottom: var(--spacing-md);">Every character has a finite "power budget" that limits the total strength of all equipped gear combined. Higher rarity items provide the same stats more efficiently, creating meaningful trade-offs:</p>
+                
+                <div style="background: var(--bg-dark); padding: var(--spacing-md); border: 1px solid var(--border-gray); margin: var(--spacing-md) 0;">
+                    <h4 style="color: var(--primary-cyan); margin-bottom: var(--spacing-sm);">Example Scenario:</h4>
+                    <ul style="color: var(--text-normal); margin: 0; padding-left: 20px;">
+                        <li>A Level 60 player has 1,300 total power budget</li>
+                        <li>Finding a 400-power Primal weapon means using 30% of total budget on one item</li>
+                        <li><strong>Choice:</strong> Massive efficiency on one piece vs. spread power across more items</li>
+                        <li><strong>Result:</strong> Every item drop creates a meaningful decision</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="metrics-grid">
+                <div class="metric-item">
+                    <h4>Prevents Power Creep</h4>
+                    <p style="color: var(--text-normal); font-size: 12px;">Numbers stay reasonable throughout game's lifespan</p>
+                </div>
+                <div class="metric-item">
+                    <h4>Meaningful Choices</h4>
+                    <p style="color: var(--text-normal); font-size: 12px;">Every equipment decision has trade-offs</p>
+                </div>
+                <div class="metric-item">
+                    <h4>Build Diversity</h4>
+                    <p style="color: var(--text-normal); font-size: 12px;">Multiple paths to achieve power goals</p>
+                </div>
+                <div class="metric-item">
+                    <h4>Progression Preservation</h4>
+                    <p style="color: var(--text-normal); font-size: 12px;">Early items can remain useful if power-efficient</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Pillars Section -->
+        <div class="card content-section" id="game-pillars">
+            <div class="card-header">
+                <h2 class="card-title">GAME PILLARS</h2>
+            </div>
+            <div class="card-accent"></div>
+            
+            <div class="pillar-grid">
+                <div class="pillar-card">
+                    <h3>🎯 Deep Character Customization</h3>
+                    <ul style="color: var(--text-normal); font-size: 13px; margin: 0; padding-left: 20px;">
+                        <li><strong>5 Classes</strong> with distinct starting bonuses and playstyles</li>
+                        <li><strong>6 Attributes</strong> that meaningfully affect all aspects of gameplay</li>
+                        <li><strong>Dual Element System</strong> with adjacent-only restrictions for strategic depth</li>
+                        <li><strong>60 Skill Points</strong> allocated between class trees and elemental trees</li>
+                    </ul>
+                </div>
+                
+                <div class="pillar-card">
+                    <h3>⚔️ Strategic Combat</h3>
+                    <ul style="color: var(--text-normal); font-size: 13px; margin: 0; padding-left: 20px;">
+                        <li><strong>Statistical Combat Model</strong> where character builds determine mission outcomes</li>
+                        <li><strong>Elemental Integration</strong> where equipment choices influence success probabilities</li>
+                        <li><strong>Status Effect System</strong> that provides tactical advantages in mission calculations</li>
+                        <li><strong>Build Optimization</strong> through weapon selection, modification, and elemental combinations</li>
+                    </ul>
+                </div>
+                
+                <div class="pillar-card">
+                    <h3>📦 Rich Itemization</h3>
+                    <ul style="color: var(--text-normal); font-size: 13px; margin: 0; padding-left: 20px;">
+                        <li><strong>Power Budget Innovation</strong> creates equipment puzzles to solve</li>
+                        <li><strong>7 Rarity Tiers</strong> with efficiency scaling, not just bigger numbers</li>
+                        <li><strong>9 Equipment Slots</strong> (2 weapons, 7 armor) with distinct stat focuses</li>
+                        <li><strong>Modification System</strong> allowing weapon archetype transformation</li>
+                    </ul>
+                </div>
+                
+                <div class="pillar-card">
+                    <h3>🌊 Progressive Content</h3>
+                    <ul style="color: var(--text-normal); font-size: 13px; margin: 0; padding-left: 20px;">
+                        <li><strong>3 Mission Categories</strong> with scalable duration and rewards</li>
+                        <li><strong>Weekly Affix System</strong> that rotates environmental and combat modifiers</li>
+                        <li><strong>Difficulty Scaling</strong> through affix combinations and tier progression</li>
+                        <li><strong>Replayable Content</strong> that feels fresh through modifier variety</li>
+                    </ul>
+                </div>
+                
+                <div class="pillar-card">
+                    <h3>🤝 Player-Driven Experience</h3>
+                    <ul style="color: var(--text-normal); font-size: 13px; margin: 0; padding-left: 20px;">
+                        <li><strong>Faction System</strong> with meaningful reputation rewards and choices</li>
+                        <li><strong>Economic Depth</strong> through simplified but meaningful currency systems</li>
+                        <li><strong>Build Expression</strong> through elemental combinations and modification choices</li>
+                        <li><strong>Social Integration</strong> through shared mission content and competitive elements</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Target Experience Section -->
+        <div class="card content-section" id="target-experience">
+            <div class="card-header">
+                <h2 class="card-title">TARGET EXPERIENCE</h2>
+            </div>
+            <div class="card-accent"></div>
+            
+            <div class="metrics-grid">
+                <div class="metric-item">
+                    <h4>Moment-to-Moment Gameplay</h4>
+                    <p style="color: var(--text-normal); font-size: 12px;">Players optimize character builds, select missions based on success probabilities, and monitor timed mission progress. Strategic decisions involve equipment allocation within power budgets, mission selection based on weekly affixes, and resource management.</p>
+                </div>
+                <div class="metric-item">
+                    <h4>Short-Term Goals (Session)</h4>
+                    <p style="color: var(--text-normal); font-size: 12px;">Launch missions with optimized builds, upgrade gear within power budget constraints, experiment with equipment combinations, and check mission completion results.</p>
+                </div>
+                <div class="metric-item">
+                    <h4>Medium-Term Goals (Week)</h4>
+                    <p style="color: var(--text-normal); font-size: 12px;">Adapt builds to weekly affix rotations, pursue specific gear upgrades, unlock new elemental combinations, and tackle higher-tier mission content.</p>
+                </div>
+                <div class="metric-item">
+                    <h4>Long-Term Goals (Months)</h4>
+                    <p style="color: var(--text-normal); font-size: 12px;">Perfect power budget optimization, master elemental combinations, explore alternative builds, reach high paragon levels, and uncover the Progenitor mystery through expedition missions.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Competitive Advantages Section -->
+        <div class="card content-section" id="competitive-advantages">
+            <div class="card-header">
+                <h2 class="card-title">COMPETITIVE ADVANTAGES</h2>
+            </div>
+            <div class="card-accent"></div>
+            
+            <div class="pillar-grid">
+                <div class="pillar-card">
+                    <h3>Against Traditional ARPGs</h3>
+                    <ul style="color: var(--text-normal); font-size: 13px; margin: 0; padding-left: 20px;">
+                        <li><strong>Power Budget System</strong> prevents the endless number inflation that plagues the genre</li>
+                        <li><strong>Gunplay Focus</strong> appeals to shooter audiences while maintaining ARPG depth</li>
+                        <li><strong>Mission Affix System</strong> provides endless variety without requiring new content creation</li>
+                    </ul>
+                </div>
+                
+                <div class="pillar-card">
+                    <h3>Against Looter Shooters</h3>
+                    <ul style="color: var(--text-normal); font-size: 13px; margin: 0; padding-left: 20px;">
+                        <li><strong>Deep Character Progression</strong> with meaningful attribute and skill choices</li>
+                        <li><strong>Complex Elemental System</strong> adds tactical depth beyond simple damage types</li>
+                        <li><strong>Power Budget Innovation</strong> makes every piece of loot potentially meaningful</li>
+                    </ul>
+                </div>
+                
+                <div class="pillar-card" style="grid-column: 1 / -1;">
+                    <h3>Unique Position</h3>
+                    <p style="color: var(--text-normal); font-size: 13px; margin: 0;">
+                        Courier occupies the unique space between ARPGs and looter shooters, offering the depth and complexity of the former with the action and accessibility of the latter, unified by the innovative Power Budget System that solves fundamental progression problems in both genres.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Success Metrics Section -->
+        <div class="card content-section" id="success-metrics">
+            <div class="card-header">
+                <h2 class="card-title">SUCCESS METRICS</h2>
+            </div>
+            <div class="card-accent"></div>
+            
+            <div class="pillar-grid">
+                <div class="pillar-card">
+                    <h3>Player Engagement</h3>
+                    <ul style="color: var(--text-normal); font-size: 13px; margin: 0; padding-left: 20px;">
+                        <li><strong>Build Diversity:</strong> Multiple viable paths through content</li>
+                        <li><strong>Equipment Decisions:</strong> Average time spent evaluating gear upgrades</li>
+                        <li><strong>Content Replay:</strong> Mission completion rates across different affix weeks</li>
+                    </ul>
+                </div>
+                
+                <div class="pillar-card">
+                    <h3>System Health</h3>
+                    <ul style="color: var(--text-normal); font-size: 13px; margin: 0; padding-left: 20px;">
+                        <li><strong>Power Budget Distribution:</strong> Ensure players use variety of item combinations</li>
+                        <li><strong>Elemental Balance:</strong> Usage rates across all five elements</li>
+                        <li><strong>Mission Participation:</strong> Engagement with affix system vs. base content</li>
+                    </ul>
+                </div>
+                
+                <div class="pillar-card">
+                    <h3>Long-Term Retention</h3>
+                    <ul style="color: var(--text-normal); font-size: 13px; margin: 0; padding-left: 20px;">
+                        <li><strong>Progression Satisfaction:</strong> Meaningful advancement at all levels</li>
+                        <li><strong>Content Freshness:</strong> Weekly affix rotation engagement</li>
+                        <li><strong>Social Engagement:</strong> Faction participation and community building</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="highlight-box">
+                <h3>Foundation</h3>
+                <p style="color: var(--text-normal);">The Power Budget System is our foundation for sustainable, long-term gameplay that remains engaging without requiring constant power inflation.</p>
+            </div>
+        </div>
+
+        <!-- Document Navigation -->
+        <div class="doc-nav-bottom">
+            <a href="index.html">← Back to Index</a>
+            <div style="color: var(--text-dim); font-size: 12px; text-align: center;">
+                <strong>NEXT:</strong> <a href="02-player-onboarding.html" style="color: var(--primary-cyan);">Player Onboarding</a><br>
+                <span style="color: var(--text-dim);">Web-based tutorial & new player experience</span>
+            </div>
+            <a href="02-player-onboarding.html">Next: Player Onboarding →</a>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer style="padding: 20px; text-align: center; font-size: 10px; color: #666; border-top: 1px solid #333; margin-top: 40px;">
+        <a href="../changelog.html" style="color: #666; text-decoration: none; border-bottom: 1px dotted #666;">CHANGELOG</a> • 
+        <a href="index.html" style="color: #666; text-decoration: none; border-bottom: 1px dotted #666;">SPECS</a> • 
+        RELATED: <a href="06-equipment-itemization.html" style="color: #666; text-decoration: none;">Equipment System</a> • 
+        <a href="10-technical-implementation.html" style="color: #666; text-decoration: none;">Technical Implementation</a>
+    </footer>
+
+    <script src="../assets/js/main.js"></script>
+    <script src="../assets/js/navigation.js"></script>
+</body>
+</html>

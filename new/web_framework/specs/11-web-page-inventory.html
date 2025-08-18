@@ -1,0 +1,1216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Page Inventory - Courier Game Specifications</title>
+    <link rel="stylesheet" href="../css/design-system.css?v=13">
+    <link rel="stylesheet" href="../css/main.css?v=13">
+    <link rel="stylesheet" href="../css/game.css?v=13">
+</head>
+<body>
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="../index.html" class="nav-logo">Courier</a>
+            <div class="nav-links">
+                <a href="../index.html">Home</a>
+                <a href="../game.html">Game</a>
+                <a href="index.html" class="nav-active">Specs</a>
+                <a href="../docs/index.html">Docs</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="page-container">
+        <div class="breadcrumb">
+            <a href="../index.html">Home</a> > 
+            <a href="index.html">Specifications</a> > 
+            <span>Web Page Inventory</span>
+        </div>
+
+        <header class="spec-header">
+            <h1>COURIER - WEB PAGE INVENTORY</h1>
+            <p class="spec-subtitle">Complete Page Structure & Function Reference</p>
+        </header>
+
+        <div class="toc-container">
+            <h2>Table of Contents</h2>
+            <ul class="toc">
+                <li><a href="#page-inventory-overview">Page Inventory Overview</a></li>
+                <li><a href="#public-pages">Public Pages (Pre-Authentication)</a></li>
+                <li><a href="#character-management">Character Management Pages</a></li>
+                <li><a href="#core-gameplay">Core Gameplay Pages</a></li>
+                <li><a href="#mission-system">Mission System Pages</a></li>
+                <li><a href="#progression-pages">Progression Pages</a></li>
+                <li><a href="#optimization-analysis">Optimization & Analysis Pages</a></li>
+                <li><a href="#social-community">Social & Community Pages</a></li>
+                <li><a href="#support-meta">Support & Meta Pages</a></li>
+                <li><a href="#error-utility">Error & Utility Pages</a></li>
+                <li><a href="#page-hierarchy">Page Hierarchy & Navigation</a></li>
+                <li><a href="#development-priority">Development Priority</a></li>
+                <li><a href="#demo-implementation">Demo Implementation Status</a></li>
+                <li><a href="#mission-implementation">Mission System Implementation Details</a></li>
+            </ul>
+        </div>
+
+        <section id="page-inventory-overview" class="spec-section">
+            <h2>PAGE INVENTORY OVERVIEW</h2>
+            <p>This document provides a comprehensive inventory of all web pages required for the Courier web application, their primary functions, and direct references to the design documents they implement. Each page is organized by user flow and development priority.</p>
+            
+            <div class="reference-key card">
+                <h3>Reference Document Key</h3>
+                <ul class="reference-list">
+                    <li><strong>ES</strong>: Executive Summary (01)</li>
+                    <li><strong>PO</strong>: Player Onboarding (02)</li>
+                    <li><strong>CS</strong>: Character Systems (03)</li>
+                    <li><strong>EC</strong>: Elemental Combat (04)</li>
+                    <li><strong>EI</strong>: Equipment & Itemization (05)</li>
+                    <li><strong>WS</strong>: Weapon Systems (06)</li>
+                    <li><strong>MC</strong>: Mission Content (07)</li>
+                    <li><strong>PE</strong>: Progression & Economy (08)</li>
+                    <li><strong>TI</strong>: Technical Implementation (09)</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="public-pages" class="spec-section">
+            <h2>PUBLIC PAGES (Pre-Authentication)</h2>
+            
+            <div class="page-group">
+                <div class="page-card">
+                    <h3>1. Landing Page (<code>/</code>)</h3>
+                    <div class="page-functions">
+                        <h4>Primary Functions:</h4>
+                        <ul>
+                            <li>Game overview and value proposition presentation</li>
+                            <li>Account creation call-to-action</li>
+                            <li>Feature highlights and screenshots</li>
+                            <li>Community/social proof integration</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="design-references">
+                        <h4>Design Document References:</h4>
+                        <ul>
+                            <li><strong>PO §19-34</strong>: Account creation flow, design goal of 2-minute onboarding</li>
+                            <li><strong>ES §6-8</strong>: Game identity and core innovation explanation</li>
+                            <li><strong>ES §37-46</strong>: Game pillars and target experience</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="ui-elements">
+                        <h4>Key UI Elements:</h4>
+                        <ul>
+                            <li>Hero section with game description</li>
+                            <li>"Play Now" prominent button</li>
+                            <li>Feature showcase (Power Budget System, elemental combat)</li>
+                            <li>Social proof (player counts, testimonials)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="page-card">
+                    <h3>2. Registration Page (<code>/register</code>)</h3>
+                    <div class="page-functions">
+                        <h4>Primary Functions:</h4>
+                        <ul>
+                            <li>User account creation with email/password</li>
+                            <li>Email verification initiation</li>
+                            <li>Terms of service acceptance</li>
+                            <li>Immediate redirect to character creation</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="design-references">
+                        <h4>Design Document References:</h4>
+                        <ul>
+                            <li><strong>PO §27-34</strong>: Quick registration flow without extensive forms</li>
+                            <li><strong>PO §11-15</strong>: Goal of immediate engagement within 2 minutes</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="page-card">
+                    <h3>3. Login Page (<code>/login</code>)</h3>
+                    <div class="page-functions">
+                        <h4>Primary Functions:</h4>
+                        <ul>
+                            <li>Existing user authentication</li>
+                            <li>Password recovery initiation</li>
+                            <li>"Remember me" functionality</li>
+                            <li>Redirect to character selection</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="design-references">
+                        <h4>Design Document References:</h4>
+                        <ul>
+                            <li><strong>PO §186-190</strong>: Multi-tab friendly, persistent game state</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="character-management" class="spec-section">
+            <h2>CHARACTER MANAGEMENT PAGES</h2>
+            
+            <div class="page-group">
+                <div class="page-card">
+                    <h3>4. Character Creation (<code>/character/create</code>)</h3>
+                    <div class="page-functions">
+                        <h4>Primary Functions:</h4>
+                        <ul>
+                            <li>Class selection with role descriptions</li>
+                            <li>Basic appearance customization</li>
+                            <li>Character naming with validation</li>
+                            <li>Tutorial mission launch preparation</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="design-references">
+                        <h4>Design Document References:</h4>
+                        <ul>
+                            <li><strong>PO §38-63</strong>: Simplified initial choices, no overwhelming options</li>
+                            <li><strong>CS §48-124</strong>: 5 character classes with distinct identities</li>
+                            <li><strong>CS §125-139</strong>: Starting equipment and attribute focus</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="page-card">
+                    <h3>5. Character Selection (<code>/characters</code>)</h3>
+                    <div class="page-functions">
+                        <h4>Primary Functions:</h4>
+                        <ul>
+                            <li>Display all player characters</li>
+                            <li>Character deletion management</li>
+                            <li>Quick character switching</li>
+                            <li>New character creation access</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="design-references">
+                        <h4>Design Document References:</h4>
+                        <ul>
+                            <li><strong>CS §16-31</strong>: Character progression from 1-60 + Paragon</li>
+                            <li><strong>PO §186-190</strong>: Game state persistence across sessions</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="core-gameplay" class="spec-section">
+            <h2>CORE GAMEPLAY PAGES</h2>
+            
+            <div class="page-group">
+                <div class="page-card">
+                    <h3>6. Game Dashboard (<code>/game</code>)</h3>
+                    <div class="page-functions">
+                        <h4>Primary Functions:</h4>
+                        <ul>
+                            <li>Central hub for all game activities</li>
+                            <li>Character overview and quick stats</li>
+                            <li>Active mission monitoring</li>
+                            <li>Navigation to all game systems</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="design-references">
+                        <h4>Design Document References:</h4>
+                        <ul>
+                            <li><strong>ES §70-80</strong>: Short-term and medium-term goal progression</li>
+                            <li><strong>MC §8-15</strong>: Mission system as core gameplay loop</li>
+                            <li><strong>PO §141-166</strong>: Hub interface with faction representatives</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="page-card featured">
+                    <h3>7. Character Sheet (<code>/game/character</code>)</h3>
+                    <div class="page-functions">
+                        <h4>Primary Functions:</h4>
+                        <ul>
+                            <li>Complete character stat display with interactive tooltips</li>
+                            <li>Equipment visualization with 9 clickable slots</li>
+                            <li>Real-time power budget tracking and validation</li>
+                            <li>Character progression tracking</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="design-references">
+                        <h4>Design Document References:</h4>
+                        <ul>
+                            <li><strong>CS §32-46</strong>: 6 primary attributes with specific effects</li>
+                            <li><strong>CS §140-162</strong>: Skill point allocation between trees</li>
+                            <li><strong>CS §163-202</strong>: Progression milestones and elemental choices</li>
+                            <li><strong>EI §17-44</strong>: Power budget system integration</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="interactive-features">
+                        <h4>Interactive Features:</h4>
+                        <div class="feature-section">
+                            <h5>Equipment Slot Interaction:</h5>
+                            <ul>
+                                <li>Equipped items show detailed tooltips on mouseover</li>
+                                <li>Empty slots show available equipment popup on mouseover</li>
+                                <li>Click empty slots to select and equip items directly</li>
+                                <li>Visual feedback with hover effects and equipped state indicators</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="feature-section">
+                            <h5>Stats Tooltip System:</h5>
+                            <ul>
+                                <li>Mouseover any core stat (Vigor, Focus, Force, Momentum, Resonance, Defense)</li>
+                                <li>Displays comprehensive tooltip with stat description and formula explanations</li>
+                                <li>Shows 5 calculated secondary stats per attribute with current values</li>
+                                <li>Professional tooltip styling with responsive positioning</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="page-card">
+                    <h3>8. Equipment Management (<code>/game/equipment</code>)</h3>
+                    <div class="page-functions">
+                        <h4>Primary Functions:</h4>
+                        <ul>
+                            <li>Equipment slot visualization (9 slots)</li>
+                            <li>Power budget tracking and validation</li>
+                            <li>Item comparison and optimization tools</li>
+                            <li>Equipment efficiency analysis</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="design-references">
+                        <h4>Design Document References:</h4>
+                        <ul>
+                            <li><strong>EI §17-44</strong>: Power budget system mechanics and formulas</li>
+                            <li><strong>EI §55-106</strong>: Equipment slot structure and stat focuses</li>
+                            <li><strong>EI §107-138</strong>: Rarity system and efficiency multipliers</li>
+                            <li><strong>EI §139-197</strong>: Strategic itemization examples</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="page-card featured">
+                    <h3>9. Inventory (<code>/game/inventory</code>)</h3>
+                    <div class="page-functions">
+                        <h4>Primary Functions:</h4>
+                        <ul>
+                            <li>Item storage and organization with interactive tooltips</li>
+                            <li>Item enhancement and modification</li>
+                            <li>Item selling and resource conversion</li>
+                            <li>Equipment management with character sheet synchronization</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="design-references">
+                        <h4>Design Document References:</h4>
+                        <ul>
+                            <li><strong>EI §198-223</strong>: Item modification system and enhancement levels</li>
+                            <li><strong>WS §260-307</strong>: Weapon modification system (7 slots)</li>
+                            <li><strong>PE §42-58</strong>: Currency system for upgrades and modifications</li>
+                            <li><strong>EI §17-44</strong>: Power budget validation and efficiency calculations</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="optimization-note">
+                        <h4>Navigation Optimization:</h4>
+                        <ul>
+                            <li>Moved to second tab position (after Character) for improved workflow</li>
+                            <li>Enhanced user experience with Character → Inventory → Equipment flow</li>
+                            <li>JSON-based item database for maintainable data architecture</li>
+                            <li>Error handling for web server requirements and browser compatibility</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="page-card featured">
+                    <h3>10. Skills Management (<code>/game/skills</code>)</h3>
+                    <div class="page-functions">
+                        <h4>Primary Functions:</h4>
+                        <ul>
+                            <li>Elemental skill tree visualization with tier progression</li>
+                            <li>Skill point allocation across 5 elemental specializations</li>
+                            <li>Interactive skill tooltips with detailed descriptions</li>
+                            <li>Tier 4 capstone skill access and progression tracking</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="design-references">
+                        <h4>Design Document References:</h4>
+                        <ul>
+                            <li><strong>ES §29-45</strong>: Tier-based skill progression (Foundation, Specialization, Mastery, Transcendence)</li>
+                            <li><strong>ES §46-180</strong>: Complete elemental skill trees for Fire, Ice, Electric, Earth, Nature</li>
+                            <li><strong>ES §181-220</strong>: Elemental synergy bonuses and combination mastery</li>
+                            <li><strong>CS §140-162</strong>: 60 skill points total allocation system</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="interactive-features">
+                        <h4>Interactive Features:</h4>
+                        <div class="feature-section">
+                            <h5>Element Tab Navigation:</h5>
+                            <ul>
+                                <li>Clickable element tabs for Fire, Ice, Electric, Earth, Nature specializations</li>
+                                <li>Dynamic skill tree population based on selected element</li>
+                                <li>Visual tier progression indicators and unlock requirements</li>
+                                <li>Skill point allocation tracking per element</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="page-card featured">
+                    <h3>11. Loadout Management (<code>/game/loadouts</code>)</h3>
+                    <div class="page-functions">
+                        <h4>Primary Functions:</h4>
+                        <ul>
+                            <li>Complete ability loadout configuration and management</li>
+                            <li>Preset loadout slots for different playstyles and scenarios</li>
+                            <li>Equipment set integration with ability combinations</li>
+                            <li>Loadout activation and sharing capabilities</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="design-references">
+                        <h4>Design Document References:</h4>
+                        <ul>
+                            <li><strong>ES §221-245</strong>: Active ability slot management and cooldown systems</li>
+                            <li><strong>CS §48-124</strong>: Class-specific abilities and ultimate skills</li>
+                            <li><strong>ES §181-220</strong>: Elemental ability integration and synergy bonuses</li>
+                            <li><strong>EI §55-106</strong>: Equipment slot coordination with loadout system</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="interactive-features">
+                        <h4>Loadout System Features:</h4>
+                        <div class="feature-section">
+                            <h5>Main Loadout Browser (<code>/game/loadouts</code>):</h5>
+                            <ul>
+                                <li>5 preset loadout tabs: Boss Killer, Mob Clear, PvP Duelist, Support, Empty Slot</li>
+                                <li>Complete ability visualization: Ultimate, Active Abilities (4 slots), Aura, Weapon Passive</li>
+                                <li>Equipment preview with 9-slot layout matching dashboard system</li>
+                                <li>Class passive display with inherited bonuses</li>
+                                <li>Loadout activation with visual feedback and confirmation</li>
+                                <li>Edit Loadout button linking to comprehensive editor</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="feature-section">
+                            <h5>Loadout Editor (<code>/game/edit-loadout</code>):</h5>
+                            <ul>
+                                <li>Drag-and-drop interface for ability assignment and management</li>
+                                <li>Left panel: Available abilities organized by category (Ultimate, Active, Aura, Weapon Passive)</li>
+                                <li>Right panel: Loadout slots with type validation and visual feedback</li>
+                                <li>Filter tabs for ability browsing: All, Class, Fire, Ice elements</li>
+                                <li>Include options: Equipment sets, Skill point allocation, Cosmetic appearance</li>
+                                <li>Save/Cancel functionality with confirmation dialogs</li>
+                                <li>Clear All option for complete loadout reset</li>
+                                <li>Back navigation to main loadout browser</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="feature-section">
+                            <h5>Ability Categories:</h5>
+                            <ul>
+                                <li><strong>Ultimate Abilities:</strong> Class-specific and elemental ultimate skills</li>
+                                <li><strong>Active Abilities:</strong> 4-slot system for class and elemental active skills</li>
+                                <li><strong>Auras:</strong> Team-wide passive bonuses with special visual styling</li>
+                                <li><strong>Weapon Passives:</strong> Equipment-based passive abilities</li>
+                                <li><strong>Class Passives:</strong> Inherited class bonuses (display-only)</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="optimization-note">
+                        <h4>Navigation Integration:</h4>
+                        <ul>
+                            <li>Positioned between SKILLS and BUILD PLANNER for logical progression flow</li>
+                            <li>Equipment integration ensures loadouts include complete gear sets</li>
+                            <li>Visual design maintains Courier design system consistency</li>
+                            <li>Cross-page state management for seamless loadout editing workflow</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="mission-system" class="spec-section">
+            <h2>MISSION SYSTEM PAGES</h2>
+            
+            <div class="page-group">
+                <div class="page-card">
+                    <h3>10. Mission Selection (<code>/game/missions</code>)</h3>
+                    <div class="page-functions">
+                        <h4>Primary Functions:</h4>
+                        <ul>
+                            <li>Available mission display with difficulty tiers</li>
+                            <li>Success probability calculation and display</li>
+                            <li>Mission duration and reward preview</li>
+                            <li>Active affix explanation and impact</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="design-references">
+                        <h4>Design Document References:</h4>
+                        <ul>
+                            <li><strong>MC §18-67</strong>: 3 mission categories with time commitments</li>
+                            <li><strong>MC §68-179</strong>: Mission affix system and weekly rotation</li>
+                            <li><strong>TI §61-88</strong>: Mission success calculation formulas</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="page-card">
+                    <h3>11. Mission Launch (<code>/game/missions/launch/:id</code>)</h3>
+                    <div class="page-functions">
+                        <h4>Primary Functions:</h4>
+                        <ul>
+                            <li>Final equipment optimization before launch</li>
+                            <li>Mission parameter confirmation</li>
+                            <li>Success probability final calculation</li>
+                            <li>Mission timer initiation</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="design-references">
+                        <h4>Design Document References:</h4>
+                        <ul>
+                            <li><strong>PO §90-112</strong>: Mission launch interface and timer display</li>
+                            <li><strong>MC §180-232</strong>: Affix scaling and interaction strategies</li>
+                            <li><strong>TI §45-60</strong>: Power budget validation before mission start</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="page-card">
+                    <h3>12. Active Missions (<code>/game/missions/active</code>)</h3>
+                    <div class="page-functions">
+                        <h4>Primary Functions:</h4>
+                        <ul>
+                            <li>Real-time mission progress monitoring</li>
+                            <li>Mission timer display and notifications</li>
+                            <li>Early mission cancellation options</li>
+                            <li>Mission completion notification handling</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="design-references">
+                        <h4>Design Document References:</h4>
+                        <ul>
+                            <li><strong>PO §76-82</strong>: Mission timer and completion notifications</li>
+                            <li><strong>MC §8-15</strong>: Timer-based gameplay as core loop</li>
+                            <li><strong>PO §186-190</strong>: Background operation when tab not active</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="page-card featured">
+                    <h3>13. Mission Results (<code>/game/missions/results/:id</code>)</h3>
+                    <div class="page-functions">
+                        <h4>Primary Functions:</h4>
+                        <ul>
+                            <li>Mission outcome presentation (critical/success/partial/failure)</li>
+                            <li>Reward distribution and collection</li>
+                            <li>Performance analysis and feedback</li>
+                            <li>Next mission recommendations</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="design-references">
+                        <h4>Design Document References:</h4>
+                        <ul>
+                            <li><strong>MC §330-420</strong>: Mission outcome determination and reward scaling</li>
+                            <li><strong>TI §89-110</strong>: Mission outcome calculation and reward generation</li>
+                            <li><strong>MC §421-456</strong>: Efficiency optimization based on results</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="implementation-status">
+                        <div class="status-implemented">
+                            <h4>Mission Success Modal - ✅ IMPLEMENTED (v0.3.4):</h4>
+                            <ul>
+                                <li><strong>Automatic Display</strong>: Appears immediately after mission launch with celebration animation</li>
+                                <li><strong>Success Statistics</strong>: Mission duration, efficiency rating, and performance letter grade</li>
+                                <li><strong>Comprehensive Rewards System</strong>:
+                                    <ul>
+                                        <li>Currency rewards (Credits, XP, Reputation) with dynamic parsing</li>
+                                        <li>Random item drops based on mission reward ranges</li>
+                                        <li>Rarity-appropriate visual styling with border colors</li>
+                                        <li>Interactive tooltips on all reward items</li>
+                                    </ul>
+                                </li>
+                                <li><strong>Visual Polish</strong>:
+                                    <ul>
+                                        <li>Animated slide-in modal with backdrop blur</li>
+                                        <li>"New Item" badges with pulsing animation on first reward</li>
+                                        <li>Glowing success title with professional sci-fi styling</li>
+                                    </ul>
+                                </li>
+                                <li><strong>Navigation Integration</strong>:
+                                    <ul>
+                                        <li>"View Inventory" button for immediate gear management</li>
+                                        <li>"Continue" button returning to mission selection</li>
+                                        <li>Seamless state management across all systems</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <div class="status-pending">
+                            <h4>Mission Failure System - PENDING IMPLEMENTATION:</h4>
+                            <ul>
+                                <li><strong>Failure Modal</strong>: Alternative overlay for unsuccessful missions</li>
+                                <li><strong>Partial Rewards</strong>: Reduced rewards based on failure type and progress</li>
+                                <li><strong>Failure Analysis</strong>: Breakdown of factors contributing to mission failure</li>
+                                <li><strong>Retry Options</strong>: Recommendations for equipment/strategy improvements</li>
+                                <li><strong>Visual Design</strong>: Red/orange color scheme to contrast success green/cyan</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="progression-pages" class="spec-section">
+            <h2>PROGRESSION PAGES</h2>
+            
+            <div class="page-group">
+                <div class="page-card">
+                    <h3>14. Elemental Specialization (<code>/game/elements</code>)</h3>
+                    <div class="page-functions">
+                        <h4>Primary Functions:</h4>
+                        <ul>
+                            <li>Elemental tree visualization and progression</li>
+                            <li>Element selection for levels 20 and 40</li>
+                            <li>Elemental combination explanation and preview</li>
+                            <li>Skill point allocation within elemental trees</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="design-references">
+                        <h4>Design Document References:</h4>
+                        <ul>
+                            <li><strong>EC §25-50</strong>: 5-element wheel and adjacency rules</li>
+                            <li><strong>EC §51-229</strong>: Detailed elemental identities and status effects</li>
+                            <li><strong>CS §163-202</strong>: Elemental unlock progression and restrictions</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="page-card">
+                    <h3>15. Faction Relations (<code>/game/factions</code>)</h3>
+                    <div class="page-functions">
+                        <h4>Primary Functions:</h4>
+                        <ul>
+                            <li>Faction reputation tracking and progress</li>
+                            <li>Faction vendor access and unique rewards</li>
+                            <li>Faction choice consequences and benefits</li>
+                            <li>Faction mission and storyline access</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="design-references">
+                        <h4>Design Document References:</h4>
+                        <ul>
+                            <li><strong>PE §59-130</strong>: 4 faction system with reputation progression</li>
+                            <li><strong>PE §131-153</strong>: Faction benefits and exclusive rewards</li>
+                            <li><strong>PO §145-153</strong>: Faction introduction and awareness building</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="page-card">
+                    <h3>16. Paragon Progression (<code>/game/paragon</code>)</h3>
+                    <div class="page-functions">
+                        <h4>Primary Functions:</h4>
+                        <ul>
+                            <li>Post-60 infinite progression tracking</li>
+                            <li>Paragon level power budget bonus display</li>
+                            <li>Long-term progression goal visualization</li>
+                            <li>Paragon milestone celebration</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="design-references">
+                        <h4>Design Document References:</h4>
+                        <ul>
+                            <li><strong>CS §16-21</strong>: Paragon levels with +1 power budget per level</li>
+                            <li><strong>PE §18-36</strong>: Paragon system mechanics and strategic impact</li>
+                            <li><strong>CS §203-219</strong>: End game progression goals</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="optimization-analysis" class="spec-section">
+            <h2>OPTIMIZATION & ANALYSIS PAGES</h2>
+            
+            <div class="page-group">
+                <div class="page-card">
+                    <h3>17. Build Optimizer (<code>/game/optimizer</code>)</h3>
+                    <div class="page-functions">
+                        <h4>Primary Functions:</h4>
+                        <ul>
+                            <li>Automated equipment optimization for specific goals</li>
+                            <li>Power budget efficiency analysis</li>
+                            <li>Build comparison tools</li>
+                            <li>Saved build configurations</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="design-references">
+                        <h4>Design Document References:</h4>
+                        <ul>
+                            <li><strong>EI §139-197</strong>: Strategic itemization and build examples</li>
+                            <li><strong>EI §17-44</strong>: Power budget optimization as core innovation</li>
+                            <li><strong>MC §233-257</strong>: Build adaptation for weekly affixes</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="page-card">
+                    <h3>18. Weekly Strategy (<code>/game/strategy</code>)</h3>
+                    <div class="page-functions">
+                        <h4>Primary Functions:</h4>
+                        <ul>
+                            <li>Current week's affix analysis and explanation</li>
+                            <li>Build recommendations for active affixes</li>
+                            <li>Success rate improvements through adaptation</li>
+                            <li>Community build sharing and ratings</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="design-references">
+                        <h4>Design Document References:</h4>
+                        <ul>
+                            <li><strong>MC §258-336</strong>: Weekly rotation system and affix impacts</li>
+                            <li><strong>MC §337-420</strong>: Affix interaction and adaptation strategies</li>
+                            <li><strong>PO §194-196</strong>: Build sharing through URL system</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="page-card">
+                    <h3>19. Statistics & Analytics (<code>/game/stats</code>)</h3>
+                    <div class="page-functions">
+                        <h4>Primary Functions:</h4>
+                        <ul>
+                            <li>Personal performance tracking and trends</li>
+                            <li>Mission success rate analysis</li>
+                            <li>Character progression visualization</li>
+                            <li>Goal setting and achievement tracking</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="design-references">
+                        <h4>Design Document References:</h4>
+                        <ul>
+                            <li><strong>PE §154-178</strong>: Progression metric tracking across all systems</li>
+                            <li><strong>MC §457-479</strong>: Success metrics and iteration points</li>
+                            <li><strong>ES §94-109</strong>: Player engagement and retention metrics</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="social-community" class="spec-section">
+            <h2>SOCIAL & COMMUNITY PAGES</h2>
+            
+            <div class="page-group">
+                <div class="page-card">
+                    <h3>20. Build Sharing (<code>/community/builds</code>)</h3>
+                    <div class="page-functions">
+                        <h4>Primary Functions:</h4>
+                        <ul>
+                            <li>Community build gallery and discovery</li>
+                            <li>Build rating and commenting system</li>
+                            <li>Build import/export functionality</li>
+                            <li>Featured builds and creator spotlights</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="design-references">
+                        <h4>Design Document References:</h4>
+                        <ul>
+                            <li><strong>PO §194-196</strong>: URL-based build sharing system</li>
+                            <li><strong>ES §94-109</strong>: Community engagement as success metric</li>
+                            <li><strong>MC §457-479</strong>: Community input integration</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="page-card">
+                    <h3>21. Leaderboards (<code>/community/leaderboards</code>)</h3>
+                    <div class="page-functions">
+                        <h4>Primary Functions:</h4>
+                        <ul>
+                            <li>Mission completion time rankings</li>
+                            <li>Success rate leaderboards</li>
+                            <li>Seasonal competitive events</li>
+                            <li>Player achievement showcases</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="design-references">
+                        <h4>Design Document References:</h4>
+                        <ul>
+                            <li><strong>PE §154-178</strong>: Competitive elements and achievement tracking</li>
+                            <li><strong>MC §457-479</strong>: Leaderboard qualification through push content</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="support-meta" class="spec-section">
+            <h2>SUPPORT & META PAGES</h2>
+            
+            <div class="page-group">
+                <div class="page-card">
+                    <h3>22. Tutorial Hub (<code>/tutorial</code>)</h3>
+                    <div class="page-functions">
+                        <h4>Primary Functions:</h4>
+                        <ul>
+                            <li>Complete tutorial mission replay access</li>
+                            <li>System explanation deep-dives</li>
+                            <li>New player guidance and tips</li>
+                            <li>Advanced strategy tutorials</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="design-references">
+                        <h4>Design Document References:</h4>
+                        <ul>
+                            <li><strong>PO §65-166</strong>: Complete tutorial progression system</li>
+                            <li><strong>PO §219-243</strong>: Knowledge checks and complexity management</li>
+                            <li><strong>PO §244-272</strong>: Retention hooks and progression guidance</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="page-card">
+                    <h3>23. Settings & Preferences (<code>/settings</code>)</h3>
+                    <div class="page-functions">
+                        <h4>Primary Functions:</h4>
+                        <ul>
+                            <li>Account management and security</li>
+                            <li>Notification preferences and controls</li>
+                            <li>Interface customization options</li>
+                            <li>Data export and account deletion</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="design-references">
+                        <h4>Design Document References:</h4>
+                        <ul>
+                            <li><strong>PO §179-196</strong>: Browser integration and preference persistence</li>
+                            <li><strong>Implementation Plan</strong>: Security considerations and data protection</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="page-card">
+                    <h3>24. Help & Documentation (<code>/help</code>)</h3>
+                    <div class="page-functions">
+                        <h4>Primary Functions:</h4>
+                        <ul>
+                            <li>Comprehensive game system documentation</li>
+                            <li>FAQ and troubleshooting guides</li>
+                            <li>Contact support functionality</li>
+                            <li>Community resources and links</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="design-references">
+                        <h4>Design Document References:</h4>
+                        <ul>
+                            <li><strong>All Documents</strong>: Reference implementation for every game system</li>
+                            <li><strong>PO §273-305</strong>: Success metrics and friction point analysis</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="error-utility" class="spec-section">
+            <h2>ERROR & UTILITY PAGES</h2>
+            
+            <div class="page-group">
+                <div class="page-card">
+                    <h3>25. 404 Not Found (<code>/404</code>)</h3>
+                    <div class="page-functions">
+                        <h4>Primary Functions:</h4>
+                        <ul>
+                            <li>Friendly error messaging for invalid URLs</li>
+                            <li>Navigation assistance back to main application</li>
+                            <li>Search functionality for intended content</li>
+                            <li>Recent page history for quick recovery</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="page-card">
+                    <h3>26. Maintenance Page (<code>/maintenance</code>)</h3>
+                    <div class="page-functions">
+                        <h4>Primary Functions:</h4>
+                        <ul>
+                            <li>Server maintenance notification and scheduling</li>
+                            <li>Estimated maintenance completion times</li>
+                            <li>Recent update information and patch notes</li>
+                            <li>Alternative activities during downtime</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="page-card">
+                    <h3>27. Offline Page (<code>/offline</code>)</h3>
+                    <div class="page-functions">
+                        <h4>Primary Functions:</h4>
+                        <ul>
+                            <li>Progressive Web App offline functionality</li>
+                            <li>Cached content access during network issues</li>
+                            <li>Network status monitoring and reconnection</li>
+                            <li>Limited offline functionality explanation</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="page-hierarchy" class="spec-section">
+            <h2>PAGE HIERARCHY & NAVIGATION</h2>
+            
+            <div class="navigation-structure">
+                <h3>Primary Navigation Structure</h3>
+                <div class="code-block">
+                    <pre><code>Landing (/)
+├── Register (/register)
+├── Login (/login)
+└── Game Dashboard (/game)
+    ├── Character (/game/character)
+    ├── Equipment (/game/equipment)
+    ├── Inventory (/game/inventory)
+    ├── Missions (/game/missions)
+    │   ├── Launch (/game/missions/launch/:id)
+    │   ├── Active (/game/missions/active)
+    │   └── Results (/game/missions/results/:id)
+    ├── Elements (/game/elements)
+    ├── Factions (/game/factions)
+    ├── Paragon (/game/paragon)
+    ├── Optimizer (/game/optimizer)
+    ├── Strategy (/game/strategy)
+    └── Stats (/game/stats)</code></pre>
+                </div>
+            </div>
+            
+            <div class="navigation-structure">
+                <h3>Secondary Navigation</h3>
+                <div class="code-block">
+                    <pre><code>Community
+├── Builds (/community/builds)
+└── Leaderboards (/community/leaderboards)
+
+Support
+├── Tutorial (/tutorial)
+├── Settings (/settings)
+└── Help (/help)</code></pre>
+                </div>
+            </div>
+            
+            <div class="mobile-considerations">
+                <h3>Mobile-Responsive Considerations</h3>
+                <ul>
+                    <li><strong>Collapsible Navigation</strong>: Hamburger menu for mobile devices</li>
+                    <li><strong>Touch-Optimized</strong>: All interactive elements sized for touch</li>
+                    <li><strong>Progressive Enhancement</strong>: Core functionality works on all devices</li>
+                    <li><strong>Offline Support</strong>: Key pages cached for offline access</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="development-priority" class="spec-section">
+            <h2>DEVELOPMENT PRIORITY</h2>
+            
+            <div class="phase-group">
+                <div class="phase-card implemented">
+                    <h3>Phase 1 Pages (MVP Core) - ✅ IMPLEMENTED</h3>
+                    <ol>
+                        <li>Landing Page, Registration, Login</li>
+                        <li>Character Creation, Character Selection</li>
+                        <li>Game Dashboard</li>
+                        <li>Basic Mission Selection and Launch</li>
+                        <li>Equipment Management (simplified)</li>
+                    </ol>
+                </div>
+
+                <div class="phase-card implemented">
+                    <h3>Phase 2 Pages (Power Budget System) - ✅ IMPLEMENTED</h3>
+                    <ol start="6">
+                        <li><strong>Character Sheet with Interactive Features</strong> (v0.3.3):
+                            <ul>
+                                <li>Equipment slot visualization with icons and tooltips</li>
+                                <li>Empty slot popups showing available items</li>
+                                <li>Core stats tooltips with secondary stat calculations</li>
+                                <li>Real-time power budget integration</li>
+                            </ul>
+                        </li>
+                        <li><strong>Inventory with Enhancement</strong> (v0.3.2):
+                            <ul>
+                                <li>JSON-based item database (23 items)</li>
+                                <li>Interactive tooltips with stat breakdowns</li>
+                                <li>Equipment synchronization with character sheet</li>
+                                <li>Advanced filtering and selection systems</li>
+                            </ul>
+                        </li>
+                        <li>Build Optimizer (basic) - PENDING</li>
+                        <li>Complete Equipment Management - PENDING</li>
+                    </ol>
+                </div>
+
+                <div class="phase-card partial">
+                    <h3>Phase 3 Pages (Mission System) - ✅ PARTIALLY IMPLEMENTED</h3>
+                    <ol start="10">
+                        <li><strong>Complete Mission Selection with affixes</strong> (v0.3.4):
+                            <ul>
+                                <li>3-category mission system (Patrol, Horde, Expedition)</li>
+                                <li>7 unique missions with comprehensive data</li>
+                                <li>Weekly affix display and mission card integration</li>
+                                <li>Interactive mission briefing system with objectives</li>
+                            </ul>
+                        </li>
+                        <li><strong>Mission Results with Success System</strong> (v0.3.4):
+                            <ul>
+                                <li>Animated success modal with performance statistics</li>
+                                <li>Dynamic reward generation and item drops</li>
+                                <li>Interactive reward collection with tooltips</li>
+                                <li>Navigation integration with inventory system</li>
+                            </ul>
+                        </li>
+                        <li>Active Missions monitoring - PENDING</li>
+                        <li>Weekly Strategy page - PENDING</li>
+                    </ol>
+                </div>
+
+                <div class="phase-card pending">
+                    <h3>Phase 4 Pages (Progression Systems)</h3>
+                    <ol start="14">
+                        <li>Elemental Specialization</li>
+                        <li>Faction Relations</li>
+                        <li>Statistics & Analytics</li>
+                        <li>Tutorial Hub</li>
+                    </ol>
+                </div>
+
+                <div class="phase-card pending">
+                    <h3>Phase 5 Pages (Advanced & Social)</h3>
+                    <ol start="18">
+                        <li>Paragon Progression</li>
+                        <li>Build Sharing community</li>
+                        <li>Leaderboards</li>
+                        <li>Advanced optimization tools</li>
+                    </ol>
+                </div>
+
+                <div class="phase-card pending">
+                    <h3>Phase 6 Pages (Polish & Support)</h3>
+                    <ol start="22">
+                        <li>Settings and preferences</li>
+                        <li>Help and documentation</li>
+                        <li>Error pages and offline support</li>
+                    </ol>
+                </div>
+            </div>
+        </section>
+
+        <section id="demo-implementation" class="spec-section">
+            <h2>DEMO IMPLEMENTATION STATUS</h2>
+            
+            <div class="demo-status">
+                <h3>Current Demo Features (v0.3.4)</h3>
+                
+                <div class="feature-group implemented">
+                    <h4>Mission System - FULLY IMPLEMENTED:</h4>
+                    <ul class="feature-list">
+                        <li>✅ <strong>Mission Selection Interface</strong>: 3-column layout with categories, mission grid, and details panel</li>
+                        <li>✅ <strong>Mission Database</strong>: 7 comprehensive missions across Patrol, Horde, and Expedition types</li>
+                        <li>✅ <strong>Interactive Mission Cards</strong>: Hover effects, difficulty color-coding, and affix display</li>
+                        <li>✅ <strong>Mission Briefing System</strong>: Detailed objectives, success rates, and launch functionality</li>
+                        <li>✅ <strong>Mission Success Modal</strong>: Animated reward presentation with item drops and statistics</li>
+                        <li>✅ <strong>Dynamic Reward Generation</strong>: Random item selection from database with rarity styling</li>
+                        <li>✅ <strong>Navigation Integration</strong>: Seamless flow between mission completion and inventory management</li>
+                        <li>✅ <strong>Professional UI Design</strong>: Sci-fi aesthetic matching the overall game theme</li>
+                    </ul>
+                </div>
+
+                <div class="feature-group implemented">
+                    <h4>Character Sheet Page - FULLY IMPLEMENTED:</h4>
+                    <ul class="feature-list">
+                        <li>✅ Interactive equipment slots with visual icons</li>
+                        <li>✅ Mouseover tooltips for equipped items</li>
+                        <li>✅ Empty slot popups showing available equipment</li>
+                        <li>✅ Click-to-equip functionality from empty slots</li>
+                        <li>✅ Core stats tooltips with secondary stat calculations</li>
+                        <li>✅ Real-time power budget tracking and updates</li>
+                        <li>✅ Professional sci-fi styling with hover effects</li>
+                    </ul>
+                </div>
+
+                <div class="feature-group implemented">
+                    <h4>Inventory Page - FULLY IMPLEMENTED:</h4>
+                    <ul class="feature-list">
+                        <li>✅ JSON-based item database (8 weapons, 15 armor)</li>
+                        <li>✅ Interactive item tooltips with comprehensive stat information</li>
+                        <li>✅ Advanced filtering system (All, Weapons, Armor, Legendary)</li>
+                        <li>✅ Equipment synchronization with character sheet</li>
+                        <li>✅ Rarity-based visual design with appropriate border colors</li>
+                        <li>✅ Item management actions (equip, enhance, modify, sell)</li>
+                        <li>✅ Power budget validation and efficiency calculations</li>
+                    </ul>
+                </div>
+
+                <div class="technical-architecture">
+                    <h4>Technical Architecture:</h4>
+                    <ul class="feature-list">
+                        <li>✅ Asynchronous JSON item loading with error handling</li>
+                        <li>✅ Cross-page equipment state synchronization</li>
+                        <li>✅ Multiple tooltip systems (items, stats, empty slots)</li>
+                        <li>✅ Mission system with success modal and reward generation</li>
+                        <li>✅ Dynamic item database integration with fallback systems</li>
+                        <li>✅ Responsive design with mobile compatibility</li>
+                        <li>✅ Web server requirement with proper error messaging</li>
+                    </ul>
+                </div>
+
+                <div class="user-experience">
+                    <h4>User Experience Enhancements:</h4>
+                    <ul class="feature-list">
+                        <li>✅ Navigation optimization (Inventory moved to 2nd tab)</li>
+                        <li>✅ Tooltip positioning that avoids screen edges</li>
+                        <li>✅ Visual feedback for all interactive elements</li>
+                        <li>✅ Comprehensive changelog system with version tracking</li>
+                        <li>✅ Professional game aesthetics with consistent theming</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="demo-conclusion">
+                <p>The demo successfully demonstrates the core Power Budget System mechanics, asynchronous mission system, and comprehensive reward loops, providing a compelling preview of the strategic depth and accessibility that defines Courier's web-first design approach.</p>
+            </div>
+        </section>
+
+        <section id="mission-implementation" class="spec-section">
+            <h2>MISSION SYSTEM IMPLEMENTATION DETAILS</h2>
+            
+            <div class="implementation-details">
+                <h3>Mission Success System (v0.3.4)</h3>
+                
+                <div class="algorithm-section">
+                    <h4>Reward Generation Algorithm:</h4>
+                    <ul>
+                        <li><strong>Currency Parsing</strong>: Dynamically extracts Credits and XP from mission reward strings</li>
+                        <li><strong>Item Drop Logic</strong>: Uses mission item count ranges (e.g., "2-3" → random 2 or 3 items)</li>
+                        <li><strong>Random Selection</strong>: Pulls items from complete 23-item database with equal probability</li>
+                        <li><strong>Rarity Distribution</strong>: Natural distribution based on database composition</li>
+                    </ul>
+                </div>
+
+                <div class="visual-section">
+                    <h4>Visual Reward Presentation:</h4>
+                    <ul>
+                        <li><strong>Animated Modal</strong>: 0.5s slide-in animation with professional backdrop blur</li>
+                        <li><strong>Success Celebration</strong>: Glowing green title with cyan mission name display</li>
+                        <li><strong>Performance Statistics</strong>: Duration, efficiency percentage, and letter grade rating</li>
+                        <li><strong>Interactive Item Cards</strong>: Hover tooltips showing complete item statistics</li>
+                    </ul>
+                </div>
+
+                <div class="reward-features">
+                    <h4>Reward Item Features:</h4>
+                    <ul>
+                        <li><strong>Rarity-Based Styling</strong>: Border colors matching inventory system (common to primal)</li>
+                        <li><strong>New Item Indication</strong>: Animated "!" badge on first reward with pulsing effect</li>
+                        <li><strong>Tooltip Integration</strong>: Full item stat display using existing tooltip system</li>
+                        <li><strong>Visual Hierarchy</strong>: Large item icons with clear name and type display</li>
+                    </ul>
+                </div>
+
+                <div class="navigation-flow">
+                    <h4>Navigation Flow:</h4>
+                    <ul>
+                        <li><strong>Mission Launch</strong>: Automatic item database loading if needed</li>
+                        <li><strong>Success Display</strong>: Immediate reward presentation with detailed breakdown</li>
+                        <li><strong>Inventory Integration</strong>: Direct navigation to inventory with reward collection</li>
+                        <li><strong>Seamless Return</strong>: Continue button returning to mission selection interface</li>
+                    </ul>
+                </div>
+
+                <div class="future-enhancements">
+                    <h4>Future Enhancement Roadmap:</h4>
+                    <ul>
+                        <li><strong>Mission Failure States</strong>: Red-themed modal for unsuccessful missions</li>
+                        <li><strong>Partial Success Variants</strong>: Graduated reward scaling based on performance</li>
+                        <li><strong>Critical Success Bonuses</strong>: Enhanced rewards for exceptional performance</li>
+                        <li><strong>Failure Analysis Tools</strong>: Detailed breakdown of contributing failure factors</li>
+                        <li><strong>Equipment Recommendations</strong>: Post-failure suggestions for build improvements</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <div class="doc-nav-bottom">
+            <div class="nav-item prev">
+                <a href="10-implementation-plan.html">
+                    <span>← Previous</span>
+                    <strong>Implementation Plan</strong>
+                </a>
+            </div>
+            <div class="nav-item next">
+                <span class="disabled">
+                    <span>Next →</span>
+                    <strong>End of Documents</strong>
+                </span>
+            </div>
+        </div>
+
+        <footer class="spec-footer">
+            <div class="footer-content">
+                <h3>Related Documents</h3>
+                <div class="footer-links">
+                    <div class="footer-section">
+                        <h4>Core Systems</h4>
+                        <ul>
+                            <li><a href="04-elemental-combat.html">Elemental Combat</a></li>
+                            <li><a href="05-equipment-itemization.html">Equipment & Itemization</a></li>
+                            <li><a href="06-weapon-systems.html">Weapon Systems</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h4>Content & Progression</h4>
+                        <ul>
+                            <li><a href="07-mission-content.html">Mission Content</a></li>
+                            <li><a href="08-progression-economy.html">Progression & Economy</a></li>
+                            <li><a href="elemental-system.html">Elemental System</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h4>Implementation</h4>
+                        <ul>
+                            <li><a href="09-technical-implementation.html">Technical Implementation</a></li>
+                            <li><a href="10-implementation-plan.html">Implementation Plan</a></li>
+                            <li><a href="../index.html">Return to Home</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>

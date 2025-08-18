@@ -1,0 +1,1392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Courier - Web Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        /* Navigation Header */
+        .nav-header {
+            background: rgba(20, 20, 20, 0.95);
+            border-bottom: 1px solid #333;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(45deg, #00ffff, #ff6600);
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+        }
+
+        .user-info {
+            color: #00ffff;
+            font-size: 12px;
+        }
+
+        .user-level {
+            color: #ff6600;
+            font-weight: bold;
+        }
+
+        /* Main Navigation Tabs */
+        .main-nav {
+            background: rgba(15, 15, 15, 0.9);
+            border-bottom: 1px solid #333;
+            padding: 0 20px;
+            margin-top: 60px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 999;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 0;
+        }
+
+        .nav-tab {
+            padding: 15px 25px;
+            background: none;
+            border: none;
+            color: #888;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-bottom: 2px solid transparent;
+            font-family: inherit;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 12px;
+        }
+
+        .nav-tab:hover {
+            color: #00ffff;
+            background: rgba(0, 255, 255, 0.1);
+        }
+
+        .nav-tab.active {
+            color: #00ffff;
+            border-bottom-color: #00ffff;
+            background: rgba(0, 255, 255, 0.15);
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-top: 120px;
+            min-height: calc(100vh - 120px);
+            padding: 20px;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* Character Sheet Styles */
+        .character-container {
+            display: grid;
+            grid-template-columns: 300px 1fr 300px;
+            gap: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .equipment-panel {
+            background: rgba(20, 20, 20, 0.8);
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .power-budget {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding: 10px;
+            background: rgba(255, 102, 0, 0.1);
+            border: 1px solid #ff6600;
+            border-radius: 4px;
+        }
+
+        .power-icon {
+            width: 24px;
+            height: 24px;
+            background: #ff6600;
+            border-radius: 50%;
+        }
+
+        .power-value {
+            color: #ff6600;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .equipment-slots {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .equipment-slot {
+            width: 60px;
+            height: 60px;
+            border: 2px dashed #555;
+            border-radius: 4px;
+            background: rgba(40, 40, 40, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .equipment-slot:hover {
+            border-color: #00ffff;
+            background: rgba(0, 255, 255, 0.1);
+        }
+
+        .equipment-slot.equipped {
+            border-color: #00ffff;
+            background: rgba(0, 255, 255, 0.2);
+        }
+
+        .equipment-slot.equipped::after {
+            content: "⚡";
+            color: #00ffff;
+            font-size: 20px;
+        }
+
+        .character-model {
+            background: rgba(20, 20, 20, 0.8);
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .character-avatar {
+            width: 200px;
+            height: 300px;
+            background: linear-gradient(45deg, #333, #555);
+            border: 2px solid #00ffff;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #00ffff;
+            font-size: 48px;
+        }
+
+        .stats-panel {
+            background: rgba(20, 20, 20, 0.8);
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .stats-section {
+            margin-bottom: 20px;
+        }
+
+        .stats-title {
+            color: #00ffff;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 5px;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-name {
+            color: #ccc;
+            font-size: 12px;
+        }
+
+        .stat-value {
+            color: #fff;
+            font-weight: bold;
+        }
+
+        /* Mission Selection Styles */
+        .mission-container {
+            display: grid;
+            grid-template-columns: 250px 1fr 350px;
+            gap: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .mission-sidebar {
+            background: rgba(20, 20, 20, 0.8);
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .mission-category {
+            padding: 10px 15px;
+            margin: 5px 0;
+            background: rgba(40, 40, 40, 0.5);
+            border: 1px solid #555;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 1px;
+        }
+
+        .mission-category:hover,
+        .mission-category.active {
+            background: rgba(0, 255, 255, 0.2);
+            border-color: #00ffff;
+            color: #00ffff;
+        }
+
+        .mission-list {
+            background: rgba(20, 20, 20, 0.8);
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .mission-search {
+            width: 100%;
+            padding: 10px;
+            background: rgba(40, 40, 40, 0.8);
+            border: 1px solid #555;
+            border-radius: 4px;
+            color: #fff;
+            font-family: inherit;
+            margin-bottom: 20px;
+        }
+
+        .mission-search::placeholder {
+            color: #888;
+        }
+
+        .mission-item {
+            background: rgba(30, 30, 30, 0.8);
+            border: 1px solid #444;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .mission-item:hover,
+        .mission-item.selected {
+            border-color: #00ffff;
+            background: rgba(0, 255, 255, 0.1);
+        }
+
+        .mission-title {
+            color: #fff;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .mission-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 11px;
+            color: #888;
+        }
+
+        .mission-difficulty {
+            color: #ff6600;
+        }
+
+        .mission-details {
+            background: rgba(20, 20, 20, 0.8);
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .mission-header {
+            border-bottom: 1px solid #333;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .mission-name {
+            color: #fff;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .mission-type {
+            color: #ff6600;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 1px;
+        }
+
+        .mission-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .mission-stat {
+            text-align: center;
+        }
+
+        .mission-stat-label {
+            color: #888;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .mission-stat-value {
+            color: #fff;
+            font-size: 16px;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        .success-rate {
+            color: #00ff00;
+        }
+
+        .mission-description {
+            color: #ccc;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .launch-button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(45deg, #00ffff, #0099cc);
+            border: none;
+            border-radius: 4px;
+            color: #000;
+            font-weight: bold;
+            font-family: inherit;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .launch-button:hover {
+            background: linear-gradient(45deg, #00ccff, #0077aa);
+            transform: translateY(-2px);
+        }
+
+        .launch-button:disabled {
+            background: #333;
+            color: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .character-container,
+            .mission-container {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .equipment-panel,
+            .stats-panel,
+            .mission-sidebar,
+            .mission-details {
+                margin-bottom: 20px;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .page.active {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        /* Status indicators */
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-active { background: #00ff00; }
+        .status-ready { background: #00ffff; }
+        .status-locked { background: #666; }
+
+        /* Affix tags */
+        .affixes {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin: 10px 0;
+        }
+
+        .affix-tag {
+            background: rgba(255, 102, 0, 0.2);
+            border: 1px solid #ff6600;
+            color: #ff6600;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Inventory Styles */
+        .inventory-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 20px;
+        }
+
+        .inventory-grid {
+            background: rgba(20, 20, 20, 0.8);
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .inventory-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #333;
+        }
+
+        .inventory-title {
+            color: #00ffff;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .inventory-filter {
+            display: flex;
+            gap: 10px;
+        }
+
+        .filter-btn {
+            padding: 5px 12px;
+            background: rgba(40, 40, 40, 0.8);
+            border: 1px solid #555;
+            border-radius: 4px;
+            color: #888;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+            font-size: 11px;
+            text-transform: uppercase;
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: rgba(0, 255, 255, 0.2);
+            border-color: #00ffff;
+            color: #00ffff;
+        }
+
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+            gap: 8px;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .item-slot {
+            width: 60px;
+            height: 60px;
+            border: 2px solid #444;
+            border-radius: 4px;
+            background: rgba(30, 30, 30, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            font-size: 24px;
+        }
+
+        .item-slot:hover {
+            border-color: #00ffff;
+            background: rgba(0, 255, 255, 0.1);
+            transform: scale(1.05);
+        }
+
+        .item-slot.common { border-color: #666; }
+        .item-slot.uncommon { border-color: #00ff00; }
+        .item-slot.rare { border-color: #0099ff; }
+        .item-slot.epic { border-color: #9900ff; }
+        .item-slot.legendary { border-color: #ff6600; }
+        .item-slot.mythic { border-color: #ff0066; }
+        .item-slot.primal { border-color: #00ffff; }\n\n        .item-slot.selected {\n            border-color: #ffff00 !important;\n            background: rgba(255, 255, 0, 0.2) !important;\n            transform: scale(1.1);\n        }
+
+        .item-corner-indicator {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .item-corner-indicator.weapon { background: #ff6600; }
+        .item-corner-indicator.armor { background: #00ffff; }
+
+        /* Item Tooltip */
+        .item-tooltip {
+            position: absolute;
+            background: rgba(10, 10, 10, 0.95);
+            border: 2px solid #333;
+            border-radius: 8px;
+            padding: 15px;
+            min-width: 280px;
+            max-width: 350px;
+            z-index: 10000;
+            pointer-events: none;
+            backdrop-filter: blur(10px);
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+        .tooltip-hidden {
+            display: none;
+        }
+
+        .tooltip-item-name {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .tooltip-item-name.common { color: #888; }
+        .tooltip-item-name.uncommon { color: #00ff00; }
+        .tooltip-item-name.rare { color: #0099ff; }
+        .tooltip-item-name.epic { color: #9900ff; }
+        .tooltip-item-name.legendary { color: #ff6600; }
+        .tooltip-item-name.mythic { color: #ff0066; }
+        .tooltip-item-name.primal { color: #00ffff; }
+
+        .tooltip-item-type {
+            color: #888;
+            font-size: 11px;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .tooltip-stats {
+            margin-bottom: 12px;
+        }
+
+        .tooltip-stat {
+            display: flex;
+            justify-content: space-between;
+            margin: 4px 0;
+            padding: 2px 0;
+        }
+
+        .tooltip-stat-name {
+            color: #ccc;
+        }
+
+        .tooltip-stat-value {
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .tooltip-stat.positive .tooltip-stat-value {
+            color: #00ff00;
+        }
+
+        .tooltip-stat.negative .tooltip-stat-value {
+            color: #ff4444;
+        }
+
+        .tooltip-section {
+            border-top: 1px solid #333;
+            margin-top: 10px;
+            padding-top: 8px;
+        }
+
+        .tooltip-power-cost {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 10px;
+            padding: 8px;
+            background: rgba(255, 102, 0, 0.1);
+            border: 1px solid #ff6600;
+            border-radius: 4px;
+        }
+
+        .tooltip-power-icon {
+            width: 16px;
+            height: 16px;
+            background: #ff6600;
+            border-radius: 50%;
+        }
+
+        .tooltip-power-text {
+            color: #ff6600;
+            font-weight: bold;
+        }
+
+        .tooltip-efficiency {
+            color: #888;
+            font-size: 10px;
+            margin-top: 4px;
+        }
+
+        .item-actions {
+            background: rgba(20, 20, 20, 0.8);
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .action-button {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 10px;
+            background: rgba(40, 40, 40, 0.8);
+            border: 1px solid #555;
+            border-radius: 4px;
+            color: #ccc;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 11px;
+        }
+
+        .action-button:hover {
+            background: rgba(0, 255, 255, 0.2);
+            border-color: #00ffff;
+            color: #00ffff;
+        }
+
+        .action-button.primary {
+            background: linear-gradient(45deg, #00ffff, #0099cc);
+            color: #000;
+            font-weight: bold;
+        }
+
+        .action-button.primary:hover {
+            background: linear-gradient(45deg, #00ccff, #0077aa);
+        }
+
+        .selected-item-details {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(30, 30, 30, 0.8);
+            border: 1px solid #444;
+            border-radius: 4px;
+        }
+
+        .selected-item-name {
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .selected-item-type {
+            color: #888;
+            font-size: 11px;
+            margin-bottom: 10px;
+        }
+
+        .selected-item-name.common { color: #888; }
+        .selected-item-name.uncommon { color: #00ff00; }
+        .selected-item-name.rare { color: #0099ff; }
+        .selected-item-name.epic { color: #9900ff; }
+        .selected-item-name.legendary { color: #ff6600; }
+        .selected-item-name.mythic { color: #ff0066; }
+        .selected-item-name.primal { color: #00ffff; }
+
+        /* Changelog Styles */
+        .changelog-link {
+            color: #00ffff;
+            text-decoration: none;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .changelog-link:hover {
+            color: #ff6600;
+        }
+
+        .changelog-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .changelog-content {
+            background: rgba(20, 20, 20, 0.8);
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 30px;
+            line-height: 1.6;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .changelog-content h1 {
+            color: #00ffff;
+            font-size: 24px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #333;
+            padding-bottom: 10px;
+        }
+
+        .changelog-content h2 {
+            color: #ff6600;
+            font-size: 18px;
+            margin: 25px 0 15px 0;
+            padding: 10px 15px;
+            background: rgba(255, 102, 0, 0.1);
+            border-left: 4px solid #ff6600;
+            border-radius: 4px;
+        }
+
+        .changelog-content h3 {
+            color: #00ffff;
+            font-size: 16px;
+            margin: 20px 0 10px 0;
+        }
+
+        .changelog-content h4 {
+            color: #ccc;
+            font-size: 14px;
+            margin: 15px 0 8px 0;
+        }
+
+        .changelog-content p {
+            color: #ccc;
+            margin-bottom: 12px;
+        }
+
+        .changelog-content ul, .changelog-content ol {
+            margin: 10px 0 15px 20px;
+            color: #ccc;
+        }
+
+        .changelog-content li {
+            margin-bottom: 5px;
+        }
+
+        .changelog-content strong {
+            color: #fff;
+        }
+
+        .changelog-content em {
+            color: #888;
+            font-style: italic;
+        }
+
+        .changelog-content code {
+            background: rgba(40, 40, 40, 0.8);
+            color: #00ffff;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .changelog-content pre {
+            background: rgba(10, 10, 10, 0.8);
+            border: 1px solid #333;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+
+        .changelog-content pre code {
+            background: none;
+            padding: 0;
+        }
+
+        .changelog-content blockquote {
+            border-left: 3px solid #555;
+            margin: 15px 0;
+            padding-left: 15px;
+            color: #888;
+        }
+
+        .changelog-content hr {
+            border: none;
+            border-top: 1px solid #333;
+            margin: 30px 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Header -->
+    <div class="nav-header">
+        <div class="logo">
+            <div class="logo-icon"></div>
+            <div>
+                <div class="user-info">
+                    <span style="color: #ff6600;">USERNAME</span><br>
+                    <span class="user-level">LEVEL 60</span>
+                </div>
+            </div>
+        </div>
+        <div class="user-info">
+            <div><a href="#" class="changelog-link" onclick="showChangelog()">CHANGELOG</a> • V0.3.1 • BUILD: 08.16.2025 15:00 EST</div>
+        </div>
+    </div>
+
+    <!-- Main Navigation -->
+    <div class="main-nav">
+        <div class="nav-tabs">
+            <button class="nav-tab active" data-page="character">CHARACTER</button>
+            <button class="nav-tab" data-page="build-planner">BUILD PLANNER</button>
+            <button class="nav-tab" data-page="market">MARKET</button>
+            <button class="nav-tab" data-page="mission">MISSION</button>
+            <button class="nav-tab" data-page="crafting">CRAFTING</button>
+            <button class="nav-tab" data-page="skills">SKILLS</button>
+            <button class="nav-tab" data-page="inventory">INVENTORY</button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Character Sheet Page -->
+        <div class="page active" id="character">
+            <div class="character-container">
+                <!-- Equipment Panel -->
+                <div class="equipment-panel">
+                    <div class="power-budget">
+                        <div class="power-icon"></div>
+                        <span class="power-value">2100</span>
+                        <span style="color: #888;">/2100</span>
+                    </div>
+                    
+                    <div class="equipment-slots">
+                        <div class="equipment-slot equipped" title="Primary Weapon"></div>
+                        <div class="equipment-slot equipped" title="Secondary Weapon"></div>
+                        <div class="equipment-slot equipped" title="Head"></div>
+                        <div class="equipment-slot equipped" title="Chest"></div>
+                        <div class="equipment-slot equipped" title="Gloves"></div>
+                        <div class="equipment-slot equipped" title="Legs"></div>
+                        <div class="equipment-slot equipped" title="Shoulders"></div>
+                        <div class="equipment-slot equipped" title="Back"></div>
+                        <div class="equipment-slot equipped" title="Bracers"></div>
+                    </div>
+                </div>
+
+                <!-- Character Model -->
+                <div class="character-model">
+                    <div class="character-avatar">👤</div>
+                    <div style="color: #00ffff; font-size: 18px; font-weight: bold;">SENTINEL</div>
+                    <div style="color: #888; margin-top: 5px;">Tank Specialist</div>
+                </div>
+
+                <!-- Stats Panel -->
+                <div class="stats-panel">
+                    <div class="stats-section">
+                        <div class="stats-title">Core Stats</div>
+                        <div class="stat-row">
+                            <span class="stat-name">VIGOR</span>
+                            <span class="stat-value">1460</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-name">FOCUS</span>
+                            <span class="stat-value">1345</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-name">FORCE</span>
+                            <span class="stat-value">4360</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-name">MOMENTUM</span>
+                            <span class="stat-value">6840</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-name">RESONANCE</span>
+                            <span class="stat-value">950</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-name">BULWARK</span>
+                            <span class="stat-value">8500</span>
+                        </div>
+                    </div>
+
+                    <div class="stats-section">
+                        <div class="stats-title">Derived Stats</div>
+                        <div class="stat-row">
+                            <span class="stat-name">Health</span>
+                            <span class="stat-value">8500</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-name">Shield</span>
+                            <span class="stat-value">3200</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-name">Damage</span>
+                            <span class="stat-value">1850</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-name">Crit Chance</span>
+                            <span class="stat-value">25%</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-name">Resistances</span>
+                            <span class="stat-value">45%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mission Page -->
+        <div class="page" id="mission">
+            <div class="mission-container">
+                <!-- Mission Sidebar -->
+                <div class="mission-sidebar">
+                    <div style="color: #00ffff; font-size: 16px; font-weight: bold; margin-bottom: 15px;">
+                        🎯 MISSION CONTROL
+                    </div>
+                    
+                    <div class="mission-category active" data-type="activities">ACTIVITIES</div>
+                    <div class="mission-category" data-type="planner">PLANNER</div>
+                    <div class="mission-category" data-type="efficiency">EFFICIENCY</div>
+                    <div class="mission-category" data-type="analytics">ANALYTICS</div>
+                </div>
+
+                <!-- Mission List -->
+                <div class="mission-list">
+                    <input type="text" class="mission-search" placeholder="SEARCH QUESTS">
+                    
+                    <div class="mission-item selected" data-mission="hunt-god">
+                        <div class="mission-title">TO HUNT A GOD</div>
+                        <div class="mission-meta">
+                            <span class="mission-difficulty">RAID | HARD</span>
+                            <span>120-300M</span>
+                            <span>Level Req: 100</span>
+                        </div>
+                        <div class="affixes">
+                            <span class="affix-tag">Volcanic</span>
+                            <span class="affix-tag">Fortified</span>
+                        </div>
+                    </div>
+
+                    <div class="mission-item" data-mission="secure-alpha">
+                        <div class="mission-title">SECURE OUTPOST ALPHA</div>
+                        <div class="mission-meta">
+                            <span class="mission-difficulty">PATROL | EASY</span>
+                            <span>15-25M</span>
+                            <span>Level Req: 10</span>
+                        </div>
+                        <div class="affixes">
+                            <span class="affix-tag">Bountiful</span>
+                        </div>
+                    </div>
+
+                    <div class="mission-item" data-mission="convoy-escort">
+                        <div class="mission-title">ESCORT SUPPLY CONVOY</div>
+                        <div class="mission-meta">
+                            <span class="mission-difficulty">HORDE | MEDIUM</span>
+                            <span>60-120M</span>
+                            <span>Level Req: 35</span>
+                        </div>
+                        <div class="affixes">
+                            <span class="affix-tag">Shielded</span>
+                            <span class="affix-tag">Wealthy</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mission Details -->
+                <div class="mission-details">
+                    <div class="mission-header">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <div class="mission-name">TO HUNT A GOD</div>
+                                <div class="mission-type">RAID | HARD</div>
+                            </div>
+                            <div class="power-budget">
+                                <div class="power-icon"></div>
+                                <span class="power-value">2100</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mission-description">
+                        A forgotten sector beneath District 5—long sealed, long redacted—has come online again. Deep scan telemetry suggests massive Progenitor presence and unknown energy signatures.
+                    </div>
+
+                    <div class="mission-stats">
+                        <div class="mission-stat">
+                            <div class="mission-stat-label">Duration</div>
+                            <div class="mission-stat-value">120-300M</div>
+                        </div>
+                        <div class="mission-stat">
+                            <div class="mission-stat-label">Level Req</div>
+                            <div class="mission-stat-value">100</div>
+                        </div>
+                        <div class="mission-stat">
+                            <div class="mission-stat-label">Success Rate</div>
+                            <div class="mission-stat-value success-rate">85%</div>
+                        </div>
+                        <div class="mission-stat">
+                            <div class="mission-stat-label">XP Reward</div>
+                            <div class="mission-stat-value">1,500</div>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 20px;">
+                        <div style="color: #ff6600; font-size: 12px; text-transform: uppercase; margin-bottom: 10px;">Active Affixes</div>
+                        <div class="affixes">
+                            <span class="affix-tag">Volcanic</span>
+                            <span class="affix-tag">Fortified</span>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 20px;">
+                        <div style="color: #888; font-size: 12px; margin-bottom: 10px;">STATUS:</div>
+                        <div style="color: #ff6600; font-size: 12px;">NO ACTIVE MISSIONS</div>
+                    </div>
+
+                    <button class="launch-button" onclick="launchMission()">
+                        ⚡ LAUNCH MISSION
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Placeholder pages -->
+        <div class="page" id="build-planner">
+            <div style="text-align: center; padding: 100px; color: #888;">
+                <h2>BUILD PLANNER</h2>
+                <p>Equipment optimization and build comparison tools</p>
+            </div>
+        </div>
+
+        <div class="page" id="market">
+            <div style="text-align: center; padding: 100px; color: #888;">
+                <h2>MARKET</h2>
+                <p>Item trading and marketplace</p>
+            </div>
+        </div>
+
+        <div class="page" id="crafting">
+            <div style="text-align: center; padding: 100px; color: #888;">
+                <h2>CRAFTING</h2>
+                <p>Item enhancement and modification</p>
+            </div>
+        </div>
+
+        <div class="page" id="skills">
+            <div style="text-align: center; padding: 100px; color: #888;">
+                <h2>SKILLS</h2>
+                <p>Skill trees and elemental specialization</p>
+            </div>
+        </div>
+
+        <div class="page" id="inventory">
+            <div class="inventory-container">
+                <!-- Inventory Grid -->
+                <div class="inventory-grid">
+                    <div class="inventory-header">
+                        <div class="inventory-title">INVENTORY</div>
+                        <div class="inventory-filter">
+                            <button class="filter-btn active" data-filter="all">ALL</button>
+                            <button class="filter-btn" data-filter="weapon">WEAPONS</button>
+                            <button class="filter-btn" data-filter="armor">ARMOR</button>
+                            <button class="filter-btn" data-filter="legendary">LEGENDARY</button>
+                        </div>
+                    </div>
+                    
+                    <div class="items-grid" id="items-grid">
+                        <!-- Items will be populated by JavaScript -->
+                    </div>
+                </div>
+                
+                <!-- Item Actions Panel -->
+                <div class="item-actions">
+                    <div class="selected-item-details" id="selected-item-details" style="display: none;">
+                        <div class="selected-item-name" id="selected-item-name">No item selected</div>
+                        <div class="selected-item-type" id="selected-item-type"></div>
+                    </div>
+                    
+                    <button class="action-button primary" onclick="equipSelectedItem()" id="equip-btn" disabled>EQUIP ITEM</button>
+                    <button class="action-button" onclick="enhanceSelectedItem()" id="enhance-btn" disabled>ENHANCE</button>
+                    <button class="action-button" onclick="modifySelectedItem()" id="modify-btn" disabled>MODIFY</button>
+                    <button class="action-button" onclick="sellSelectedItem()" id="sell-btn" disabled>SELL</button>
+                    
+                    <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #333;">
+                        <div style="color: #888; font-size: 11px; margin-bottom: 10px;">POWER BUDGET</div>
+                        <div class="power-budget">
+                            <div class="power-icon"></div>
+                            <span class="power-value" id="current-power">1850</span>
+                            <span style="color: #888;">/2100</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tooltip -->
+            <div class="item-tooltip tooltip-hidden" id="item-tooltip">
+                <div class="tooltip-content"></div>
+            </div>
+        </div>
+
+        <!-- Changelog Page -->
+        <div class="page" id="changelog">
+            <div class="changelog-container">
+                <div class="changelog-header">
+                    <h1 style="color: #00ffff; margin-bottom: 10px;">📋 COURIER CHANGELOG</h1>
+                    <p style="color: #888; margin-bottom: 30px;">Development history and version notes</p>
+                </div>
+                <div class="changelog-content" id="changelog-content">
+                    Loading changelog...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Navigation system
+        function initNavigation() {
+            const navTabs = document.querySelectorAll('.nav-tab');
+            const pages = document.querySelectorAll('.page');
+
+            navTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const targetPage = tab.dataset.page;
+                    
+                    // Update active tab
+                    navTabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    
+                    // Update active page
+                    pages.forEach(page => page.classList.remove('active'));
+                    document.getElementById(targetPage).classList.add('active');
+                });
+            });
+        }
+
+        // Mission system
+        function initMissionSystem() {
+            const missionItems = document.querySelectorAll('.mission-item');
+            const missionCategories = document.querySelectorAll('.mission-category');
+
+            // Mission data
+            const missions = {
+                'hunt-god': {
+                    name: 'TO HUNT A GOD',
+                    type: 'RAID | HARD',
+                    description: 'A forgotten sector beneath District 5—long sealed, long redacted—has come online again. Deep scan telemetry suggests massive Progenitor presence and unknown energy signatures.',
+                    duration: '120-300M',
+                    level: '100',
+                    successRate: '85%',
+                    xp: '1,500',
+                    affixes: ['Volcanic', 'Fortified']
+                },
+                'secure-alpha': {
+                    name: 'SECURE OUTPOST ALPHA',
+                    type: 'PATROL | EASY',
+                    description: 'Clear the abandoned research outpost of hostile forces and secure valuable data caches. Standard patrol operation with minimal resistance expected.',
+                    duration: '15-25M',
+                    level: '10',
+                    successRate: '95%',
+                    xp: '250',
+                    affixes: ['Bountiful']
+                },
+                'convoy-escort': {
+                    name: 'ESCORT SUPPLY CONVOY',
+                    type: 'HORDE | MEDIUM',
+                    description: 'Protect supply convoy through contested territory. Expect waves of enemies attempting to intercept valuable resources.',
+                    duration: '60-120M',
+                    level: '35',
+                    successRate: '78%',
+                    xp: '800',
+                    affixes: ['Shielded', 'Wealthy']
+                }
+            };
+
+            missionItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    // Update selected mission
+                    missionItems.forEach(m => m.classList.remove('selected'));
+                    item.classList.add('selected');
+                    
+                    // Update mission details
+                    const missionId = item.dataset.mission;
+                    const mission = missions[missionId];
+                    if (mission) {
+                        updateMissionDetails(mission);
+                    }
+                });
+            });
+
+            missionCategories.forEach(category => {
+                category.addEventListener('click', () => {
+                    missionCategories.forEach(c => c.classList.remove('active'));
+                    category.classList.add('active');
+                });
+            });
+        }
+
+        function updateMissionDetails(mission) {
+            document.querySelector('.mission-name').textContent = mission.name;
+            document.querySelector('.mission-type').textContent = mission.type;
+            document.querySelector('.mission-description').textContent = mission.description;
+            
+            const stats = document.querySelectorAll('.mission-stat-value');
+            stats[0].textContent = mission.duration;
+            stats[1].textContent = mission.level;
+            stats[2].textContent = mission.successRate;
+            stats[3].textContent = mission.xp;
+            
+            // Update affixes
+            const affixContainer = document.querySelector('.mission-details .affixes');
+            affixContainer.innerHTML = mission.affixes.map(affix => 
+                `<span class="affix-tag">${affix}</span>`
+            ).join('');
+        }
+
+        function launchMission() {
+            const button = document.querySelector('.launch-button');
+            const originalText = button.innerHTML;
+            
+            button.innerHTML = '⏱️ LAUNCHING...';
+            button.disabled = true;
+            
+            setTimeout(() => {
+                button.innerHTML = '✅ MISSION ACTIVE';
+                
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                    button.disabled = false;
+                }, 2000);
+            }, 1500);
+        }
+
+        // Equipment interaction
+        function initEquipmentSystem() {
+            const equipmentSlots = document.querySelectorAll('.equipment-slot');
+            
+            equipmentSlots.forEach(slot => {
+                slot.addEventListener('click', () => {
+                    // Simple toggle for demo
+                    slot.classList.toggle('equipped');
+                    
+                    // Update power budget (simple demo)
+                    const equippedSlots = document.querySelectorAll('.equipment-slot.equipped');
+                    const powerUsed = equippedSlots.length * 200;
+                    const powerDisplay = document.querySelector('.power-value');
+                    powerDisplay.textContent = Math.max(0, 2100 - powerUsed);
+                });
+            });
+        }
+
+        // Inventory System
+        let gameData = {\n            selectedItem: null,\n            equippedItems: {\n                primary: null,\n                secondary: null,\n                head: null,\n                shoulders: null,\n                chest: null,\n                gloves: null,\n                legs: null,\n                back: null,\n                bracers: null\n            },\n            playerLevel: 60,\n            paragonLevel: 40\n        };\n\n        // Item Database\n        const itemDatabase = {\n            // Weapons\n            'plasma-rifle': {\n                id: 'plasma-rifle',\n                name: 'Plasma Rifle',\n                type: 'weapon',\n                subtype: 'assault-rifle',\n                rarity: 'legendary',\n                icon: '🔫',\n                stats: {\n                    damage: 180,\n                    fireRate: 450,\n                    accuracy: 85,\n                    range: 40\n                },\n                powerCost: 280,\n                slot: 'primary',\n                description: 'Advanced energy weapon with devastating firepower'\n            },\n            'void-shotgun': {\n                id: 'void-shotgun',\n                name: 'Void Breaker',\n                type: 'weapon',\n                subtype: 'shotgun',\n                rarity: 'epic',\n                icon: '💥',\n                stats: {\n                    damage: 320,\n                    fireRate: 120,\n                    accuracy: 45,\n                    range: 12\n                },\n                powerCost: 240,\n                slot: 'primary',\n                description: 'Close-range devastation with void energy'\n            },\n            'neural-sniper': {\n                id: 'neural-sniper',\n                name: 'Neural Disruptor',\n                type: 'weapon',\n                subtype: 'sniper',\n                rarity: 'mythic',\n                icon: '🎯',\n                stats: {\n                    damage: 650,\n                    fireRate: 45,\n                    accuracy: 98,\n                    range: 120\n                },\n                powerCost: 320,\n                slot: 'primary',\n                description: 'Precision weapon targeting neural pathways'\n            },\n            'storm-smg': {\n                id: 'storm-smg',\n                name: 'Storm Surge SMG',\n                type: 'weapon',\n                subtype: 'smg',\n                rarity: 'rare',\n                icon: '🏃',\n                stats: {\n                    damage: 45,\n                    fireRate: 850,\n                    accuracy: 65,\n                    range: 25\n                },\n                powerCost: 180,\n                slot: 'secondary',\n                description: 'High-velocity electrical discharge weapon'\n            },\n            'quantum-pistol': {\n                id: 'quantum-pistol',\n                name: 'Quantum Phase Pistol',\n                type: 'weapon',\n                subtype: 'pistol',\n                rarity: 'legendary',\n                icon: '🔫',\n                stats: {\n                    damage: 120,\n                    fireRate: 280,\n                    accuracy: 88,\n                    range: 35\n                },\n                powerCost: 200,\n                slot: 'secondary',\n                description: 'Reality-bending sidearm with phase technology'\n            },\n            'ember-rifle': {\n                id: 'ember-rifle',\n                name: 'Ember Assault Rifle',\n                type: 'weapon',\n                subtype: 'assault-rifle',\n                rarity: 'uncommon',\n                icon: '🔫',\n                stats: {\n                    damage: 95,\n                    fireRate: 420,\n                    accuracy: 72,\n                    range: 42\n                },\n                powerCost: 160,\n                slot: 'primary',\n                description: 'Standard military rifle with incendiary rounds'\n            },\n            // Armor\n            'titan-helm': {\n                id: 'titan-helm',\n                name: 'Titan Command Helmet',\n                type: 'armor',\n                subtype: 'head',\n                rarity: 'legendary',\n                icon: '⛑️',\n                stats: {\n                    health: 350,\n                    precision: 25,\n                    criticalChance: 12,\n                    abilityPower: 18\n                },\n                powerCost: 140,\n                slot: 'head',\n                description: 'Advanced tactical helmet with neural interfaces'\n            },\n            'void-plate': {\n                id: 'void-plate',\n                name: 'Void Reinforced Chestplate',\n                type: 'armor',\n                subtype: 'chest',\n                rarity: 'epic',\n                icon: '🛡️',\n                stats: {\n                    health: 850,\n                    defense: 45,\n                    voidResistance: 30,\n                    shieldCapacity: 280\n                },\n                powerCost: 280,\n                slot: 'chest',\n                description: 'Heavy armor infused with void-resistant materials'\n            },\n            'storm-gauntlets': {\n                id: 'storm-gauntlets',\n                name: 'Storm Caller Gauntlets',\n                type: 'armor',\n                subtype: 'gloves',\n                rarity: 'rare',\n                icon: '🧤',\n                stats: {\n                    weaponDamage: 28,\n                    reloadSpeed: 35,\n                    electricDamage: 22,\n                    capacityBonus: 15\n                },\n                powerCost: 160,\n                slot: 'gloves',\n                description: 'Conductive gauntlets enhancing electrical abilities'\n            },\n            'phase-boots': {\n                id: 'phase-boots',\n                name: 'Phase Walker Boots',\n                type: 'armor',\n                subtype: 'legs',\n                rarity: 'mythic',\n                icon: '👢',\n                stats: {\n                    health: 420,\n                    movementSpeed: 25,\n                    alacrity: 35,\n                    phaseResistance: 40\n                },\n                powerCost: 220,\n                slot: 'legs',\n                description: 'Boots allowing brief dimensional phase shifts'\n            },\n            'neural-pauldrons': {\n                id: 'neural-pauldrons',\n                name: 'Neural Link Pauldrons',\n                type: 'armor',\n                subtype: 'shoulders',\n                rarity: 'epic',\n                icon: '🔗',\n                stats: {\n                    weaponDamage: 32,\n                    armor: 28,\n                    ammoReserves: 40,\n                    neuralSync: 20\n                },\n                powerCost: 170,\n                slot: 'shoulders',\n                description: 'Advanced shoulder armor with neural enhancement'\n            },\n            'quantum-cloak': {\n                id: 'quantum-cloak',\n                name: 'Quantum Flux Cloak',\n                type: 'armor',\n                subtype: 'back',\n                rarity: 'legendary',\n                icon: '🎭',\n                stats: {\n                    allResistances: 25,\n                    shieldRegen: 45,\n                    quantumResistance: 50,\n                    stealth: 15\n                },\n                powerCost: 190,\n                slot: 'back',\n                description: 'Adaptive cloak phasing through quantum fields'\n            },\n            'sentinel-bracers': {\n                id: 'sentinel-bracers',\n                name: 'Sentinel Focus Bracers',\n                type: 'armor',\n                subtype: 'bracers',\n                rarity: 'rare',\n                icon: '💪',\n                stats: {\n                    classAbilityPower: 45,\n                    abilityRange: 20,\n                    energyRegen: 30,\n                    defenseBonus: 25\n                },\n                powerCost: 120,\n                slot: 'bracers',\n                description: 'Class-specific enhancement bracers for Sentinels'\n            },\n            // More Common/Uncommon Items\n            'basic-rifle': {\n                id: 'basic-rifle',\n                name: 'Standard Issue Rifle',\n                type: 'weapon',\n                subtype: 'assault-rifle',\n                rarity: 'common',\n                icon: '🔫',\n                stats: {\n                    damage: 65,\n                    fireRate: 380,\n                    accuracy: 68,\n                    range: 35\n                },\n                powerCost: 130,\n                slot: 'primary',\n                description: 'Reliable military-grade assault rifle'\n            },\n            'tech-helm': {\n                id: 'tech-helm',\n                name: 'Tech Specialist Helmet',\n                type: 'armor',\n                subtype: 'head',\n                rarity: 'uncommon',\n                icon: '⛑️',\n                stats: {\n                    health: 180,\n                    precision: 15,\n                    techBonus: 20,\n                    scanning: 25\n                },\n                powerCost: 90,\n                slot: 'head',\n                description: 'Enhanced helmet with technical interfaces'\n            },\n            'combat-vest': {\n                id: 'combat-vest',\n                name: 'Tactical Combat Vest',\n                type: 'armor',\n                subtype: 'chest',\n                rarity: 'common',\n                icon: '🦺',\n                stats: {\n                    health: 420,\n                    defense: 22,\n                    ammoCapacity: 30\n                },\n                powerCost: 150,\n                slot: 'chest',\n                description: 'Standard protective vest with ammo storage'\n            },\n            'rapid-gloves': {\n                id: 'rapid-gloves',\n                name: 'Rapid Fire Gloves',\n                type: 'armor',\n                subtype: 'gloves',\n                rarity: 'uncommon',\n                icon: '🧤',\n                stats: {\n                    weaponDamage: 15,\n                    reloadSpeed: 25,\n                    fireRate: 18\n                },\n                powerCost: 110,\n                slot: 'gloves',\n                description: 'Tactical gloves enhancing weapon handling'\n            },\n            'mobility-boots': {\n                id: 'mobility-boots',\n                name: 'Enhanced Mobility Boots',\n                type: 'armor',\n                subtype: 'legs',\n                rarity: 'rare',\n                icon: '👢',\n                stats: {\n                    health: 280,\n                    movementSpeed: 18,\n                    alacrity: 22,\n                    jumpHeight: 15\n                },\n                powerCost: 140,\n                slot: 'legs',\n                description: 'Advanced boots with mobility enhancement'\n            },\n            'armor-pauldrons': {\n                id: 'armor-pauldrons',\n                name: 'Reinforced Pauldrons',\n                type: 'armor',\n                subtype: 'shoulders',\n                rarity: 'common',\n                icon: '🔗',\n                stats: {\n                    armor: 35,\n                    health: 120,\n                    defense: 15\n                },\n                powerCost: 80,\n                slot: 'shoulders',\n                description: 'Sturdy shoulder protection'\n            },\n            'shield-cloak': {\n                id: 'shield-cloak',\n                name: 'Shield Generator Cloak',\n                type: 'armor',\n                subtype: 'back',\n                rarity: 'uncommon',\n                icon: '🎭',\n                stats: {\n                    shieldCapacity: 180,\n                    shieldRegen: 25,\n                    energyResistance: 15\n                },\n                powerCost: 120,\n                slot: 'back',\n                description: 'Cloak with integrated shield technology'\n            },\n            'explorer-bracers': {\n                id: 'explorer-bracers',\n                name: 'Explorer Utility Bracers',\n                type: 'armor',\n                subtype: 'bracers',\n                rarity: 'common',\n                icon: '💪',\n                stats: {\n                    utilityPower: 20,\n                    resourceGain: 15,\n                    exploration: 25\n                },\n                powerCost: 70,\n                slot: 'bracers',\n                description: 'Multi-purpose bracers for exploration'\n            },\n            // Additional Primal/High-tier items\n            'primal-destroyer': {\n                id: 'primal-destroyer',\n                name: 'Primal Force Destroyer',\n                type: 'weapon',\n                subtype: 'shotgun',\n                rarity: 'primal',\n                icon: '💥',\n                stats: {\n                    damage: 480,\n                    fireRate: 90,\n                    accuracy: 65,\n                    range: 15,\n                    primalForce: 100\n                },\n                powerCost: 380,\n                slot: 'primary',\n                description: 'Weapon channeling raw primal forces of creation'\n            },\n            'essence-crown': {\n                id: 'essence-crown',\n                name: 'Crown of Pure Essence',\n                type: 'armor',\n                subtype: 'head',\n                rarity: 'primal',\n                icon: '👑',\n                stats: {\n                    health: 520,\n                    precision: 45,\n                    criticalChance: 25,\n                    abilityPower: 35,\n                    essenceChanneling: 50\n                },\n                powerCost: 200,\n                slot: 'head',\n                description: 'Crystallized essence crown amplifying all abilities'\n            }\n        };\n\n        // Power Budget Calculations\n        function calculateItemPowerCost(item) {\n            const rarityMultipliers = {\n                'common': 1.3,\n                'uncommon': 1.15,\n                'rare': 1.0,\n                'epic': 0.9,\n                'legendary': 0.8,\n                'mythic': 0.8,\n                'primal': 0.75\n            };\n            \n            return Math.floor(item.powerCost * rarityMultipliers[item.rarity]);\n        }\n\n        function getPlayerMaxPowerBudget() {\n            return 100 + (gameData.playerLevel * 20) + gameData.paragonLevel;\n        }\n\n        function getCurrentPowerUsage() {\n            let totalUsage = 0;\n            Object.values(gameData.equippedItems).forEach(item => {\n                if (item) {\n                    totalUsage += calculateItemPowerCost(item);\n                }\n            });\n            return totalUsage;\n        }\n\n        // Inventory System\n        function initInventorySystem() {\n            populateInventory();\n            initInventoryFilters();\n            initTooltipSystem();\n        }\n\n        function populateInventory() {\n            const itemsGrid = document.getElementById('items-grid');\n            itemsGrid.innerHTML = '';\n            \n            Object.values(itemDatabase).forEach(item => {\n                const itemSlot = createItemSlot(item);\n                itemsGrid.appendChild(itemSlot);\n            });\n        }\n\n        function createItemSlot(item) {\n            const slot = document.createElement('div');\n            slot.className = `item-slot ${item.rarity}`;\n            slot.dataset.itemId = item.id;\n            slot.innerHTML = `\n                ${item.icon}\n                <div class=\"item-corner-indicator ${item.type}\"></div>\n            `;\n            \n            slot.addEventListener('click', () => selectItem(item));\n            slot.addEventListener('mouseenter', (e) => showTooltip(e, item));\n            slot.addEventListener('mouseleave', hideTooltip);\n            slot.addEventListener('mousemove', moveTooltip);\n            \n            return slot;\n        }\n\n        function selectItem(item) {\n            gameData.selectedItem = item;\n            \n            // Update visual selection\n            document.querySelectorAll('.item-slot').forEach(slot => {\n                slot.classList.remove('selected');\n            });\n            document.querySelector(`[data-item-id=\"${item.id}\"]`).classList.add('selected');\n            \n            // Update item details panel\n            updateItemDetailsPanel(item);\n        }\n\n        function updateItemDetailsPanel(item) {\n            const detailsPanel = document.getElementById('selected-item-details');\n            const itemName = document.getElementById('selected-item-name');\n            const itemType = document.getElementById('selected-item-type');\n            \n            detailsPanel.style.display = 'block';\n            itemName.textContent = item.name;\n            itemName.className = `selected-item-name ${item.rarity}`;\n            itemType.textContent = `${item.type.toUpperCase()} - ${item.subtype.toUpperCase()}`;\n            \n            // Enable action buttons\n            const buttons = ['equip-btn', 'enhance-btn', 'modify-btn', 'sell-btn'];\n            buttons.forEach(btnId => {\n                const btn = document.getElementById(btnId);\n                btn.disabled = false;\n            });\n        }\n\n        function initInventoryFilters() {\n            const filterBtns = document.querySelectorAll('.filter-btn');\n            \n            filterBtns.forEach(btn => {\n                btn.addEventListener('click', () => {\n                    // Update active filter\n                    filterBtns.forEach(b => b.classList.remove('active'));\n                    btn.classList.add('active');\n                    \n                    // Filter items\n                    const filter = btn.dataset.filter;\n                    filterItems(filter);\n                });\n            });\n        }\n\n        function filterItems(filter) {\n            const itemSlots = document.querySelectorAll('.item-slot');\n            \n            itemSlots.forEach(slot => {\n                const itemId = slot.dataset.itemId;\n                const item = itemDatabase[itemId];\n                let show = true;\n                \n                if (filter === 'weapon' && item.type !== 'weapon') show = false;\n                if (filter === 'armor' && item.type !== 'armor') show = false;\n                if (filter === 'legendary' && !['legendary', 'mythic', 'primal'].includes(item.rarity)) show = false;\n                \n                slot.style.display = show ? 'flex' : 'none';\n            });\n        }\n\n        // Tooltip System\n        function initTooltipSystem() {\n            // Tooltip will be shown/hidden by item hover events\n        }\n\n        function showTooltip(event, item) {\n            const tooltip = document.getElementById('item-tooltip');\n            const content = tooltip.querySelector('.tooltip-content');\n            \n            content.innerHTML = generateTooltipContent(item);\n            tooltip.className = 'item-tooltip';\n            \n            // Position tooltip\n            moveTooltip(event);\n        }\n\n        function hideTooltip() {\n            const tooltip = document.getElementById('item-tooltip');\n            tooltip.className = 'item-tooltip tooltip-hidden';\n        }\n\n        function moveTooltip(event) {\n            const tooltip = document.getElementById('item-tooltip');\n            const rect = tooltip.getBoundingClientRect();\n            \n            let x = event.clientX + 10;\n            let y = event.clientY + 10;\n            \n            // Keep tooltip in viewport\n            if (x + rect.width > window.innerWidth) {\n                x = event.clientX - rect.width - 10;\n            }\n            if (y + rect.height > window.innerHeight) {\n                y = event.clientY - rect.height - 10;\n            }\n            \n            tooltip.style.left = x + 'px';\n            tooltip.style.top = y + 'px';\n        }\n\n        function generateTooltipContent(item) {\n            const powerCost = calculateItemPowerCost(item);\n            const efficiency = ((item.powerCost / powerCost) * 100).toFixed(0);\n            \n            let content = `\n                <div class=\"tooltip-item-name ${item.rarity}\">${item.name}</div>\n                <div class=\"tooltip-item-type\">${item.type} - ${item.subtype}</div>\n                <div class=\"tooltip-stats\">\n            `;\n            \n            // Add stats\n            Object.entries(item.stats).forEach(([statName, value]) => {\n                const displayName = statName.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());\n                content += `\n                    <div class=\"tooltip-stat positive\">\n                        <span class=\"tooltip-stat-name\">${displayName}</span>\n                        <span class=\"tooltip-stat-value\">+${value}</span>\n                    </div>\n                `;\n            });\n            \n            content += `\n                </div>\n                <div class=\"tooltip-section\">\n                    <div class=\"tooltip-power-cost\">\n                        <div class=\"tooltip-power-icon\"></div>\n                        <span class=\"tooltip-power-text\">${powerCost} Power Cost</span>\n                    </div>\n                    <div class=\"tooltip-efficiency\">Efficiency: ${efficiency}% (${item.rarity})</div>\n                </div>\n                <div class=\"tooltip-section\">\n                    <div style=\"color: #ccc; font-style: italic;\">${item.description}</div>\n                </div>\n            `;\n            \n            return content;\n        }\n\n        // Item Actions\n        function equipSelectedItem() {\n            if (!gameData.selectedItem) return;\n            \n            const item = gameData.selectedItem;\n            const slot = item.slot;\n            \n            // Calculate power budget impact\n            const currentUsage = getCurrentPowerUsage();\n            const itemCost = calculateItemPowerCost(item);\n            const maxBudget = getPlayerMaxPowerBudget();\n            \n            // Remove current item cost if replacing\n            const currentItemInSlot = gameData.equippedItems[slot];\n            const currentSlotCost = currentItemInSlot ? calculateItemPowerCost(currentItemInSlot) : 0;\n            \n            const newTotalUsage = currentUsage - currentSlotCost + itemCost;\n            \n            if (newTotalUsage > maxBudget) {\n                alert(`Cannot equip: Would exceed power budget by ${newTotalUsage - maxBudget} points`);\n                return;\n            }\n            \n            // Equip the item\n            gameData.equippedItems[slot] = item;\n            updatePowerBudgetDisplay();\n            \n            alert(`Equipped ${item.name} to ${slot} slot`);\n        }\n\n        function enhanceSelectedItem() {\n            if (!gameData.selectedItem) return;\n            alert(`Enhancement system not yet implemented for ${gameData.selectedItem.name}`);\n        }\n\n        function modifySelectedItem() {\n            if (!gameData.selectedItem) return;\n            alert(`Modification system not yet implemented for ${gameData.selectedItem.name}`);\n        }\n\n        function sellSelectedItem() {\n            if (!gameData.selectedItem) return;\n            const item = gameData.selectedItem;\n            const value = Math.floor(calculateItemPowerCost(item) * 0.6);\n            \n            if (confirm(`Sell ${item.name} for ${value} credits?`)) {\n                // Remove from inventory (for demo, we'll just hide it)\n                const itemSlot = document.querySelector(`[data-item-id=\"${item.id}\"]`);\n                itemSlot.style.display = 'none';\n                \n                // Clear selection\n                gameData.selectedItem = null;\n                document.getElementById('selected-item-details').style.display = 'none';\n                \n                alert(`Sold ${item.name} for ${value} credits`);\n            }\n        }\n\n        function updatePowerBudgetDisplay() {\n            const currentUsage = getCurrentPowerUsage();\n            const powerDisplay = document.getElementById('current-power');\n            if (powerDisplay) {\n                powerDisplay.textContent = currentUsage;\n            }\n            \n            // Update character sheet power display as well\n            const charPowerDisplay = document.querySelector('.character-container .power-value');\n            if (charPowerDisplay) {\n                charPowerDisplay.textContent = currentUsage;\n            }\n        }\n\n        // Initialize all systems\n        document.addEventListener('DOMContentLoaded', () => {\n            initNavigation();\n            initMissionSystem();\n            initEquipmentSystem();\n            initInventorySystem();\n        });\n\n        // Add some interactive animations
+        document.addEventListener('DOMContentLoaded', () => {
+            // Animate power budget changes
+            const powerBudgets = document.querySelectorAll('.power-budget');
+            powerBudgets.forEach(budget => {
+                budget.addEventListener('mouseenter', () => {
+                    budget.style.transform = 'scale(1.05)';
+                });
+                budget.addEventListener('mouseleave', () => {
+                    budget.style.transform = 'scale(1)';
+                });
+            });
+
+            // Add search functionality
+            const searchInput = document.querySelector('.mission-search');
+            if (searchInput) {
+                searchInput.addEventListener('input', (e) => {
+                    const searchTerm = e.target.value.toLowerCase();
+                    const missionItems = document.querySelectorAll('.mission-item');
+                    
+                    missionItems.forEach(item => {
+                        const title = item.querySelector('.mission-title').textContent.toLowerCase();
+                        if (title.includes(searchTerm)) {
+                            item.style.display = 'block';
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+                });
+            }
+        });
+
+        // Changelog System
+        function showChangelog() {
+            alert('Changelog v0.3.1 - August 16, 2025\\n\\n📋 CHANGELOG SYSTEM RELEASE\\n\\n• Interactive Changelog accessible via clickable header link\\n• Version History Tracking with detailed release notes\\n• Automatic Timestamps for development progress tracking\\n• Markdown Documentation system for maintaining change history\\n\\nPrevious Release (v0.3.0):\\n🎒 INVENTORY SYSTEM with 20+ items, Power Budget Integration, Interactive Tooltips, Advanced Filtering, and Item Management\\n\\nSee CHANGELOG.md for complete version history');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loadouts - Courier</title>
+    <link rel="stylesheet" href="assets/css/design-system.css?v=13">
+    <link rel="stylesheet" href="assets/css/main.css?v=13">
+    <link rel="stylesheet" href="assets/css/game.css?v=13">
+    <style>
+        /* Loadout-specific styles using Courier design system */
+        .loadout-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        /* Loadout Preset Buttons */
+        .loadout-tabs {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-xl);
+            flex-wrap: wrap;
+        }
+
+        .loadout-tab {
+            background: var(--bg-medium);
+            border: 2px solid var(--border-gray);
+            color: var(--text-normal);
+            padding: var(--spacing-sm) var(--spacing-lg);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .loadout-tab:hover {
+            background: var(--bg-light);
+            border-color: var(--primary-cyan);
+            color: var(--primary-cyan);
+        }
+
+        .loadout-tab.active {
+            background: var(--primary-cyan);
+            border-color: var(--primary-cyan);
+            color: var(--bg-black);
+        }
+        
+        .loadout-tab.activated {
+            background: linear-gradient(145deg, var(--primary-orange), #ff8800);
+            border-color: var(--primary-orange);
+            color: var(--bg-black);
+            box-shadow: 0 0 15px rgba(255, 107, 0, 0.4);
+            position: relative;
+            animation: active-loadout-glow 3s ease-in-out infinite alternate;
+        }
+        
+        @keyframes active-loadout-glow {
+            0% {
+                box-shadow: 0 0 15px rgba(255, 107, 0, 0.4);
+            }
+            100% {
+                box-shadow: 0 0 20px rgba(255, 107, 0, 0.6);
+            }
+        }
+        
+        .loadout-tab.activated::after {
+            content: "ACTIVE";
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--primary-orange);
+            color: var(--bg-black);
+            font-size: 8px;
+            font-weight: bold;
+            padding: 2px 6px;
+            border-radius: 10px;
+            border: 1px solid var(--bg-black);
+            letter-spacing: 0.5px;
+        }
+
+        .loadout-tab.empty {
+            border-style: dashed;
+            opacity: 0.6;
+        }
+
+        /* Main Loadout Card */
+        .loadout-card {
+            background: var(--bg-dark);
+            border: 1px solid var(--border-gray);
+            padding: var(--spacing-xl);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .loadout-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .loadout-title {
+            font-size: 28px;
+            font-weight: 300;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--primary-cyan);
+        }
+
+        .edit-button {
+            background: transparent;
+            border: 1px solid var(--border-gray);
+            color: var(--text-normal);
+            padding: var(--spacing-sm) var(--spacing-lg);
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+
+        .edit-button:hover {
+            background: var(--bg-light);
+            color: var(--primary-cyan);
+            border-color: var(--primary-cyan);
+        }
+
+        /* Ability Sections */
+        .ability-section {
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .section-title {
+            font-size: 14px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .abilities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: var(--spacing-md);
+        }
+
+        .ability-slot {
+            background: var(--bg-medium);
+            border: 2px solid var(--border-gray);
+            border-radius: 4px;
+            padding: var(--spacing-md);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .ability-slot:hover {
+            border-color: var(--primary-cyan);
+            background: var(--bg-light);
+        }
+
+        .ability-icon {
+            width: 56px;
+            height: 56px;
+            background: var(--primary-cyan);
+            border-radius: 4px;
+            margin: 0 auto var(--spacing-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: var(--bg-black);
+        }
+
+        .ability-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-bright);
+            margin-bottom: var(--spacing-xs);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .ability-cooldown {
+            font-size: 11px;
+            color: var(--text-dim);
+        }
+
+        /* Ultimate Slot */
+        .ultimate-slot {
+            border-color: var(--primary-orange);
+            background: rgba(255, 107, 0, 0.1);
+        }
+
+        .ultimate-slot .ability-icon {
+            background: var(--primary-orange);
+            width: 64px;
+            height: 64px;
+            font-size: 32px;
+        }
+
+        /* Passive Abilities */
+        .passive-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-xl);
+        }
+
+        .passive-slot {
+            background: var(--bg-medium);
+            border: 2px solid var(--border-gray);
+            border-radius: 4px;
+            padding: var(--spacing-md);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+
+        /* Aura Slot Special Styling */
+        .aura-slot {
+            border-color: var(--secondary-purple);
+            background: rgba(128, 0, 255, 0.1);
+        }
+
+        .aura-slot .passive-icon {
+            background: var(--secondary-purple);
+        }
+
+        .passive-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--border-gray);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: var(--text-bright);
+        }
+
+        .passive-info {
+            flex: 1;
+        }
+
+        .passive-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-bright);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .passive-desc {
+            font-size: 12px;
+            color: var(--text-dim);
+        }
+
+        /* Class Passives Grid */
+        .passive-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-md);
+        }
+
+        .passive-item {
+            background: var(--bg-medium);
+            border: 1px solid var(--border-gray);
+            border-radius: 4px;
+            padding: var(--spacing-sm);
+            font-size: 12px;
+        }
+
+        .passive-item-name {
+            color: var(--secondary-purple);
+            font-weight: 600;
+            margin-right: var(--spacing-xs);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .passive-item-desc {
+            color: var(--text-normal);
+        }
+
+        /* Equipment Preview */
+        .equipment-preview {
+            background: var(--bg-medium);
+            border: 1px solid var(--border-gray);
+            border-radius: 4px;
+            padding: var(--spacing-md);
+            margin-top: var(--spacing-xl);
+        }
+
+        .equipment-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-md);
+            max-width: 270px;
+        }
+
+        .equipment-slot {
+            width: 80px;
+            height: 80px;
+            background: var(--bg-dark);
+            border: 2px solid var(--border-gray);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: var(--text-dim);
+            flex-direction: column;
+            padding: 4px;
+        }
+
+        .equipment-placeholder {
+            color: var(--text-dim);
+            font-size: 8px;
+            text-align: center;
+            line-height: 1.1;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            word-wrap: break-word;
+            max-width: 100%;
+            padding: 2px;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-xl);
+        }
+
+        .btn-activate {
+            background: var(--primary-cyan);
+            color: var(--bg-black);
+            border: 1px solid var(--primary-cyan);
+        }
+
+        .btn-activate:hover {
+            background: transparent;
+            color: var(--primary-cyan);
+        }
+
+        .btn-share {
+            background: transparent;
+            color: var(--text-normal);
+            border: 1px solid var(--border-gray);
+        }
+
+        .btn-share:hover {
+            background: var(--bg-light);
+            color: var(--text-bright);
+            border-color: var(--text-bright);
+        }
+        
+        /* Empty Slot Styling */
+        .empty-slot {
+            border-style: dashed !important;
+            opacity: 0.6;
+            cursor: pointer;
+        }
+        
+        .empty-slot:hover {
+            opacity: 1;
+            border-color: var(--primary-cyan) !important;
+        }
+        
+        .empty-slot .ability-icon {
+            font-size: 32px;
+            color: var(--text-dim);
+        }
+        
+        /* Skill Selector Modal */
+        .skill-selector-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+        
+        .skill-selector-content {
+            background: var(--bg-dark);
+            border: 2px solid var(--border-gray);
+            border-radius: 8px;
+            padding: var(--spacing-lg);
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .skill-selector-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-lg);
+            padding-bottom: var(--spacing-md);
+            border-bottom: 1px solid var(--border-gray);
+        }
+        
+        .skill-selector-header h3 {
+            color: var(--primary-cyan);
+            margin: 0;
+            font-size: 18px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .skill-selector-header button {
+            background: none;
+            border: 1px solid var(--border-gray);
+            color: var(--text-normal);
+            font-size: 20px;
+            width: 32px;
+            height: 32px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .skill-selector-header button:hover {
+            background: var(--danger-red);
+            color: white;
+        }
+        
+        .skill-selector-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: var(--spacing-md);
+        }
+        
+        .skill-selector-item {
+            background: var(--bg-medium);
+            border: 2px solid var(--border-gray);
+            border-radius: 8px;
+            padding: var(--spacing-md);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .skill-selector-item:hover {
+            border-color: var(--primary-cyan);
+            background: var(--bg-light);
+            transform: translateY(-2px);
+        }
+        
+        .skill-selector-item .skill-icon {
+            font-size: 36px;
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .skill-selector-item .skill-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-bright);
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .skill-selector-item .skill-rank {
+            font-size: 10px;
+            color: var(--text-dim);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Header -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <div class="nav-logo"></div>
+            <div>
+                <div class="nav-username">AGENT RECON-7</div>
+                <div class="nav-level">LEVEL 60 • PARAGON 40</div>
+            </div>
+        </div>
+        <div class="nav-menu">
+            <a href="game/dashboard.html" class="nav-item">CHARACTER</a>
+            <a href="inventory.html" class="nav-item">INVENTORY</a>
+            <a href="missions.html" class="nav-item">MISSIONS</a>
+            <a href="skills.html" class="nav-item">SKILLS</a>
+            <a href="loadouts.html" class="nav-item active">LOADOUTS</a>
+            <a href="build-planner.html" class="nav-item">BUILD PLANNER</a>
+            <a href="marketplace.html" class="nav-item">MARKET</a>
+            <a href="crafting.html" class="nav-item">CRAFTING</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="page-container">
+        <div class="page-header">
+            <h1 class="page-title">LOADOUT MANAGEMENT</h1>
+        </div>
+
+        <div class="loadout-container">
+            <!-- Loadout Preset Tabs -->
+            <div class="loadout-tabs">
+                <button class="loadout-tab active activated" data-loadout="1">
+                    Boss Killer
+                </button>
+                <button class="loadout-tab" data-loadout="2">
+                    Mob Clear
+                </button>
+                <button class="loadout-tab" data-loadout="3">
+                    PvP Duelist
+                </button>
+                <button class="loadout-tab" data-loadout="4">
+                    Support
+                </button>
+                <button class="loadout-tab empty" data-loadout="5">
+                    + Empty Slot
+                </button>
+            </div>
+
+            <!-- Main Loadout Card -->
+            <div class="loadout-card">
+                <div class="loadout-header">
+                    <h1 class="loadout-title">Boss Killer</h1>
+                    <button class="edit-button" onclick="window.location.href='edit-loadout.html'">Edit Loadout</button>
+                </div>
+
+                <!-- Ultimate Ability -->
+                <div class="ability-section">
+                    <h3 class="section-title">Ultimate Ability</h3>
+                    <div class="abilities-grid" id="ultimate-abilities">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Active Abilities -->
+                <div class="ability-section">
+                    <h3 class="section-title">Active Abilities</h3>
+                    <div class="abilities-grid" id="active-abilities">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Passive Abilities -->
+                <div class="passive-section" id="key-passives">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+
+                <!-- Class Passives -->
+                <div class="ability-section" style="margin-top: var(--spacing-xl);">
+                    <h3 class="section-title">Class Passives</h3>
+                    <div class="passive-grid" id="class-passives">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Equipment Preview -->
+                <div class="equipment-preview">
+                    <h3 class="section-title">Equipment</h3>
+                    <div class="equipment-grid">
+                        <div class="equipment-slot" data-slot="primary">
+                            <div class="equipment-placeholder">Primary</div>
+                        </div>
+                        <div class="equipment-slot" data-slot="secondary">
+                            <div class="equipment-placeholder">Secondary</div>
+                        </div>
+                        <div class="equipment-slot" data-slot="head">
+                            <div class="equipment-placeholder">Head</div>
+                        </div>
+                        <div class="equipment-slot" data-slot="shoulders">
+                            <div class="equipment-placeholder">Shoulders</div>
+                        </div>
+                        <div class="equipment-slot" data-slot="chest">
+                            <div class="equipment-placeholder">Chest</div>
+                        </div>
+                        <div class="equipment-slot" data-slot="gloves">
+                            <div class="equipment-placeholder">Gloves</div>
+                        </div>
+                        <div class="equipment-slot" data-slot="legs">
+                            <div class="equipment-placeholder">Legs</div>
+                        </div>
+                        <div class="equipment-slot" data-slot="back">
+                            <div class="equipment-placeholder">Back</div>
+                        </div>
+                        <div class="equipment-slot" data-slot="bracers">
+                            <div class="equipment-placeholder">Bracers</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <button class="btn btn-activate">Activate Loadout</button>
+                    <button class="btn btn-share">Share Loadout</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer style="padding: 20px; text-align: center; font-size: 10px; color: #666; border-top: 1px solid #333; margin-top: 40px;">
+        <a href="changelog.html" style="color: #666; text-decoration: none; border-bottom: 1px dotted #666;">CHANGELOG</a> • 
+        <a href="specs/index.html" style="color: #666; text-decoration: none; border-bottom: 1px dotted #666;">SPECS</a> • 
+        <a href="tuning/index.html" style="color: #666; text-decoration: none; border-bottom: 1px dotted #666;">TUNING</a> • 
+        <a href="admin/index.html" style="color: #666; text-decoration: none; border-bottom: 1px dotted #666;">ADMIN</a> • 
+        <a href="sim/index.html" style="color: #666; text-decoration: none; border-bottom: 1px dotted #666;">SIMULATOR</a> • 
+        LAST UPDATED: 2025-08-17 CST • LOADOUTS: Equipment integration and combat simulator access
+    </footer>
+
+    <script src="assets/js/main.js"></script>
+    <script src="assets/js/navigation.js"></script>
+    <script>
+        // Equipment integration for loadouts
+        function loadEquippedItems() {
+            try {
+                const equippedItems = JSON.parse(localStorage.getItem('courier_equipped_items')) || {};
+                
+                // Update equipment slots with actual equipped items
+                Object.entries(equippedItems).forEach(([slot, item]) => {
+                    const slotElement = document.querySelector(`[data-slot="${slot}"]`);
+                    if (slotElement && item) {
+                        // Replace placeholder with actual item
+                        slotElement.innerHTML = `
+                            <div style="font-size: 14px; color: var(--text-bright);">${item.icon || '⚔️'}</div>
+                            <div style="font-size: 8px; color: var(--text-normal); text-align: center; line-height: 1.1; margin-top: 2px;">
+                                ${item.name || 'Unknown'}
+                            </div>
+                        `;
+                        
+                        // Add rarity border color
+                        if (item.rarity) {
+                            const rarityColors = {
+                                common: '#888',
+                                uncommon: '#4CAF50',
+                                rare: '#2196F3',
+                                epic: '#9C27B0',
+                                legendary: '#FF9800',
+                                exotic: '#E91E63'
+                            };
+                            slotElement.style.borderColor = rarityColors[item.rarity] || '#666';
+                        }
+                    }
+                });
+                
+                console.log('Equipped items loaded:', equippedItems);
+            } catch (error) {
+                console.error('Error loading equipped items:', error);
+            }
+        }
+
+        // Listen for equipment changes from other pages
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'courier_equipped_items') {
+                console.log('Equipment changed, reloading...');
+                loadEquippedItems();
+            }
+        });
+
+        // Load equipment when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            loadEquippedItems();
+        });
+
+        // Refresh equipment periodically (in case storage events don't fire)
+        setInterval(loadEquippedItems, 5000);
+    </script>
+        // Initialize loadout system with skill data
+        let skillsDatabase = {};
+        let currentSkillPoints = {
+            available: 15,
+            total: 60,
+            invested: {}
+        };
+        
+        // Load current skill investments from localStorage
+        function loadCurrentSkillInvestments() {
+            try {
+                const savedSkills = localStorage.getItem('courier-skill-investments');
+                if (savedSkills) {
+                    const parsed = JSON.parse(savedSkills);
+                    currentSkillPoints.invested = parsed.class || {};
+                    console.log('Loaded skill investments from localStorage:', currentSkillPoints.invested);
+                } else {
+                    // Demo data if no saved skills
+                    currentSkillPoints.invested = {
+                        'dead-eye': 3,
+                        'quick-hands': 2,
+                        'sniper-specialist': 2,
+                        'fan-hammer': 5,
+                        'bullet-time': 4,
+                        'never-miss': 3,
+                        'ace-hole': 2,
+                        'high-noon': 5
+                    };
+                }
+            } catch (error) {
+                console.error('Error loading skill investments:', error);
+                currentSkillPoints.invested = {};
+            }
+        }
+
+        // Load skills database
+        async function loadSkillsData() {
+            try {
+                const response = await fetch('assets/data/skills.json?v=22');
+                if (response.ok) {
+                    skillsDatabase = await response.json();
+                    console.log('Skills data loaded for loadouts');
+                    loadCurrentSkillInvestments();
+                    populateLoadout();
+                } else {
+                    console.error('Failed to load skills data');
+                }
+            } catch (error) {
+                console.error('Error loading skills data:', error);
+            }
+        }
+
+        // Populate loadout based on invested skills
+        function populateLoadout() {
+            populateUltimateAbilities();
+            populateActiveAbilities();
+            populateKeyPassives();
+            populateClassPassives();
+        }
+
+        function populateUltimateAbilities() {
+            const container = document.getElementById('ultimate-abilities');
+            if (!container) return;
+
+            const ultimateSkills = ['high-noon', 'dead-mans-hand', 'perfect-shot'];
+            let html = '';
+            let hasUltimate = false;
+
+            ultimateSkills.forEach(skillId => {
+                const invested = currentSkillPoints.invested[skillId] || 0;
+                if (invested > 0) {
+                    const skill = skillsDatabase.class?.[skillId];
+                    if (skill) {
+                        const iconMap = {
+                            'high-noon': '🌅',
+                            'dead-mans-hand': '🃏', 
+                            'perfect-shot': '🎯'
+                        };
+
+                        html += `
+                            <div class="ability-slot ultimate-slot" data-skill="${skillId}">
+                                <div class="ability-icon">${iconMap[skillId]}</div>
+                                <div class="ability-name">${skill.name}</div>
+                                <div class="ability-cooldown">120s cooldown • Rank ${invested}</div>
+                            </div>
+                        `;
+                        hasUltimate = true;
+                    }
+                }
+            });
+
+            if (!hasUltimate) {
+                // Get all available ultimates the player has learned
+                const availableUltimates = ultimateSkills.filter(skillId => {
+                    const invested = currentSkillPoints.invested[skillId] || 0;
+                    return invested > 0;
+                });
+                
+                html = `
+                    <div class="ability-slot ultimate-slot empty-slot" onclick="showSkillSelector('ultimate')">
+                        <div class="ability-icon">+</div>
+                        <div class="ability-name">Add Ultimate</div>
+                        <div class="ability-cooldown">Click to assign</div>
+                    </div>
+                `;
+            }
+
+            container.innerHTML = html;
+        }
+
+        // Store current loadout assignment
+        let currentLoadoutSlots = {
+            ultimate: null,
+            actives: [null, null, null, null, null, null]
+        };
+        
+        function populateActiveAbilities() {
+            const container = document.getElementById('active-abilities');
+            if (!container) return;
+
+            const activeSkills = ['fan-hammer', 'ricochet-roulette', 'gunslinger-focus', 'all-in', 'bullet-time', 'vanish'];
+            let html = '';
+            
+            const iconMap = {
+                'fan-hammer': '🌪️',
+                'ricochet-roulette': '🪃',
+                'gunslinger-focus': '🎲',
+                'all-in': '🃏',
+                'bullet-time': '⏰',
+                'vanish': '👻'
+            };
+
+            const cooldownMap = {
+                'fan-hammer': '25s',
+                'ricochet-roulette': '20s', 
+                'gunslinger-focus': '25s',
+                'all-in': '35s',
+                'bullet-time': '40s',
+                'vanish': '35s'
+            };
+
+            // Create 6 slots, either with assigned skills or empty
+            for (let i = 0; i < 6; i++) {
+                const assignedSkill = currentLoadoutSlots.actives[i];
+                
+                if (assignedSkill && currentSkillPoints.invested[assignedSkill] > 0) {
+                    const skill = skillsDatabase.class?.[assignedSkill];
+                    const invested = currentSkillPoints.invested[assignedSkill];
+                    const currentEffect = skill.effects[invested - 1] || skill.description;
+                    
+                    html += `
+                        <div class="ability-slot" data-skill="${assignedSkill}" data-slot="${i}" title="${currentEffect}" onclick="removeSkillFromSlot('active', ${i})">
+                            <div class="ability-icon">${iconMap[assignedSkill]}</div>
+                            <div class="ability-name">${skill.name}</div>
+                            <div class="ability-cooldown">${cooldownMap[assignedSkill]} • Rank ${invested}</div>
+                        </div>
+                    `;
+                } else {
+                    html += `
+                        <div class="ability-slot empty-slot" data-slot="${i}" onclick="showSkillSelector('active', ${i})">
+                            <div class="ability-icon">+</div>
+                            <div class="ability-name">Add Skill</div>
+                            <div class="ability-cooldown">Click to assign</div>
+                        </div>
+                    `;
+                }
+            }
+
+            container.innerHTML = html;
+        }
+
+        function populateKeyPassives() {
+            const container = document.getElementById('key-passives');
+            if (!container) return;
+
+            const keyPassives = ['sniper-specialist', 'handgun-specialist'];
+            let html = '';
+
+            keyPassives.forEach(skillId => {
+                const invested = currentSkillPoints.invested[skillId] || 0;
+                if (invested > 0) {
+                    const skill = skillsDatabase.class?.[skillId];
+                    if (skill) {
+                        const iconMap = {
+                            'sniper-specialist': '🔍',
+                            'handgun-specialist': '🔫'
+                        };
+
+                        const descMap = {
+                            'sniper-specialist': 'First shot from cover: 200% damage',
+                            'handgun-specialist': 'No recoil, +25% accuracy while moving'
+                        };
+
+                        html += `
+                            <div class="passive-slot">
+                                <div class="passive-icon">${iconMap[skillId]}</div>
+                                <div class="passive-info">
+                                    <div class="passive-name">${skill.name}</div>
+                                    <div class="passive-desc">${descMap[skillId]}</div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                }
+            });
+
+            container.innerHTML = html;
+        }
+
+        function populateClassPassives() {
+            const container = document.getElementById('class-passives');
+            if (!container) return;
+
+            let html = '';
+            let passiveCount = 0;
+
+            Object.keys(currentSkillPoints.invested).forEach(skillId => {
+                const invested = currentSkillPoints.invested[skillId];
+                if (invested > 0) {
+                    const skill = skillsDatabase.class?.[skillId];
+                    if (skill && skill.tier <= 5) { // Don't show ultimates here
+                        const currentEffect = skill.effects[invested - 1];
+                        if (currentEffect) {
+                            html += `
+                                <div class="passive-item">
+                                    <span class="passive-item-name">${skill.name} (${invested}/${skill.maxPoints}):</span>
+                                    <span class="passive-item-desc">${currentEffect}</span>
+                                </div>
+                            `;
+                            passiveCount++;
+                        }
+                    }
+                }
+            });
+
+            if (passiveCount === 0) {
+                html = `
+                    <div class="passive-item" style="opacity: 0.5;">
+                        <span class="passive-item-name">No passive skills invested</span>
+                        <span class="passive-item-desc">Invest skill points to see passive effects here</span>
+                    </div>
+                `;
+            }
+
+            container.innerHTML = html;
+        }
+
+        // Show skill selector modal
+        function showSkillSelector(slotType, slotIndex = null) {
+            const availableSkills = getAvailableSkillsForSlot(slotType);
+            
+            if (availableSkills.length === 0) {
+                alert('No learned skills available for this slot type. Invest skill points first!');
+                return;
+            }
+            
+            let html = `
+                <div class="skill-selector-modal" id="skillSelectorModal">
+                    <div class="skill-selector-content">
+                        <div class="skill-selector-header">
+                            <h3>Select ${slotType === 'ultimate' ? 'Ultimate' : 'Active'} Skill</h3>
+                            <button onclick="closeSkillSelector()">×</button>
+                        </div>
+                        <div class="skill-selector-grid">
+            `;
+            
+            availableSkills.forEach(skillId => {
+                const skill = skillsDatabase.class[skillId];
+                const invested = currentSkillPoints.invested[skillId];
+                const iconMap = {
+                    'high-noon': '🌅', 'dead-mans-hand': '🃏', 'perfect-shot': '🎯',
+                    'fan-hammer': '🌪️', 'ricochet-roulette': '🪃', 'gunslinger-focus': '🎲',
+                    'all-in': '🃏', 'bullet-time': '⏰', 'vanish': '👻'
+                };
+                
+                html += `
+                    <div class="skill-selector-item" onclick="assignSkillToSlot('${skillId}', '${slotType}', ${slotIndex})">
+                        <div class="skill-icon">${iconMap[skillId] || '⚡'}</div>
+                        <div class="skill-name">${skill.name}</div>
+                        <div class="skill-rank">Rank ${invested}</div>
+                    </div>
+                `;
+            });
+            
+            html += `
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', html);
+        }
+        
+        function getAvailableSkillsForSlot(slotType) {
+            const ultimateSkills = ['high-noon', 'dead-mans-hand', 'perfect-shot'];
+            const activeSkills = ['fan-hammer', 'ricochet-roulette', 'gunslinger-focus', 'all-in', 'bullet-time', 'vanish'];
+            
+            const targetSkills = slotType === 'ultimate' ? ultimateSkills : activeSkills;
+            
+            return targetSkills.filter(skillId => {
+                const invested = currentSkillPoints.invested[skillId] || 0;
+                return invested > 0;
+            });
+        }
+        
+        function assignSkillToSlot(skillId, slotType, slotIndex) {
+            if (slotType === 'ultimate') {
+                currentLoadoutSlots.ultimate = skillId;
+            } else if (slotType === 'active') {
+                currentLoadoutSlots.actives[slotIndex] = skillId;
+            }
+            
+            closeSkillSelector();
+            populateLoadout();
+        }
+        
+        function removeSkillFromSlot(slotType, slotIndex) {
+            if (slotType === 'ultimate') {
+                currentLoadoutSlots.ultimate = null;
+            } else if (slotType === 'active') {
+                currentLoadoutSlots.actives[slotIndex] = null;
+            }
+            
+            populateLoadout();
+        }
+        
+        function closeSkillSelector() {
+            const modal = document.getElementById('skillSelectorModal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            loadSkillsData();
+        });
+    </script>
+    <script>
+        // Loadout switching functionality
+        const loadoutTabs = document.querySelectorAll('.loadout-tab');
+        const loadoutTitle = document.querySelector('.loadout-title');
+        
+        // Predefined loadout builds with specific skill allocations
+        const predefinedLoadouts = {
+            'boss-killer': {
+                name: 'Boss Killer',
+                skills: {
+                    'dead-eye': 3,
+                    'sniper-specialist': 2,
+                    'fan-hammer': 5,
+                    'bullet-time': 4,
+                    'never-miss': 3,
+                    'ace-hole': 2,
+                    'high-noon': 5
+                }
+            },
+            'mob-clear': {
+                name: 'Mob Clear',
+                skills: {
+                    'quick-hands': 3,
+                    'shotgun-specialist': 2,
+                    'hair-trigger': 3,
+                    'mark-death': 5,
+                    'explosive-rounds': 4,
+                    'ricochet-roulette': 3,
+                    'all-in': 2
+                }
+            },
+            'pvp-duelist': {
+                name: 'PvP Duelist',
+                skills: {
+                    'lucky-charm': 2,
+                    'gunslinger-focus': 2,
+                    'quick-draw': 3,
+                    'vanish': 4,
+                    'lucky-streak': 4,
+                    'roll-dice': 3,
+                    'master-gunslinger': 3,
+                    'perfect-shot': 3
+                }
+            },
+            'support': {
+                name: 'Support',
+                skills: {
+                    'dead-eye': 2,
+                    'steady-aim': 3,
+                    'run-gun': 4,
+                    'desperado': 3,
+                    'handgun-specialist': 2,
+                    'mark-death': 3,
+                    'ace-hole': 2
+                }
+            }
+        };
+
+        loadoutTabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                const loadoutId = this.dataset.loadout;
+                
+                // Update active state
+                loadoutTabs.forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                
+                let loadoutKey = '';
+                switch(loadoutId) {
+                    case '1': loadoutKey = 'boss-killer'; break;
+                    case '2': loadoutKey = 'mob-clear'; break;
+                    case '3': loadoutKey = 'pvp-duelist'; break;
+                    case '4': loadoutKey = 'support'; break;
+                    case '5': 
+                        window.location.href = 'edit-loadout.html';
+                        return;
+                }
+                
+                const loadout = predefinedLoadouts[loadoutKey];
+                if (loadout) {
+                    loadoutTitle.textContent = loadout.name;
+                    currentSkillPoints.invested = { ...loadout.skills };
+                    populateLoadout();
+                    
+                    // Auto-save this loadout configuration
+                    saveCurrentLoadout(loadout.name);
+                }
+            });
+        });
+
+        // Save current loadout
+        function saveCurrentLoadout(loadoutName) {
+            const loadoutData = {
+                name: loadoutName,
+                skillInvestments: { ...currentSkillPoints.invested },
+                timestamp: new Date().toISOString()
+            };
+            
+            try {
+                localStorage.setItem(`courier-loadout-${loadoutName.toLowerCase().replace(/\s+/g, '-')}`, JSON.stringify(loadoutData));
+                console.log(`Saved loadout: ${loadoutName}`);
+                return true;
+            } catch (error) {
+                console.error('Error saving loadout:', error);
+                return false;
+            }
+        }
+        
+        // Load and apply a saved loadout
+        function loadSavedLoadout(loadoutName) {
+            try {
+                const loadoutData = localStorage.getItem(`courier-loadout-${loadoutName.toLowerCase().replace(/\s+/g, '-')}`);
+                if (loadoutData) {
+                    const parsed = JSON.parse(loadoutData);
+                    currentSkillPoints.invested = parsed.skillInvestments || {};
+                    
+                    // Update localStorage with new skill investments
+                    const savedSkills = localStorage.getItem('courier-skill-investments') || '{}';
+                    const skillData = JSON.parse(savedSkills);
+                    skillData.class = currentSkillPoints.invested;
+                    localStorage.setItem('courier-skill-investments', JSON.stringify(skillData));
+                    
+                    populateLoadout();
+                    console.log(`Loaded loadout: ${loadoutName}`);
+                    return true;
+                }
+            } catch (error) {
+                console.error('Error loading loadout:', error);
+            }
+            return false;
+        }
+        
+        // Activate loadout button
+        document.querySelector('.btn-activate').addEventListener('click', function() {
+            const currentLoadoutName = document.querySelector('.loadout-title').textContent;
+            const success = loadSavedLoadout(currentLoadoutName);
+            
+            if (success) {
+                // Remove activated state from all tabs
+                loadoutTabs.forEach(tab => tab.classList.remove('activated'));
+                
+                // Add activated state to currently selected tab
+                const activeTab = document.querySelector('.loadout-tab.active');
+                if (activeTab) {
+                    activeTab.classList.add('activated');
+                }
+                
+                this.textContent = 'Activated!';
+                this.style.background = 'var(--primary-orange)';
+                setTimeout(() => {
+                    this.textContent = 'Activate Loadout';
+                    this.style.background = 'var(--primary-cyan)';
+                }, 2000);
+            } else {
+                this.textContent = 'Error!';
+                this.style.background = 'var(--danger-red)';
+                setTimeout(() => {
+                    this.textContent = 'Activate Loadout';
+                    this.style.background = 'var(--primary-cyan)';
+                }, 2000);
+            }
+        });
+        
+        // Auto-save current build as current loadout
+        function autoSaveCurrentLoadout() {
+            const currentLoadoutName = document.querySelector('.loadout-title').textContent;
+            saveCurrentLoadout(currentLoadoutName);
+        }
+        
+        // Auto-save when skills change (check every 5 seconds)
+        setInterval(() => {
+            if (Object.keys(currentSkillPoints.invested).length > 0) {
+                autoSaveCurrentLoadout();
+            }
+        }, 5000);
+    </script>
+</body>
+</html>

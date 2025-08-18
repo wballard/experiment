@@ -1,0 +1,38 @@
+<!-- Missions Page Component -->
+<div class="missions-container">
+    <div class="missions-header">
+        <h2>MISSION CONTROL</h2>
+        <div class="weekly-affixes">
+            <h3>Weekly Affixes</h3>
+            <div class="affix-list">
+                <span class="affix-tag frozen">Frozen</span>
+                <span class="affix-tag overcharged">Overcharged</span>
+                <span class="affix-tag adaptive">Adaptive</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="mission-categories">
+        <button class="mission-category active" data-category="patrol">
+            <h3>PATROL</h3>
+            <p>Quick reconnaissance missions</p>
+            <span class="duration">15-25 min</span>
+        </button>
+        <button class="mission-category" data-category="horde">
+            <h3>HORDE</h3>
+            <p>Defend against enemy waves</p>
+            <span class="duration">30-45 min</span>
+        </button>
+        <button class="mission-category" data-category="expedition">
+            <h3>EXPEDITION</h3>
+            <p>Extended exploration operations</p>
+            <span class="duration">45-90 min</span>
+        </button>
+    </div>
+
+    <div class="mission-grid" id="missionGrid">
+        <!-- Mission cards will be loaded dynamically -->
+    </div>
+</div>
+
+<link rel="stylesheet" href="../../assets/css/missions.css">

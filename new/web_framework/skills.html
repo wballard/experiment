@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skills - Courier</title>
+    <link rel="stylesheet" href="assets/css/design-system.css?v=22">
+    <link rel="stylesheet" href="assets/css/main.css?v=22">
+    <link rel="stylesheet" href="assets/css/skills.css?v=22">
+</head>
+<body>
+    <!-- Navigation Header -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <div class="nav-logo"></div>
+            <div>
+                <div class="nav-username">AGENT RECON-7</div>
+                <div class="nav-level">LEVEL 60 • PARAGON 40</div>
+            </div>
+        </div>
+        <div class="nav-menu">
+            <a href="game/dashboard.html" class="nav-item">CHARACTER</a>
+            <a href="inventory.html" class="nav-item">INVENTORY</a>
+            <a href="missions.html" class="nav-item">MISSIONS</a>
+            <a href="skills.html" class="nav-item active">SKILLS</a>
+            <a href="loadouts.html" class="nav-item">LOADOUTS</a>
+            <a href="build-planner.html" class="nav-item">BUILD PLANNER</a>
+            <a href="marketplace.html" class="nav-item">MARKET</a>
+            <a href="crafting.html" class="nav-item">CRAFTING</a>
+        </div>
+    </nav>
+
+    <!-- Skills Content -->
+    <div class="page-container">
+        <div class="page-header">
+            <h1 class="page-title">CLASS AND ELEMENTAL SKILLS</h1>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Skill Points</h2>
+                <div style="display: flex; gap: var(--spacing-lg); align-items: center;">
+                    <span class="text-dim">Available: <span class="text-cyan" id="availablePoints">15</span></span>
+                    <span class="text-dim">Total: <span class="text-cyan" id="totalPoints">60</span></span>
+                    <div id="tierProgress" style="display: flex; gap: var(--spacing-sm); align-items: center;">
+                        <!-- Tier progress will be populated by JavaScript -->
+                    </div>
+                    <button class="btn btn-danger">RESET ALL</button>
+                </div>
+            </div>
+            <div class="card-accent"></div>
+
+            <div class="nav-menu" style="justify-content: center; margin-bottom: var(--spacing-lg);">
+                <button class="nav-item active" data-element="class" id="classTab">🎯 OUTLAW</button>
+                <button class="nav-item" data-element="fire">🔥 FIRE</button>
+                <button class="nav-item" data-element="ice">❄️ ICE</button>
+                <button class="nav-item" data-element="electric">⚡ ELECTRIC</button>
+                <button class="nav-item" data-element="earth">🌍 EARTH</button>
+                <button class="nav-item" data-element="nature">🌿 NATURE</button>
+            </div>
+
+            <!-- Debug Class Selector -->
+            <div style="display: flex; justify-content: center; margin-bottom: var(--spacing-md);">
+                <div style="background: var(--bg-dark); border: 1px solid var(--border-gray); padding: var(--spacing-sm); border-radius: 4px;">
+                    <label style="color: var(--text-dim); font-size: 11px; margin-right: var(--spacing-sm);">DEBUG: Change Class</label>
+                    <select id="debugClassSelector" style="background: var(--bg-medium); border: 1px solid var(--border-gray); color: var(--text-normal); padding: 4px 8px; border-radius: 4px; font-size: 11px;">
+                        <option value="outlaw" selected>🎯 Outlaw (Gunslinger)</option>
+                        <option value="guardian">🛡️ Guardian (Tank/Support)</option>
+                        <option value="technomancer">⚡ Technomancer (Tech Caster)</option>
+                        <option value="infiltrator">🗡️ Infiltrator (Stealth/Melee)</option>
+                        <option value="psion">🧬 Psion (Psychic)</option>
+                        <option value="medic">💊 Medic (Healer/Support)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="skill-tree-container" style="margin-top: var(--spacing-lg);">
+                <!-- Outlaw Class Tree -->
+                <div class="skill-tree" id="class-tree" style="display: block;">
+                    <svg class="skill-connections-svg" id="class-connections-svg">
+                        <!-- Connection lines will be dynamically generated here -->
+                    </svg>
+                    <div class="unified-skill-grid">
+                        <!-- Row 1 - Foundation Skills -->
+                        <div class="skill-node available" data-skill="dead-eye" data-prereqs="[]" style="grid-row: 1; grid-column: 2;">
+                            <div class="skill-icon">🎯</div>
+                            <div class="skill-points">0/3</div>
+                            <div class="skill-name">Dead Eye</div>
+                        </div>
+                        <div class="skill-node available" data-skill="quick-hands" data-prereqs="[]" style="grid-row: 1; grid-column: 4;">
+                            <div class="skill-icon">🤏</div>
+                            <div class="skill-points">0/3</div>
+                            <div class="skill-name">Quick Hands</div>
+                        </div>
+                        <div class="skill-node available" data-skill="lucky-charm" data-prereqs="[]" style="grid-row: 1; grid-column: 6;">
+                            <div class="skill-icon">🍀</div>
+                            <div class="skill-points">0/2</div>
+                            <div class="skill-name">Lucky Charm</div>
+                        </div>
+
+                        <!-- Row 2 - Weapon Specialists -->
+                        <div class="skill-node locked" data-skill="handgun-specialist" data-prereqs="[&quot;dead-eye&quot;]" style="grid-row: 2; grid-column: 1;">
+                            <div class="skill-icon">🔫</div>
+                            <div class="skill-points">0/2</div>
+                            <div class="skill-name">Handgun</div>
+                        </div>
+                        <div class="skill-node locked" data-skill="sniper-specialist" data-prereqs="[&quot;dead-eye&quot;]" style="grid-row: 2; grid-column: 2;">
+                            <div class="skill-icon">🔍</div>
+                            <div class="skill-points">0/2</div>
+                            <div class="skill-name">Sniper</div>
+                        </div>
+                        <div class="skill-node locked" data-skill="shotgun-specialist" data-prereqs="[&quot;quick-hands&quot;]" style="grid-row: 2; grid-column: 3;">
+                            <div class="skill-icon">💥</div>
+                            <div class="skill-points">0/2</div>
+                            <div class="skill-name">Shotgun</div>
+                        </div>
+                        <div class="skill-node locked" data-skill="steady-aim" data-prereqs="[&quot;quick-hands&quot;]" style="grid-row: 2; grid-column: 4;">
+                            <div class="skill-icon">🎯</div>
+                            <div class="skill-points">0/3</div>
+                            <div class="skill-name">Steady Aim</div>
+                        </div>
+                        <div class="skill-node locked" data-skill="hair-trigger" data-prereqs="[&quot;lucky-charm&quot;]" style="grid-row: 2; grid-column: 5;">
+                            <div class="skill-icon">⚡</div>
+                            <div class="skill-points">0/3</div>
+                            <div class="skill-name">Hair Trigger</div>
+                        </div>
+                        <div class="skill-node locked" data-skill="gunslinger-focus" data-prereqs="[&quot;lucky-charm&quot;]" style="grid-row: 2; grid-column: 6;">
+                            <div class="skill-icon">🎲</div>
+                            <div class="skill-points">0/2</div>
+                            <div class="skill-name">Focus</div>
+                        </div>
+
+                        <!-- Row 3 - Advanced Abilities -->
+                        <div class="skill-node locked" data-skill="ricochet-roulette" data-prereqs="[&quot;handgun-specialist&quot;]" style="grid-row: 3; grid-column: 1;">
+                            <div class="skill-icon">🪃</div>
+                            <div class="skill-points">0/5</div>
+                            <div class="skill-name">Ricochet</div>
+                        </div>
+                        <div class="skill-node locked" data-skill="fan-hammer" data-prereqs="[&quot;sniper-specialist&quot;,&quot;shotgun-specialist&quot;]" style="grid-row: 3; grid-column: 2;">
+                            <div class="skill-icon">🌪️</div>
+                            <div class="skill-points">0/5</div>
+                            <div class="skill-name">Fan Hammer</div>
+                        </div>
+                        <div class="skill-node locked" data-skill="mark-death" data-prereqs="[&quot;shotgun-specialist&quot;,&quot;steady-aim&quot;]" style="grid-row: 3; grid-column: 3;">
+                            <div class="skill-icon">💀</div>
+                            <div class="skill-points">0/5</div>
+                            <div class="skill-name">Mark Death</div>
+                        </div>
+                        <div class="skill-node locked" data-skill="run-gun" data-prereqs="[&quot;steady-aim&quot;]" style="grid-row: 3; grid-column: 4;">
+                            <div class="skill-icon">🏃</div>
+                            <div class="skill-points">0/4</div>
+                            <div class="skill-name">Run & Gun</div>
+                        </div>
+                        <div class="skill-node locked" data-skill="quick-draw" data-prereqs="[&quot;hair-trigger&quot;]" style="grid-row: 3; grid-column: 5;">
+                            <div class="skill-icon">⚡</div>
+                            <div class="skill-points">0/3</div>
+                            <div class="skill-name">Quick Draw</div>
+                        </div>
+                        <div class="skill-node locked" data-skill="lucky-streak" data-prereqs="[&quot;gunslinger-focus&quot;]" style="grid-row: 3; grid-column: 6;">
+                            <div class="skill-icon">⭐</div>
+                            <div class="skill-points">0/4</div>
+                            <div class="skill-name">Lucky Streak</div>
+                        </div>
+
+                        <!-- Row 4 - Elite Skills -->
+                        <div class="skill-node locked" data-skill="all-in" data-prereqs="[&quot;ricochet-roulette&quot;]" style="grid-row: 4; grid-column: 1;">
+                            <div class="skill-icon">🃏</div>
+                            <div class="skill-points">0/4</div>
+                            <div class="skill-name">All In</div>
+                        </div>
+                        <div class="skill-node locked" data-skill="bullet-time" data-prereqs="[&quot;fan-hammer&quot;]" style="grid-row: 4; grid-column: 2;">
+                            <div class="skill-icon">⏰</div>
+                            <div class="skill-points">0/4</div>
+                            <div class="skill-name">Bullet Time</div>
+                        </div>
+                        <div class="skill-node locked" data-skill="explosive-rounds" data-prereqs="[&quot;mark-death&quot;]" style="grid-row: 4; grid-column: 3;">
+                            <div class="skill-icon">💣</div>
+                            <div class="skill-points">0/4</div>
+                            <div class="skill-name">Explosive</div>
+                        </div>
+                        <div class="skill-node locked" data-skill="desperado" data-prereqs="[&quot;run-gun&quot;]" style="grid-row: 4; grid-column: 4;">
+                            <div class="skill-icon">💀</div>
+                            <div class="skill-points">0/4</div>
+                            <div class="skill-name">Desperado</div>
+                        </div>
+                        <div class="skill-node locked" data-skill="vanish" data-prereqs="[&quot;quick-draw&quot;]" style="grid-row: 4; grid-column: 5;">
+                            <div class="skill-icon">👻</div>
+                            <div class="skill-points">0/4</div>
+                            <div class="skill-name">Vanish</div>
+                        </div>
+                        <div class="skill-node locked" data-skill="roll-dice" data-prereqs="[&quot;lucky-streak&quot;]" style="grid-row: 4; grid-column: 6;">
+                            <div class="skill-icon">🎲</div>
+                            <div class="skill-points">0/3</div>
+                            <div class="skill-name">Roll Dice</div>
+                        </div>
+
+                        <!-- Row 5 - Mastery Skills -->
+                        <div class="skill-node locked" data-skill="never-miss" data-prereqs="[&quot;all-in&quot;,&quot;bullet-time&quot;]" style="grid-row: 5; grid-column: 1;">
+                            <div class="skill-icon">🎯</div>
+                            <div class="skill-points">0/3</div>
+                            <div class="skill-name">Never Miss</div>
+                        </div>
+                        <div class="skill-node locked" data-skill="ace-hole" data-prereqs="[&quot;explosive-rounds&quot;,&quot;desperado&quot;]" style="grid-row: 5; grid-column: 3;">
+                            <div class="skill-icon">🃏</div>
+                            <div class="skill-points">0/2</div>
+                            <div class="skill-name">Ace in Hole</div>
+                        </div>
+                        <div class="skill-node locked" data-skill="master-gunslinger" data-prereqs="[&quot;vanish&quot;,&quot;roll-dice&quot;]" style="grid-row: 5; grid-column: 5;">
+                            <div class="skill-icon">👑</div>
+                            <div class="skill-points">0/3</div>
+                            <div class="skill-name">Master</div>
+                        </div>
+
+                        <!-- Row 6 - Ultimate Skills -->
+                        <div class="skill-node locked ultimate" data-skill="high-noon" data-prereqs="[&quot;never-miss&quot;,&quot;ace-hole&quot;]" style="grid-row: 6; grid-column: 2;">
+                            <div class="skill-icon">🌅</div>
+                            <div class="skill-points">0/5</div>
+                            <div class="skill-name">High Noon</div>
+                        </div>
+                        <div class="skill-node locked ultimate" data-skill="dead-mans-hand" data-prereqs="[&quot;ace-hole&quot;]" style="grid-row: 6; grid-column: 3;">
+                            <div class="skill-icon">🃏</div>
+                            <div class="skill-points">0/5</div>
+                            <div class="skill-name">Dead Hand</div>
+                        </div>
+                        <div class="skill-node locked ultimate" data-skill="perfect-shot" data-prereqs="[&quot;ace-hole&quot;,&quot;master-gunslinger&quot;]" style="grid-row: 6; grid-column: 4;">
+                            <div class="skill-icon">🎯</div>
+                            <div class="skill-points">0/5</div>
+                            <div class="skill-name">Perfect Shot</div>
+                        </div>
+
+                        <!-- Row 7 - Legendary Capstone -->
+                        <div class="skill-node locked capstone" data-skill="legendary-outlaw" data-prereqs="[&quot;high-noon&quot;,&quot;dead-mans-hand&quot;,&quot;perfect-shot&quot;]" style="grid-row: 7; grid-column: 3;">
+                            <div class="skill-icon">🤠</div>
+                            <div class="skill-points">0/3</div>
+                            <div class="skill-name">Legendary</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fire Skill Tree -->
+                <div class="skill-tree" id="fire-tree" style="display: none;">
+                    <div class="tier-section">
+                        <h3 class="tier-title">TIER 1 - IGNITION FOUNDATION</h3>
+                        <div class="skills-row">
+                            <div class="skill-node" data-skill="combustion-mastery" style="grid-column: 1;">
+                                <div class="skill-icon">🔥</div>
+                                <div class="skill-points">0/3</div>
+                            </div>
+                            <div class="skill-node" data-skill="flame-weapon" style="grid-column: 3;">
+                                <div class="skill-icon">⚔️</div>
+                                <div class="skill-points">0/5</div>
+                            </div>
+                            <div class="skill-node" data-skill="heat-resistance" style="grid-column: 5;">
+                                <div class="skill-icon">🛡️</div>
+                                <div class="skill-points">0/2</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tier-section">
+                        <h3 class="tier-title">TIER 2 - INFERNO SPECIALIZATION</h3>
+                        <div class="skills-row">
+                            <div class="skill-node locked" data-skill="fireball" style="grid-column: 1;">
+                                <div class="skill-icon">💥</div>
+                                <div class="skill-points">0/3</div>
+                            </div>
+                            <div class="skill-node locked" data-skill="flame-wall" style="grid-column: 3;">
+                                <div class="skill-icon">🧱</div>
+                                <div class="skill-points">0/4</div>
+                            </div>
+                            <div class="skill-node locked" data-skill="burning-ground" style="grid-column: 5;">
+                                <div class="skill-icon">🌋</div>
+                                <div class="skill-points">0/3</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tier-section">
+                        <h3 class="tier-title">TIER 3 - CONFLAGRATION MASTERY</h3>
+                        <div class="skills-row">
+                            <div class="skill-node locked" data-skill="phoenix-surge" style="grid-column: 2;">
+                                <div class="skill-icon">🔥</div>
+                                <div class="skill-points">0/5</div>
+                            </div>
+                            <div class="skill-node locked" data-skill="fire-combination" style="grid-column: 4;">
+                                <div class="skill-icon">⚡</div>
+                                <div class="skill-points">0/2</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tier-section">
+                        <h3 class="tier-title">TIER 4 - TRANSCENDENCE</h3>
+                        <div class="skills-row">
+                            <div class="skill-node locked capstone" data-skill="pyroclasm-lord" style="grid-column: 3;">
+                                <div class="skill-icon">🔥</div>
+                                <div class="skill-points">0/1</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Other skill trees will be loaded dynamically -->
+                <div class="skill-tree" id="ice-tree" style="display: none;"></div>
+                <div class="skill-tree" id="electric-tree" style="display: none;"></div>
+                <div class="skill-tree" id="earth-tree" style="display: none;"></div>
+                <div class="skill-tree" id="nature-tree" style="display: none;"></div>
+            </div>
+        </div>
+
+        <!-- Active Bonuses and Elemental Synergy Cards -->
+        <div style="display: flex; gap: var(--spacing-lg); margin-top: var(--spacing-xl);">
+            <div class="card" style="flex: 1;">
+                <div class="card-header">
+                    <h2 class="card-title">ACTIVE BONUSES</h2>
+                </div>
+                <div class="card-accent"></div>
+                <div class="summary-content" id="active-bonuses">
+                    <div class="bonus-item">
+                        <span class="bonus-name">No bonuses active</span>
+                        <span class="bonus-value">--</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" style="flex: 1;">
+                <div class="card-header">
+                    <h2 class="card-title">ELEMENTAL SYNERGY</h2>
+                </div>
+                <div class="card-accent"></div>
+                <div class="summary-content" id="elemental-synergy">
+                    <div class="bonus-item">
+                        <span class="bonus-name">Primary Element</span>
+                        <span class="bonus-value" id="primary-element">NONE</span>
+                    </div>
+                    <div class="bonus-item">
+                        <span class="bonus-name">Secondary Element</span>
+                        <span class="bonus-value" id="secondary-element">NONE</span>
+                    </div>
+                    <div class="bonus-item">
+                        <span class="bonus-name">Combo Potential</span>
+                        <span class="bonus-value" id="combo-potential">--</span>
+                    </div>
+                    <div class="bonus-item">
+                        <span class="bonus-name">Next Unlock</span>
+                        <span class="bonus-value" id="next-unlock">LVL 1</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer style="padding: 20px; text-align: center; font-size: 10px; color: #666; border-top: 1px solid #333; margin-top: 40px;">
+        <a href="changelog.html" style="color: #666; text-decoration: none; border-bottom: 1px dotted #666;">CHANGELOG</a> • 
+        <a href="specs/index.html" style="color: #666; text-decoration: none; border-bottom: 1px dotted #666;">SPECS</a> • 
+        <a href="tuning/index.html" style="color: #666; text-decoration: none; border-bottom: 1px dotted #666;">TUNING</a> • 
+        <a href="admin/index.html" style="color: #666; text-decoration: none; border-bottom: 1px dotted #666;">ADMIN</a> • 
+        LAST UPDATED: 2025-08-17 CST • SKILLS: Tier 4 capstone progression • ADMIN: Item creation console
+    </footer>
+
+    <!-- Initialize global game state -->
+    <script>
+        window.CourierGame = {
+            data: {
+                playerLevel: 60,
+                paragonLevel: 40,
+                skillPoints: {
+                    available: 60, // Will be recalculated based on invested points
+                    total: 60,
+                    invested: {}
+                }
+            }
+        };
+    </script>
+    <script src="assets/js/skills.js?v=21"></script>
+    <script>
+        // Initialize skills directly
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('Standalone skills page loaded');
+            if (window.SkillSystem) {
+                window.SkillSystem.init();
+                window.SkillSystem.setupDebugClassSelector();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,3721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Courier - Web Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        /* Navigation Header */
+        .nav-header {
+            background: rgba(20, 20, 20, 0.95);
+            border-bottom: 1px solid #333;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(45deg, #00ffff, #ff6600);
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+        }
+
+        .user-info {
+            color: #00ffff;
+            font-size: 12px;
+        }
+
+        .user-level {
+            color: #ff6600;
+            font-weight: bold;
+        }
+
+        .changelog-link {
+            color: #00ffff;
+            text-decoration: none;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .changelog-link:hover {
+            color: #ff6600;
+        }
+
+        /* Main Navigation Tabs */
+        .main-nav {
+            background: rgba(15, 15, 15, 0.9);
+            border-bottom: 1px solid #333;
+            padding: 0 20px;
+            margin-top: 60px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 999;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 0;
+        }
+
+        .nav-tab {
+            padding: 15px 25px;
+            background: none;
+            border: none;
+            color: #888;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-bottom: 2px solid transparent;
+            font-family: inherit;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 12px;
+        }
+
+        .nav-tab:hover {
+            color: #00ffff;
+            background: rgba(0, 255, 255, 0.1);
+        }
+
+        .nav-tab.active {
+            color: #00ffff;
+            border-bottom-color: #00ffff;
+            background: rgba(0, 255, 255, 0.15);
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-top: 120px;
+            min-height: calc(100vh - 120px);
+            padding: 20px;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Character Sheet Styles */
+        .character-container {
+            display: grid;
+            grid-template-columns: 300px 1fr 300px;
+            gap: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .equipment-panel {
+            background: rgba(20, 20, 20, 0.8);
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .power-budget {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding: 10px;
+            background: rgba(255, 102, 0, 0.1);
+            border: 1px solid #ff6600;
+            border-radius: 4px;
+            transition: transform 0.3s;
+        }
+
+        .power-budget:hover {
+            transform: scale(1.05);
+        }
+
+        .power-icon {
+            width: 24px;
+            height: 24px;
+            background: #ff6600;
+            border-radius: 50%;
+        }
+
+        .power-value {
+            color: #ff6600;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .equipment-slots {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .equipment-slot {
+            width: 60px;
+            height: 60px;
+            border: 2px dashed #555;
+            border-radius: 4px;
+            background: rgba(40, 40, 40, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .equipment-slot:hover {
+            border-color: #00ffff;
+            background: rgba(0, 255, 255, 0.1);
+        }
+
+        .equipment-slot.equipped {
+            border-color: #00ffff;
+            background: rgba(0, 255, 255, 0.2);
+        }
+
+        .equipment-slot.equipped {
+            color: #00ffff;
+            font-size: 20px;
+        }
+        
+        .equipment-slot {
+            color: #666;
+            font-size: 20px;
+        }
+
+        /* Inventory Styles */
+        .inventory-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 20px;
+        }
+
+        .inventory-grid {
+            background: rgba(20, 20, 20, 0.8);
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .inventory-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #333;
+        }
+
+        .inventory-title {
+            color: #00ffff;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .inventory-filter {
+            display: flex;
+            gap: 10px;
+        }
+
+        .filter-btn {
+            padding: 5px 12px;
+            background: rgba(40, 40, 40, 0.8);
+            border: 1px solid #555;
+            border-radius: 4px;
+            color: #888;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+            font-size: 11px;
+            text-transform: uppercase;
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: rgba(0, 255, 255, 0.2);
+            border-color: #00ffff;
+            color: #00ffff;
+        }
+
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+            gap: 8px;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .item-slot {
+            width: 60px;
+            height: 60px;
+            border: 2px solid #444;
+            border-radius: 4px;
+            background: rgba(30, 30, 30, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            font-size: 24px;
+        }
+
+        .item-slot:hover {
+            border-color: #00ffff;
+            background: rgba(0, 255, 255, 0.1);
+            transform: scale(1.05);
+        }
+
+        .item-slot.selected {
+            border-color: #ffff00 !important;
+            background: rgba(255, 255, 0, 0.2) !important;
+            transform: scale(1.1);
+        }
+
+        .item-slot.common { border-color: #666; }
+        .item-slot.uncommon { border-color: #00ff00; }
+        .item-slot.rare { border-color: #0099ff; }
+        .item-slot.epic { border-color: #9900ff; }
+        .item-slot.legendary { border-color: #ff6600; }
+        .item-slot.mythic { border-color: #ff0066; }
+        .item-slot.primal { border-color: #00ffff; }
+
+        .item-corner-indicator {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .item-corner-indicator.weapon { background: #ff6600; }
+        .item-corner-indicator.armor { background: #00ffff; }
+
+        .item-actions {
+            background: rgba(20, 20, 20, 0.8);
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .selected-item-details {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(30, 30, 30, 0.8);
+            border: 1px solid #444;
+            border-radius: 4px;
+        }
+
+        .selected-item-name {
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .selected-item-name.common { color: #888; }
+        .selected-item-name.uncommon { color: #00ff00; }
+        .selected-item-name.rare { color: #0099ff; }
+        .selected-item-name.epic { color: #9900ff; }
+        .selected-item-name.legendary { color: #ff6600; }
+        .selected-item-name.mythic { color: #ff0066; }
+        .selected-item-name.primal { color: #00ffff; }
+
+        .selected-item-type {
+            color: #888;
+            font-size: 11px;
+            margin-bottom: 10px;
+        }
+
+        .action-button {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 10px;
+            background: rgba(40, 40, 40, 0.8);
+            border: 1px solid #555;
+            border-radius: 4px;
+            color: #ccc;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 11px;
+        }
+
+        .action-button:hover {
+            background: rgba(0, 255, 255, 0.2);
+            border-color: #00ffff;
+            color: #00ffff;
+        }
+
+        .action-button.primary {
+            background: linear-gradient(45deg, #00ffff, #0099cc);
+            color: #000;
+            font-weight: bold;
+        }
+
+        .action-button.primary:hover {
+            background: linear-gradient(45deg, #00ccff, #0077aa);
+        }
+
+        .action-button:disabled {
+            background: #333;
+            color: #666;
+            cursor: not-allowed;
+        }
+
+        /* Tooltip */
+        .item-tooltip {
+            position: absolute;
+            background: rgba(10, 10, 10, 0.95);
+            border: 2px solid #333;
+            border-radius: 8px;
+            padding: 15px;
+            min-width: 280px;
+            max-width: 350px;
+            z-index: 10000;
+            pointer-events: none;
+            backdrop-filter: blur(10px);
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+        .tooltip-hidden {
+            display: none;
+        }
+
+        .tooltip-item-name {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .tooltip-item-name.common { color: #888; }
+        .tooltip-item-name.uncommon { color: #00ff00; }
+        .tooltip-item-name.rare { color: #0099ff; }
+        .tooltip-item-name.epic { color: #9900ff; }
+        .tooltip-item-name.legendary { color: #ff6600; }
+        .tooltip-item-name.mythic { color: #ff0066; }
+        .tooltip-item-name.primal { color: #00ffff; }
+
+        .tooltip-item-type {
+            color: #888;
+            font-size: 11px;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .tooltip-stats {
+            margin-bottom: 12px;
+        }
+
+        .tooltip-stat {
+            display: flex;
+            justify-content: space-between;
+            margin: 4px 0;
+            padding: 2px 0;
+        }
+
+        .tooltip-stat-name {
+            color: #ccc;
+        }
+
+        .tooltip-stat-value {
+            color: #00ff00;
+            font-weight: bold;
+        }
+
+        .tooltip-section {
+            border-top: 1px solid #333;
+            margin-top: 10px;
+            padding-top: 8px;
+        }
+
+        .tooltip-power-cost {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 10px;
+            padding: 8px;
+            background: rgba(255, 102, 0, 0.1);
+            border: 1px solid #ff6600;
+            border-radius: 4px;
+        }
+
+        .tooltip-power-icon {
+            width: 16px;
+            height: 16px;
+            background: #ff6600;
+            border-radius: 50%;
+        }
+
+        .tooltip-power-text {
+            color: #ff6600;
+            font-weight: bold;
+        }
+
+        .tooltip-efficiency {
+            color: #888;
+            font-size: 10px;
+            margin-top: 4px;
+        }
+        
+        /* Empty Slot Popup */
+        .empty-slot-popup {
+            position: absolute;
+            background: rgba(10, 10, 10, 0.95);
+            border: 2px solid #333;
+            border-radius: 8px;
+            padding: 15px;
+            min-width: 200px;
+            max-width: 300px;
+            z-index: 10000;
+            pointer-events: none;
+            backdrop-filter: blur(10px);
+            font-size: 12px;
+            line-height: 1.4;
+        }
+        
+        .popup-hidden {
+            display: none;
+        }
+        
+        .popup-title {
+            color: #00ffff;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .popup-items {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .popup-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 5px;
+            margin: 2px 0;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s;
+            pointer-events: auto;
+        }
+        
+        .popup-item:hover {
+            background: rgba(0, 255, 255, 0.1);
+        }
+        
+        .popup-item-icon {
+            font-size: 16px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .popup-item-name {
+            flex: 1;
+        }
+        
+        .popup-item-name.common { color: #888; }
+        .popup-item-name.uncommon { color: #00ff00; }
+        .popup-item-name.rare { color: #0099ff; }
+        .popup-item-name.epic { color: #9900ff; }
+        .popup-item-name.legendary { color: #ff6600; }
+        .popup-item-name.mythic { color: #ff0066; }
+        .popup-item-name.primal { color: #00ffff; }
+        
+        /* Mission System Styles */
+        .mission-container {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            height: calc(100vh - 140px);
+        }
+        
+        .mission-sidebar {
+            background: rgba(20, 20, 20, 0.8);
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 20px;
+            height: fit-content;
+        }
+        
+        .mission-category-header h3 {
+            color: #00ffff;
+            font-size: 14px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 8px;
+        }
+        
+        .mission-category {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid transparent;
+        }
+        
+        .mission-category:hover {
+            background: rgba(0, 255, 255, 0.1);
+            border-color: #00ffff;
+        }
+        
+        .mission-category.active {
+            background: rgba(0, 255, 255, 0.2);
+            border-color: #00ffff;
+        }
+        
+        .category-icon {
+            font-size: 20px;
+            width: 30px;
+            text-align: center;
+        }
+        
+        .category-name {
+            color: #fff;
+            font-weight: bold;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .category-time {
+            color: #888;
+            font-size: 10px;
+        }
+        
+        .weekly-affixes {
+            margin-top: 30px;
+        }
+        
+        .weekly-affixes h4 {
+            color: #ff6600;
+            font-size: 12px;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .affix-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .affix-icon {
+            font-size: 14px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .affix-name {
+            color: #ccc;
+            font-size: 11px;
+        }
+        
+        .mission-main {
+            background: rgba(20, 20, 20, 0.8);
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .mission-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #333;
+        }
+        
+        .mission-header h2 {
+            color: #00ffff;
+            font-size: 18px;
+            margin: 0;
+        }
+        
+        .mission-stats {
+            display: flex;
+            gap: 20px;
+            font-size: 12px;
+            color: #888;
+        }
+        
+        .mission-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 20px;
+            flex: 1;
+            overflow-y: auto;
+            max-height: 600px;
+        }
+        
+        .mission-card {
+            background: rgba(30, 30, 30, 0.8);
+            border: 2px solid #444;
+            border-radius: 8px;
+            padding: 20px;
+            transition: all 0.3s;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .mission-card:hover {
+            border-color: #00ffff;
+            background: rgba(0, 255, 255, 0.05);
+            transform: translateY(-2px);
+        }
+        
+        .mission-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+        
+        .mission-name {
+            color: #fff;
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+        
+        .mission-type {
+            color: #00ffff;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .mission-difficulty {
+            color: #ff6600;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        .mission-info {
+            margin: 10px 0;
+        }
+        
+        .mission-duration {
+            color: #888;
+            font-size: 11px;
+            margin-bottom: 5px;
+        }
+        
+        .mission-success-rate {
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        
+        .mission-rewards {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .reward-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 10px;
+            color: #ccc;
+        }
+        
+        .mission-affixes {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+        
+        .mission-affix {
+            background: rgba(255, 102, 0, 0.2);
+            border: 1px solid #ff6600;
+            border-radius: 3px;
+            padding: 2px 6px;
+            font-size: 9px;
+            color: #ff6600;
+            text-transform: uppercase;
+        }
+        
+        .mission-briefing {
+            margin: 15px 0;
+            flex: 1;
+        }
+        
+        .mission-description {
+            color: #ccc;
+            font-size: 12px;
+            line-height: 1.4;
+            margin-bottom: 12px;
+        }
+        
+        .mission-objectives {
+            margin-bottom: 15px;
+        }
+        
+        .mission-objectives h4 {
+            color: #00ffff;
+            font-size: 11px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .mission-objective {
+            color: #ccc;
+            font-size: 11px;
+            margin: 4px 0;
+            padding-left: 15px;
+            position: relative;
+        }
+        
+        .mission-objective::before {
+            content: "•";
+            color: #00ffff;
+            position: absolute;
+            left: 0;
+        }
+        
+        .mission-launch-section {
+            border-top: 1px solid #333;
+            padding-top: 15px;
+            margin-top: auto;
+        }
+        
+        .mission-launch-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 11px;
+            color: #888;
+        }
+        
+        .mission-launch-button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(45deg, #00ffff, #0099cc);
+            color: #000;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+            font-size: 11px;
+        }
+        
+        .mission-launch-button:hover {
+            background: linear-gradient(45deg, #00ccff, #0077aa);
+            transform: translateY(-1px);
+        }
+        
+        .mission-launch-button:disabled {
+            background: #333;
+            color: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .mission-details {
+            background: rgba(20, 20, 20, 0.8);
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 20px;
+            height: fit-content;
+        }
+        
+        .mission-details-header h3 {
+            color: #00ffff;
+            font-size: 14px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 8px;
+        }
+        
+        .mission-brief {
+            color: #ccc;
+            font-size: 12px;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+        
+        .mission-objectives {
+            margin-bottom: 15px;
+        }
+        
+        .mission-objectives h4 {
+            color: #00ffff;
+            font-size: 11px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+        
+        .objective-item {
+            color: #ccc;
+            font-size: 11px;
+            margin: 4px 0;
+            padding-left: 15px;
+            position: relative;
+        }
+        
+        .objective-item::before {
+            content: "•";
+            color: #00ffff;
+            position: absolute;
+            left: 0;
+        }
+        
+        .launch-button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(45deg, #00ffff, #0099cc);
+            color: #000;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+            margin-top: 15px;
+        }
+        
+        .launch-button:hover {
+            background: linear-gradient(45deg, #00ccff, #0077aa);
+            transform: translateY(-1px);
+        }
+        
+        .launch-button:disabled {
+            background: #333;
+            color: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        /* Stats Tooltip */
+        .stats-tooltip {
+            position: absolute;
+            background: rgba(10, 10, 10, 0.95);
+            border: 2px solid #333;
+            border-radius: 8px;
+            padding: 15px;
+            min-width: 250px;
+            max-width: 350px;
+            z-index: 10000;
+            pointer-events: none;
+            backdrop-filter: blur(10px);
+            font-size: 12px;
+            line-height: 1.4;
+        }
+        
+        .stats-tooltip-hidden {
+            display: none;
+        }
+        
+        .stats-tooltip-title {
+            color: #00ffff;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 14px;
+        }
+        
+        .stats-tooltip-description {
+            color: #ccc;
+            margin-bottom: 15px;
+            font-style: italic;
+        }
+        
+        .secondary-stats {
+            border-top: 1px solid #333;
+            padding-top: 10px;
+        }
+        
+        .secondary-stat {
+            display: flex;
+            justify-content: space-between;
+            margin: 5px 0;
+            padding: 3px 0;
+        }
+        
+        .secondary-stat-name {
+            color: #ccc;
+        }
+        
+        .secondary-stat-value {
+            color: #00ff00;
+            font-weight: bold;
+        }
+        
+        .stat-row {
+            cursor: pointer;
+            transition: all 0.3s;
+            border-radius: 4px;
+        }
+        
+        .stat-row:hover {
+            background: rgba(0, 255, 255, 0.1);
+            transform: scale(1.02);
+        }
+
+        /* Mission Success Modal */
+        .mission-success-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 10001;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+        
+        .mission-success-overlay.hidden {
+            display: none;
+        }
+        
+        .mission-success-modal {
+            background: rgba(15, 15, 15, 0.95);
+            border: 2px solid #00ffff;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            animation: successSlideIn 0.5s ease-out;
+        }
+        
+        @keyframes successSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        .success-header {
+            text-align: center;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #333;
+        }
+        
+        .success-title {
+            color: #00ff00;
+            font-size: 24px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+        }
+        
+        .success-mission-name {
+            color: #00ffff;
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+        
+        .success-stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            font-size: 12px;
+            color: #888;
+        }
+        
+        .success-stat {
+            text-align: center;
+        }
+        
+        .success-stat-value {
+            color: #00ff00;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .rewards-section {
+            margin-bottom: 25px;
+        }
+        
+        .rewards-header {
+            color: #ff6600;
+            font-size: 16px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .currency-rewards {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+        }
+        
+        .currency-reward {
+            text-align: center;
+        }
+        
+        .currency-icon {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+        
+        .currency-amount {
+            color: #ffff00;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .currency-label {
+            color: #888;
+            font-size: 10px;
+            text-transform: uppercase;
+        }
+        
+        .item-rewards {
+            margin-top: 20px;
+        }
+        
+        .item-rewards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .reward-item-card {
+            background: rgba(30, 30, 30, 0.8);
+            border: 2px solid #444;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .reward-item-card:hover {
+            transform: translateY(-2px);
+            border-color: #00ffff;
+            background: rgba(0, 255, 255, 0.05);
+        }
+        
+        .reward-item-card.common { border-color: #666; }
+        .reward-item-card.uncommon { border-color: #00ff00; }
+        .reward-item-card.rare { border-color: #0099ff; }
+        .reward-item-card.epic { border-color: #9900ff; }
+        .reward-item-card.legendary { border-color: #ff6600; }
+        .reward-item-card.mythic { border-color: #ff0066; }
+        .reward-item-card.primal { border-color: #00ffff; }
+        
+        .reward-item-icon {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+        
+        .reward-item-name {
+            font-weight: bold;
+            font-size: 11px;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+        }
+        
+        .reward-item-name.common { color: #888; }
+        .reward-item-name.uncommon { color: #00ff00; }
+        .reward-item-name.rare { color: #0099ff; }
+        .reward-item-name.epic { color: #9900ff; }
+        .reward-item-name.legendary { color: #ff6600; }
+        .reward-item-name.mythic { color: #ff0066; }
+        .reward-item-name.primal { color: #00ffff; }
+        
+        .reward-item-type {
+            color: #888;
+            font-size: 9px;
+            text-transform: uppercase;
+        }
+        
+        .new-item-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #00ff00;
+            color: #000;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        .success-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #333;
+        }
+        
+        .success-button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+            font-size: 11px;
+        }
+        
+        .success-button.primary {
+            background: linear-gradient(45deg, #00ffff, #0099cc);
+            color: #000;
+        }
+        
+        .success-button.primary:hover {
+            background: linear-gradient(45deg, #00ccff, #0077aa);
+            transform: translateY(-1px);
+        }
+        
+        .success-button.secondary {
+            background: rgba(40, 40, 40, 0.8);
+            border: 1px solid #666;
+            color: #ccc;
+        }
+        
+        .success-button.secondary:hover {
+            background: rgba(0, 255, 255, 0.2);
+            border-color: #00ffff;
+            color: #00ffff;
+        }
+        
+        /* Responsive Mission Layout */
+        @media (max-width: 1200px) {
+            .mission-container {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .mission-sidebar {
+                order: 2;
+            }
+            
+            .mission-grid {
+                grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            }
+            
+            .item-rewards-grid {
+                grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .mission-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Generic styles for other pages */
+        .placeholder-page {
+            text-align: center;
+            padding: 100px;
+            color: #888;
+        }
+
+        .placeholder-page h2 {
+            color: #00ffff;
+            margin-bottom: 20px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .character-container,
+            .inventory-container {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+        }
+        /* Skills System Styles */
+        .skills-container {
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .skills-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #333;
+        }
+
+        .skills-header h2 {
+            color: #00ffff;
+            font-size: 24px;
+            margin: 0;
+        }
+
+        .skill-points-info {
+            display: flex;
+            gap: 20px;
+            font-size: 14px;
+        }
+
+        .points-available {
+            color: #00ff00;
+            font-weight: bold;
+        }
+
+        .points-total {
+            color: #888;
+        }
+
+        .element-selector {
+            display: flex;
+            gap: 0;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #333;
+        }
+
+        .element-tab {
+            flex: 1;
+            padding: 15px 20px;
+            background: rgba(20, 20, 20, 0.8);
+            border: none;
+            color: #888;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-right: 1px solid #333;
+        }
+
+        .element-tab:last-child {
+            border-right: none;
+        }
+
+        .element-tab.active {
+            background: linear-gradient(45deg, #00ffff, #0099cc);
+            color: #000;
+            font-weight: bold;
+        }
+
+        .element-tab:not(.active):hover {
+            background: rgba(0, 255, 255, 0.1);
+            color: #00ffff;
+        }
+
+        .skill-tree-container {
+            min-height: 600px;
+            position: relative;
+            padding: 20px;
+            background: rgba(10, 10, 10, 0.6);
+            border-radius: 8px;
+        }
+
+        .skill-tree {
+            display: none;
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .tier-section {
+            margin-bottom: 60px;
+            position: relative;
+        }
+
+        .tier-title {
+            color: #ff6600;
+            font-size: 14px;
+            margin-bottom: 30px;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: bold;
+            padding: 8px 16px;
+            background: rgba(255, 102, 0, 0.1);
+            border: 1px solid #ff6600;
+            border-radius: 4px;
+            display: inline-block;
+            position: relative;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .skills-row {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 30px 40px;
+            justify-items: center;
+            margin: 0 auto;
+            max-width: 600px;
+            position: relative;
+        }
+
+        .skill-node {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, #2a2a2a, #1a1a1a);
+            border: 3px solid #444;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            overflow: visible;
+        }
+
+        .skill-node:hover {
+            border-color: #00ffff;
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
+            z-index: 10;
+        }
+
+        .skill-node.locked {
+            opacity: 0.4;
+            cursor: not-allowed;
+            border-color: #333;
+            background: linear-gradient(135deg, #1a1a1a, #0a0a0a);
+        }
+
+        .skill-node.locked:hover {
+            border-color: #333;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .skill-node.invested {
+            border-color: #ffd700;
+            background: linear-gradient(135deg, #4a4a00, #2a2a00);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+
+        .skill-node.available {
+            border-color: #00ff00;
+            background: linear-gradient(135deg, #003300, #001100);
+            animation: available-pulse 2s infinite;
+        }
+
+        @keyframes available-pulse {
+            0%, 100% { box-shadow: 0 0 5px rgba(0, 255, 0, 0.3); }
+            50% { box-shadow: 0 0 15px rgba(0, 255, 0, 0.6); }
+        }
+
+        .skill-icon {
+            font-size: 28px;
+            margin-bottom: 2px;
+            line-height: 1;
+        }
+
+        .skill-name {
+            display: none;
+        }
+
+        .skill-points {
+            color: #00ffff;
+            font-size: 8px;
+            font-weight: bold;
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 1px 3px;
+            border-radius: 2px;
+            min-width: 16px;
+            text-align: center;
+        }
+
+        .skill-node.invested .skill-points {
+            color: #ffd700;
+            background: rgba(0, 0, 0, 0.9);
+        }
+
+        .skill-node.maxed .skill-points {
+            color: #ff6600;
+            background: rgba(255, 102, 0, 0.2);
+        }
+
+        /* Connection Lines */
+        .skill-connection {
+            position: absolute;
+            background: #444;
+            z-index: 1;
+        }
+
+        .skill-connection.active {
+            background: #ffd700;
+            box-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+        }
+
+        .skill-connection.vertical {
+            width: 2px;
+            height: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            top: -30px;
+        }
+
+        .skill-connection.horizontal {
+            height: 2px;
+            width: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            left: -30px;
+        }
+
+        /* Skill Tooltip */
+        .skill-tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.95);
+            border: 2px solid #00ffff;
+            border-radius: 6px;
+            padding: 12px;
+            max-width: 350px;
+            z-index: 1000;
+            pointer-events: none;
+            font-size: 11px;
+            line-height: 1.4;
+            color: #fff;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.8);
+        }
+
+        .skill-tooltip .tooltip-title {
+            color: #00ffff;
+            font-weight: bold;
+            font-size: 13px;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+
+        .skill-tooltip .tooltip-description {
+            color: #ccc;
+            margin-bottom: 8px;
+        }
+
+        .skill-tooltip .tooltip-rank {
+            color: #ffd700;
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+
+        .skill-tooltip .tooltip-effect {
+            color: #00ff00;
+            margin-bottom: 8px;
+            padding: 6px;
+            background: rgba(0, 255, 0, 0.1);
+            border-radius: 4px;
+            border-left: 3px solid #00ff00;
+        }
+
+        .skill-tooltip .tooltip-progression {
+            color: #fff;
+            font-weight: bold;
+            margin: 8px 0 4px 0;
+            padding-top: 6px;
+            border-top: 1px solid #333;
+        }
+
+        .skill-tooltip .tooltip-progression-rank {
+            margin: 3px 0;
+            padding: 4px 6px;
+            border-radius: 3px;
+            font-size: 10px;
+        }
+
+        .skill-tooltip .tooltip-progression-rank.invested-rank {
+            color: #ffd700;
+            background: rgba(255, 215, 0, 0.1);
+            border-left: 3px solid #ffd700;
+        }
+
+        .skill-tooltip .tooltip-progression-rank.current-rank {
+            color: #00ff00;
+            background: rgba(0, 255, 0, 0.2);
+            border-left: 3px solid #00ff00;
+        }
+
+        .skill-tooltip .tooltip-progression-rank.next-rank {
+            color: #00ffff;
+            background: rgba(0, 255, 255, 0.1);
+            border-left: 3px solid #00ffff;
+        }
+
+        .skill-tooltip .tooltip-progression-rank.future-rank {
+            color: #888;
+            background: rgba(40, 40, 40, 0.3);
+            border-left: 3px solid #444;
+        }
+
+        .skill-tooltip .tooltip-requirements {
+            color: #ff6600;
+            font-size: 10px;
+            margin-top: 8px;
+            padding-top: 6px;
+            border-top: 1px solid #333;
+        }
+
+        .skill-tooltip .tooltip-status {
+            margin-top: 8px;
+            padding-top: 6px;
+            border-top: 1px solid #333;
+            font-weight: bold;
+            text-align: center;
+        }
+
+
+        /* Mobile responsiveness for skills */
+        @media (max-width: 768px) {
+            .element-selector {
+                flex-wrap: wrap;
+            }
+
+            .element-tab {
+                flex: 1 1 50%;
+                min-width: 100px;
+                font-size: 10px;
+                padding: 12px 16px;
+            }
+
+            .skill-tree-container {
+                padding: 10px;
+            }
+
+            .skills-row {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 20px 30px;
+                max-width: 400px;
+            }
+
+            .skill-node {
+                width: 48px;
+                height: 48px;
+            }
+
+            .skill-icon {
+                font-size: 20px;
+            }
+
+            .skill-points {
+                font-size: 7px;
+                padding: 1px 2px;
+                min-width: 12px;
+            }
+
+            .tier-title {
+                font-size: 12px;
+                padding: 6px 12px;
+            }
+
+            .tier-section {
+                margin-bottom: 40px;
+            }
+
+            .skill-tooltip {
+                max-width: 280px;
+                font-size: 10px;
+                padding: 10px;
+            }
+
+            .skill-tooltip .tooltip-title {
+                font-size: 11px;
+            }
+
+            .skill-tooltip .tooltip-progression-rank {
+                font-size: 9px;
+                padding: 3px 5px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .skills-row {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px 25px;
+                max-width: 300px;
+            }
+
+            .element-tab {
+                font-size: 9px;
+                padding: 10px 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Header -->
+    <div class="nav-header">
+        <div class="logo">
+            <div class="logo-icon"></div>
+            <div>
+                <div class="user-info">
+                    <span style="color: #ff6600;">USERNAME</span><br>
+                    <span class="user-level">LEVEL 60</span>
+                </div>
+            </div>
+        </div>
+        <div class="user-info">
+            <div><a href="#" class="changelog-link" onclick="showChangelog()">CHANGELOG</a> • V0.3.3 • BUILD: 08.16.2025 15:35 EST</div>
+        </div>
+    </div>
+
+    <!-- Main Navigation -->
+    <div class="main-nav">
+        <div class="nav-tabs">
+            <button class="nav-tab active" data-page="character">CHARACTER</button>
+            <button class="nav-tab" data-page="inventory">INVENTORY</button>
+            <button class="nav-tab" data-page="mission">MISSION</button>
+            <button class="nav-tab" data-page="build-planner">BUILD PLANNER</button>
+            <button class="nav-tab" data-page="market">MARKET</button>
+            <button class="nav-tab" data-page="crafting">CRAFTING</button>
+            <button class="nav-tab" data-page="skills">SKILLS</button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Character Sheet Page -->
+        <div class="page active" id="character">
+            <div class="character-container">
+                <!-- Equipment Panel -->
+                <div class="equipment-panel">
+                    <div class="power-budget">
+                        <div class="power-icon"></div>
+                        <span class="power-value">1850</span>
+                        <span style="color: #888;">/2140</span>
+                    </div>
+                    
+                    <div class="equipment-slots">
+                        <div class="equipment-slot" data-slot="primary" title="Primary Weapon" onclick="showSlotSelection('primary')">🔫</div>
+                        <div class="equipment-slot" data-slot="secondary" title="Secondary Weapon" onclick="showSlotSelection('secondary')">🔫</div>
+                        <div class="equipment-slot" data-slot="head" title="Head" onclick="showSlotSelection('head')">⛑️</div>
+                        <div class="equipment-slot" data-slot="chest" title="Chest" onclick="showSlotSelection('chest')">🛡️</div>
+                        <div class="equipment-slot" data-slot="gloves" title="Gloves" onclick="showSlotSelection('gloves')">🧤</div>
+                        <div class="equipment-slot" data-slot="legs" title="Legs" onclick="showSlotSelection('legs')">👢</div>
+                        <div class="equipment-slot" data-slot="shoulders" title="Shoulders" onclick="showSlotSelection('shoulders')">🔗</div>
+                        <div class="equipment-slot" data-slot="back" title="Back" onclick="showSlotSelection('back')">🎭</div>
+                        <div class="equipment-slot" data-slot="bracers" title="Bracers" onclick="showSlotSelection('bracers')">💪</div>
+                    </div>
+                </div>
+
+                <!-- Character Model -->
+                <div style="background: rgba(20, 20, 20, 0.8); border: 1px solid #333; border-radius: 8px; padding: 40px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                    <div style="width: 200px; height: 300px; background: linear-gradient(45deg, #333, #555); border: 2px solid #00ffff; border-radius: 8px; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; color: #00ffff; font-size: 48px;">
+                        👤
+                    </div>
+                    <div style="color: #00ffff; font-size: 18px; font-weight: bold;">SENTINEL</div>
+                    <div style="color: #888; margin-top: 5px;">Tank Specialist</div>
+                </div>
+
+                <!-- Stats Panel -->
+                <div class="equipment-panel">
+                    <div style="margin-bottom: 20px;">
+                        <div style="color: #00ffff; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; border-bottom: 1px solid #333; padding-bottom: 5px;">Core Stats</div>
+                        <div class="stat-row" data-stat="vigor" style="display: flex; justify-content: space-between; padding: 5px; border-bottom: 1px solid rgba(255, 255, 255, 0.1);"><span style="color: #ccc; font-size: 12px;">VIGOR</span><span style="color: #fff; font-weight: bold;">1460</span></div>
+                        <div class="stat-row" data-stat="focus" style="display: flex; justify-content: space-between; padding: 5px; border-bottom: 1px solid rgba(255, 255, 255, 0.1);"><span style="color: #ccc; font-size: 12px;">FOCUS</span><span style="color: #fff; font-weight: bold;">1345</span></div>
+                        <div class="stat-row" data-stat="force" style="display: flex; justify-content: space-between; padding: 5px; border-bottom: 1px solid rgba(255, 255, 255, 0.1);"><span style="color: #ccc; font-size: 12px;">FORCE</span><span style="color: #fff; font-weight: bold;">4360</span></div>
+                        <div class="stat-row" data-stat="momentum" style="display: flex; justify-content: space-between; padding: 5px; border-bottom: 1px solid rgba(255, 255, 255, 0.1);"><span style="color: #ccc; font-size: 12px;">MOMENTUM</span><span style="color: #fff; font-weight: bold;">6840</span></div>
+                        <div class="stat-row" data-stat="resonance" style="display: flex; justify-content: space-between; padding: 5px; border-bottom: 1px solid rgba(255, 255, 255, 0.1);"><span style="color: #ccc; font-size: 12px;">RESONANCE</span><span style="color: #fff; font-weight: bold;">950</span></div>
+                        <div class="stat-row" data-stat="defense" style="display: flex; justify-content: space-between; padding: 5px; border-bottom: 1px solid rgba(255, 255, 255, 0.1);"><span style="color: #ccc; font-size: 12px;">DEFENSE</span><span style="color: #fff; font-weight: bold;">8500</span></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tooltip for Character Page -->
+            <div class="item-tooltip tooltip-hidden" id="character-tooltip">
+                <div class="tooltip-content"></div>
+            </div>
+            
+            <!-- Empty Slot Popup -->
+            <div class="empty-slot-popup popup-hidden" id="empty-slot-popup">
+                <div class="popup-title">Available Items</div>
+                <div class="popup-items" id="popup-items"></div>
+            </div>
+            
+            <!-- Stats Tooltip -->
+            <div class="stats-tooltip stats-tooltip-hidden" id="stats-tooltip">
+                <div class="stats-tooltip-title" id="stats-tooltip-title">Attribute Name</div>
+                <div class="stats-tooltip-description" id="stats-tooltip-description">Description</div>
+                <div class="secondary-stats" id="secondary-stats"></div>
+            </div>
+        </div>
+
+        <!-- Inventory Page -->
+        <div class="page" id="inventory">
+            <div class="inventory-container">
+                <!-- Inventory Grid -->
+                <div class="inventory-grid">
+                    <div class="inventory-header">
+                        <div class="inventory-title">INVENTORY</div>
+                        <div class="inventory-filter">
+                            <button class="filter-btn active" data-filter="all">ALL</button>
+                            <button class="filter-btn" data-filter="weapon">WEAPONS</button>
+                            <button class="filter-btn" data-filter="armor">ARMOR</button>
+                            <button class="filter-btn" data-filter="legendary">LEGENDARY</button>
+                        </div>
+                    </div>
+                    
+                    <div class="items-grid" id="items-grid">
+                        <!-- Items will be populated by JavaScript -->
+                    </div>
+                </div>
+                
+                <!-- Item Actions Panel -->
+                <div class="item-actions">
+                    <div class="selected-item-details" id="selected-item-details" style="display: none;">
+                        <div class="selected-item-name" id="selected-item-name">No item selected</div>
+                        <div class="selected-item-type" id="selected-item-type"></div>
+                    </div>
+                    
+                    <button class="action-button primary" onclick="equipSelectedItem()" id="equip-btn" disabled>EQUIP ITEM</button>
+                    <button class="action-button" onclick="enhanceSelectedItem()" id="enhance-btn" disabled>ENHANCE</button>
+                    <button class="action-button" onclick="modifySelectedItem()" id="modify-btn" disabled>MODIFY</button>
+                    <button class="action-button" onclick="sellSelectedItem()" id="sell-btn" disabled>SELL</button>
+                    
+                    <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #333;">
+                        <div style="color: #888; font-size: 11px; margin-bottom: 10px;">POWER BUDGET</div>
+                        <div class="power-budget">
+                            <div class="power-icon"></div>
+                            <span class="power-value" id="current-power">1850</span>
+                            <span style="color: #888;">/2140</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tooltip -->
+            <div class="item-tooltip tooltip-hidden" id="item-tooltip">
+                <div class="tooltip-content"></div>
+            </div>
+        </div>
+
+        <!-- Placeholder pages -->
+        <div class="page" id="build-planner">
+            <div class="placeholder-page">
+                <h2>BUILD PLANNER</h2>
+                <p>Equipment optimization and build comparison tools</p>
+            </div>
+        </div>
+
+        <div class="page" id="market">
+            <div class="placeholder-page">
+                <h2>MARKET</h2>
+                <p>Item trading and marketplace</p>
+            </div>
+        </div>
+
+        <div class="page" id="mission">
+            <div class="mission-container">
+                <!-- Mission Categories Sidebar -->
+                <div class="mission-sidebar">
+                    <div class="mission-category-header">
+                        <h3>MISSION TYPES</h3>
+                    </div>
+                    <div class="mission-categories">
+                        <div class="mission-category active" data-category="patrol">
+                            <div class="category-icon">🔍</div>
+                            <div class="category-info">
+                                <div class="category-name">PATROL</div>
+                                <div class="category-time">15-30 min</div>
+                            </div>
+                        </div>
+                        <div class="mission-category" data-category="horde">
+                            <div class="category-icon">⚡</div>
+                            <div class="category-info">
+                                <div class="category-name">HORDE</div>
+                                <div class="category-time">45-90 min</div>
+                            </div>
+                        </div>
+                        <div class="mission-category" data-category="expedition">
+                            <div class="category-icon">🚀</div>
+                            <div class="category-info">
+                                <div class="category-name">EXPEDITION</div>
+                                <div class="category-time">2-4 hours</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="weekly-affixes">
+                        <h4>WEEKLY AFFIXES</h4>
+                        <div class="affix-list">
+                            <div class="affix-item">
+                                <span class="affix-icon">❄️</span>
+                                <span class="affix-name">Frozen Ground</span>
+                            </div>
+                            <div class="affix-item">
+                                <span class="affix-icon">⚡</span>
+                                <span class="affix-name">Electric Storm</span>
+                            </div>
+                            <div class="affix-item">
+                                <span class="affix-icon">🔥</span>
+                                <span class="affix-name">Scorched Earth</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Mission Selection Area -->
+                <div class="mission-main">
+                    <div class="mission-header">
+                        <h2>AVAILABLE MISSIONS</h2>
+                        <div class="mission-stats">
+                            <span>Power Budget: <strong class="power-value">1850</strong>/2140</span>
+                            <span>Success Rate: <strong style="color: #00ff00;">87%</strong></span>
+                        </div>
+                    </div>
+                    
+                    <div class="mission-grid" id="mission-grid">
+                        <!-- Missions will be populated by JavaScript -->
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+
+        <!-- Mission Success Modal -->
+        <div class="mission-success-overlay hidden" id="mission-success-overlay">
+            <div class="mission-success-modal">
+                <div class="success-header">
+                    <div class="success-title">MISSION SUCCESS</div>
+                    <div class="success-mission-name" id="success-mission-name">Mission Name</div>
+                    <div class="success-stats">
+                        <div class="success-stat">
+                            <div class="success-stat-value" id="success-duration">--</div>
+                            <div>Duration</div>
+                        </div>
+                        <div class="success-stat">
+                            <div class="success-stat-value" id="success-efficiency">--</div>
+                            <div>Efficiency</div>
+                        </div>
+                        <div class="success-stat">
+                            <div class="success-stat-value" id="success-rating">--</div>
+                            <div>Rating</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="rewards-section">
+                    <div class="rewards-header">MISSION REWARDS</div>
+                    
+                    <div class="currency-rewards">
+                        <div class="currency-reward">
+                            <div class="currency-icon">💰</div>
+                            <div class="currency-amount" id="reward-credits">0</div>
+                            <div class="currency-label">Credits</div>
+                        </div>
+                        <div class="currency-reward">
+                            <div class="currency-icon">⭐</div>
+                            <div class="currency-amount" id="reward-xp">0</div>
+                            <div class="currency-label">Experience</div>
+                        </div>
+                        <div class="currency-reward">
+                            <div class="currency-icon">🎯</div>
+                            <div class="currency-amount" id="reward-reputation">+25</div>
+                            <div class="currency-label">Reputation</div>
+                        </div>
+                    </div>
+                    
+                    <div class="item-rewards">
+                        <div style="color: #00ffff; font-size: 14px; font-weight: bold; text-align: center; margin-bottom: 10px;">ITEM DROPS</div>
+                        <div class="item-rewards-grid" id="item-rewards-grid">
+                            <!-- Item rewards will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="success-actions">
+                    <button class="success-button secondary" onclick="viewInventory()">VIEW INVENTORY</button>
+                    <button class="success-button primary" onclick="closeMissionSuccess()">CONTINUE</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="page" id="crafting">
+            <div class="placeholder-page">
+                <h2>CRAFTING</h2>
+                <p>Item enhancement and modification</p>
+            </div>
+        </div>
+
+        <div class="page" id="skills">
+            <div class="skills-container">
+                <div class="skills-header">
+                    <h2>ELEMENTAL SKILLS</h2>
+                    <div class="skill-points-info">
+                        <span class="points-available">Skill Points: <span id="availablePoints">15</span></span>
+                        <span class="points-total">Total: <span id="totalPoints">60</span></span>
+                    </div>
+                </div>
+
+                <div class="element-selector">
+                    <button class="element-tab active" data-element="fire">🔥 FIRE</button>
+                    <button class="element-tab" data-element="ice">❄️ ICE</button>
+                    <button class="element-tab" data-element="electric">⚡ ELECTRIC</button>
+                    <button class="element-tab" data-element="earth">🌍 EARTH</button>
+                    <button class="element-tab" data-element="nature">🌿 NATURE</button>
+                </div>
+
+                <div class="skill-tree-container">
+                    <!-- Fire Skill Tree -->
+                    <div class="skill-tree" id="fire-tree" style="display: block;">
+                        <div class="tier-section">
+                            <h3 class="tier-title">TIER 1 - IGNITION FOUNDATION</h3>
+                            <div class="skills-row">
+                                <div class="skill-node" data-skill="combustion-mastery" style="grid-column: 1;">
+                                    <div class="skill-icon">🔥</div>
+                                    <div class="skill-points">0/3</div>
+                                </div>
+                                <div class="skill-node" data-skill="flame-weapon" style="grid-column: 3;">
+                                    <div class="skill-icon">⚔️</div>
+                                    <div class="skill-points">0/5</div>
+                                </div>
+                                <div class="skill-node" data-skill="heat-resistance" style="grid-column: 5;">
+                                    <div class="skill-icon">🛡️</div>
+                                    <div class="skill-points">0/2</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tier-section">
+                            <h3 class="tier-title">TIER 2 - INFERNO SPECIALIZATION</h3>
+                            <div class="skills-row">
+                                <div class="skill-node locked" data-skill="fireball" style="grid-column: 1;" data-requires="combustion-mastery">
+                                    <div class="skill-connection vertical"></div>
+                                    <div class="skill-icon">💥</div>
+                                    <div class="skill-points">0/3</div>
+                                </div>
+                                <div class="skill-node locked" data-skill="flame-wall" style="grid-column: 3;" data-requires="flame-weapon">
+                                    <div class="skill-connection vertical"></div>
+                                    <div class="skill-icon">🧱</div>
+                                    <div class="skill-points">0/4</div>
+                                </div>
+                                <div class="skill-node locked" data-skill="burning-ground" style="grid-column: 5;" data-requires="heat-resistance">
+                                    <div class="skill-connection vertical"></div>
+                                    <div class="skill-icon">🌋</div>
+                                    <div class="skill-points">0/3</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tier-section">
+                            <h3 class="tier-title">TIER 3 - CONFLAGRATION MASTERY</h3>
+                            <div class="skills-row">
+                                <div class="skill-node locked" data-skill="phoenix-surge" style="grid-column: 2;" data-requires="fireball,flame-wall">
+                                    <div class="skill-connection vertical"></div>
+                                    <div class="skill-icon">🔥</div>
+                                    <div class="skill-points">0/5</div>
+                                </div>
+                                <div class="skill-node locked" data-skill="fire-combination" style="grid-column: 4;" data-requires="flame-wall,burning-ground">
+                                    <div class="skill-connection vertical"></div>
+                                    <div class="skill-icon">⚡</div>
+                                    <div class="skill-points">0/2</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ice Skill Tree -->
+                    <div class="skill-tree" id="ice-tree" style="display: none;">
+                        <div class="tier-section">
+                            <h3 class="tier-title">TIER 1 - FROST FOUNDATION</h3>
+                            <div class="skills-row">
+                                <div class="skill-node" data-skill="cryogenic-mastery" style="grid-column: 1;">
+                                    <div class="skill-icon">❄️</div>
+                                    <div class="skill-points">0/3</div>
+                                </div>
+                                <div class="skill-node" data-skill="frost-weapon" style="grid-column: 3;">
+                                    <div class="skill-icon">⚔️</div>
+                                    <div class="skill-points">0/5</div>
+                                </div>
+                                <div class="skill-node" data-skill="cold-resistance" style="grid-column: 5;">
+                                    <div class="skill-icon">🛡️</div>
+                                    <div class="skill-points">0/2</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tier-section">
+                            <h3 class="tier-title">TIER 2 - BLIZZARD SPECIALIZATION</h3>
+                            <div class="skills-row">
+                                <div class="skill-node locked" data-skill="ice-shard" style="grid-column: 1;">
+                                    <div class="skill-connection vertical"></div>
+                                    <div class="skill-icon">🧊</div>
+                                    <div class="skill-points">0/3</div>
+                                </div>
+                                <div class="skill-node locked" data-skill="ice-barrier" style="grid-column: 3;">
+                                    <div class="skill-connection vertical"></div>
+                                    <div class="skill-icon">🧱</div>
+                                    <div class="skill-points">0/4</div>
+                                </div>
+                                <div class="skill-node locked" data-skill="frozen-zone" style="grid-column: 5;">
+                                    <div class="skill-connection vertical"></div>
+                                    <div class="skill-icon">🌀</div>
+                                    <div class="skill-points">0/3</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tier-section">
+                            <h3 class="tier-title">TIER 3 - ABSOLUTE ZERO MASTERY</h3>
+                            <div class="skills-row">
+                                <div class="skill-node locked" data-skill="winters-embrace" style="grid-column: 2;">
+                                    <div class="skill-connection vertical"></div>
+                                    <div class="skill-icon">❄️</div>
+                                    <div class="skill-points">0/5</div>
+                                </div>
+                                <div class="skill-node locked" data-skill="ice-combination" style="grid-column: 4;">
+                                    <div class="skill-connection vertical"></div>
+                                    <div class="skill-icon">⚡</div>
+                                    <div class="skill-points">0/2</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Electric Skill Tree -->
+                    <div class="skill-tree" id="electric-tree" style="display: none;">
+                        <div class="tier-section">
+                            <h3 class="tier-title">TIER 1 - CURRENT FOUNDATION</h3>
+                            <div class="skills-row">
+                                <div class="skill-node" data-skill="electrical-mastery">
+                                    <div class="skill-icon">⚡</div>
+                                    <div class="skill-name">Electrical Mastery</div>
+                                    <div class="skill-points">0/3</div>
+                                </div>
+                                <div class="skill-node" data-skill="shock-weapon">
+                                    <div class="skill-icon">⚔️</div>
+                                    <div class="skill-name">Shock Weapon</div>
+                                    <div class="skill-points">0/5</div>
+                                </div>
+                                <div class="skill-node" data-skill="conductivity">
+                                    <div class="skill-icon">🛡️</div>
+                                    <div class="skill-name">Conductivity</div>
+                                    <div class="skill-points">0/2</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tier-section">
+                            <h3 class="tier-title">TIER 2 - STORM SPECIALIZATION</h3>
+                            <div class="skills-row">
+                                <div class="skill-node locked" data-skill="lightning-bolt">
+                                    <div class="skill-icon">⚡</div>
+                                    <div class="skill-name">Lightning Bolt</div>
+                                    <div class="skill-points">0/3</div>
+                                </div>
+                                <div class="skill-node locked" data-skill="tesla-coil">
+                                    <div class="skill-icon">🔌</div>
+                                    <div class="skill-name">Tesla Coil</div>
+                                    <div class="skill-points">0/4</div>
+                                </div>
+                                <div class="skill-node locked" data-skill="electric-field">
+                                    <div class="skill-icon">⚡</div>
+                                    <div class="skill-name">Electric Field</div>
+                                    <div class="skill-points">0/3</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tier-section">
+                            <h3 class="tier-title">TIER 3 - TEMPEST MASTERY</h3>
+                            <div class="skills-row">
+                                <div class="skill-node locked" data-skill="storm-lord">
+                                    <div class="skill-icon">🌩️</div>
+                                    <div class="skill-name">Storm Lord</div>
+                                    <div class="skill-points">0/5</div>
+                                </div>
+                                <div class="skill-node locked" data-skill="electric-combination">
+                                    <div class="skill-icon">⚡</div>
+                                    <div class="skill-name">Combination Mastery</div>
+                                    <div class="skill-points">0/2</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Earth Skill Tree -->
+                    <div class="skill-tree" id="earth-tree" style="display: none;">
+                        <div class="tier-section">
+                            <h3 class="tier-title">TIER 1 - STONE FOUNDATION</h3>
+                            <div class="skills-row">
+                                <div class="skill-node" data-skill="geological-mastery">
+                                    <div class="skill-icon">🌍</div>
+                                    <div class="skill-name">Geological Mastery</div>
+                                    <div class="skill-points">0/3</div>
+                                </div>
+                                <div class="skill-node" data-skill="stone-weapon">
+                                    <div class="skill-icon">⚔️</div>
+                                    <div class="skill-name">Stone Weapon</div>
+                                    <div class="skill-points">0/5</div>
+                                </div>
+                                <div class="skill-node" data-skill="seismic-stability">
+                                    <div class="skill-icon">🛡️</div>
+                                    <div class="skill-name">Seismic Stability</div>
+                                    <div class="skill-points">0/2</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tier-section">
+                            <h3 class="tier-title">TIER 2 - TERRAIN SPECIALIZATION</h3>
+                            <div class="skills-row">
+                                <div class="skill-node locked" data-skill="earth-spike">
+                                    <div class="skill-icon">⛰️</div>
+                                    <div class="skill-name">Earth Spike</div>
+                                    <div class="skill-points">0/3</div>
+                                </div>
+                                <div class="skill-node locked" data-skill="stone-wall">
+                                    <div class="skill-icon">🧱</div>
+                                    <div class="skill-name">Stone Wall</div>
+                                    <div class="skill-points">0/4</div>
+                                </div>
+                                <div class="skill-node locked" data-skill="earthquake">
+                                    <div class="skill-icon">🌋</div>
+                                    <div class="skill-name">Earthquake</div>
+                                    <div class="skill-points">0/3</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tier-section">
+                            <h3 class="tier-title">TIER 3 - TECTONIC MASTERY</h3>
+                            <div class="skills-row">
+                                <div class="skill-node locked" data-skill="mountains-fury">
+                                    <div class="skill-icon">⛰️</div>
+                                    <div class="skill-name">Mountain's Fury</div>
+                                    <div class="skill-points">0/5</div>
+                                </div>
+                                <div class="skill-node locked" data-skill="earth-combination">
+                                    <div class="skill-icon">⚡</div>
+                                    <div class="skill-name">Combination Mastery</div>
+                                    <div class="skill-points">0/2</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Nature Skill Tree -->
+                    <div class="skill-tree" id="nature-tree" style="display: none;">
+                        <div class="tier-section">
+                            <h3 class="tier-title">TIER 1 - GROWTH FOUNDATION</h3>
+                            <div class="skills-row">
+                                <div class="skill-node" data-skill="natural-mastery">
+                                    <div class="skill-icon">🌿</div>
+                                    <div class="skill-name">Natural Mastery</div>
+                                    <div class="skill-points">0/3</div>
+                                </div>
+                                <div class="skill-node" data-skill="living-weapon">
+                                    <div class="skill-icon">⚔️</div>
+                                    <div class="skill-name">Living Weapon</div>
+                                    <div class="skill-points">0/5</div>
+                                </div>
+                                <div class="skill-node" data-skill="natural-resistance">
+                                    <div class="skill-icon">🛡️</div>
+                                    <div class="skill-name">Natural Resistance</div>
+                                    <div class="skill-points">0/2</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tier-section">
+                            <h3 class="tier-title">TIER 2 - VERDANT SPECIALIZATION</h3>
+                            <div class="skills-row">
+                                <div class="skill-node locked" data-skill="healing-burst">
+                                    <div class="skill-icon">💚</div>
+                                    <div class="skill-name">Healing Burst</div>
+                                    <div class="skill-points">0/3</div>
+                                </div>
+                                <div class="skill-node locked" data-skill="thorn-barrier">
+                                    <div class="skill-icon">🌹</div>
+                                    <div class="skill-name">Thorn Barrier</div>
+                                    <div class="skill-points">0/4</div>
+                                </div>
+                                <div class="skill-node locked" data-skill="natures-blessing">
+                                    <div class="skill-icon">✨</div>
+                                    <div class="skill-name">Nature's Blessing</div>
+                                    <div class="skill-points">0/3</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tier-section">
+                            <h3 class="tier-title">TIER 3 - PRIMAL MASTERY</h3>
+                            <div class="skills-row">
+                                <div class="skill-node locked" data-skill="world-tree">
+                                    <div class="skill-icon">🌳</div>
+                                    <div class="skill-name">World Tree</div>
+                                    <div class="skill-points">0/5</div>
+                                </div>
+                                <div class="skill-node locked" data-skill="nature-combination">
+                                    <div class="skill-icon">⚡</div>
+                                    <div class="skill-name">Combination Mastery</div>
+                                    <div class="skill-points">0/2</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game Data
+        let gameData = {
+            selectedItem: null,
+            equippedItems: {
+                primary: null,
+                secondary: null,
+                head: null,
+                shoulders: null,
+                chest: null,
+                gloves: null,
+                legs: null,
+                back: null,
+                bracers: null
+            },
+            playerLevel: 60,
+            paragonLevel: 40,
+            skillPoints: {
+                available: 15,
+                total: 60,
+                invested: {}
+            }
+        };
+
+        // Item Database - loaded from JSON
+        let itemDatabase = {};
+
+        // Power Budget Calculations
+        function calculateItemPowerCost(item) {
+            const rarityMultipliers = {
+                'common': 1.3,
+                'uncommon': 1.15,
+                'rare': 1.0,
+                'epic': 0.9,
+                'legendary': 0.8,
+                'mythic': 0.8,
+                'primal': 0.75
+            };
+            return Math.floor(item.powerCost * rarityMultipliers[item.rarity]);
+        }
+
+        function getPlayerMaxPowerBudget() {
+            return 100 + (gameData.playerLevel * 20) + gameData.paragonLevel;
+        }
+
+        // Load Items from JSON
+        async function loadItems() {
+            try {
+                const response = await fetch('./items.json');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                
+                // Combine weapons and armor into a single itemDatabase
+                itemDatabase = { ...data.weapons, ...data.armor };
+                
+                console.log(`Loaded ${Object.keys(itemDatabase).length} items from items.json`);
+                return true;
+            } catch (error) {
+                console.error('Error loading items:', error);
+                console.error('Error details:', error.message);
+                // Fallback to empty database
+                itemDatabase = {};
+                return false;
+            }
+        }
+
+        // Navigation System
+        function initNavigation() {
+            const navTabs = document.querySelectorAll('.nav-tab');
+            const pages = document.querySelectorAll('.page');
+
+            navTabs.forEach(tab => {
+                tab.addEventListener('click', async () => {
+                    const targetPage = tab.dataset.page;
+                    
+                    // Update active tab
+                    navTabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    
+                    // Update active page
+                    pages.forEach(page => page.classList.remove('active'));
+                    document.getElementById(targetPage).classList.add('active');
+                    
+                    // Initialize inventory if switching to inventory page
+                    if (targetPage === 'inventory') {
+                        // Load items if not already loaded
+                        if (Object.keys(itemDatabase).length === 0) {
+                            const loaded = await loadItems();
+                            if (!loaded) {
+                                document.getElementById('items-grid').innerHTML = 
+                                    '<div style="grid-column: 1/-1; text-align: center; color: #ff4444; padding: 20px;">Error loading items. Please check browser console for details.<br><br>Make sure you\'re accessing the demo via a web server (not file:// protocol).</div>';
+                                return;
+                            }
+                        }
+                        populateInventory();
+                    }
+                    
+                    // Initialize mission system if switching to mission page
+                    if (targetPage === 'mission') {
+                        initMissionSystem();
+                    }
+                });
+            });
+        }
+
+        // Inventory System
+        function populateInventory() {
+            const itemsGrid = document.getElementById('items-grid');
+            itemsGrid.innerHTML = '';
+            
+            Object.values(itemDatabase).forEach(item => {
+                const itemSlot = createItemSlot(item);
+                itemsGrid.appendChild(itemSlot);
+            });
+            
+            // Initialize filter buttons
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    filterItems(btn.dataset.filter);
+                });
+            });
+        }
+
+        function createItemSlot(item) {
+            const slot = document.createElement('div');
+            slot.className = `item-slot ${item.rarity}`;
+            slot.dataset.itemId = item.id;
+            slot.innerHTML = `
+                ${item.icon}
+                <div class="item-corner-indicator ${item.type}"></div>
+            `;
+            
+            slot.addEventListener('click', () => selectItem(item));
+            slot.addEventListener('mouseenter', (e) => showTooltip(e, item));
+            slot.addEventListener('mouseleave', hideTooltip);
+            slot.addEventListener('mousemove', moveTooltip);
+            
+            return slot;
+        }
+
+        function selectItem(item) {
+            gameData.selectedItem = item;
+            
+            // Update visual selection
+            document.querySelectorAll('.item-slot').forEach(slot => {
+                slot.classList.remove('selected');
+            });
+            document.querySelector(`[data-item-id="${item.id}"]`).classList.add('selected');
+            
+            // Update item details panel
+            const detailsPanel = document.getElementById('selected-item-details');
+            const itemName = document.getElementById('selected-item-name');
+            const itemType = document.getElementById('selected-item-type');
+            
+            detailsPanel.style.display = 'block';
+            itemName.textContent = item.name;
+            itemName.className = `selected-item-name ${item.rarity}`;
+            itemType.textContent = `${item.type.toUpperCase()} - ${item.subtype.toUpperCase()}`;
+            
+            // Enable action buttons
+            const buttons = ['equip-btn', 'enhance-btn', 'modify-btn', 'sell-btn'];
+            buttons.forEach(btnId => {
+                document.getElementById(btnId).disabled = false;
+            });
+        }
+
+        function filterItems(filter) {
+            const itemSlots = document.querySelectorAll('.item-slot');
+            
+            itemSlots.forEach(slot => {
+                const itemId = slot.dataset.itemId;
+                const item = itemDatabase[itemId];
+                let show = true;
+                
+                if (filter === 'weapon' && item.type !== 'weapon') show = false;
+                if (filter === 'armor' && item.type !== 'armor') show = false;
+                if (filter === 'legendary' && !['legendary', 'mythic', 'primal'].includes(item.rarity)) show = false;
+                
+                slot.style.display = show ? 'flex' : 'none';
+            });
+        }
+
+        // Tooltip System
+        function showTooltip(event, item) {
+            // Use character page tooltip if on character page, otherwise use inventory tooltip
+            const currentPage = document.querySelector('.page.active').id;
+            const tooltip = currentPage === 'character' ? 
+                document.getElementById('character-tooltip') : 
+                document.getElementById('item-tooltip');
+            const powerCost = calculateItemPowerCost(item);
+            const efficiency = ((item.powerCost / powerCost) * 100).toFixed(0);
+            
+            let content = `
+                <div class="tooltip-item-name ${item.rarity}">${item.name}</div>
+                <div class="tooltip-item-type">${item.type} - ${item.subtype}</div>
+                <div class="tooltip-stats">
+            `;
+            
+            Object.entries(item.stats).forEach(([statName, value]) => {
+                const displayName = statName.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                content += `
+                    <div class="tooltip-stat">
+                        <span class="tooltip-stat-name">${displayName}</span>
+                        <span class="tooltip-stat-value">+${value}</span>
+                    </div>
+                `;
+            });
+            
+            content += `
+                </div>
+                <div class="tooltip-section">
+                    <div class="tooltip-power-cost">
+                        <div class="tooltip-power-icon"></div>
+                        <span class="tooltip-power-text">${powerCost} Power Cost</span>
+                    </div>
+                    <div class="tooltip-efficiency">Efficiency: ${efficiency}% (${item.rarity})</div>
+                </div>
+                <div class="tooltip-section">
+                    <div style="color: #ccc; font-style: italic;">${item.description}</div>
+                </div>
+            `;
+            
+            tooltip.innerHTML = content;
+            tooltip.className = 'item-tooltip';
+            moveTooltip(event);
+        }
+
+        function hideTooltip() {
+            // Hide both tooltips to ensure clean state
+            document.getElementById('item-tooltip').className = 'item-tooltip tooltip-hidden';
+            const characterTooltip = document.getElementById('character-tooltip');
+            if (characterTooltip) {
+                characterTooltip.className = 'item-tooltip tooltip-hidden';
+            }
+        }
+
+        function moveTooltip(event) {
+            // Move the active tooltip based on current page
+            const currentPage = document.querySelector('.page.active').id;
+            const tooltip = currentPage === 'character' ? 
+                document.getElementById('character-tooltip') : 
+                document.getElementById('item-tooltip');
+                
+            let x = event.clientX + 10;
+            let y = event.clientY + 10;
+            
+            if (x + 350 > window.innerWidth) x = event.clientX - 360;
+            if (y + 200 > window.innerHeight) y = event.clientY - 210;
+            
+            tooltip.style.left = x + 'px';
+            tooltip.style.top = y + 'px';
+        }
+
+        // Item Actions
+        function equipSelectedItem() {
+            if (!gameData.selectedItem) return;
+            const item = gameData.selectedItem;
+            
+            // Update equipped items
+            gameData.equippedItems[item.slot] = item;
+            
+            // Update character page equipment slot
+            updateEquipmentSlot(item.slot, item);
+            
+            // Update power budget
+            updatePowerBudget();
+            
+            alert(`Equipped ${item.name} to ${item.slot} slot!`);
+        }
+        
+        function updateEquipmentSlot(slot, item) {
+            const slotElement = document.querySelector(`[data-slot="${slot}"]`);
+            if (slotElement) {
+                slotElement.classList.add('equipped');
+                slotElement.innerHTML = item.icon;
+                slotElement.title = `${item.name} (${item.rarity})`;
+                
+                // Remove existing event listeners to prevent duplicates
+                slotElement.replaceWith(slotElement.cloneNode(true));
+                const newSlotElement = document.querySelector(`[data-slot="${slot}"]`);
+                
+                // Re-add click handler for slot selection
+                newSlotElement.addEventListener('click', () => showSlotSelection(slot));
+                
+                // Add tooltip events for equipped items
+                newSlotElement.addEventListener('mouseenter', (e) => showTooltip(e, item));
+                newSlotElement.addEventListener('mouseleave', hideTooltip);
+                newSlotElement.addEventListener('mousemove', moveTooltip);
+            }
+        }
+        
+        function updatePowerBudget() {
+            let totalPower = 0;
+            Object.values(gameData.equippedItems).forEach(item => {
+                if (item) {
+                    totalPower += calculateItemPowerCost(item);
+                }
+            });
+            
+            // Update power display on both character and inventory pages
+            const powerElements = document.querySelectorAll('.power-value');
+            powerElements.forEach(el => {
+                el.textContent = totalPower;
+            });
+        }
+        
+        function showSlotSelection(slot) {
+            if (Object.keys(itemDatabase).length === 0) {
+                alert('Items not loaded. Please visit the inventory page first.');
+                return;
+            }
+            
+            // Find items for this slot
+            const slotItems = Object.values(itemDatabase).filter(item => item.slot === slot);
+            
+            if (slotItems.length === 0) {
+                alert(`No items available for ${slot} slot.`);
+                return;
+            }
+            
+            // Create selection UI
+            let selectionHTML = `Select ${slot} equipment:\n\n`;
+            slotItems.forEach((item, index) => {
+                selectionHTML += `${index + 1}. ${item.name} (${item.rarity})\n`;
+            });
+            
+            const selection = prompt(selectionHTML + '\nEnter item number:');
+            const itemIndex = parseInt(selection) - 1;
+            
+            if (itemIndex >= 0 && itemIndex < slotItems.length) {
+                const selectedItem = slotItems[itemIndex];
+                gameData.equippedItems[slot] = selectedItem;
+                updateEquipmentSlot(slot, selectedItem);
+                updatePowerBudget();
+                alert(`Equipped ${selectedItem.name}!`);
+            }
+        }
+
+        function enhanceSelectedItem() {
+            if (!gameData.selectedItem) return;
+            alert(`Enhancement system not yet implemented for ${gameData.selectedItem.name}`);
+        }
+
+        function modifySelectedItem() {
+            if (!gameData.selectedItem) return;
+            alert(`Modification system not yet implemented for ${gameData.selectedItem.name}`);
+        }
+
+        function sellSelectedItem() {
+            if (!gameData.selectedItem) return;
+            const item = gameData.selectedItem;
+            const value = Math.floor(calculateItemPowerCost(item) * 0.6);
+            
+            if (confirm(`Sell ${item.name} for ${value} credits?`)) {
+                document.querySelector(`[data-item-id="${item.id}"]`).style.display = 'none';
+                gameData.selectedItem = null;
+                document.getElementById('selected-item-details').style.display = 'none';
+                alert(`Sold ${item.name} for ${value} credits`);
+            }
+        }
+
+        // Changelog System
+        function showChangelog() {
+            alert('Changelog v0.3.1 - August 16, 2025\\n\\n📋 CHANGELOG SYSTEM RELEASE\\n\\n• Interactive Changelog accessible via clickable header link\\n• Version History Tracking with detailed release notes\\n• Automatic Timestamps for development progress tracking\\n• Markdown Documentation system for maintaining change history\\n\\nPrevious Release (v0.3.0):\\n🎒 INVENTORY SYSTEM with 20+ items, Power Budget Integration, Interactive Tooltips, Advanced Filtering, and Item Management\\n\\nSee CHANGELOG.md for complete version history');
+        }
+
+        // Empty Slot Popup System
+        function showEmptySlotPopup(event, slot) {
+            if (Object.keys(itemDatabase).length === 0) {
+                return; // No items loaded yet
+            }
+            
+            const popup = document.getElementById('empty-slot-popup');
+            const popupItems = document.getElementById('popup-items');
+            const title = popup.querySelector('.popup-title');
+            
+            // Find items for this slot
+            const slotItems = Object.values(itemDatabase).filter(item => item.slot === slot);
+            
+            if (slotItems.length === 0) {
+                return; // No items for this slot
+            }
+            
+            title.textContent = `Available ${slot.toUpperCase()} Items`;
+            
+            // Clear previous items
+            popupItems.innerHTML = '';
+            
+            // Sort items by rarity (rarest first)
+            const rarityOrder = ['primal', 'mythic', 'legendary', 'epic', 'rare', 'uncommon', 'common'];
+            slotItems.sort((a, b) => rarityOrder.indexOf(a.rarity) - rarityOrder.indexOf(b.rarity));
+            
+            // Create item list
+            slotItems.forEach(item => {
+                const itemElement = document.createElement('div');
+                itemElement.className = 'popup-item';
+                itemElement.innerHTML = `
+                    <div class="popup-item-icon">${item.icon}</div>
+                    <div class="popup-item-name ${item.rarity}">${item.name}</div>
+                `;
+                
+                itemElement.addEventListener('click', () => {
+                    equipItemToSlot(item, slot);
+                    hideEmptySlotPopup();
+                });
+                
+                popupItems.appendChild(itemElement);
+            });
+            
+            popup.className = 'empty-slot-popup';
+            moveEmptySlotPopup(event);
+        }
+        
+        function hideEmptySlotPopup() {
+            document.getElementById('empty-slot-popup').className = 'empty-slot-popup popup-hidden';
+        }
+        
+        function moveEmptySlotPopup(event) {
+            const popup = document.getElementById('empty-slot-popup');
+            let x = event.clientX + 10;
+            let y = event.clientY + 10;
+            
+            if (x + 300 > window.innerWidth) x = event.clientX - 310;
+            if (y + 200 > window.innerHeight) y = event.clientY - 210;
+            
+            popup.style.left = x + 'px';
+            popup.style.top = y + 'px';
+        }
+        
+        function equipItemToSlot(item, slot) {
+            gameData.equippedItems[slot] = item;
+            updateEquipmentSlot(slot, item);
+            updatePowerBudget();
+        }
+        
+        // Stats Tooltip System
+        const statDefinitions = {
+            vigor: {
+                name: "VIGOR",
+                description: "Health and Endurance - Your character's vitality and ability to withstand damage",
+                secondaryStats: [
+                    { name: "Health Points", formula: "10 + (Vigor × 3)", value: 4390 },
+                    { name: "Health Regeneration", formula: "0.5% + (Vigor × 0.1%)", value: "146.5%" },
+                    { name: "Stamina", formula: "50 + (Vigor × 2)", value: 2970 },
+                    { name: "Stamina Regeneration", formula: "2 + (Vigor × 0.2)", value: 294 },
+                    { name: "Status Effect Resistance", formula: "Vigor × 0.5%", value: "730%" }
+                ]
+            },
+            focus: {
+                name: "FOCUS",
+                description: "Mental Acuity and Precision - Enhances accuracy, critical hits, and ability power",
+                secondaryStats: [
+                    { name: "Ability Power", formula: "Focus × 1.5", value: 2018 },
+                    { name: "Critical Hit Chance", formula: "Focus × 0.1%", value: "134.5%" },
+                    { name: "Accuracy", formula: "50 + (Focus × 0.3)", value: 454 },
+                    { name: "Energy Points", formula: "20 + (Focus × 1.5)", value: 2038 },
+                    { name: "Energy Regeneration", formula: "1 + (Focus × 0.15)", value: 202 }
+                ]
+            },
+            force: {
+                name: "FORCE",
+                description: "Physical Power and Impact - Determines weapon damage and physical capabilities",
+                secondaryStats: [
+                    { name: "Weapon Damage", formula: "Force × 1.2", value: 5232 },
+                    { name: "Melee Damage", formula: "Force × 2.0", value: 8720 },
+                    { name: "Knockback Power", formula: "Force × 0.1", value: 436 },
+                    { name: "Carry Capacity", formula: "50 + (Force × 5)", value: 21850 },
+                    { name: "Equipment Requirements", formula: "Minimum Force needed", value: "Met" }
+                ]
+            },
+            momentum: {
+                name: "MOMENTUM",
+                description: "Speed and Agility - Controls movement speed, attack speed, and reaction time",
+                secondaryStats: [
+                    { name: "Movement Speed", formula: "100 + (Momentum × 0.5)", value: 3520 },
+                    { name: "Attack Speed", formula: "100 + (Momentum × 0.3)", value: 2152 },
+                    { name: "Reload Speed", formula: "100 + (Momentum × 0.4)", value: 2836 },
+                    { name: "Dodge Chance", formula: "Momentum × 0.15%", value: "1026%" },
+                    { name: "Action Speed", formula: "100 + (Momentum × 0.2)", value: 1468 }
+                ]
+            },
+            resonance: {
+                name: "RESONANCE",
+                description: "Elemental Affinity - Amplifies elemental damage and status effects",
+                secondaryStats: [
+                    { name: "Elemental Damage", formula: "Resonance × 1.8", value: 1710 },
+                    { name: "Status Effect Duration", formula: "100 + (Resonance × 2)%", value: "1900%" },
+                    { name: "Elemental Resistance", formula: "Resonance × 0.3%", value: "285%" },
+                    { name: "Combination Effectiveness", formula: "Resonance × 0.25%", value: "237.5%" },
+                    { name: "Energy Efficiency", formula: "100 - (Resonance × 0.1)%", value: "5%" }
+                ]
+            },
+            defense: {
+                name: "DEFENSE",
+                description: "Damage Reduction and Protection - Reduces incoming damage and enhances survivability",
+                secondaryStats: [
+                    { name: "Damage Reduction", formula: "Defense × 0.8%", value: "6800%" },
+                    { name: "Shield Capacity", formula: "Defense × 3", value: 25500 },
+                    { name: "Shield Regeneration", formula: "Defense × 0.2", value: 1700 },
+                    { name: "Armor Rating", formula: "Defense × 1.5", value: 12750 },
+                    { name: "Crowd Control Resistance", formula: "Defense × 0.4%", value: "3400%" }
+                ]
+            }
+        };
+        
+        function showStatsTooltip(event, statType) {
+            const tooltip = document.getElementById('stats-tooltip');
+            const title = document.getElementById('stats-tooltip-title');
+            const description = document.getElementById('stats-tooltip-description');
+            const secondaryStats = document.getElementById('secondary-stats');
+            
+            const statData = statDefinitions[statType];
+            if (!statData) return;
+            
+            title.textContent = statData.name;
+            description.textContent = statData.description;
+            
+            // Clear previous secondary stats
+            secondaryStats.innerHTML = '';
+            
+            // Add secondary stats
+            statData.secondaryStats.forEach(stat => {
+                const statElement = document.createElement('div');
+                statElement.className = 'secondary-stat';
+                statElement.innerHTML = `
+                    <span class="secondary-stat-name">${stat.name}</span>
+                    <span class="secondary-stat-value">${stat.value}</span>
+                `;
+                secondaryStats.appendChild(statElement);
+            });
+            
+            tooltip.className = 'stats-tooltip';
+            moveStatsTooltip(event);
+        }
+        
+        function hideStatsTooltip() {
+            document.getElementById('stats-tooltip').className = 'stats-tooltip stats-tooltip-hidden';
+        }
+        
+        function moveStatsTooltip(event) {
+            const tooltip = document.getElementById('stats-tooltip');
+            let x = event.clientX + 10;
+            let y = event.clientY + 10;
+            
+            if (x + 350 > window.innerWidth) x = event.clientX - 360;
+            if (y + 250 > window.innerHeight) y = event.clientY - 260;
+            
+            tooltip.style.left = x + 'px';
+            tooltip.style.top = y + 'px';
+        }
+
+        // Skills System Data
+        const skillsDatabase = {
+            fire: {
+                'combustion-mastery': {
+                    name: 'Combustion Mastery',
+                    icon: '🔥',
+                    tier: 1,
+                    maxPoints: 3,
+                    description: 'Increases fire damage and burn effects.',
+                    effects: [
+                        '+10% fire damage, burn duration +1 second',
+                        '+20% fire damage, burn spreads to 1 nearby enemy',
+                        '+30% fire damage, burn spreads to 2 nearby enemies'
+                    ],
+                    requirements: 'None'
+                },
+                'flame-weapon': {
+                    name: 'Flame Weapon',
+                    icon: '⚔️',
+                    tier: 1,
+                    maxPoints: 5,
+                    description: 'Weapons deal fire damage with ignite chance.',
+                    effects: [
+                        'Weapons deal fire damage, 10% chance to ignite',
+                        'Ignite chance +20%, fire damage +15%',
+                        'Ignite chance +30%, fire damage +25%',
+                        'Ignite chance +40%, fire damage +35%',
+                        'Ignite chance +50%, fire damage +50%'
+                    ],
+                    requirements: 'None'
+                },
+                'heat-resistance': {
+                    name: 'Heat Resistance',
+                    icon: '🛡️',
+                    tier: 1,
+                    maxPoints: 2,
+                    description: 'Provides fire resistance and immunity to self-inflicted fire damage.',
+                    effects: [
+                        '+25% fire resistance, immunity to self-inflicted fire damage',
+                        '+50% fire resistance, fire heals for 10% of damage'
+                    ],
+                    requirements: 'None'
+                },
+                'fireball': {
+                    name: 'Fireball',
+                    icon: '💥',
+                    tier: 2,
+                    maxPoints: 3,
+                    description: 'Launch explosive fireball projectile.',
+                    effects: [
+                        'Launch explosive fireball (30 power cost)',
+                        '+50% explosion radius, +25% damage',
+                        'Fireball pierces through enemies'
+                    ],
+                    requirements: '5 points in Tier 1'
+                },
+                'flame-wall': {
+                    name: 'Flame Wall',
+                    icon: '🧱',
+                    tier: 2,
+                    maxPoints: 4,
+                    description: 'Create wall of fire blocking passage.',
+                    effects: [
+                        'Create wall of fire blocking passage (40 power cost)',
+                        'Wall duration +100%, damage +50%',
+                        'Wall width +50%, spreads fire on contact',
+                        'Can create multiple walls simultaneously'
+                    ],
+                    requirements: '5 points in Tier 1'
+                },
+                'burning-ground': {
+                    name: 'Burning Ground',
+                    icon: '🌋',
+                    tier: 2,
+                    maxPoints: 3,
+                    description: 'Create area of burning ground.',
+                    effects: [
+                        'Create area of burning ground (25 power cost)',
+                        'Area size +100%, duration +50%',
+                        'Burning ground follows enemies'
+                    ],
+                    requirements: '5 points in Tier 1'
+                },
+                'phoenix-surge': {
+                    name: 'Phoenix Surge',
+                    icon: '🔥',
+                    tier: 3,
+                    maxPoints: 5,
+                    description: 'Ultimate fire transformation ability.',
+                    effects: [
+                        'Become fire elemental for 10 seconds (100 power cost)',
+                        'Duration +5 seconds, fire immunity',
+                        'All attacks create fire explosions',
+                        'Movement leaves burning trail',
+                        'Resurrection on death during surge'
+                    ],
+                    requirements: '10 points in Tier 2'
+                },
+                'fire-combination': {
+                    name: 'Combination Mastery',
+                    icon: '⚡',
+                    tier: 3,
+                    maxPoints: 2,
+                    description: 'Enhances fire combination abilities.',
+                    effects: [
+                        'Combination abilities cost -25% power',
+                        'Combination effects last +50% longer'
+                    ],
+                    requirements: '10 points in Tier 2'
+                }
+            }
+        };
+
+        // Skills System Functions
+        function initSkillsSystem() {
+            initElementTabs();
+            initSkillNodes();
+            updateSkillPointsDisplay();
+            updateSkillLocks();
+        }
+
+        function initElementTabs() {
+            const elementTabs = document.querySelectorAll('.element-tab');
+            elementTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    elementTabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    const element = tab.dataset.element;
+                    showElementTree(element);
+                });
+            });
+        }
+
+        function showElementTree(element) {
+            const trees = document.querySelectorAll('.skill-tree');
+            trees.forEach(tree => tree.style.display = 'none');
+            
+            const targetTree = document.getElementById(`${element}-tree`);
+            if (targetTree) {
+                targetTree.style.display = 'block';
+            }
+        }
+
+        function initSkillNodes() {
+            const skillNodes = document.querySelectorAll('.skill-node');
+            skillNodes.forEach(node => {
+                node.addEventListener('click', () => {
+                    if (!node.classList.contains('locked')) {
+                        const skillId = node.dataset.skill;
+                        investSkillPoint(skillId);
+                    }
+                });
+
+                node.addEventListener('mouseenter', (e) => {
+                    const skillId = node.dataset.skill;
+                    showSkillTooltip(e, skillId);
+                });
+
+                node.addEventListener('mouseleave', () => {
+                    hideSkillTooltip();
+                });
+            });
+        }
+
+        function investSkillPoint(skillId) {
+            const currentPoints = gameData.skillPoints.invested[skillId] || 0;
+            const element = getCurrentElement();
+            const skill = skillsDatabase[element]?.[skillId];
+            
+            if (!skill) return;
+            
+            if (currentPoints < skill.maxPoints && gameData.skillPoints.available > 0) {
+                gameData.skillPoints.invested[skillId] = currentPoints + 1;
+                gameData.skillPoints.available--;
+                
+                updateSkillNodeDisplay(skillId);
+                updateSkillPointsDisplay();
+                updateSkillLocks();
+            }
+        }
+
+        function getCurrentElement() {
+            const activeTab = document.querySelector('.element-tab.active');
+            return activeTab ? activeTab.dataset.element : 'fire';
+        }
+
+        function updateSkillNodeDisplay(skillId) {
+            const node = document.querySelector(`[data-skill="${skillId}"]`);
+            if (!node) return;
+
+            const currentPoints = gameData.skillPoints.invested[skillId] || 0;
+            const element = getCurrentElement();
+            const skill = skillsDatabase[element]?.[skillId];
+            
+            if (!skill) return;
+
+            const pointsDisplay = node.querySelector('.skill-points');
+            pointsDisplay.textContent = `${currentPoints}/${skill.maxPoints}`;
+
+            // Update node appearance based on investment
+            node.classList.remove('invested', 'available', 'maxed');
+            
+            if (currentPoints >= skill.maxPoints) {
+                node.classList.add('maxed');
+            } else if (currentPoints > 0) {
+                node.classList.add('invested');
+            } else if (canInvestInSkill(skillId)) {
+                node.classList.add('available');
+            }
+
+            // Update connection lines
+            updateConnectionLines(skillId);
+        }
+
+        function canInvestInSkill(skillId) {
+            const element = getCurrentElement();
+            const skill = skillsDatabase[element]?.[skillId];
+            if (!skill) return false;
+
+            const currentPoints = gameData.skillPoints.invested[skillId] || 0;
+            if (currentPoints >= skill.maxPoints) return false;
+            if (gameData.skillPoints.available <= 0) return false;
+
+            // Check tier requirements
+            if (skill.tier === 2 && getTierInvestment(element, 1) < 5) return false;
+            if (skill.tier === 3 && getTierInvestment(element, 2) < 10) return false;
+
+            return true;
+        }
+
+        function updateConnectionLines(skillId) {
+            const node = document.querySelector(`[data-skill="${skillId}"]`);
+            if (!node) return;
+
+            const connection = node.querySelector('.skill-connection');
+            if (!connection) return;
+
+            const currentPoints = gameData.skillPoints.invested[skillId] || 0;
+            if (currentPoints > 0) {
+                connection.classList.add('active');
+            } else {
+                connection.classList.remove('active');
+            }
+        }
+
+        function updateSkillPointsDisplay() {
+            const availableElement = document.getElementById('availablePoints');
+            const totalElement = document.getElementById('totalPoints');
+            
+            if (availableElement) {
+                availableElement.textContent = gameData.skillPoints.available;
+            }
+            if (totalElement) {
+                totalElement.textContent = gameData.skillPoints.total;
+            }
+        }
+
+        function updateSkillLocks() {
+            const element = getCurrentElement();
+            if (!skillsDatabase[element]) return;
+
+            // Update all skills in current element
+            Object.keys(skillsDatabase[element]).forEach(skillId => {
+                const node = document.querySelector(`[data-skill="${skillId}"]`);
+                if (!node) return;
+
+                if (canInvestInSkill(skillId)) {
+                    node.classList.remove('locked');
+                } else {
+                    node.classList.add('locked');
+                }
+
+                updateSkillNodeDisplay(skillId);
+            });
+        }
+
+        function showSkillTooltip(event, skillId) {
+            const element = getCurrentElement();
+            const skill = skillsDatabase[element]?.[skillId];
+            if (!skill) return;
+
+            const currentPoints = gameData.skillPoints.invested[skillId] || 0;
+            
+            // Remove existing tooltip
+            hideSkillTooltip();
+
+            // Create tooltip
+            const tooltip = document.createElement('div');
+            tooltip.className = 'skill-tooltip';
+            
+            let html = `
+                <div class="tooltip-title">${skill.name}</div>
+                <div class="tooltip-description">${skill.description}</div>
+            `;
+
+            // Show current rank and effect
+            if (currentPoints > 0) {
+                html += `<div class="tooltip-rank">Rank ${currentPoints}/${skill.maxPoints}</div>`;
+                html += `<div class="tooltip-effect"><strong>Current Effect:</strong><br>${skill.effects[currentPoints - 1]}</div>`;
+            } else {
+                html += `<div class="tooltip-rank">Rank 0/${skill.maxPoints}</div>`;
+                html += `<div class="tooltip-effect" style="color: #666;"><strong>Not Learned</strong></div>`;
+            }
+
+            // Show all rank progression
+            html += `<div class="tooltip-progression"><strong>Rank Progression:</strong></div>`;
+            
+            skill.effects.forEach((effect, index) => {
+                const rank = index + 1;
+                const isCurrentRank = currentPoints === rank;
+                const isInvested = currentPoints >= rank;
+                const isNextRank = currentPoints === rank - 1;
+                
+                let className = 'tooltip-progression-rank';
+                let prefix = `Rank ${rank}: `;
+                
+                if (isCurrentRank) {
+                    className += ' current-rank';
+                    prefix = `<strong>Rank ${rank} (Current): </strong>`;
+                } else if (isInvested) {
+                    className += ' invested-rank';
+                    prefix = `Rank ${rank}: `;
+                } else if (isNextRank) {
+                    className += ' next-rank';
+                    prefix = `<strong>Rank ${rank} (Next): </strong>`;
+                } else {
+                    className += ' future-rank';
+                    prefix = `Rank ${rank}: `;
+                }
+                
+                html += `<div class="${className}">${prefix}${effect}</div>`;
+            });
+
+            // Show requirements
+            if (skill.requirements !== 'None') {
+                html += `<div class="tooltip-requirements"><strong>Requirements:</strong> ${skill.requirements}</div>`;
+            }
+
+            // Show current status
+            if (currentPoints >= skill.maxPoints) {
+                html += `<div class="tooltip-status" style="color: #ff6600;"><strong>MAXED OUT</strong></div>`;
+            } else if (canInvestInSkill(skillId)) {
+                html += `<div class="tooltip-status" style="color: #00ff00;"><strong>Click to learn</strong></div>`;
+            } else if (gameData.skillPoints.available <= 0) {
+                html += `<div class="tooltip-status" style="color: #ff6600;"><strong>No skill points available</strong></div>`;
+            } else {
+                html += `<div class="tooltip-status" style="color: #888;"><strong>Requirements not met</strong></div>`;
+            }
+
+            tooltip.innerHTML = html;
+            document.body.appendChild(tooltip);
+
+            // Position tooltip
+            const rect = event.target.closest('.skill-node').getBoundingClientRect();
+            const tooltipRect = tooltip.getBoundingClientRect();
+            
+            let x = rect.right + 15;
+            let y = rect.top;
+
+            // Adjust if tooltip goes off screen
+            if (x + tooltipRect.width > window.innerWidth) {
+                x = rect.left - tooltipRect.width - 15;
+            }
+            if (y + tooltipRect.height > window.innerHeight) {
+                y = window.innerHeight - tooltipRect.height - 10;
+            }
+            if (y < 10) {
+                y = 10;
+            }
+
+            tooltip.style.left = x + 'px';
+            tooltip.style.top = y + 'px';
+        }
+
+        function hideSkillTooltip() {
+            const tooltip = document.querySelector('.skill-tooltip');
+            if (tooltip) {
+                tooltip.remove();
+            }
+        }
+
+        function getTierInvestment(element, tier) {
+            let points = 0;
+            Object.keys(skillsDatabase[element] || {}).forEach(skillId => {
+                const skill = skillsDatabase[element][skillId];
+                if (skill.tier === tier) {
+                    points += gameData.skillPoints.invested[skillId] || 0;
+                }
+            });
+            return points;
+        }
+
+
+        // Mission System Data
+        const missionDatabase = {
+            patrol: [
+                {
+                    id: "patrol-1",
+                    name: "Sector 7 Reconnaissance",
+                    type: "patrol",
+                    difficulty: "Normal",
+                    duration: "18 minutes",
+                    successRate: 92,
+                    rewards: ["Credits: 450", "XP: 850", "Items: 2-3"],
+                    affixes: ["Frozen"],
+                    description: "Investigate anomalous energy readings in the abandoned industrial sector. Reports indicate possible Void entity presence.",
+                    objectives: [
+                        "Scan 8 energy signatures",
+                        "Eliminate any hostile entities",
+                        "Upload collected data to Command"
+                    ]
+                },
+                {
+                    id: "patrol-2", 
+                    name: "Comm Relay Repair",
+                    type: "patrol",
+                    difficulty: "Easy",
+                    duration: "15 minutes",
+                    successRate: 96,
+                    rewards: ["Credits: 320", "XP: 600", "Items: 1-2"],
+                    affixes: [],
+                    description: "Restore communication relay stations knocked offline by recent storm activity. Essential for maintaining sector coverage.",
+                    objectives: [
+                        "Repair 3 communication arrays",
+                        "Test signal strength",
+                        "Establish connection with Command"
+                    ]
+                },
+                {
+                    id: "patrol-3",
+                    name: "Mining Platform Defense",
+                    type: "patrol", 
+                    difficulty: "Hard",
+                    duration: "25 minutes",
+                    successRate: 78,
+                    rewards: ["Credits: 680", "XP: 1200", "Items: 3-4"],
+                    affixes: ["Electric", "Scorched"],
+                    description: "Defend automated mining platform from increased Void creature activity. Platform contains valuable quantum materials.",
+                    objectives: [
+                        "Eliminate 15+ hostile entities",
+                        "Protect mining equipment (>80% integrity)",
+                        "Secure quantum material extraction"
+                    ]
+                }
+            ],
+            horde: [
+                {
+                    id: "horde-1",
+                    name: "Void Incursion Alpha",
+                    type: "horde",
+                    difficulty: "Hard",
+                    duration: "65 minutes",
+                    successRate: 71,
+                    rewards: ["Credits: 1450", "XP: 2800", "Items: 5-7"],
+                    affixes: ["Electric", "Frozen"],
+                    description: "Major Void incursion detected in residential district. Massive entity presence requires extended engagement.",
+                    objectives: [
+                        "Survive 12 waves of increasing intensity",
+                        "Eliminate Void Commander entity",
+                        "Evacuate 50+ civilians to safety"
+                    ]
+                },
+                {
+                    id: "horde-2",
+                    name: "Swarm Extermination",
+                    type: "horde",
+                    difficulty: "Normal", 
+                    duration: "52 minutes",
+                    successRate: 84,
+                    rewards: ["Credits: 980", "XP: 1900", "Items: 4-5"],
+                    affixes: ["Scorched"],
+                    description: "Eliminate massive swarm infestation in agricultural sector before they spread to populated areas.",
+                    objectives: [
+                        "Clear 8 infestation zones",
+                        "Destroy Queen entity",
+                        "Prevent swarm escape (0 entities)"
+                    ]
+                }
+            ],
+            expedition: [
+                {
+                    id: "expedition-1",
+                    name: "Deep Void Expedition",
+                    type: "expedition",
+                    difficulty: "Extreme",
+                    duration: "3.5 hours",
+                    successRate: 45,
+                    rewards: ["Credits: 3200", "XP: 8500", "Items: 8-12"],
+                    affixes: ["Electric", "Frozen", "Scorched"],
+                    description: "Deep reconnaissance into Void-controlled territory. High risk, maximum reward mission for experienced operatives only.",
+                    objectives: [
+                        "Penetrate 15km into Void territory",
+                        "Locate and analyze Void nexus",
+                        "Extract with critical intelligence data"
+                    ]
+                },
+                {
+                    id: "expedition-2",
+                    name: "Ancient Facility Exploration",
+                    type: "expedition",
+                    difficulty: "Hard",
+                    duration: "2.8 hours", 
+                    successRate: 62,
+                    rewards: ["Credits: 2400", "XP: 5200", "Items: 6-8"],
+                    affixes: ["Frozen"],
+                    description: "Explore recently discovered pre-war research facility. Advanced technology and unknown dangers await.",
+                    objectives: [
+                        "Map facility layout (100% coverage)",
+                        "Recover research data archives",
+                        "Neutralize automated defense systems"
+                    ]
+                }
+            ]
+        };
+        
+        // Mission System Functions
+        function initMissionSystem() {
+            populateMissions('patrol');
+            initMissionCategoryHandlers();
+        }
+        
+        function initMissionCategoryHandlers() {
+            const categories = document.querySelectorAll('.mission-category');
+            categories.forEach(category => {
+                category.addEventListener('click', () => {
+                    categories.forEach(c => c.classList.remove('active'));
+                    category.classList.add('active');
+                    const categoryType = category.dataset.category;
+                    populateMissions(categoryType);
+                });
+            });
+        }
+        
+        function populateMissions(category) {
+            const missionGrid = document.getElementById('mission-grid');
+            const missions = missionDatabase[category] || [];
+            
+            missionGrid.innerHTML = '';
+            
+            missions.forEach(mission => {
+                const missionCard = createMissionCard(mission);
+                missionGrid.appendChild(missionCard);
+            });
+        }
+        
+        function createMissionCard(mission) {
+            const card = document.createElement('div');
+            card.className = 'mission-card';
+            card.dataset.missionId = mission.id;
+            
+            const successColor = mission.successRate >= 80 ? '#00ff00' : 
+                                mission.successRate >= 60 ? '#ffff00' : '#ff6600';
+            
+            const difficultyColor = mission.difficulty === 'Easy' ? '#00ff00' :
+                                  mission.difficulty === 'Normal' ? '#ffff00' :
+                                  mission.difficulty === 'Hard' ? '#ff6600' : '#ff0000';
+            
+            card.innerHTML = `
+                <div class="mission-card-header">
+                    <div>
+                        <div class="mission-name">${mission.name}</div>
+                        <div class="mission-type">${mission.type}</div>
+                    </div>
+                    <div class="mission-difficulty" style="color: ${difficultyColor}">${mission.difficulty}</div>
+                </div>
+                <div class="mission-info">
+                    <div class="mission-duration">⏱️ ${mission.duration}</div>
+                    <div class="mission-success-rate" style="color: ${successColor}">
+                        Success Rate: ${mission.successRate}%
+                    </div>
+                    <div class="mission-rewards">
+                        ${mission.rewards.map(reward => `<span class="reward-item">${reward}</span>`).join('')}
+                    </div>
+                    <div class="mission-affixes">
+                        ${mission.affixes.map(affix => `<span class="mission-affix">${affix}</span>`).join('')}
+                    </div>
+                </div>
+                
+                <div class="mission-briefing">
+                    <div class="mission-description">${mission.description}</div>
+                    <div class="mission-objectives">
+                        <h4>Objectives</h4>
+                        ${mission.objectives.map(obj => `<div class="mission-objective">${obj}</div>`).join('')}
+                    </div>
+                </div>
+                
+                <div class="mission-launch-section">
+                    <div class="mission-launch-stats">
+                        <span>Duration: ${mission.duration}</span>
+                        <span>Difficulty: ${mission.difficulty}</span>
+                        <span style="color: ${successColor}">Success: ${mission.successRate}%</span>
+                    </div>
+                    <button class="mission-launch-button" onclick="launchMission('${mission.id}')">
+                        Launch Mission
+                    </button>
+                </div>
+            `;
+            
+            return card;
+        }
+        
+        
+        async function launchMission(missionId) {
+            // Find mission data
+            let mission = null;
+            for (let category in missionDatabase) {
+                mission = missionDatabase[category].find(m => m.id === missionId);
+                if (mission) break;
+            }
+            
+            if (mission) {
+                // Ensure items are loaded before showing success
+                if (Object.keys(itemDatabase).length === 0) {
+                    const loaded = await loadItems();
+                    if (!loaded) {
+                        alert(`Mission "${mission.name}" completed!\n\nRewards: ${mission.rewards.join(', ')}\n\nNote: Item rewards unavailable - please visit inventory page first to load items.`);
+                        return;
+                    }
+                }
+                
+                // Simulate mission completion and show success page
+                setTimeout(() => {
+                    showMissionSuccess(mission);
+                }, 500); // Brief delay for realism
+            }
+        }
+        
+        // Mission Success System
+        function showMissionSuccess(mission) {
+            const overlay = document.getElementById('mission-success-overlay');
+            const missionName = document.getElementById('success-mission-name');
+            const duration = document.getElementById('success-duration');
+            const efficiency = document.getElementById('success-efficiency');
+            const rating = document.getElementById('success-rating');
+            const credits = document.getElementById('reward-credits');
+            const xp = document.getElementById('reward-xp');
+            const itemRewardsGrid = document.getElementById('item-rewards-grid');
+            
+            // Set mission info
+            missionName.textContent = mission.name;
+            duration.textContent = mission.duration;
+            efficiency.textContent = mission.successRate + '%';
+            rating.textContent = mission.difficulty === 'Easy' ? 'A+' : 
+                                mission.difficulty === 'Normal' ? 'A' :
+                                mission.difficulty === 'Hard' ? 'B+' : 'B';
+            
+            // Parse and set currency rewards
+            const creditsMatch = mission.rewards.find(r => r.includes('Credits:'));
+            const xpMatch = mission.rewards.find(r => r.includes('XP:'));
+            
+            if (creditsMatch) {
+                credits.textContent = creditsMatch.split(':')[1].trim();
+            }
+            if (xpMatch) {
+                xp.textContent = xpMatch.split(':')[1].trim();
+            }
+            
+            // Generate item rewards
+            generateItemRewards(mission, itemRewardsGrid);
+            
+            // Show modal
+            overlay.classList.remove('hidden');
+        }
+        
+        function generateItemRewards(mission, container) {
+            container.innerHTML = '';
+            
+            // Parse item count from mission rewards
+            const itemsMatch = mission.rewards.find(r => r.includes('Items:'));
+            let itemCount = 2; // Default
+            if (itemsMatch) {
+                const range = itemsMatch.split(':')[1].trim();
+                const numbers = range.split('-').map(n => parseInt(n.trim()));
+                itemCount = numbers.length > 1 ? 
+                    Math.floor(Math.random() * (numbers[1] - numbers[0] + 1)) + numbers[0] :
+                    numbers[0];
+            }
+            
+            // Get available items from database
+            const allItems = Object.values(itemDatabase);
+            if (allItems.length === 0) {
+                // Create placeholder item cards showing what would be dropped
+                for (let i = 0; i < itemCount; i++) {
+                    const placeholderCard = document.createElement('div');
+                    placeholderCard.className = 'reward-item-card rare';
+                    placeholderCard.innerHTML = `
+                        <div class="reward-item-icon">📦</div>
+                        <div class="reward-item-name rare">Mystery Item ${i + 1}</div>
+                        <div class="reward-item-type">Unknown</div>
+                        ${i === 0 ? '<div class="new-item-badge">!</div>' : ''}
+                    `;
+                    container.appendChild(placeholderCard);
+                }
+                return;
+            }
+            
+            // Generate random item rewards
+            for (let i = 0; i < itemCount; i++) {
+                const randomItem = allItems[Math.floor(Math.random() * allItems.length)];
+                const itemCard = createRewardItemCard(randomItem, i === 0); // First item is "new"
+                container.appendChild(itemCard);
+            }
+        }
+        
+        function createRewardItemCard(item, isNew = false) {
+            const card = document.createElement('div');
+            card.className = `reward-item-card ${item.rarity}`;
+            
+            card.innerHTML = `
+                <div class="reward-item-icon">${item.icon}</div>
+                <div class="reward-item-name ${item.rarity}">${item.name}</div>
+                <div class="reward-item-type">${item.type}</div>
+                ${isNew ? '<div class="new-item-badge">!</div>' : ''}
+            `;
+            
+            // Add tooltip on hover
+            card.addEventListener('mouseenter', (e) => showTooltip(e, item));
+            card.addEventListener('mouseleave', hideTooltip);
+            card.addEventListener('mousemove', moveTooltip);
+            
+            return card;
+        }
+        
+        function closeMissionSuccess() {
+            document.getElementById('mission-success-overlay').classList.add('hidden');
+        }
+        
+        function viewInventory() {
+            closeMissionSuccess();
+            // Switch to inventory tab
+            const navTabs = document.querySelectorAll('.nav-tab');
+            const pages = document.querySelectorAll('.page');
+            
+            navTabs.forEach(t => t.classList.remove('active'));
+            document.querySelector('[data-page="inventory"]').classList.add('active');
+            
+            pages.forEach(page => page.classList.remove('active'));
+            document.getElementById('inventory').classList.add('active');
+            
+            // Initialize inventory if needed
+            if (Object.keys(itemDatabase).length > 0) {
+                populateInventory();
+            }
+        }
+
+        // Initialize systems
+        document.addEventListener('DOMContentLoaded', () => {
+            initNavigation();
+            initEmptySlotEvents();
+            initStatsTooltips();
+            initSkillsSystem();
+        });
+        
+        function initEmptySlotEvents() {
+            // Add event listeners to all empty equipment slots
+            const equipmentSlots = document.querySelectorAll('.equipment-slot');
+            equipmentSlots.forEach(slot => {
+                const slotType = slot.dataset.slot;
+                
+                slot.addEventListener('mouseenter', (e) => {
+                    // Only show popup if slot is empty (not equipped)
+                    if (!slot.classList.contains('equipped')) {
+                        showEmptySlotPopup(e, slotType);
+                    }
+                });
+                
+                slot.addEventListener('mouseleave', () => {
+                    hideEmptySlotPopup();
+                });
+                
+                slot.addEventListener('mousemove', (e) => {
+                    // Only move popup if it's visible
+                    const popup = document.getElementById('empty-slot-popup');
+                    if (!popup.classList.contains('popup-hidden')) {
+                        moveEmptySlotPopup(e);
+                    }
+                });
+            });
+        }
+        
+        function initStatsTooltips() {
+            // Add event listeners to all stat rows
+            const statRows = document.querySelectorAll('.stat-row');
+            statRows.forEach(row => {
+                const statType = row.dataset.stat;
+                
+                row.addEventListener('mouseenter', (e) => {
+                    showStatsTooltip(e, statType);
+                });
+                
+                row.addEventListener('mouseleave', () => {
+                    hideStatsTooltip();
+                });
+                
+                row.addEventListener('mousemove', (e) => {
+                    moveStatsTooltip(e);
+                });
+            });
+        }
+    </script>
+</body>
+</html>

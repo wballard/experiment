@@ -1,0 +1,34 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir:*)",
+      "Bash(mv:*)",
+      "Bash(python3:*)",
+      "Bash(open http://localhost:8000/demo.html)",
+      "Bash(cp:*)",
+      "Bash(zip:*)",
+      "Bash(lsof:*)",
+      "Bash(kill:*)",
+      "Bash(curl:*)",
+      "Bash(grep:*)",
+      "Bash(find:*)",
+      "Bash(sed:*)",
+      "WebFetch(domain:classic.wowhead.com)",
+      "WebFetch(domain:www.wowhead.com)",
+      "Bash(open http://localhost:8002/skills.html)",
+      "Bash(open \"http://localhost:8002/skills.html\")",
+      "Bash(pkill:*)",
+      "Bash(open \"http://localhost:8003/skills.html\")",
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "Bash(open \"http://localhost:9000/loadouts.html\")",
+      "Bash(open \"http://localhost:9000/skills.html\")",
+      "WebFetch(domain:www.wowsims.com)",
+      "Bash(open \"http://localhost:8001/sim/\")",
+      "Bash(open \"http://localhost:8002/sim/\")"
+    ],
+    "deny": [],
+    "ask": [],
+    "defaultMode": "acceptEdits"
+  }
+}

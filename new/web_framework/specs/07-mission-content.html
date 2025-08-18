@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mission Content - Courier Specifications</title>
+    <link rel="stylesheet" href="../assets/css/design-system.css?v=13">
+    <link rel="stylesheet" href="../assets/css/main.css?v=13">
+    <link rel="stylesheet" href="../assets/css/game.css?v=13">
+    <style>
+        .breadcrumb {
+            color: var(--text-dim);
+            font-size: 12px;
+            margin-bottom: var(--spacing-lg);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .breadcrumb a {
+            color: var(--primary-cyan);
+            text-decoration: none;
+        }
+        .breadcrumb a:hover {
+            color: var(--text-bright);
+        }
+        .doc-nav-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: var(--spacing-xl);
+            padding: var(--spacing-lg);
+            background: var(--bg-dark);
+            border: 1px solid var(--border-gray);
+        }
+        .doc-nav-bottom a {
+            color: var(--primary-cyan);
+            text-decoration: none;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border: 1px solid var(--border-gray);
+            background: var(--bg-medium);
+            transition: all 0.3s ease;
+        }
+        .doc-nav-bottom a:hover {
+            border-color: var(--primary-cyan);
+            background: var(--bg-light);
+        }
+        .content-section {
+            margin-bottom: var(--spacing-xl);
+        }
+        .highlight-box {
+            background: var(--bg-dark);
+            border: 1px solid var(--primary-orange);
+            padding: var(--spacing-lg);
+            margin: var(--spacing-lg) 0;
+        }
+        .highlight-box h3 {
+            color: var(--primary-orange);
+            margin-bottom: var(--spacing-md);
+        }
+        .mission-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: var(--spacing-lg);
+            margin: var(--spacing-lg) 0;
+        }
+        .mission-card {
+            background: var(--bg-medium);
+            border: 1px solid var(--border-gray);
+            padding: var(--spacing-lg);
+            transition: all 0.3s ease;
+        }
+        .mission-card:hover {
+            border-color: var(--primary-cyan);
+            background: var(--bg-light);
+        }
+        .mission-card h3 {
+            color: var(--primary-cyan);
+            margin-bottom: var(--spacing-md);
+            font-size: 18px;
+        }
+        .mission-card h4 {
+            color: var(--primary-orange);
+            margin-bottom: var(--spacing-sm);
+            font-size: 14px;
+        }
+        .affix-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: var(--spacing-md);
+            margin: var(--spacing-lg) 0;
+        }
+        .affix-card {
+            background: var(--bg-dark);
+            padding: var(--spacing-md);
+            border: 1px solid var(--border-gray);
+        }
+        .affix-card h4 {
+            margin-bottom: var(--spacing-sm);
+            font-size: 14px;
+        }
+        .affix-environmental { border-color: #4CAF50; }
+        .affix-environmental h4 { color: #4CAF50; }
+        .affix-enemy { border-color: #F44336; }
+        .affix-enemy h4 { color: #F44336; }
+        .affix-player { border-color: #FF9800; }
+        .affix-player h4 { color: #FF9800; }
+        .affix-reward { border-color: #FFD700; }
+        .affix-reward h4 { color: #FFD700; }
+        .toc {
+            background: var(--bg-medium);
+            border: 1px solid var(--border-gray);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+        .toc h3 {
+            color: var(--primary-cyan);
+            margin-bottom: var(--spacing-md);
+        }
+        .toc ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        .toc li {
+            margin-bottom: var(--spacing-sm);
+        }
+        .toc a {
+            color: var(--text-normal);
+            text-decoration: none;
+            font-size: 13px;
+        }
+        .toc a:hover {
+            color: var(--primary-cyan);
+        }
+        .week-rotation {
+            background: var(--bg-dark);
+            border: 1px solid var(--primary-cyan);
+            padding: var(--spacing-lg);
+            margin: var(--spacing-md) 0;
+        }
+        .week-rotation h4 {
+            color: var(--primary-cyan);
+            margin-bottom: var(--spacing-md);
+        }
+        .rotation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--spacing-lg);
+            margin: var(--spacing-lg) 0;
+        }
+        .strategy-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--spacing-md);
+            margin: var(--spacing-lg) 0;
+        }
+        .strategy-item {
+            background: var(--bg-medium);
+            padding: var(--spacing-md);
+            border: 1px solid var(--border-gray);
+        }
+        .strategy-item h4 {
+            color: var(--primary-orange);
+            margin-bottom: var(--spacing-sm);
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Header -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <div class="nav-logo"></div>
+            <div>
+                <div class="nav-username">COURIER SPECIFICATIONS</div>
+                <div class="nav-level">MISSION CONTENT</div>
+            </div>
+        </div>
+        <div class="nav-menu">
+            <a href="../game/dashboard.html" class="nav-item">CHARACTER</a>
+            <a href="../inventory.html" class="nav-item">INVENTORY</a>
+            <a href="../missions.html" class="nav-item">MISSIONS</a>
+            <a href="../skills.html" class="nav-item">SKILLS</a>
+            <a href="../build-planner.html" class="nav-item">BUILD PLANNER</a>
+            <a href="../marketplace.html" class="nav-item">MARKET</a>
+            <a href="../crafting.html" class="nav-item">CRAFTING</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="page-container">
+        <div class="breadcrumb">
+            <a href="index.html">SPECS</a> > MISSION CONTENT
+        </div>
+
+        <div class="page-header">
+            <h1 class="page-title">MISSION & CONTENT SYSTEMS</h1>
+            <p style="color: var(--text-normal); margin-top: var(--spacing-md);">Progressive Challenges & Affix Variety</p>
+        </div>
+
+        <!-- Table of Contents -->
+        <div class="toc">
+            <h3>📋 TABLE OF CONTENTS</h3>
+            <ul>
+                <li><a href="#philosophy">Mission Philosophy</a></li>
+                <li><a href="#categories">Mission Categories</a></li>
+                <li><a href="#affix-system">Mission Affix System</a></li>
+                <li><a href="#rotation-system">Weekly Rotation System</a></li>
+                <li><a href="#strategy">Affix Interaction & Strategy</a></li>
+            </ul>
+        </div>
+
+        <!-- Mission Philosophy Section -->
+        <div class="card content-section" id="philosophy">
+            <div class="card-header">
+                <h2 class="card-title">MISSION PHILOSOPHY</h2>
+            </div>
+            <div class="card-accent"></div>
+            
+            <p style="color: var(--text-normal); line-height: 1.6; margin-bottom: var(--spacing-lg);">
+                Courier's mission system provides scalable, replayable content through asynchronous timer-based missions with 
+                outcomes determined by statistical models. Character builds, equipment optimization, and weekly rotating affixes 
+                determine success probabilities and reward quality. Three core mission categories offer different time commitments 
+                and risk/reward profiles.
+            </p>
+
+            <div class="highlight-box">
+                <h3>Core Principles</h3>
+                <ul style="color: var(--text-normal); margin: 0; padding-left: 20px;">
+                    <li><strong>Statistical Outcomes:</strong> Mission success determined by character build vs mission requirements</li>
+                    <li><strong>Timer-Based Gameplay:</strong> Real-time mission duration with completion notifications</li>
+                    <li><strong>Affix-Driven Variety:</strong> Weekly modifiers change success calculations and strategies</li>
+                    <li><strong>Build Optimization:</strong> Equipment and attribute choices directly impact success probability</li>
+                    <li><strong>Risk vs Reward:</strong> Higher difficulty missions offer better rewards but lower success rates</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Mission Categories Section -->
+        <div class="card content-section" id="categories">
+            <div class="card-header">
+                <h2 class="card-title">MISSION CATEGORIES (3 Total)</h2>
+            </div>
+            <div class="card-accent"></div>
+            
+            <div class="mission-grid">
+                <div class="mission-card">
+                    <h3>🏃 Patrol Missions</h3>
+                    <h4>Duration: 5-30 minutes</h4>
+                    <p style="color: var(--text-normal); font-size: 13px; margin-bottom: var(--spacing-md);">
+                        <strong>Role:</strong> Quick resource gathering and experimentation
+                    </p>
+
+                    <h4>Characteristics:</h4>
+                    <ul style="color: var(--text-normal); font-size: 12px; margin: 0 0 var(--spacing-md) 0; padding-left: 20px;">
+                        <li><strong>Low Risk:</strong> High success rates (70-95%)</li>
+                        <li><strong>Immediate Rewards:</strong> Fast gratification for short play sessions</li>
+                        <li><strong>Learning Content:</strong> Safe environment to test new builds</li>
+                        <li><strong>Affix Introduction:</strong> 0-1 affixes for learning mechanics</li>
+                    </ul>
+
+                    <h4>Typical Objectives:</h4>
+                    <ul style="color: var(--text-normal); font-size: 12px; margin: 0 0 var(--spacing-md) 0; padding-left: 20px;">
+                        <li>Clear designated areas of enemies</li>
+                        <li>Collect resource nodes or items</li>
+                        <li>Escort objectives safely</li>
+                        <li>Defend positions briefly</li>
+                    </ul>
+
+                    <h4>Reward Focus:</h4>
+                    <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 20px;">
+                        <li>Crafting materials</li>
+                        <li>Common gear with occasional upgrades</li>
+                        <li>Faction reputation</li>
+                        <li>Experience for leveling</li>
+                    </ul>
+                </div>
+
+                <div class="mission-card">
+                    <h3>⚔️ Horde Missions</h3>
+                    <h4>Duration: 1-4 hours</h4>
+                    <p style="color: var(--text-normal); font-size: 13px; margin-bottom: var(--spacing-md);">
+                        <strong>Role:</strong> Primary combat challenges with wave-based encounters
+                    </p>
+
+                    <h4>Characteristics:</h4>
+                    <ul style="color: var(--text-normal); font-size: 12px; margin: 0 0 var(--spacing-md) 0; padding-left: 20px;">
+                        <li><strong>Moderate Risk:</strong> Balanced success rates (50-80%)</li>
+                        <li><strong>Wave Mechanics:</strong> Increasing enemy density and strength</li>
+                        <li><strong>Build Testing:</strong> Stress-tests character optimization</li>
+                        <li><strong>Affix Integration:</strong> 1-3 affixes create varied challenges</li>
+                    </ul>
+
+                    <h4>Typical Objectives:</h4>
+                    <ul style="color: var(--text-normal); font-size: 12px; margin: 0 0 var(--spacing-md) 0; padding-left: 20px;">
+                        <li>Survive escalating enemy waves</li>
+                        <li>Eliminate high-value targets</li>
+                        <li>Control strategic positions</li>
+                        <li>Manage resources across extended engagement</li>
+                    </ul>
+
+                    <h4>Reward Focus:</h4>
+                    <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 20px;">
+                        <li>Rare and Epic gear</li>
+                        <li>Significant experience gains</li>
+                        <li>Enhanced crafting materials</li>
+                        <li>Faction-specific rewards</li>
+                    </ul>
+                </div>
+
+                <div class="mission-card">
+                    <h3>🌌 Expedition Missions</h3>
+                    <h4>Duration: 6-24 hours</h4>
+                    <p style="color: var(--text-normal); font-size: 13px; margin-bottom: var(--spacing-md);">
+                        <strong>Role:</strong> Exploration and discovery for dedicated players
+                    </p>
+
+                    <h4>Characteristics:</h4>
+                    <ul style="color: var(--text-normal); font-size: 12px; margin: 0 0 var(--spacing-md) 0; padding-left: 20px;">
+                        <li><strong>High Risk:</strong> Variable success rates (20-60%)</li>
+                        <li><strong>Exploration Focus:</strong> Unknown environments and challenges</li>
+                        <li><strong>Build Mastery:</strong> Requires optimized builds and tactics</li>
+                        <li><strong>Maximum Affixes:</strong> 2-4 affixes for ultimate challenge</li>
+                    </ul>
+
+                    <h4>Typical Objectives:</h4>
+                    <ul style="color: var(--text-normal); font-size: 12px; margin: 0 0 var(--spacing-md) 0; padding-left: 20px;">
+                        <li>Explore procedural environments</li>
+                        <li>Uncover Progenitor mysteries</li>
+                        <li>Defeat complex boss encounters</li>
+                        <li>Complete multi-stage objectives</li>
+                    </ul>
+
+                    <h4>Reward Focus:</h4>
+                    <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 20px;">
+                        <li>Legendary and Mythic gear</li>
+                        <li>Exclusive crafting materials</li>
+                        <li>Unique cosmetics and titles</li>
+                        <li>Major story progression</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mission Affix System Section -->
+        <div class="card content-section" id="affix-system">
+            <div class="card-header">
+                <h2 class="card-title">MISSION AFFIX SYSTEM</h2>
+            </div>
+            <div class="card-accent"></div>
+            
+            <div class="highlight-box">
+                <h3>Core Concept</h3>
+                <p style="color: var(--text-normal); margin-bottom: var(--spacing-md);">
+                    Inspired by World of Warcraft's Mythic+ system and Diablo 4's Nightmare Dungeons, affixes are weekly 
+                    rotating modifiers that fundamentally change how players approach familiar content.
+                </p>
+
+                <h4 style="color: var(--primary-cyan); margin-bottom: var(--spacing-sm);">Design Goals</h4>
+                <ul style="color: var(--text-normal); margin: 0; padding-left: 20px;">
+                    <li><strong>Fresh Content:</strong> Same missions feel different each week</li>
+                    <li><strong>Build Adaptation:</strong> Different affixes favor different strategies</li>
+                    <li><strong>Progressive Challenge:</strong> More affixes = higher difficulty and rewards</li>
+                    <li><strong>Strategic Depth:</strong> Players choose which affixes to engage with</li>
+                </ul>
+            </div>
+
+            <h3 style="color: var(--primary-cyan); margin-bottom: var(--spacing-lg);">Affix Categories</h3>
+
+            <div class="affix-grid">
+                <div class="affix-card affix-environmental">
+                    <h4>🌍 Environmental Affixes</h4>
+                    <p style="color: var(--text-normal); font-size: 12px; margin-bottom: var(--spacing-sm);">
+                        Modify the battlefield itself, creating positional and movement challenges.
+                    </p>
+                    
+                    <div style="margin-bottom: var(--spacing-sm);">
+                        <strong style="color: var(--text-bright); font-size: 12px;">Volcanic:</strong>
+                        <p style="color: var(--text-normal); font-size: 11px; margin: 0;">
+                            Volcanic plumes spawn under players every 5 seconds. 15% health damage over 2 seconds. 
+                            Favors mobile builds and ranged combat.
+                        </p>
+                    </div>
+
+                    <div style="margin-bottom: var(--spacing-sm);">
+                        <strong style="color: var(--text-bright); font-size: 12px;">Frozen Ground:</strong>
+                        <p style="color: var(--text-normal); font-size: 11px; margin: 0;">
+                            30% of ground becomes icy, reducing movement by 20%. Ice patches grow when standing still. 
+                            Favors momentum builds and slide mechanics.
+                        </p>
+                    </div>
+
+                    <div style="margin-bottom: var(--spacing-sm);">
+                        <strong style="color: var(--text-bright); font-size: 12px;">Lightning Storm:</strong>
+                        <p style="color: var(--text-normal); font-size: 11px; margin: 0;">
+                            Lightning strikes random locations every 2-3 seconds. 25% health + 1 second stun. 
+                            1.5 second visual telegraph.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="affix-card affix-enemy">
+                    <h4>👹 Enemy Modifier Affixes</h4>
+                    <p style="color: var(--text-normal); font-size: 12px; margin-bottom: var(--spacing-sm);">
+                        Enhance enemy capabilities or add new mechanics to all enemies.
+                    </p>
+                    
+                    <div style="margin-bottom: var(--spacing-sm);">
+                        <strong style="color: var(--text-bright); font-size: 12px;">Fortified:</strong>
+                        <p style="color: var(--text-normal); font-size: 11px; margin: 0;">
+                            +30% enemy health, +20% enemy damage. Non-boss enemies gain minor damage reduction. 
+                            Counters: High damage builds, penetration focus.
+                        </p>
+                    </div>
+
+                    <div style="margin-bottom: var(--spacing-sm);">
+                        <strong style="color: var(--text-bright); font-size: 12px;">Vampiric:</strong>
+                        <p style="color: var(--text-normal); font-size: 11px; margin: 0;">
+                            Enemies heal for 20% of damage dealt to players. Visible life drain effect. 
+                            Counters: High damage output, healing reduction effects.
+                        </p>
+                    </div>
+
+                    <div style="margin-bottom: var(--spacing-sm);">
+                        <strong style="color: var(--text-bright); font-size: 12px;">Teleporting:</strong>
+                        <p style="color: var(--text-normal); font-size: 11px; margin: 0;">
+                            Enemies teleport to player position after 3 seconds of combat. 8 second cooldown. 
+                            Purple flash warning before teleport.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="affix-card affix-player">
+                    <h4>🚫 Player Modifier Affixes</h4>
+                    <p style="color: var(--text-normal); font-size: 12px; margin-bottom: var(--spacing-sm);">
+                        Restrict or modify player capabilities, creating build and tactical challenges.
+                    </p>
+                    
+                    <div style="margin-bottom: var(--spacing-sm);">
+                        <strong style="color: var(--text-bright); font-size: 12px;">Attrition:</strong>
+                        <p style="color: var(--text-normal); font-size: 11px; margin: 0;">
+                            -50% healing effectiveness from all sources. Shield regeneration unaffected. 
+                            Favors: Shield-focused builds, damage avoidance tactics.
+                        </p>
+                    </div>
+
+                    <div style="margin-bottom: var(--spacing-sm);">
+                        <strong style="color: var(--text-bright); font-size: 12px;">Suppression:</strong>
+                        <p style="color: var(--text-normal); font-size: 11px; margin: 0;">
+                            +3 seconds added to all ability cooldowns. Stacks with other penalties. 
+                            Favors: Weapon-focused builds, cooldown reduction investment.
+                        </p>
+                    </div>
+
+                    <div style="margin-bottom: var(--spacing-sm);">
+                        <strong style="color: var(--text-bright); font-size: 12px;">Exposed:</strong>
+                        <p style="color: var(--text-normal); font-size: 11px; margin: 0;">
+                            -30% to all player resistances. Stacks with difficulty penalties. 
+                            Requires: Resistance gear optimization, defensive planning.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="affix-card affix-reward">
+                    <h4>✨ Reward Modifier Affixes</h4>
+                    <p style="color: var(--text-normal); font-size: 12px; margin-bottom: var(--spacing-sm);">
+                        Positive affixes that increase rewards while adding minor challenges.
+                    </p>
+                    
+                    <div style="margin-bottom: var(--spacing-sm);">
+                        <strong style="color: var(--text-bright); font-size: 12px;">Bountiful:</strong>
+                        <p style="color: var(--text-normal); font-size: 11px; margin: 0;">
+                            +30% item drop rate from all sources. At least one rare+ item from elite enemies. 
+                            Excellent for gear farming sessions.
+                        </p>
+                    </div>
+
+                    <div style="margin-bottom: var(--spacing-sm);">
+                        <strong style="color: var(--text-bright); font-size: 12px;">Experienced:</strong>
+                        <p style="color: var(--text-normal); font-size: 11px; margin: 0;">
+                            +40% experience gain from all sources. Elite kills grant experience burst to all nearby players. 
+                            30 meter radius for sharing.
+                        </p>
+                    </div>
+
+                    <div style="margin-bottom: var(--spacing-sm);">
+                        <strong style="color: var(--text-bright); font-size: 12px;">Volatile:</strong>
+                        <p style="color: var(--text-normal); font-size: 11px; margin: 0;">
+                            20% chance for enemies to drop explosive orbs on death. Can damage enemies or heal players 
+                            based on pickup timing.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Weekly Rotation System Section -->
+        <div class="card content-section" id="rotation-system">
+            <div class="card-header">
+                <h2 class="card-title">WEEKLY ROTATION SYSTEM</h2>
+            </div>
+            <div class="card-accent"></div>
+            
+            <p style="color: var(--text-normal); line-height: 1.6; margin-bottom: var(--spacing-lg);">
+                Affixes rotate on a predictable 4-week schedule, allowing players to plan builds and strategies.
+            </p>
+
+            <div class="rotation-grid">
+                <div class="week-rotation">
+                    <h4>Week 1: Elemental Chaos</h4>
+                    <p style="color: var(--text-normal); font-size: 13px; margin-bottom: var(--spacing-sm);">
+                        <strong>Active Affixes:</strong> Volcanic, Fortified, Exposed, Bountiful
+                    </p>
+                    <p style="color: var(--text-normal); font-size: 12px; margin-bottom: var(--spacing-sm);">
+                        <strong>Theme:</strong> Environmental danger with defensive challenges
+                    </p>
+                    <p style="color: var(--text-normal); font-size: 12px; margin-bottom: var(--spacing-sm);">
+                        <strong>Favored Builds:</strong> High mobility, fire resistance, defensive optimization
+                    </p>
+                    <p style="color: var(--text-normal); font-size: 12px;">
+                        <strong>Strategy:</strong> Constant movement while managing tougher enemies with reduced resistances
+                    </p>
+                </div>
+
+                <div class="week-rotation">
+                    <h4>Week 2: Tactical Nightmare</h4>
+                    <p style="color: var(--text-normal); font-size: 13px; margin-bottom: var(--spacing-sm);">
+                        <strong>Active Affixes:</strong> Lightning Storm, Teleporting, Suppression, Experienced
+                    </p>
+                    <p style="color: var(--text-normal); font-size: 12px; margin-bottom: var(--spacing-sm);">
+                        <strong>Theme:</strong> Positioning and timing challenges
+                    </p>
+                    <p style="color: var(--text-normal); font-size: 12px; margin-bottom: var(--spacing-sm);">
+                        <strong>Favored Builds:</strong> High mobility, weapon-focused builds, stun resistance
+                    </p>
+                    <p style="color: var(--text-normal); font-size: 12px;">
+                        <strong>Strategy:</strong> Weapon-heavy combat with minimal ability reliance
+                    </p>
+                </div>
+
+                <div class="week-rotation">
+                    <h4>Week 3: Endurance Test</h4>
+                    <p style="color: var(--text-normal); font-size: 13px; margin-bottom: var(--spacing-sm);">
+                        <strong>Active Affixes:</strong> Toxic Fog, Vampiric, Attrition, Wealthy
+                    </p>
+                    <p style="color: var(--text-normal); font-size: 12px; margin-bottom: var(--spacing-sm);">
+                        <strong>Theme:</strong> Sustain and resource management
+                    </p>
+                    <p style="color: var(--text-normal); font-size: 12px; margin-bottom: var(--spacing-sm);">
+                        <strong>Favored Builds:</strong> Poison resistance, shield focus, high damage output
+                    </p>
+                    <p style="color: var(--text-normal); font-size: 12px;">
+                        <strong>Strategy:</strong> Efficient healing management with burst damage tactics
+                    </p>
+                </div>
+
+                <div class="week-rotation">
+                    <h4>Week 4: Chaos Theory</h4>
+                    <p style="color: var(--text-normal); font-size: 13px; margin-bottom: var(--spacing-sm);">
+                        <strong>Active Affixes:</strong> Frozen Ground, Shielded, Drought, Volatile
+                    </p>
+                    <p style="color: var(--text-normal); font-size: 12px; margin-bottom: var(--spacing-sm);">
+                        <strong>Theme:</strong> Resource conservation with movement constraints
+                    </p>
+                    <p style="color: var(--text-normal); font-size: 12px; margin-bottom: var(--spacing-sm);">
+                        <strong>Favored Builds:</strong> Slide mechanics, sustained damage, resource efficiency
+                    </p>
+                    <p style="color: var(--text-normal); font-size: 12px;">
+                        <strong>Strategy:</strong> Careful resource management with consistent damage application
+                    </p>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <h3>Affix Scaling by Tier</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minima(200px, 1fr)); gap: var(--spacing-md);">
+                    <div>
+                        <h4 style="color: var(--primary-cyan); margin-bottom: var(--spacing-sm);">Tier 1-5 Missions</h4>
+                        <p style="color: var(--text-normal); font-size: 12px;">
+                            0-1 affixes. Introduction to mechanics. Low penalty, high learning value. 
+                            Suitable for new players and build testing.
+                        </p>
+                    </div>
+                    <div>
+                        <h4 style="color: var(--primary-cyan); margin-bottom: var(--spacing-sm);">Tier 6-10 Missions</h4>
+                        <p style="color: var(--text-normal); font-size: 12px;">
+                            1-2 affixes. Standard endgame content. Balanced risk/reward ratio. 
+                            Core progression pathway.
+                        </p>
+                    </div>
+                    <div>
+                        <h4 style="color: var(--primary-cyan); margin-bottom: var(--spacing-sm);">Tier 11-15 Missions</h4>
+                        <p style="color: var(--text-normal); font-size: 12px;">
+                            2-3 affixes. Advanced challenge content. Requires build optimization. 
+                            High-tier rewards necessary.
+                        </p>
+                    </div>
+                    <div>
+                        <h4 style="color: var(--primary-cyan); margin-bottom: var(--spacing-sm);">Tier 16+ Missions</h4>
+                        <p style="color: var(--text-normal); font-size: 12px;">
+                            3-4 affixes. Expert-level content. Perfect execution required. 
+                            Maximum reward potential.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Affix Interaction & Strategy Section -->
+        <div class="card content-section" id="strategy">
+            <div class="card-header">
+                <h2 class="card-title">AFFIX INTERACTION & STRATEGY</h2>
+            </div>
+            <div class="card-accent"></div>
+            
+            <div class="strategy-grid">
+                <div class="strategy-item">
+                    <h4>Fire Resistance Week (Volcanic + others)</h4>
+                    <p style="color: var(--text-normal); font-size: 12px; margin-bottom: var(--spacing-sm);">
+                        <strong>Optimal Builds:</strong>
+                    </p>
+                    <ul style="color: var(--text-normal); font-size: 11px; margin: 0; padding-left: 15px;">
+                        <li>High fire resistance gear</li>
+                        <li>Movement speed focus (Alacrity investment)</li>
+                        <li>Ranged weapons to maintain distance</li>
+                        <li>Ice elemental choice for resistance synergy</li>
+                    </ul>
+                </div>
+
+                <div class="strategy-item">
+                    <h4>Ability Suppression Week (Suppression + others)</h4>
+                    <p style="color: var(--text-normal); font-size: 12px; margin-bottom: var(--spacing-sm);">
+                        <strong>Optimal Builds:</strong>
+                    </p>
+                    <ul style="color: var(--text-normal); font-size: 11px; margin: 0; padding-left: 15px;">
+                        <li>Weapon damage focus over abilities</li>
+                        <li>Cooldown reduction investment to offset penalties</li>
+                        <li>Sustained damage builds (SMG, Assault Rifle)</li>
+                        <li>Avoid ability-dependent elemental trees</li>
+                    </ul>
+                </div>
+
+                <div class="strategy-item">
+                    <h4>Resource Management Week (Drought + Attrition)</h4>
+                    <p style="color: var(--text-normal); font-size: 12px; margin-bottom: var(--spacing-sm);">
+                        <strong>Optimal Builds:</strong>
+                    </p>
+                    <ul style="color: var(--text-normal); font-size: 11px; margin: 0; padding-left: 15px;">
+                        <li>Shield-focused defensive strategy</li>
+                        <li>High damage efficiency (burst over sustained)</li>
+                        <li>Melee weapon integration</li>
+                        <li>Minimal reliance on consumables</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <h3>Affix Synergy Bonuses</h3>
+                <p style="color: var(--text-normal); margin-bottom: var(--spacing-md);">
+                    Players can gain success rate bonuses by building specifically to counter active affixes:
+                </p>
+                <ul style="color: var(--text-normal); margin: 0; padding-left: 20px;">
+                    <li><strong>Movement Speed</strong> vs Environmental hazards: +5% success</li>
+                    <li><strong>Resistance</strong> vs Exposure penalties: +5% success</li>
+                    <li><strong>Shield Focus</strong> vs Attrition: +5% success</li>
+                    <li><strong>Maximum Bonus:</strong> +10% success rate for perfect counter-builds</li>
+                </ul>
+            </div>
+
+            <div class="strategy-grid">
+                <div class="strategy-item">
+                    <h4>Weekly Preparation</h4>
+                    <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 15px;">
+                        <li>Review upcoming affix combinations</li>
+                        <li>Adjust gear and attribute allocations</li>
+                        <li>Plan skill point redistribution if needed</li>
+                        <li>Coordinate team compositions for group content</li>
+                    </ul>
+                </div>
+
+                <div class="strategy-item">
+                    <h4>Long-term Strategy</h4>
+                    <ul style="color: var(--text-normal); font-size: 12px; margin: 0; padding-left: 15px;">
+                        <li>Build multiple gear sets for different affix weeks</li>
+                        <li>Develop expertise with multiple weapon types</li>
+                        <li>Master various elemental combinations</li>
+                        <li>Maintain resource reserves for adaptation</li>
+                    </ul>
+                </div>
+            </div>
+
+            <p style="color: var(--text-normal); line-height: 1.6; margin-top: var(--spacing-lg);">
+                The mission affix system ensures that familiar content remains engaging and challenging while rewarding 
+                players who adapt their builds and strategies to weekly variations.
+            </p>
+        </div>
+
+        <!-- Document Navigation -->
+        <div class="doc-nav-bottom">
+            <a href="06-weapon-systems.html">← Previous: Weapon Systems</a>
+            <div style="color: var(--text-dim); font-size: 12px; text-align: center;">
+                <strong>NEXT:</strong> <a href="08-progression-economy.html" style="color: var(--primary-cyan);">Progression & Economy</a><br>
+                <span style="color: var(--text-dim);">Character advancement & faction systems</span>
+            </div>
+            <a href="08-progression-economy.html">Next: Progression & Economy →</a>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer style="padding: 20px; text-align: center; font-size: 10px; color: #666; border-top: 1px solid #333; margin-top: 40px;">
+        <a href="../changelog.html" style="color: #666; text-decoration: none; border-bottom: 1px dotted #666;">CHANGELOG</a> • 
+        <a href="index.html" style="color: #666; text-decoration: none; border-bottom: 1px dotted #666;">SPECS</a> • 
+        RELATED: <a href="08-progression-economy.html" style="color: #666; text-decoration: none;">Progression & Economy</a> • 
+        <a href="09-technical-implementation.html" style="color: #666; text-decoration: none;">Technical Implementation</a>
+    </footer>
+
+    <script src="../assets/js/main.js"></script>
+    <script src="../assets/js/navigation.js"></script>
+</body>
+</html>

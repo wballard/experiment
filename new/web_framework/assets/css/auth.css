@@ -1,0 +1,153 @@
+/* Authentication Pages Styles */
+
+.auth-container {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.auth-form {
+    background: rgba(20, 20, 20, 0.9);
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 40px;
+    max-width: 400px;
+    width: 100%;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.logo-container {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.logo-container .logo-icon {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(45deg, #00ffff, #ff6600);
+    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+    margin: 0 auto 15px;
+}
+
+.logo-container h1 {
+    color: #00ffff;
+    font-size: 24px;
+    margin-bottom: 5px;
+}
+
+.logo-container p {
+    color: #888;
+    font-size: 14px;
+}
+
+.auth-form-content {
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    color: #ccc;
+    font-size: 14px;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.form-group input[type="email"],
+.form-group input[type="password"] {
+    width: 100%;
+    padding: 12px;
+    background: rgba(40, 40, 40, 0.8);
+    border: 1px solid #555;
+    border-radius: 4px;
+    color: #fff;
+    font-family: inherit;
+    font-size: 14px;
+}
+
+.form-group input[type="email"]:focus,
+.form-group input[type="password"]:focus {
+    outline: none;
+    border-color: #00ffff;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+}
+
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.checkbox-group input[type="checkbox"] {
+    width: auto;
+}
+
+.checkbox-group label {
+    margin-bottom: 0;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.btn {
+    padding: 15px 30px;
+    border: none;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s;
+    width: 100%;
+}
+
+.btn-primary {
+    background: linear-gradient(45deg, #00ffff, #0099cc);
+    color: #000;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(45deg, #00ccff, #0077aa);
+    transform: translateY(-1px);
+    box-shadow: 0 5px 15px rgba(0, 255, 255, 0.4);
+}
+
+.auth-links {
+    text-align: center;
+    border-top: 1px solid #333;
+    padding-top: 20px;
+}
+
+.auth-links p {
+    margin-bottom: 10px;
+    font-size: 12px;
+    color: #888;
+}
+
+.auth-links a {
+    color: #00ffff;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.auth-links a:hover {
+    color: #ff6600;
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+    .auth-form {
+        padding: 30px 20px;
+        margin: 10px;
+    }
+    
+    .logo-container h1 {
+        font-size: 20px;
+    }
+}

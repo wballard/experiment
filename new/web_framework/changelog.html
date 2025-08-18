@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Changelog - Courier</title>
+    <link rel="stylesheet" href="assets/css/design-system.css">
+    <link rel="stylesheet" href="assets/css/main.css">
+    <style>
+        .changelog-entry {
+            margin-bottom: var(--spacing-xl);
+            border-bottom: 1px solid var(--border-gray);
+            padding-bottom: var(--spacing-lg);
+        }
+        .changelog-entry:last-child {
+            border-bottom: none;
+        }
+        .version-header {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+        }
+        .version-number {
+            background: var(--primary-cyan);
+            color: var(--bg-black);
+            padding: 4px 12px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .version-date {
+            color: var(--text-dim);
+            font-size: 12px;
+        }
+        .version-title {
+            font-size: 18px;
+            color: var(--primary-cyan);
+            margin-bottom: var(--spacing-sm);
+        }
+        .change-category {
+            margin-bottom: var(--spacing-md);
+        }
+        .category-title {
+            font-size: 14px;
+            color: var(--primary-orange);
+            font-weight: bold;
+            margin-bottom: var(--spacing-xs);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .change-list {
+            list-style: none;
+            padding-left: 0;
+        }
+        .change-item {
+            padding: var(--spacing-xs) 0;
+            color: var(--text-normal);
+            font-size: 13px;
+            line-height: 1.4;
+        }
+        .change-item::before {
+            content: "▸";
+            color: var(--primary-cyan);
+            margin-right: var(--spacing-xs);
+        }
+        .back-button {
+            position: fixed;
+            top: 80px;
+            left: 20px;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Header -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <div class="nav-logo"></div>
+            <div>
+                <div class="nav-username">AGENT RECON-7</div>
+                <div class="nav-level">LEVEL 60 • PARAGON 40</div>
+            </div>
+        </div>
+        <div class="nav-menu">
+            <a href="game/dashboard.html" class="nav-item">CHARACTER</a>
+            <a href="inventory.html" class="nav-item">INVENTORY</a>
+            <a href="missions.html" class="nav-item">MISSIONS</a>
+            <a href="skills.html" class="nav-item">SKILLS</a>
+            <a href="#" class="nav-item">BUILD PLANNER</a>
+            <a href="#" class="nav-item">MARKET</a>
+            <a href="#" class="nav-item">CRAFTING</a>
+        </div>
+    </nav>
+
+    <!-- Back Button -->
+    <button class="btn back-button" onclick="history.back()">← BACK</button>
+
+    <!-- Main Content -->
+    <div class="page-container">
+        <div class="page-header">
+            <h1 class="page-title">DEVELOPMENT CHANGELOG</h1>
+        </div>
+
+        <!-- Latest Updates (v0.6.x series) -->
+        <div class="changelog-entry">
+            <div class="version-header">
+                <div class="version-number">v0.6.0</div>
+                <div class="version-date">2025-08-17 02:30 CST</div>
+            </div>
+            <div class="version-title">⚙️ STAT TUNING & DEFENSE SYSTEM</div>
+            
+            <div class="change-category">
+                <div class="category-title">MAJOR FEATURES</div>
+                <ul class="change-list">
+                    <li class="change-item">Complete Stat Tuning System - Real-time adjustment of secondary stat ratios</li>
+                    <li class="change-item">Interactive Balance Controls - Modify all core stat to secondary stat relationships</li>
+                    <li class="change-item">Defense Statistics Dashboard - Comprehensive defensive stat visualization</li>
+                    <li class="change-item">Elemental Resistance Display - Fire, Ice, Lightning, Earth, and Void resistance tracking</li>
+                </ul>
+            </div>
+
+            <div class="change-category">
+                <div class="category-title">TUNING SYSTEM</div>
+                <ul class="change-list">
+                    <li class="change-item">tuning/index.html - Complete stat adjustment interface with live preview</li>
+                    <li class="change-item">Six Core Stats - Vigor, Focus, Force, Momentum, Resonance, Defense tuning</li>
+                    <li class="change-item">18 Secondary Stats - Health, regen, energy, damage, resistances, and more</li>
+                    <li class="change-item">Save/Export System - Persistent configurations with JSON export capability</li>
+                </ul>
+            </div>
+
+            <div class="change-category">
+                <div class="category-title">DEFENSE DASHBOARD</div>
+                <ul class="change-list">
+                    <li class="change-item">Health & Energy - Total health/energy with regeneration rates</li>
+                    <li class="change-item">Damage Mitigation - Armor, damage reduction, block and dodge chances</li>
+                    <li class="change-item">Elemental Resistances - Visual resistance display for all five elements</li>
+                    <li class="change-item">Status Resistance - Stun, slow, DoT resistance with effect duration reduction</li>
+                </ul>
+            </div>
+
+            <div class="change-category">
+                <div class="category-title">USER EXPERIENCE</div>
+                <ul class="change-list">
+                    <li class="change-item">Navigation Integration - Added TUNING link to all page footers</li>
+                    <li class="change-item">Visual Design - Consistent Courier design system with hover effects</li>
+                    <li class="change-item">Real-time Updates - Immediate feedback for all stat adjustments</li>
+                    <li class="change-item">Export Configuration - Download tuning settings as JSON files</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="changelog-entry">
+            <div class="version-header">
+                <div class="version-number">v0.5.0</div>
+                <div class="version-date">2025-08-17 01:40 CST</div>
+            </div>
+            <div class="version-title">⚔️ LOADOUT MANAGEMENT SYSTEM</div>
+            
+            <div class="change-category">
+                <div class="category-title">MAJOR FEATURES</div>
+                <ul class="change-list">
+                    <li class="change-item">Complete Loadout System - Full ability and equipment loadout management</li>
+                    <li class="change-item">Drag and Drop Editor - Interactive ability assignment with visual feedback</li>
+                    <li class="change-item">Multiple Loadout Slots - Support for 5 different loadout configurations</li>
+                    <li class="change-item">Equipment Integration - Loadouts include complete equipment sets matching dashboard layout</li>
+                </ul>
+            </div>
+
+            <div class="change-category">
+                <div class="category-title">LOADOUT MANAGEMENT</div>
+                <ul class="change-list">
+                    <li class="change-item">loadouts.html - Main loadout browser with preset tabs (Boss Killer, Mob Clear, PvP Duelist, Support)</li>
+                    <li class="change-item">edit-loadout.html - Comprehensive drag-and-drop loadout editor</li>
+                    <li class="change-item">Ability Categories - Ultimate, Active Abilities, Auras, and Weapon Passives</li>
+                    <li class="change-item">Equipment Preview - Full 9-slot equipment display matching dashboard system</li>
+                </ul>
+            </div>
+
+            <div class="change-category">
+                <div class="category-title">USER EXPERIENCE</div>
+                <ul class="change-list">
+                    <li class="change-item">Navigation Integration - Added LOADOUTS tab between SKILLS and BUILD PLANNER</li>
+                    <li class="change-item">Visual Design - Consistent Courier design system with cyan/orange theming</li>
+                    <li class="change-item">Interactive Elements - Hover effects, drag-and-drop feedback, and smooth transitions</li>
+                    <li class="change-item">Save/Load System - Complete loadout persistence with naming and activation</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="changelog-entry">
+            <div class="version-header">
+                <div class="version-number">v0.4.0</div>
+                <div class="version-date">2025-08-17 01:20 CST</div>
+            </div>
+            <div class="version-title">📚 COMPLETE SPECIFICATIONS SYSTEM</div>
+            
+            <div class="change-category">
+                <div class="category-title">MAJOR FEATURES</div>
+                <ul class="change-list">
+                    <li class="change-item">Complete HTML Documentation - All 12 game design documents converted to interactive HTML</li>
+                    <li class="change-item">Specifications Browser - Visual card-based navigation system for all design docs</li>
+                    <li class="change-item">Cross-Linking Architecture - Full navigation between related documents and sections</li>
+                    <li class="change-item">Reading Order Guidance - Recommended paths for different team roles</li>
+                </ul>
+            </div>
+
+            <div class="change-category">
+                <div class="category-title">DOCUMENTATION SYSTEM</div>
+                <ul class="change-list">
+                    <li class="change-item">specs/index.html - Main table of contents with visual navigation cards</li>
+                    <li class="change-item">Interactive Navigation - Breadcrumbs, table of contents, and prev/next linking</li>
+                    <li class="change-item">Design System Integration - Consistent styling with game interface</li>
+                    <li class="change-item">Mobile Responsive - Full documentation system works on all screen sizes</li>
+                </ul>
+            </div>
+
+            <div class="change-category">
+                <div class="category-title">NAVIGATION ENHANCEMENTS</div>
+                <ul class="change-list">
+                    <li class="change-item">Footer Integration - Added SPECS link to all page footers</li>
+                    <li class="change-item">Coming Soon Pages - Professional placeholders for Build Planner, Marketplace, Crafting</li>
+                    <li class="change-item">Complete Site Navigation - All header links functional across entire application</li>
+                    <li class="change-item">Cache Management - Version parameters for reliable content updates</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="changelog-entry">
+            <div class="version-header">
+                <div class="version-number">v0.4.3</div>
+                <div class="version-date">2025-08-16 11:52 PM CST</div>
+            </div>
+            <div class="version-title">🔍 INVENTORY FILTER SYSTEM</div>
+            
+            <div class="change-category">
+                <div class="category-title">NEW FEATURES</div>
+                <ul class="change-list">
+                    <li class="change-item">Inventory filters: [ALL] [WEAPON] [ARMOR] [SLOT]</li>
+                    <li class="change-item">Slot filter with dropdown selection for 9 equipment slots</li>
+                    <li class="change-item">Real-time inventory filtering by type and slot</li>
+                    <li class="change-item">Enhanced debug system for filter troubleshooting</li>
+                </ul>
+            </div>
+
+            <div class="change-category">
+                <div class="category-title">USER INTERFACE</div>
+                <ul class="change-list">
+                    <li class="change-item">Filter buttons with active state highlighting</li>
+                    <li class="change-item">Dropdown slot selector replaces button grid</li>
+                    <li class="change-item">Dynamic show/hide of slot filters</li>
+                    <li class="change-item">Proper footer changelog instead of floating box</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="changelog-entry">
+            <div class="version-header">
+                <div class="version-number">v0.4.2</div>
+                <div class="version-date">2025-08-16 10:40 PM CST</div>
+            </div>
+            <div class="version-title">🎨 ICON STANDARDIZATION</div>
+            
+            <div class="change-category">
+                <div class="category-title">VISUAL IMPROVEMENTS</div>
+                <ul class="change-list">
+                    <li class="change-item">All item icons standardized to 56x56 pixels</li>
+                    <li class="change-item">Removed all text from icon areas for clean display</li>
+                    <li class="change-item">Equipment slots expanded to 80x80 to accommodate icons</li>
+                    <li class="change-item">Hidden item names and placeholders for icon-only view</li>
+                </ul>
+            </div>
+
+            <div class="change-category">
+                <div class="category-title">TECHNICAL IMPROVEMENTS</div>
+                <ul class="change-list">
+                    <li class="change-item">JavaScript override forcing exact icon dimensions</li>
+                    <li class="change-item">CSS flexbox centering for perfect icon alignment</li>
+                    <li class="change-item">Cross-browser compatibility improvements</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="changelog-entry">
+            <div class="version-header">
+                <div class="version-number">v0.4.1</div>
+                <div class="version-date">2025-08-16 10:35 PM CST</div>
+            </div>
+            <div class="version-title">🛠️ TOOLTIP SYSTEM OVERHAUL</div>
+            
+            <div class="change-category">
+                <div class="category-title">BUG FIXES</div>
+                <ul class="change-list">
+                    <li class="change-item">Fixed tooltip inconsistencies between Safari and Chrome</li>
+                    <li class="change-item">Resolved inventory tooltip centering issues</li>
+                    <li class="change-item">Replaced complex CSS with simple inline styles</li>
+                    <li class="change-item">Removed CSS conflicts causing tooltip misalignment</li>
+                </ul>
+            </div>
+
+            <div class="change-category">
+                <div class="category-title">SYSTEM IMPROVEMENTS</div>
+                <ul class="change-list">
+                    <li class="change-item">Universal tooltip system using exact dashboard implementation</li>
+                    <li class="change-item">Browser-agnostic inline styling for consistency</li>
+                    <li class="change-item">Left-aligned headers matching character page</li>
+                    <li class="change-item">Simplified tooltip architecture for reliability</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="changelog-entry">
+            <div class="version-header">
+                <div class="version-number">v0.4.0</div>
+                <div class="version-date">2025-08-16 09:30 PM CST</div>
+            </div>
+            <div class="version-title">📊 CHARACTER STATS ENHANCEMENT</div>
+            
+            <div class="change-category">
+                <div class="category-title">NEW FEATURES</div>
+                <ul class="change-list">
+                    <li class="change-item">Secondary stats tooltips for all 6 main attributes</li>
+                    <li class="change-item">Detailed stat breakdowns on mouseover</li>
+                    <li class="change-item">Comprehensive secondary effects for Vigor, Focus, Force, Momentum, Resonance, Defense</li>
+                    <li class="change-item">Color-coded stat values for easy identification</li>
+                </ul>
+            </div>
+
+            <div class="change-category">
+                <div class="category-title">USER EXPERIENCE</div>
+                <ul class="change-list">
+                    <li class="change-item">Interactive stat hover system on character page</li>
+                    <li class="change-item">Smart tooltip positioning with screen edge detection</li>
+                    <li class="change-item">Professional styling matching design system</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Previous Major Versions -->
+        <div class="changelog-entry">
+            <div class="version-header">
+                <div class="version-number">v0.3.3</div>
+                <div class="version-date">2025-08-16 03:35 PM CST</div>
+            </div>
+            <div class="version-title">⚡ EQUIPMENT SYSTEM INTEGRATION</div>
+            
+            <div class="change-category">
+                <div class="category-title">NEW FEATURES</div>
+                <ul class="change-list">
+                    <li class="change-item">Equipment Synchronization - Items equipped from inventory now update character page</li>
+                    <li class="change-item">Interactive Equipment Slots - Click slots on character page to equip items directly</li>
+                    <li class="change-item">Slot-Specific Icons - Visual equipment slot indicators (🗡️, ⛑️, 🛡️, etc.)</li>
+                    <li class="change-item">Power Budget Integration - Real-time power usage updates across all pages</li>
+                </ul>
+            </div>
+
+            <div class="change-category">
+                <div class="category-title">EQUIPMENT MANAGEMENT</div>
+                <ul class="change-list">
+                    <li class="change-item">Equipment slots show appropriate icons for each type (weapon, armor, accessories)</li>
+                    <li class="change-item">Clicking equipment slots shows available items for that specific slot</li>
+                    <li class="change-item">Direct equipping from character page with item selection prompts</li>
+                    <li class="change-item">Visual feedback when items are equipped (icon updates and equipped state)</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="changelog-entry">
+            <div class="version-header">
+                <div class="version-number">v0.3.0</div>
+                <div class="version-date">2025-08-16 02:45 PM CST</div>
+            </div>
+            <div class="version-title">🎒 INVENTORY SYSTEM RELEASE</div>
+            
+            <div class="change-category">
+                <div class="category-title">MAJOR FEATURES</div>
+                <ul class="change-list">
+                    <li class="change-item">Complete Inventory System with 20+ placeholder items</li>
+                    <li class="change-item">Power Budget Integration with real-time calculations</li>
+                    <li class="change-item">Interactive Tooltips showing detailed item stats</li>
+                    <li class="change-item">Advanced Filtering by item type and rarity</li>
+                    <li class="change-item">Item Management with equip, enhance, modify, and sell actions</li>
+                </ul>
+            </div>
+
+            <div class="change-category">
+                <div class="category-title">ITEM DATABASE</div>
+                <ul class="change-list">
+                    <li class="change-item">6 Weapons across all 5 archetypes (Assault Rifle, Shotgun, Sniper, SMG, Pistol)</li>
+                    <li class="change-item">14 Armor Pieces covering all 7 equipment slots</li>
+                    <li class="change-item">7 Rarity Tiers from Common to Primal with accurate power cost multipliers</li>
+                    <li class="change-item">Comprehensive Stats following itemization specification</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="changelog-entry">
+            <div class="version-header">
+                <div class="version-number">v0.2.0</div>
+                <div class="version-date">2025-08-16 12:30 PM CST</div>
+            </div>
+            <div class="version-title">🎮 CORE DEMO FRAMEWORK</div>
+            
+            <div class="change-category">
+                <div class="category-title">CORE SYSTEMS</div>
+                <ul class="change-list">
+                    <li class="change-item">Fixed header with logo and user information</li>
+                    <li class="change-item">Tabbed navigation for all major game systems</li>
+                    <li class="change-item">Character Sheet with 9-slot equipment visualization</li>
+                    <li class="change-item">Mission System with category sidebar and detailed information</li>
+                    <li class="change-item">Sci-fi themed dark interface with cyan/orange accents</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="changelog-entry">
+            <div class="version-header">
+                <div class="version-number">v0.1.0</div>
+                <div class="version-date">2025-08-16 10:00 AM CST</div>
+            </div>
+            <div class="version-title">🚀 PROJECT INITIALIZATION</div>
+            
+            <div class="change-category">
+                <div class="category-title">FOUNDATION</div>
+                <ul class="change-list">
+                    <li class="change-item">Comprehensive game design document suite</li>
+                    <li class="change-item">Power Budget System specification</li>
+                    <li class="change-item">Equipment and itemization framework</li>
+                    <li class="change-item">Mission content and progression systems</li>
+                    <li class="change-item">Technical implementation roadmap</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer style="padding: 20px; text-align: center; font-size: 10px; color: #666; border-top: 1px solid #333; margin-top: 40px;">
+        Development started August 16, 2025 • Total commits: 25+ • Latest build: v0.4.3
+    </footer>
+</body>
+</html>
