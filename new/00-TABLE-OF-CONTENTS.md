@@ -26,56 +26,42 @@ Complete character progression system including:
 - 5 Character classes with starting bonuses
 - Skill point allocation system
 
-### **04-ELEMENTAL-SKILLS.md**
-Comprehensive elemental skill trees and progression:
-- 5 elemental skill trees with 30-45 points each
-- Tier-based progression system (Foundation, Specialization, Mastery)
-- Active abilities and passive bonuses for each element
-- Combination mastery and adjacency synergies
-
-### **Elemental System.md**
-Primary elemental mechanics and Ice tree design:
-- Damage modifier systems and calculation rules
-- Complete Ice elemental tree with full skill progression
-- Freeze buildup mechanics and shatter interactions
-- Active abilities and ultimate skills for Ice specialization
-
-### **05-ELEMENTAL-COMBAT.md**
+### **04-ELEMENTAL-COMBAT.md**
 The five-element system with status effects:
 - Element wheel and adjacency rules
 - Status buildup mechanics (percentage-based)
 - Detailed status effects for each element
 - Elemental combination possibilities
 
-### **06-EQUIPMENT-ITEMIZATION.md**
+### **05-EQUIPMENT-ITEMIZATION.md**
 Power Budget system and equipment structure:
 - Power budget formula and rarity efficiency
 - Equipment slots (2 weapons, 7 armor)
 - Item rarity system (7 tiers)
 - Strategic itemization choices
 
-### **07-WEAPON-SYSTEMS.md**
+### **06-WEAPON-SYSTEMS.md**
 Weapon archetypes and modification system:
 - 5 base weapon archetypes with stats
 - 7-slot modification system (to be refined)
 - Weapon variant creation through mods
 - Statistical display approach
 
-### **08-MISSION-CONTENT.md**
+### **07-MISSION-CONTENT.md**
 Mission categories and affix system:
 - 3 mission types (Patrol, Horde, Expedition)
 - Weekly rotating affix system
 - Environmental and combat modifiers
 - Scaling difficulty and rewards
 
-### **09-PROGRESSION-ECONOMY.md**
+### **08-PROGRESSION-ECONOMY.md**
 Character advancement and faction systems:
 - Currency system (simplified for now)
 - Faction reputation and rewards
 - Long-term progression goals
 - Economic balance principles
 
-### **10-TECHNICAL-IMPLEMENTATION.md**
+### **09-TECHNICAL-IMPLEMENTATION.md**
 Core formulas and calculation methods:
 - Power budget validation
 - Mission success calculations
@@ -115,20 +101,16 @@ Core formulas and calculation methods:
 
 For new team members or stakeholders:
 1. **Executive Summary** - Understand the game vision
-2. **Player Onboarding** - New player experience and web platform
-3. **Character Systems** - Core progression mechanics  
-4. **Elemental Skills** - Skill trees and progression paths
-5. **Elemental System** - Damage mechanics and Ice tree design
-6. **Elemental Combat** - Status effects and combinations
-7. **Equipment & Itemization** - Gear progression innovation
-8. **Remaining documents** - Based on development focus
+2. **Character Systems** - Core progression mechanics  
+3. **Elemental Combat** - Primary depth system
+4. **Equipment & Itemization** - Gear progression innovation
+5. **Remaining documents** - Based on development focus
 
 For specific development teams:
 - **Programming**: Technical Implementation + relevant systems
 - **Design**: All documents with focus on affected systems
 - **Art**: Character Systems, Weapon Systems for visual requirements
 - **QA**: Mission Content, Technical Implementation for testing
-- **UX/UI**: Player Onboarding for tutorial flow and web optimization
 
 ---
 
