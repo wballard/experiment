@@ -33,7 +33,12 @@
       "Bash(open \"http://localhost:8004/test-data-manager.html\")",
       "Bash(open \"http://localhost:8004/inventory.html\")",
       "Bash(open \"http://localhost:8004/game/dashboard.html\")",
-      "WebFetch(domain:docs.anthropic.com)"
+      "WebFetch(domain:docs.anthropic.com)",
+      "Bash(open \"http://localhost:8000/inventory.html\")",
+      "Bash(open:*)",
+      "Bash(npm install)",
+      "Bash(npm start)",
+      "Bash(node server.js)"
     ],
     "deny": [],
     "ask": [],

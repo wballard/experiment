@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory - Courier</title>
+    <link rel="stylesheet" href="assets/css/design-system.css?v=11">
+    <link rel="stylesheet" href="assets/css/main.css?v=11">
+    <link rel="stylesheet" href="assets/css/inventory.css?v=11">
+    <style>
+        /* Power Budget Progress Bar Styles */
+        .power-progress-bar {
+            width: 100% !important;
+            height: 12px !important;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.8) 0%, rgba(20, 20, 20, 0.8) 100%) !important;
+            border: 1px solid #444 !important;
+            border-radius: 6px !important;
+            overflow: hidden !important;
+            position: relative !important;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+            display: block !important;
+        }
+
+        .power-progress-fill {
+            height: 100% !important;
+            background: linear-gradient(135deg, #ff6600 0%, #ffaa44 50%, #ff8800 100%) !important;
+            transition: width 0.8s ease !important;
+            border-radius: 4px !important;
+            position: relative !important;
+            box-shadow: 0 0 8px rgba(255, 102, 0, 0.4) !important;
+            display: block !important;
+        }
+
+        .power-progress-fill.over-capacity {
+            background: linear-gradient(135deg, #ff0000 0%, #ff4444 50%, #cc0000 100%) !important;
+            box-shadow: 0 0 12px rgba(255, 0, 0, 0.6) !important;
+            animation: power-warning 1.5s ease-in-out infinite;
+        }
+
+        @keyframes power-warning {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Header -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <div class="nav-logo"></div>
+            <div>
+                <div class="nav-username">AGENT RECON-7</div>
+                <div class="nav-level">LEVEL 60 • PARAGON 40</div>
+            </div>
+        </div>
+        <div class="nav-menu">
+            <a href="game/dashboard.html" class="nav-item">CHARACTER</a>
+            <a href="inventory.html" class="nav-item active">INVENTORY</a>
+            <a href="missions.html" class="nav-item">MISSIONS</a>
+            <a href="skills.html" class="nav-item">SKILLS</a>
+            <a href="loadouts.html" class="nav-item">LOADOUTS</a>
+            <a href="build-planner.html" class="nav-item">BUILD PLANNER</a>
+            <a href="marketplace.html" class="nav-item">MARKET</a>
+            <a href="crafting.html" class="nav-item">CRAFTING</a>
+        </div>
+    </nav>
+
+    <!-- Inventory Content -->
+    <div class="page-container">
+        <div class="page-header">
+            <h1 class="page-title">EQUIPMENT INVENTORY</h1>
+        </div>
+            
+        <div class="layout-sidebar">
+            <!-- Power Budget Sidebar -->
+            <div class="sidebar">
+                <div class="card-header">
+                    <h2 class="card-title">Power Budget</h2>
+                </div>
+                <div class="card-accent"></div>
+                
+                <div style="margin-bottom: var(--spacing-lg);">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: var(--spacing-xs);">
+                        <span class="text-dim">USED</span>
+                        <span class="text-cyan"><span class="power-used">0</span> / <span class="power-max">2140</span></span>
+                    </div>
+                    <div class="power-progress-bar">
+                        <div class="power-progress-fill" style="width: 0%;"></div>
+                    </div>
+                </div>
+
+                <!-- Equipment Slots -->
+                <div class="card-header">
+                    <h3 class="card-title">Equipped Items</h3>
+                </div>
+                <div class="card-accent"></div>
+                
+                <div class="equipment-grid">
+                    <div class="equipment-slot" data-slot="head">
+                        <div class="equipment-placeholder">Head</div>
+                    </div>
+                    <div class="equipment-slot" data-slot="shoulders">
+                        <div class="equipment-placeholder">Shoulders</div>
+                    </div>
+                    <div class="equipment-slot" data-slot="back">
+                        <div class="equipment-placeholder">Back</div>
+                    </div>
+                    <div class="equipment-slot" data-slot="primary">
+                        <div class="equipment-placeholder">Primary</div>
+                    </div>
+                    <div class="equipment-slot" data-slot="chest">
+                        <div class="equipment-placeholder">Chest</div>
+                    </div>
+                    <div class="equipment-slot" data-slot="gloves">
+                        <div class="equipment-placeholder">Gloves</div>
+                    </div>
+                    <div class="equipment-slot" data-slot="legs">
+                        <div class="equipment-placeholder">Legs</div>
+                    </div>
+                    <div class="equipment-slot" data-slot="secondary">
+                        <div class="equipment-placeholder">Secondary</div>
+                    </div>
+                    <div class="equipment-slot" data-slot="bracers">
+                        <div class="equipment-placeholder">Bracers</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Main Inventory -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Available Equipment</h2>
+                    <button class="btn btn-primary">SORT BY POWER</button>
+                </div>
+                <div class="card-accent"></div>
+                
+                <!-- Inventory Filters -->
+                <div class="inventory-filters" style="padding: var(--spacing-md); border-bottom: 1px solid var(--border-gray);">
+                    <div style="display: flex; gap: var(--spacing-sm); align-items: center;">
+                        <span style="font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px;">FILTER:</span>
+                        <button class="filter-btn active" data-filter="all">ALL</button>
+                        <button class="filter-btn" data-filter="weapon">WEAPON</button>
+                        <button class="filter-btn" data-filter="armor">ARMOR</button>
+                        <button class="filter-btn" data-filter="slot">SLOT</button>
+                    </div>
+                    <div id="slot-filters" class="slot-filters" style="display: none; margin-top: var(--spacing-sm); margin-left: 45px;">
+                        <select class="slot-dropdown" id="slot-dropdown" style="
+                            padding: 6px 12px; 
+                            background-color: var(--bg-medium); 
+                            border: 1px solid var(--border-gray); 
+                            color: var(--text-normal); 
+                            font-size: 10px; 
+                            text-transform: uppercase; 
+                            letter-spacing: 1px;
+                        ">
+                            <option value="">SELECT SLOT</option>
+                            <option value="primary">PRIMARY</option>
+                            <option value="secondary">SECONDARY</option>
+                            <option value="head">HEAD</option>
+                            <option value="shoulders">SHOULDERS</option>
+                            <option value="chest">CHEST</option>
+                            <option value="gloves">GLOVES</option>
+                            <option value="legs">LEGS</option>
+                            <option value="back">BACK</option>
+                            <option value="bracers">BRACERS</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="inventory-grid" id="inventory-grid">
+                    <div class="page-loader">
+                        <p>Loading inventory items...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Initialize global game state -->
+    <script>
+        window.CourierGame = {
+            data: {
+                items: {},
+                playerLevel: 60,
+                paragonLevel: 40,
+                equippedItems: {
+                    primary: null,
+                    secondary: null,
+                    head: null,
+                    shoulders: null,
+                    chest: null,
+                    gloves: null,
+                    legs: null,
+                    back: null,
+                    bracers: null
+                }
+            }
+        };
+    </script>
+    <script src="assets/js/inventory.js"></script>
+    <script>
+        console.log('=== SIMPLE INVENTORY PAGE LOADING ===');
+        
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log('=== DOM CONTENT LOADED ===');
+            
+            // Check if InventorySystem is available
+            if (window.InventorySystem) {
+                console.log('InventorySystem found, initializing...');
+                try {
+                    await window.InventorySystem.init();
+                    console.log('InventorySystem initialized successfully');
+                } catch (error) {
+                    console.error('Error initializing InventorySystem:', error);
+                }
+            } else {
+                console.error('InventorySystem not found!');
+            }
+        });
+    </script>
+</body>
+</html>

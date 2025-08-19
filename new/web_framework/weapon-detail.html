@@ -1,0 +1,1428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weapon Details - Courier</title>
+    <link rel="stylesheet" href="assets/css/design-system.css?v=13">
+    <link rel="stylesheet" href="assets/css/main.css?v=13">
+    <link rel="stylesheet" href="assets/css/inventory.css?v=18">
+    <style>
+        .weapon-detail-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--spacing-lg);
+        }
+        
+        .weapon-header {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--spacing-xl);
+            margin-bottom: var(--spacing-xl);
+            padding: var(--spacing-lg);
+            background: var(--bg-medium);
+            border: 1px solid var(--border-gray);
+            border-radius: 8px;
+        }
+        
+        .weapon-display {
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            gap: var(--spacing-xl);
+            align-items: start;
+        }
+        
+        .weapon-visual-section {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-lg);
+        }
+        
+        .weapon-icon-large {
+            width: 400px;
+            height: 200px;
+            background: var(--bg-dark);
+            border: 3px solid var(--border-gray);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            padding: var(--spacing-md);
+        }
+        
+        .weapon-icon-large img {
+            max-width: 370px;
+            max-height: 170px;
+            object-fit: contain;
+        }
+        
+        .weapon-mods {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .weapon-mods-advanced {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: var(--spacing-sm);
+        }
+        
+        .mod-slot {
+            width: 72px;
+            height: 72px;
+            background: var(--bg-dark);
+            border: 2px solid #666;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            padding: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .mod-slot:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
+        }
+        
+        .mod-slot img {
+            max-width: 60px;
+            max-height: 60px;
+            object-fit: contain;
+            opacity: 0.6;
+        }
+        
+        .mod-slot-label {
+            position: absolute;
+            bottom: 2px;
+            left: 2px;
+            right: 2px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            font-size: 8px;
+            font-weight: bold;
+            padding: 1px 2px;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        /* Equipped mod styling */
+        .mod-slot.equipped {
+            border-color: var(--primary-cyan);
+        }
+        
+        .mod-slot.equipped img {
+            opacity: 1;
+        }
+
+        /* Mod Categories */
+        .mod-sections {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-lg);
+        }
+
+        .mod-section {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-gray);
+            border-radius: 4px;
+            padding: var(--spacing-md);
+        }
+
+        .mod-section-title {
+            color: var(--text-bright);
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 0 0 var(--spacing-md) 0;
+            padding-bottom: var(--spacing-xs);
+            border-bottom: 1px solid var(--border-gray);
+        }
+
+        .permanent-note {
+            color: var(--primary-orange);
+            font-size: 10px;
+            font-weight: normal;
+        }
+
+        .mod-slot.permanent {
+            border-color: var(--primary-orange);
+            cursor: default;
+        }
+
+        .mod-slot.permanent:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        .permanent-indicator {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: var(--primary-orange);
+            color: var(--bg-black);
+            font-size: 6px;
+            font-weight: bold;
+            text-align: center;
+            padding: 1px;
+            letter-spacing: 0.5px;
+        }
+
+        .mod-slot.modifiable {
+            border-color: var(--primary-cyan);
+        }
+
+        .mod-slot.empty-slot {
+            border-style: dashed;
+            opacity: 0.7;
+        }
+
+        .mod-slot.empty-slot:hover {
+            opacity: 1;
+            border-color: var(--primary-cyan);
+        }
+        
+        /* Mod power rating */
+        .mod-slot .power-rating {
+            position: absolute;
+            bottom: 2px;
+            left: 2px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            font-size: 8px;
+            font-weight: bold;
+            padding: 1px 3px;
+            border-radius: 2px;
+        }
+        
+        /* Mod selector modal */
+        .mod-selector-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+        }
+        
+        .mod-selector-content {
+            background: var(--bg-dark);
+            border: 1px solid var(--border-gray);
+            border-radius: 8px;
+            padding: var(--spacing-lg);
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .mod-selector-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-lg);
+            padding-bottom: var(--spacing-sm);
+            border-bottom: 1px solid var(--border-gray);
+        }
+        
+        .mod-selector-title {
+            font-size: 16px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: var(--text-bright);
+        }
+        
+        .mod-selector-close {
+            background: none;
+            border: none;
+            color: var(--text-normal);
+            font-size: 20px;
+            cursor: pointer;
+            padding: 4px;
+        }
+        
+        .mod-selector-close:hover {
+            color: var(--text-bright);
+        }
+        
+        .mod-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: var(--spacing-sm);
+        }
+        
+        .mod-item {
+            width: 80px;
+            height: 80px;
+            background: var(--bg-medium);
+            border: 2px solid #666;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .mod-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
+        }
+        
+        .mod-item img {
+            max-width: 70px;
+            max-height: 70px;
+            object-fit: contain;
+        }
+        
+        .unequip-option {
+            background: var(--bg-medium);
+            border: 2px dashed #666;
+            color: var(--text-dim);
+            font-size: 10px;
+            text-transform: uppercase;
+            text-align: center;
+            padding: var(--spacing-sm);
+        }
+        
+        .unequip-option:hover {
+            border-color: var(--primary-cyan);
+            color: var(--text-bright);
+        }
+        
+        /* Make weapon icon background match rarity */
+        .weapon-icon-large.rarity-common { background-color: rgba(157, 157, 157, 0.2); }
+        .weapon-icon-large.rarity-uncommon { background-color: rgba(30, 255, 0, 0.2); }
+        .weapon-icon-large.rarity-rare { background-color: rgba(0, 112, 221, 0.2); }
+        .weapon-icon-large.rarity-epic { background-color: rgba(163, 53, 238, 0.2); }
+        .weapon-icon-large.rarity-legendary { background-color: rgba(255, 128, 0, 0.2); }
+        .weapon-icon-large.rarity-mythic { background-color: rgba(255, 0, 0, 0.2); }
+        .weapon-icon-large.rarity-primal { background-color: rgba(0, 255, 255, 0.2); }
+        
+        .weapon-info {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+        
+        .weapon-title {
+            font-size: 32px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin: 0;
+            color: var(--text-bright);
+        }
+        
+        .weapon-type {
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-dim);
+            margin: 0;
+        }
+        
+        .weapon-description {
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text-normal);
+            margin: var(--spacing-md) 0;
+        }
+        
+        .power-cost-large {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary-cyan);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--spacing-lg);
+        }
+        
+        .stat-section {
+            background: var(--bg-medium);
+            border: 1px solid var(--border-gray);
+            border-radius: 8px;
+            padding: var(--spacing-lg);
+        }
+        
+        .stat-section-title {
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-dim);
+            margin-bottom: var(--spacing-md);
+            border-bottom: 1px solid var(--border-gray);
+            padding-bottom: var(--spacing-sm);
+        }
+        
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .stat-row:last-child {
+            border-bottom: none;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-normal);
+        }
+        
+        .stat-value {
+            font-size: 14px;
+            font-weight: bold;
+            color: var(--text-bright);
+        }
+        
+        /* Stat modifier colors */
+        :root {
+            --stat-positive: #00ff88;
+            --stat-negative: #ff4444;
+        }
+        
+        .back-button {
+            background: var(--bg-dark);
+            border: 1px solid var(--border-gray);
+            color: var(--text-normal);
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 12px;
+            transition: all 0.3s ease;
+            display: inline-block;
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .back-button:hover {
+            background: var(--primary-cyan);
+            color: var(--bg-black);
+            border-color: var(--primary-cyan);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <div class="nav-logo"></div>
+            <div class="nav-title">
+                <div class="nav-username">AGENT RECON-7</div>
+                <div class="nav-level">LEVEL 60 • PARAGON 40</div>
+            </div>
+        </div>
+        <div class="nav-menu">
+            <a href="game/dashboard.html" class="nav-item">CHARACTER</a>
+            <a href="inventory.html" class="nav-item active">INVENTORY</a>
+            <a href="missions.html" class="nav-item">MISSIONS</a>
+            <a href="skills.html" class="nav-item">SKILLS</a>
+            <a href="loadouts.html" class="nav-item">LOADOUTS</a>
+            <a href="build-planner.html" class="nav-item">BUILD PLANNER</a>
+            <a href="marketplace.html" class="nav-item">MARKET</a>
+            <a href="crafting.html" class="nav-item">CRAFTING</a>
+        </div>
+        <div class="nav-actions">
+            <a href="inventory.html" class="nav-action">INVENTORY</a>
+        </div>
+    </nav>
+
+    <div class="page-container">
+        <div class="weapon-detail-container">
+            <a href="inventory.html" class="back-button">← Back to Inventory</a>
+            
+            <div class="weapon-header" id="weapon-header">
+                <!-- Weapon icon and info will be populated by JavaScript -->
+            </div>
+            
+            <div class="stats-grid" id="stats-grid">
+                <!-- Weapon stats will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Mod Selector Modal -->
+    <div class="mod-selector-modal" id="mod-selector-modal">
+        <div class="mod-selector-content">
+            <div class="mod-selector-header">
+                <div class="mod-selector-title" id="mod-selector-title">Select Mod</div>
+                <button class="mod-selector-close" onclick="weaponDetail.closeModSelector()">×</button>
+            </div>
+            <div class="mod-grid" id="mod-grid">
+                <!-- Mod options will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="assets/js/api-client.js"></script>
+    <script src="assets/js/tooltips.js"></script>
+    <script>
+        class WeaponDetail {
+            constructor() {
+                this.weaponId = null;
+                this.weapon = null;
+                this.equippedMods = {};
+                this.availableMods = [];
+            }
+
+            async init() {
+                console.log('WeaponDetail.init() called');
+                
+                // Get weapon ID from URL parameters
+                const urlParams = new URLSearchParams(window.location.search);
+                this.weaponId = urlParams.get('id');
+                
+                console.log('Weapon ID from URL:', this.weaponId);
+                
+                if (!this.weaponId) {
+                    console.error('No weapon ID provided in URL');
+                    this.showError('No weapon ID provided');
+                    return;
+                }
+
+                console.log('Loading weapon data...');
+                await this.loadWeapon();
+                
+                console.log('Loading weapon mods...');
+                await this.loadWeaponMods();
+                await this.loadAvailableMods();
+                
+                console.log('Rendering weapon...');
+                this.renderWeapon();
+            }
+
+            async loadWeapon() {
+                try {
+                    console.log('Loading weapon data for ID:', this.weaponId);
+                    console.log('CourierAPI available:', !!window.CourierAPI);
+                    
+                    // Try direct fetch first as fallback
+                    try {
+                        console.log('Trying direct fetch to inventory...');
+                        const directResponse = await fetch('http://localhost:3001/api/player/1/inventory');
+                        console.log('Direct inventory fetch status:', directResponse.status);
+                        
+                        if (directResponse.ok) {
+                            const directData = await directResponse.json();
+                            console.log('Direct inventory data received:', directData.success);
+                            
+                            const allItems = directData.inventory || [];
+                            console.log('Total items in inventory:', allItems.length);
+                            
+                            // Find the weapon with the matching ID
+                            this.weapon = allItems.find(item => item.id === this.weaponId);
+                            console.log('Found weapon via direct fetch:', this.weapon ? this.weapon.name : 'NOT FOUND');
+                            
+                            if (this.weapon && this.weapon.type === 'weapon') {
+                                console.log('Weapon loaded successfully via direct fetch');
+                                return;
+                            }
+                        }
+                    } catch (directError) {
+                        console.error('Direct inventory fetch failed:', directError);
+                    }
+                    
+                    // Fallback to API client
+                    console.log('Calling CourierAPI.getInventory()...');
+                    const response = await window.CourierAPI.getInventory();
+                    console.log('API response:', response);
+                    
+                    const allItems = response.inventory || [];
+                    console.log('All items:', allItems.length);
+                    
+                    // Find the weapon with the matching ID
+                    this.weapon = allItems.find(item => item.id === this.weaponId);
+                    console.log('Found weapon:', this.weapon);
+                    
+                    if (!this.weapon) {
+                        console.error('Weapon not found with ID:', this.weaponId);
+                        this.showError('Weapon not found');
+                        return;
+                    }
+                    
+                    if (this.weapon.type !== 'weapon') {
+                        console.error('Item is not a weapon, type:', this.weapon.type);
+                        this.showError('Item is not a weapon');
+                        return;
+                    }
+                    
+                    console.log('Weapon loaded successfully');
+                    
+                } catch (error) {
+                    console.error('Failed to load weapon:', error);
+                    console.error('Error details:', error.stack);
+                    this.showError('Failed to load weapon data: ' + error.message);
+                }
+            }
+
+            async loadWeaponMods() {
+                try {
+                    console.log('Loading equipped mods for weapon:', this.weaponId);
+                    const response = await window.CourierAPI.getWeaponMods(this.weaponId);
+                    this.equippedMods = response.mods || {};
+                    console.log('Loaded equipped mods:', this.equippedMods);
+                } catch (error) {
+                    console.error('Failed to load weapon mods:', error);
+                    this.equippedMods = {};
+                }
+            }
+
+            async loadAvailableMods() {
+                try {
+                    console.log('Loading available mods...');
+                    console.log('CourierAPI object:', window.CourierAPI);
+                    console.log('API base URL:', window.CourierAPI.baseUrl);
+                    
+                    // Try direct fetch first as fallback
+                    try {
+                        const directResponse = await fetch('http://localhost:3001/api/player/1/mods');
+                        console.log('Direct fetch response status:', directResponse.status);
+                        
+                        if (directResponse.ok) {
+                            const directData = await directResponse.json();
+                            console.log('Direct fetch data:', directData);
+                            this.availableMods = directData.mods || [];
+                            console.log('Loaded available mods via direct fetch:', this.availableMods.length, 'mods');
+                            return;
+                        }
+                    } catch (directError) {
+                        console.error('Direct fetch failed:', directError);
+                    }
+                    
+                    // Fallback to API client
+                    const response = await window.CourierAPI.getAvailableMods();
+                    this.availableMods = response.mods || [];
+                    console.log('Loaded available mods via API client:', this.availableMods.length, 'mods');
+                } catch (error) {
+                    console.error('Failed to load available mods:', error);
+                    console.error('Error details:', error.stack);
+                    this.availableMods = [];
+                }
+            }
+
+            renderWeapon() {
+                console.log('renderWeapon called with weapon:', this.weapon);
+                if (!this.weapon) {
+                    console.error('No weapon data available for rendering');
+                    return;
+                }
+
+                console.log('Calling renderHeader...');
+                this.renderHeader();
+                
+                console.log('Calling renderStats...');
+                this.renderStats();
+                
+                console.log('Weapon rendering complete');
+            }
+
+            renderHeader() {
+                try {
+                    console.log('renderHeader called with weapon:', this.weapon);
+                    const header = document.getElementById('weapon-header');
+                    
+                    if (!header) {
+                        console.error('weapon-header element not found');
+                        return;
+                    }
+                    
+                    // Set rarity class and background color
+                    header.className = `weapon-header rarity-${this.weapon.rarity}`;
+                    
+                    const iconPath = this.weapon.icon;
+                    console.log('Calling renderModSlots...');
+                    const modSlotsHTML = this.renderModSlots();
+                    console.log('Generated mod slots HTML:', modSlotsHTML);
+                    
+                    // Calculate total power including mods
+                    const modifiedStats = this.getModifiedWeaponStats();
+                    let powerDisplay;
+                    
+                    if (this.weaponId.includes('_modified_')) {
+                        // For modified weapons, show total power with base power in parentheses
+                        const totalPower = this.weapon.power_cost || 0;
+                        const basePower = this.weapon.base_power_cost || 0;
+                        
+                        powerDisplay = `${totalPower} (${basePower})`;
+                    } else {
+                        // For regular weapons, show breakdown with mod bonuses
+                        const basePower = this.weapon.power_cost || 0;
+                        const totalPower = modifiedStats.total_power_cost || basePower;
+                        const modPower = totalPower - basePower;
+                        
+                        powerDisplay = modPower > 0 ? 
+                            `${basePower} <span style="color: var(--primary-cyan);">+${modPower}</span> = ${totalPower}` : 
+                            `${totalPower}`;
+                    }
+                    
+                    const headerHTML = `
+                        <div class="weapon-display">
+                            <div class="weapon-visual-section">
+                                <div class="weapon-icon-large rarity-${this.weapon.rarity}">
+                                    <img src="${iconPath}?v=${Date.now()}" alt="${this.weapon.name}" />
+                                </div>
+                                ${modSlotsHTML}
+                            </div>
+                            <div class="weapon-info">
+                                <h1 class="weapon-title">${this.weapon.name}</h1>
+                                <p class="weapon-type">${this.weapon.item_subtype || this.weapon.weapon_type}</p>
+                                <div class="power-cost-large">
+                                    <span>⚡</span>
+                                    <span>${powerDisplay}</span>
+                                </div>
+                                <p class="weapon-description">${this.weapon.description}</p>
+                                ${this.weaponId.includes('_modified_') ? `
+                                <div class="weapon-actions" style="margin-top: 16px;">
+                                    <button class="save-weapon-btn" onclick="weaponDetail.saveModifiedWeapon()" style="background: var(--primary-orange); border: none; color: var(--bg-black); padding: 12px 24px; border-radius: 4px; text-transform: uppercase; letter-spacing: 1px; font-size: 12px; font-weight: bold; cursor: pointer; transition: all 0.3s ease;">
+                                        Update Modified Weapon
+                                    </button>
+                                </div>
+                                ` : `
+                                <div class="weapon-actions" style="margin-top: 16px;">
+                                    <button class="save-weapon-btn" onclick="weaponDetail.saveModifiedWeapon()" style="background: var(--primary-cyan); border: none; color: var(--bg-black); padding: 12px 24px; border-radius: 4px; text-transform: uppercase; letter-spacing: 1px; font-size: 12px; font-weight: bold; cursor: pointer; transition: all 0.3s ease;">
+                                        Save Modified Weapon
+                                    </button>
+                                </div>
+                                `}
+                            </div>
+                        </div>
+                    `;
+                    
+                    console.log('Setting header HTML:', headerHTML);
+                    header.innerHTML = headerHTML;
+                    
+                    console.log('Header HTML set successfully');
+                } catch (error) {
+                    console.error('Error in renderHeader:', error);
+                }
+            }
+
+            renderModSlots() {
+                console.log('renderModSlots called');
+                
+                // Define mod categories
+                const attachmentMods = [
+                    { name: 'Scope', icon: 'assets/images/Icons/Mods/Scope.png' },
+                    { name: 'Barrel', icon: 'assets/images/Icons/Mods/Barrel.png' },
+                    { name: 'Foregrip', icon: 'assets/images/Icons/Mods/Foregrip.png' },
+                    { name: 'Magazine', icon: 'assets/images/Icons/Mods/Mag.png' },
+                    { name: 'Stock', icon: 'assets/images/Icons/Mods/Stock.png' }
+                ];
+                
+                const catalystMods = [
+                    { name: 'Targeting', icon: 'assets/images/Icons/Skill Icons/Skill_Placeholder.png' },
+                    { name: 'Power', icon: 'assets/images/Icons/Skill Icons/Skill_Placeholder2.png' },
+                    { name: 'AI', icon: 'assets/images/Icons/Skill Icons/Skill_Placeholder3.png' },
+                    { name: 'Ballistics', icon: 'assets/images/Icons/Skill Icons/Skill_Placeholder.png' },
+                    { name: 'Neural', icon: 'assets/images/Icons/Skill Icons/Skill_Placeholder2.png' }
+                ];
+
+                console.log('Attachment mod slots:', attachmentMods);
+                console.log('Catalyst mod slots:', catalystMods);
+                console.log('Equipped mods:', this.equippedMods);
+
+                const renderSlotSection = (slots, category, canModify = true) => {
+                    return slots.map(slot => {
+                        const slotType = slot.name.toLowerCase();
+                        const equippedMod = this.equippedMods[slotType];
+                        
+                        let modDisplay = '';
+                        let slotClass = 'mod-slot';
+                        let clickHandler = '';
+                        let tooltipHandlers = '';
+                        
+                        // Add category class for styling
+                        slotClass += ` ${category}-mod`;
+                        
+                        if (equippedMod && equippedMod.id) {
+                            // Show equipped mod
+                            slotClass += ` equipped rarity-${equippedMod.rarity}`;
+                            modDisplay = `
+                                <img src="${equippedMod.icon}?v=${Date.now()}" alt="${equippedMod.name}" />
+                                <div class="power-rating">${equippedMod.power_cost || 0}</div>
+                            `;
+                            
+                            // Add tooltip for equipped mods
+                            tooltipHandlers = `onmouseenter="weaponDetail.showModTooltip(event, '${equippedMod.id}')" 
+                                               onmouseleave="weaponDetail.hideModTooltip()"`;
+                            
+                            // Only add click handler if mod can be modified
+                            if (canModify) {
+                                clickHandler = `onclick="weaponDetail.openModSelector('${slotType}')"`;
+                                slotClass += ' modifiable';
+                            } else {
+                                slotClass += ' permanent';
+                            }
+                        } else {
+                            // Show empty slot placeholder - always clickable to add mods
+                            modDisplay = `
+                                <img src="${slot.icon}?v=${Date.now()}" alt="${slot.name}" />
+                            `;
+                            clickHandler = `onclick="weaponDetail.openModSelector('${slotType}')"`;
+                            slotClass += ' empty-slot';
+                        }
+                        
+                        const slotHTML = `
+                            <div class="${slotClass}" data-mod-type="${slotType}" 
+                                 data-category="${category}"
+                                 ${clickHandler}
+                                 ${tooltipHandlers}>
+                                ${modDisplay}
+                                <div class="mod-slot-label">${slot.name}</div>
+                                ${!canModify && equippedMod ? '<div class="permanent-indicator">PERMANENT</div>' : ''}
+                            </div>
+                        `;
+                        console.log(`Generated HTML for ${slot.name} (${category}):`, slotHTML);
+                        return slotHTML;
+                    }).join('');
+                };
+
+                // Determine if catalyst mods can be modified (only on non-modified weapons)
+                const canModifyCatalysts = !this.weaponId.includes('_modified_');
+                
+                const attachmentModHTML = renderSlotSection(attachmentMods, 'attachment', true);
+                const catalystModHTML = renderSlotSection(catalystMods, 'catalyst', canModifyCatalysts);
+                
+                const html = `
+                    <div class="mod-sections">
+                        <div class="mod-section attachment-section">
+                            <h4 class="mod-section-title">Attachment Mods</h4>
+                            <div class="weapon-mods attachment-mods">
+                                ${attachmentModHTML}
+                            </div>
+                        </div>
+                        <div class="mod-section catalyst-section">
+                            <h4 class="mod-section-title">Catalyst Mods ${!canModifyCatalysts ? '<span class="permanent-note">(Permanent)</span>' : ''}</h4>
+                            <div class="weapon-mods catalyst-mods">
+                                ${catalystModHTML}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                console.log('Final mod slots HTML:', html);
+                return html;
+            }
+
+            renderStats() {
+                const statsGrid = document.getElementById('stats-grid');
+                const modifiedStats = this.getModifiedWeaponStats();
+                
+                let html = '';
+                
+                // Core Combat Stats
+                const damageDisplay = this.getStatDisplay('damage_min', 'damage_max');
+                const fireRateDisplay = this.getStatDisplay('fire_rate');
+                const dpsDisplay = this.calculateModifiedDPS(modifiedStats);
+                
+                html += `
+                    <div class="stat-section">
+                        <div class="stat-section-title">Core Combat Stats</div>
+                        <div class="stat-row">
+                            <span class="stat-label">Damage</span>
+                            <span class="stat-value">${damageDisplay}</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Fire Rate</span>
+                            <span class="stat-value">${fireRateDisplay} RPS</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">DPS</span>
+                            <span class="stat-value">${dpsDisplay}</span>
+                        </div>
+                    </div>
+                `;
+                
+                // Magazine & Ammo
+                const magazineSizeDisplay = this.getStatDisplay('magazine_size');
+                const ammoCapacityDisplay = this.getStatDisplay('ammo_capacity');
+                const magazinesCount = Math.floor(modifiedStats.ammo_capacity / modifiedStats.magazine_size);
+                
+                html += `
+                    <div class="stat-section">
+                        <div class="stat-section-title">Magazine & Ammo</div>
+                        <div class="stat-row">
+                            <span class="stat-label">Magazine Size</span>
+                            <span class="stat-value">${magazineSizeDisplay}</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Ammo Capacity</span>
+                            <span class="stat-value">${ammoCapacityDisplay}</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Magazines</span>
+                            <span class="stat-value">${magazinesCount}</span>
+                        </div>
+                    </div>
+                `;
+                
+                // Speed & Handling
+                const reloadSpeedDisplay = this.getStatDisplay('reload_speed');
+                const adsSpeedDisplay = this.getStatDisplay('ads_speed');
+                const handlingDisplay = this.getStatDisplay('handling');
+                
+                html += `
+                    <div class="stat-section">
+                        <div class="stat-section-title">Speed & Handling</div>
+                        <div class="stat-row">
+                            <span class="stat-label">Reload Speed</span>
+                            <span class="stat-value">${reloadSpeedDisplay}s</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">ADS Speed</span>
+                            <span class="stat-value">${adsSpeedDisplay}s</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Handling</span>
+                            <span class="stat-value">${handlingDisplay}/100</span>
+                        </div>
+                    </div>
+                `;
+                
+                // Accuracy & Control
+                const accuracyDisplay = this.getStatDisplay('accuracy');
+                const stabilityDisplay = this.getStatDisplay('stability');
+                const recoilDisplay = this.getStatDisplay('recoil');
+                
+                html += `
+                    <div class="stat-section">
+                        <div class="stat-section-title">Accuracy & Control</div>
+                        <div class="stat-row">
+                            <span class="stat-label">Accuracy</span>
+                            <span class="stat-value">${accuracyDisplay}/100</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Stability</span>
+                            <span class="stat-value">${stabilityDisplay}/100</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Recoil</span>
+                            <span class="stat-value">${recoilDisplay}/100</span>
+                        </div>
+                    </div>
+                `;
+                
+                // Range
+                const rangeEffectiveDisplay = this.getStatDisplay('range_effective');
+                const rangeMaxDisplay = this.getStatDisplay('range_max');
+                const effectiveRangeDesc = this.getEffectiveRangeDescription(modifiedStats.range_effective);
+                
+                html += `
+                    <div class="stat-section">
+                        <div class="stat-section-title">Range</div>
+                        <div class="stat-row">
+                            <span class="stat-label">Effective Range</span>
+                            <span class="stat-value">${effectiveRangeDesc} (${rangeEffectiveDisplay}m)</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Maximum Range</span>
+                            <span class="stat-value">${rangeMaxDisplay}m</span>
+                        </div>
+                    </div>
+                `;
+                
+                // Advanced Mod Bonuses Section
+                const advancedStats = modifiedStats.advanced_stats;
+                const hasAdvancedStats = Object.values(advancedStats).some(value => value > 0);
+                
+                if (hasAdvancedStats) {
+                    html += `
+                        <div class="stat-section">
+                            <div class="stat-section-title">Advanced Mod Bonuses</div>
+                    `;
+                    
+                    if (advancedStats.damage_percent > 0) {
+                        html += `<div class="stat-row"><span class="stat-label">Damage Bonus</span><span class="stat-value" style="color: var(--stat-positive);">+${advancedStats.damage_percent}%</span></div>`;
+                    }
+                    if (advancedStats.crit_chance_percent > 0) {
+                        html += `<div class="stat-row"><span class="stat-label">Critical Hit Chance</span><span class="stat-value" style="color: var(--stat-positive);">+${advancedStats.crit_chance_percent}%</span></div>`;
+                    }
+                    if (advancedStats.armor_penetration > 0) {
+                        html += `<div class="stat-row"><span class="stat-label">Armor Penetration</span><span class="stat-value" style="color: var(--stat-positive);">+${advancedStats.armor_penetration}%</span></div>`;
+                    }
+                    if (advancedStats.damage_multiplier_vs_elites > 0) {
+                        html += `<div class="stat-row"><span class="stat-label">Damage vs Elites</span><span class="stat-value" style="color: var(--stat-positive);">+${advancedStats.damage_multiplier_vs_elites}%</span></div>`;
+                    }
+                    if (advancedStats.damage_multiplier_vs_bosses > 0) {
+                        html += `<div class="stat-row"><span class="stat-label">Damage vs Bosses</span><span class="stat-value" style="color: var(--stat-positive);">+${advancedStats.damage_multiplier_vs_bosses}%</span></div>`;
+                    }
+                    
+                    html += `</div>`;
+                }
+                
+                // Elemental Damage Section
+                const hasElementalDamage = advancedStats.fire_damage_flat > 0 || advancedStats.ice_damage_flat > 0 || 
+                                          advancedStats.electric_damage_flat > 0 || advancedStats.poison_damage_flat > 0 ||
+                                          advancedStats.fire_damage_percent > 0 || advancedStats.ice_damage_percent > 0 ||
+                                          advancedStats.electric_damage_percent > 0 || advancedStats.poison_damage_percent > 0;
+                
+                if (hasElementalDamage) {
+                    html += `
+                        <div class="stat-section">
+                            <div class="stat-section-title">Elemental Damage</div>
+                    `;
+                    
+                    if (advancedStats.fire_damage_flat > 0 || advancedStats.fire_damage_percent > 0) {
+                        let fireDisplay = '';
+                        if (advancedStats.fire_damage_flat > 0) fireDisplay += `+${advancedStats.fire_damage_flat} `;
+                        if (advancedStats.fire_damage_percent > 0) fireDisplay += `(+${advancedStats.fire_damage_percent}%) `;
+                        html += `<div class="stat-row"><span class="stat-label">Fire Damage</span><span class="stat-value" style="color: #ff6600;">${fireDisplay.trim()}</span></div>`;
+                    }
+                    if (advancedStats.ice_damage_flat > 0 || advancedStats.ice_damage_percent > 0) {
+                        let iceDisplay = '';
+                        if (advancedStats.ice_damage_flat > 0) iceDisplay += `+${advancedStats.ice_damage_flat} `;
+                        if (advancedStats.ice_damage_percent > 0) iceDisplay += `(+${advancedStats.ice_damage_percent}%) `;
+                        html += `<div class="stat-row"><span class="stat-label">Ice Damage</span><span class="stat-value" style="color: #66ccff;">${iceDisplay.trim()}</span></div>`;
+                    }
+                    if (advancedStats.electric_damage_flat > 0 || advancedStats.electric_damage_percent > 0) {
+                        let electricDisplay = '';
+                        if (advancedStats.electric_damage_flat > 0) electricDisplay += `+${advancedStats.electric_damage_flat} `;
+                        if (advancedStats.electric_damage_percent > 0) electricDisplay += `(+${advancedStats.electric_damage_percent}%) `;
+                        html += `<div class="stat-row"><span class="stat-label">Electric Damage</span><span class="stat-value" style="color: #ffff00;">${electricDisplay.trim()}</span></div>`;
+                    }
+                    if (advancedStats.poison_damage_flat > 0 || advancedStats.poison_damage_percent > 0) {
+                        let poisonDisplay = '';
+                        if (advancedStats.poison_damage_flat > 0) poisonDisplay += `+${advancedStats.poison_damage_flat} `;
+                        if (advancedStats.poison_damage_percent > 0) poisonDisplay += `(+${advancedStats.poison_damage_percent}%) `;
+                        html += `<div class="stat-row"><span class="stat-label">Poison Damage</span><span class="stat-value" style="color: #66ff66;">${poisonDisplay.trim()}</span></div>`;
+                    }
+                    
+                    html += `</div>`;
+                }
+                
+                statsGrid.innerHTML = html;
+            }
+
+            // Helper method to display stats with mod bonuses
+            getStatDisplay(statName1, statName2 = null) {
+                const modifiedStats = this.getModifiedWeaponStats();
+                
+                if (statName2) {
+                    // For damage ranges (min-max)
+                    const baseMin = this.weapon[statName1] || 0;
+                    const baseMax = this.weapon[statName2] || 0;
+                    const modMin = modifiedStats[statName1] || 0;
+                    const modMax = modifiedStats[statName2] || 0;
+                    
+                    if (baseMin !== modMin || baseMax !== modMax) {
+                        const minBonus = modMin - baseMin;
+                        const maxBonus = modMax - baseMax;
+                        return `${baseMin}-${baseMax} <span style="color: var(--stat-positive);">(+${minBonus}-+${maxBonus})</span> = ${modMin}-${modMax}`;
+                    }
+                    return `${modMin}-${modMax}`;
+                } else {
+                    // For single stats
+                    const baseValue = this.weapon[statName1] || 0;
+                    const modValue = modifiedStats[statName1] || 0;
+                    
+                    if (baseValue !== modValue) {
+                        const bonus = modValue - baseValue;
+                        const bonusColor = bonus > 0 ? 'var(--stat-positive)' : 'var(--stat-negative)';
+                        const bonusText = bonus > 0 ? `+${bonus}` : `${bonus}`;
+                        return `${baseValue} <span style="color: ${bonusColor};">(${bonusText})</span> = ${modValue}`;
+                    }
+                    return `${modValue}`;
+                }
+            }
+
+            calculateDPS() {
+                const avgDamage = (this.weapon.damage_min + this.weapon.damage_max) / 2;
+                const dps = Math.round(avgDamage * this.weapon.fire_rate);
+                return dps;
+            }
+            
+            calculateModifiedDPS(modifiedStats) {
+                const avgDamage = (modifiedStats.damage_min + modifiedStats.damage_max) / 2;
+                const dps = Math.round(avgDamage * modifiedStats.fire_rate);
+                const baseDPS = this.calculateDPS();
+                
+                if (dps !== baseDPS) {
+                    const bonus = dps - baseDPS;
+                    const bonusColor = bonus > 0 ? 'var(--stat-positive)' : 'var(--stat-negative)';
+                    const bonusText = bonus > 0 ? `+${bonus}` : `${bonus}`;
+                    return `${baseDPS} <span style="color: ${bonusColor};">(${bonusText})</span> = ${dps}`;
+                }
+                return `${dps}`;
+            }
+
+            getEffectiveRangeDescription(range = null) {
+                const effectiveRange = range || this.weapon.range_effective;
+                
+                if (effectiveRange <= 30) {
+                    return "Very Close";
+                } else if (effectiveRange <= 60) {
+                    return "Close";
+                } else if (effectiveRange <= 120) {
+                    return "Medium";
+                } else if (effectiveRange <= 200) {
+                    return "Long";
+                } else {
+                    return "Very Long";
+                }
+            }
+
+            openModSelector(slotType) {
+                console.log('Opening mod selector for:', slotType);
+                
+                const modal = document.getElementById('mod-selector-modal');
+                const title = document.getElementById('mod-selector-title');
+                const modGrid = document.getElementById('mod-grid');
+                
+                title.textContent = `Select ${slotType.charAt(0).toUpperCase() + slotType.slice(1)}`;
+                
+                // Clear existing mods
+                modGrid.innerHTML = '';
+                
+                // Add unequip option if something is currently equipped
+                const currentMod = this.equippedMods[slotType];
+                if (currentMod && currentMod.id) {
+                    const unequipDiv = document.createElement('div');
+                    unequipDiv.className = 'mod-item unequip-option';
+                    unequipDiv.innerHTML = 'Unequip';
+                    unequipDiv.onclick = () => this.unequipMod(slotType);
+                    modGrid.appendChild(unequipDiv);
+                }
+                
+                // Filter available mods by type
+                const compatibleMods = this.availableMods.filter(mod => mod.mod_type === slotType);
+                console.log('Compatible mods for', slotType, ':', compatibleMods);
+                
+                compatibleMods.forEach(mod => {
+                    const modDiv = document.createElement('div');
+                    modDiv.className = `mod-item rarity-${mod.rarity}`;
+                    modDiv.innerHTML = `
+                        <img src="${mod.icon}?v=${Date.now()}" alt="${mod.name}" />
+                        <div class="power-rating">${mod.power_cost || 0}</div>
+                    `;
+                    modDiv.onclick = () => this.equipMod(slotType, mod.id);
+                    
+                    // Add tooltip
+                    modDiv.addEventListener('mouseenter', (e) => {
+                        if (window.CourierTooltips) {
+                            window.CourierTooltips.showTooltip(e, this.transformModForTooltip(mod));
+                        }
+                    });
+                    modDiv.addEventListener('mouseleave', () => {
+                        if (window.CourierTooltips) {
+                            window.CourierTooltips.hideTooltip();
+                        }
+                    });
+                    
+                    modGrid.appendChild(modDiv);
+                });
+                
+                modal.style.display = 'flex';
+            }
+            
+            closeModSelector() {
+                const modal = document.getElementById('mod-selector-modal');
+                modal.style.display = 'none';
+            }
+            
+            async equipMod(slotType, modId) {
+                try {
+                    console.log(`Equipping mod ${modId} to ${slotType} slot`);
+                    await window.CourierAPI.equipWeaponMod(this.weaponId, slotType, modId);
+                    
+                    // Reload data and refresh display
+                    await this.loadWeaponMods();
+                    await this.loadAvailableMods();
+                    this.renderWeapon();
+                    this.closeModSelector();
+                    
+                    console.log('Mod equipped successfully');
+                } catch (error) {
+                    console.error('Failed to equip mod:', error);
+                    alert('Failed to equip mod: ' + error.message);
+                }
+            }
+            
+            async unequipMod(slotType) {
+                try {
+                    console.log(`Unequipping mod from ${slotType} slot`);
+                    await window.CourierAPI.unequipWeaponMod(this.weaponId, slotType);
+                    
+                    // Reload data and refresh display
+                    await this.loadWeaponMods();
+                    await this.loadAvailableMods();
+                    this.renderWeapon();
+                    this.closeModSelector();
+                    
+                    console.log('Mod unequipped successfully');
+                } catch (error) {
+                    console.error('Failed to unequip mod:', error);
+                    alert('Failed to unequip mod: ' + error.message);
+                }
+            }
+            
+            // Calculate weapon stats including mod bonuses
+            getModifiedWeaponStats() {
+                const baseStats = { ...this.weapon };
+                
+                // If this is a modified weapon, the stats are already baked in
+                if (this.weaponId.includes('_modified_')) {
+                    console.log('Returning stats for modified weapon');
+                    // For modified weapons, extract advanced stats from the database fields
+                    baseStats.advanced_stats = {
+                        damage_percent: this.weapon.damage_percent || 0,
+                        crit_chance_percent: this.weapon.crit_chance_percent || 0,
+                        fire_damage_flat: this.weapon.fire_damage_flat || 0,
+                        fire_damage_percent: this.weapon.fire_damage_percent || 0,
+                        ice_damage_flat: this.weapon.ice_damage_flat || 0,
+                        ice_damage_percent: this.weapon.ice_damage_percent || 0,
+                        electric_damage_flat: this.weapon.electric_damage_flat || 0,
+                        electric_damage_percent: this.weapon.electric_damage_percent || 0,
+                        poison_damage_flat: this.weapon.poison_damage_flat || 0,
+                        poison_damage_percent: this.weapon.poison_damage_percent || 0,
+                        armor_penetration: this.weapon.armor_penetration || 0,
+                        damage_multiplier_vs_elites: this.weapon.damage_multiplier_vs_elites || 0,
+                        damage_multiplier_vs_bosses: this.weapon.damage_multiplier_vs_bosses || 0
+                    };
+                    // The total power cost is already in the weapon's power_cost field
+                    baseStats.total_power_cost = this.weapon.power_cost;
+                    return baseStats;
+                }
+                
+                // Initialize advanced stats containers for non-modified weapons
+                baseStats.advanced_stats = {
+                    damage_percent: 0,
+                    crit_chance_percent: 0,
+                    fire_damage_flat: 0,
+                    fire_damage_percent: 0,
+                    ice_damage_flat: 0,
+                    ice_damage_percent: 0,
+                    electric_damage_flat: 0,
+                    electric_damage_percent: 0,
+                    poison_damage_flat: 0,
+                    poison_damage_percent: 0,
+                    armor_penetration: 0,
+                    damage_multiplier_vs_elites: 0,
+                    damage_multiplier_vs_bosses: 0
+                };
+                
+                // Apply mod bonuses
+                Object.values(this.equippedMods).forEach(mod => {
+                    if (mod && mod.id) {
+                        // Apply basic stat modifiers from mods
+                        if (mod.damage_min) baseStats.damage_min = (baseStats.damage_min || 0) + mod.damage_min;
+                        if (mod.damage_max) baseStats.damage_max = (baseStats.damage_max || 0) + mod.damage_max;
+                        if (mod.fire_rate) baseStats.fire_rate = (baseStats.fire_rate || 0) + mod.fire_rate;
+                        if (mod.magazine_size) baseStats.magazine_size = (baseStats.magazine_size || 0) + mod.magazine_size;
+                        if (mod.ammo_capacity) baseStats.ammo_capacity = (baseStats.ammo_capacity || 0) + mod.ammo_capacity;
+                        if (mod.reload_speed) baseStats.reload_speed = (baseStats.reload_speed || 0) + mod.reload_speed;
+                        if (mod.ads_speed) baseStats.ads_speed = (baseStats.ads_speed || 0) + mod.ads_speed;
+                        if (mod.handling) baseStats.handling = (baseStats.handling || 0) + mod.handling;
+                        if (mod.range_effective) baseStats.range_effective = (baseStats.range_effective || 0) + mod.range_effective;
+                        if (mod.range_max) baseStats.range_max = (baseStats.range_max || 0) + mod.range_max;
+                        if (mod.recoil) baseStats.recoil = (baseStats.recoil || 0) + mod.recoil;
+                        if (mod.accuracy) baseStats.accuracy = (baseStats.accuracy || 0) + mod.accuracy;
+                        if (mod.stability) baseStats.stability = (baseStats.stability || 0) + mod.stability;
+                        if (mod.crit_chance) baseStats.crit_chance = (baseStats.crit_chance || 0) + mod.crit_chance;
+                        
+                        // Apply advanced stat modifiers
+                        if (mod.damage_percent) baseStats.advanced_stats.damage_percent += mod.damage_percent;
+                        if (mod.crit_chance_percent) baseStats.advanced_stats.crit_chance_percent += mod.crit_chance_percent;
+                        if (mod.fire_damage_flat) baseStats.advanced_stats.fire_damage_flat += mod.fire_damage_flat;
+                        if (mod.fire_damage_percent) baseStats.advanced_stats.fire_damage_percent += mod.fire_damage_percent;
+                        if (mod.ice_damage_flat) baseStats.advanced_stats.ice_damage_flat += mod.ice_damage_flat;
+                        if (mod.ice_damage_percent) baseStats.advanced_stats.ice_damage_percent += mod.ice_damage_percent;
+                        if (mod.electric_damage_flat) baseStats.advanced_stats.electric_damage_flat += mod.electric_damage_flat;
+                        if (mod.electric_damage_percent) baseStats.advanced_stats.electric_damage_percent += mod.electric_damage_percent;
+                        if (mod.poison_damage_flat) baseStats.advanced_stats.poison_damage_flat += mod.poison_damage_flat;
+                        if (mod.poison_damage_percent) baseStats.advanced_stats.poison_damage_percent += mod.poison_damage_percent;
+                        if (mod.armor_penetration) baseStats.advanced_stats.armor_penetration += mod.armor_penetration;
+                        if (mod.damage_multiplier_vs_elites) baseStats.advanced_stats.damage_multiplier_vs_elites += mod.damage_multiplier_vs_elites;
+                        if (mod.damage_multiplier_vs_bosses) baseStats.advanced_stats.damage_multiplier_vs_bosses += mod.damage_multiplier_vs_bosses;
+                        
+                        // Calculate total power cost including mods
+                        baseStats.total_power_cost = (baseStats.total_power_cost || baseStats.power_cost || 0) + (mod.power_cost || 0);
+                    }
+                });
+                
+                return baseStats;
+            }
+
+            transformModForTooltip(mod) {
+                return {
+                    ...mod,
+                    powerCost: mod.power_cost,
+                    itemSubtype: mod.item_subtype,
+                    type: 'mod'
+                };
+            }
+
+            // Calculate estimated total mod power cost from advanced stats
+            calculateTotalModPower(advancedStats) {
+                // This is a rough estimation based on common mod power costs
+                let totalModPower = 0;
+                
+                // Basic mods typically cost 3-20 power
+                if (advancedStats.damage_percent > 0) totalModPower += Math.ceil(advancedStats.damage_percent * 1.5);
+                if (advancedStats.crit_chance_percent > 0) totalModPower += Math.ceil(advancedStats.crit_chance_percent * 1.2);
+                if (advancedStats.fire_damage_flat > 0) totalModPower += Math.ceil(advancedStats.fire_damage_flat * 0.3);
+                if (advancedStats.ice_damage_flat > 0) totalModPower += Math.ceil(advancedStats.ice_damage_flat * 0.3);
+                if (advancedStats.electric_damage_flat > 0) totalModPower += Math.ceil(advancedStats.electric_damage_flat * 0.3);
+                if (advancedStats.poison_damage_flat > 0) totalModPower += Math.ceil(advancedStats.poison_damage_flat * 0.3);
+                if (advancedStats.armor_penetration > 0) totalModPower += Math.ceil(advancedStats.armor_penetration * 0.8);
+                
+                return totalModPower;
+            }
+
+            // Show tooltip for equipped mods
+            showModTooltip(event, modId) {
+                const mod = this.findModById(modId);
+                if (mod && window.CourierTooltips) {
+                    const tooltipMod = this.transformModForTooltip(mod);
+                    window.CourierTooltips.showTooltip(event, tooltipMod);
+                }
+            }
+
+            // Hide mod tooltip
+            hideModTooltip() {
+                if (window.CourierTooltips) {
+                    window.CourierTooltips.hideTooltip();
+                }
+            }
+
+            // Find mod by ID in equipped mods
+            findModById(modId) {
+                for (const mod of Object.values(this.equippedMods)) {
+                    if (mod && mod.id === modId) {
+                        return mod;
+                    }
+                }
+                return null;
+            }
+
+            showError(message) {
+                const header = document.getElementById('weapon-header');
+                header.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: var(--spacing-xl);">
+                        <h2 style="color: var(--text-bright); margin-bottom: var(--spacing-md);">Error</h2>
+                        <p style="color: var(--text-normal);">${message}</p>
+                    </div>
+                `;
+            }
+
+            // Save modified weapon to inventory
+            async saveModifiedWeapon() {
+                try {
+                    console.log('Saving modified weapon...');
+                    
+                    // Get the modified stats and power cost
+                    const modifiedStats = this.getModifiedWeaponStats();
+                    const modifiedPowerCost = modifiedStats.total_power_cost || modifiedStats.power_cost || 0;
+                    
+                    // Prepare the modified stats object for saving
+                    const statsToSave = {
+                        damage_min: modifiedStats.damage_min,
+                        damage_max: modifiedStats.damage_max,
+                        fire_rate: modifiedStats.fire_rate,
+                        magazine_size: modifiedStats.magazine_size,
+                        ammo_capacity: modifiedStats.ammo_capacity,
+                        reload_speed: modifiedStats.reload_speed,
+                        ads_speed: modifiedStats.ads_speed,
+                        handling: modifiedStats.handling,
+                        range_effective: modifiedStats.range_effective,
+                        range_max: modifiedStats.range_max,
+                        recoil: modifiedStats.recoil,
+                        accuracy: modifiedStats.accuracy,
+                        stability: modifiedStats.stability,
+                        crit_chance: modifiedStats.crit_chance,
+                        // Advanced stats
+                        damage_percent: modifiedStats.advanced_stats.damage_percent || 0,
+                        crit_chance_percent: modifiedStats.advanced_stats.crit_chance_percent || 0,
+                        fire_damage_flat: modifiedStats.advanced_stats.fire_damage_flat || 0,
+                        fire_damage_percent: modifiedStats.advanced_stats.fire_damage_percent || 0,
+                        ice_damage_flat: modifiedStats.advanced_stats.ice_damage_flat || 0,
+                        ice_damage_percent: modifiedStats.advanced_stats.ice_damage_percent || 0,
+                        electric_damage_flat: modifiedStats.advanced_stats.electric_damage_flat || 0,
+                        electric_damage_percent: modifiedStats.advanced_stats.electric_damage_percent || 0,
+                        poison_damage_flat: modifiedStats.advanced_stats.poison_damage_flat || 0,
+                        poison_damage_percent: modifiedStats.advanced_stats.poison_damage_percent || 0,
+                        armor_penetration: modifiedStats.advanced_stats.armor_penetration || 0,
+                        damage_multiplier_vs_elites: modifiedStats.advanced_stats.damage_multiplier_vs_elites || 0,
+                        damage_multiplier_vs_bosses: modifiedStats.advanced_stats.damage_multiplier_vs_bosses || 0
+                    };
+                    
+                    console.log('Modified stats to save:', statsToSave);
+                    console.log('Modified power cost:', modifiedPowerCost);
+                    
+                    // Call the API to save the modified weapon
+                    const response = await window.CourierAPI.saveModifiedWeapon(
+                        this.weaponId, 
+                        statsToSave, 
+                        modifiedPowerCost
+                    );
+                    
+                    if (response.success) {
+                        console.log('Modified weapon saved successfully:', response);
+                        alert(`Modified weapon saved to inventory as "${response.result.weapon.name}"!`);
+                    } else {
+                        console.error('Failed to save modified weapon:', response);
+                        alert('Failed to save modified weapon: ' + (response.error || 'Unknown error'));
+                    }
+                    
+                } catch (error) {
+                    console.error('Error saving modified weapon:', error);
+                    alert('Error saving modified weapon: ' + error.message);
+                }
+            }
+        }
+
+        // Global variable for access from onclick handlers
+        let weaponDetail;
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log('Weapon Detail page DOMContentLoaded event fired');
+            
+            // Check if required elements exist
+            const header = document.getElementById('weapon-header');
+            const statsGrid = document.getElementById('stats-grid');
+            console.log('weapon-header element:', header);
+            console.log('stats-grid element:', statsGrid);
+            
+            // Check API client
+            if (window.CourierAPI) {
+                console.log('CourierAPI found and ready');
+            } else {
+                console.error('CourierAPI not found!');
+            }
+            
+            // Initialize weapon detail page
+            console.log('Creating WeaponDetail instance...');
+            weaponDetail = new WeaponDetail();
+            await weaponDetail.init();
+        });
+    </script>
+</body>
+</html>

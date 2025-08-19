@@ -9,7 +9,7 @@
 /* Layout sidebar grid - this is the key fix */
 .layout-sidebar {
     display: grid;
-    grid-template-columns: 350px 1fr;
+    grid-template-columns: 540px 1fr;
     gap: var(--spacing-lg);
     width: 100%;
     max-width: 100%;
@@ -18,8 +18,8 @@
 
 /* Sidebar styling */
 .layout-sidebar .sidebar {
-    min-width: 300px;
-    max-width: 350px;
+    min-width: 520px;
+    max-width: 540px;
     overflow: hidden;
     box-sizing: border-box;
     padding: var(--spacing-md);
@@ -44,22 +44,44 @@
     overflow: hidden;
 }
 
-/* Equipment grid specific styling for inventory sidebar */
-.inventory-container .equipment-grid {
+/* STANDARDIZED EQUIPMENT GRID LAYOUT */
+/* Grid structure: 2x3 armor grid + vertical weapons stack */
+.inventory-container .equipment-grid,
+.card .equipment-grid,
+.sidebar .equipment-grid {
     display: grid !important;
-    grid-template-columns: repeat(3, 1fr) !important;
-    gap: 6px !important;
-    max-width: 270px !important;
-    width: 270px !important;
+    grid-template-columns: 104px 104px 296px !important;
+    grid-template-rows: 104px 104px 104px !important;
+    gap: 4px !important;
+    max-width: 520px !important;
+    width: 520px !important;
     box-sizing: border-box;
     margin-top: var(--spacing-md);
 }
 
-.inventory-container .equipment-slot {
-    width: 80px !important;
-    height: 80px !important;
-    min-width: 80px !important;
-    max-width: 80px !important;
+/* ARMOR SLOTS - 96px content + 2px buffer + 2px border each side = 104px total */
+.inventory-container .equipment-slot[data-slot="head"],
+.inventory-container .equipment-slot[data-slot="shoulders"], 
+.inventory-container .equipment-slot[data-slot="chest"],
+.inventory-container .equipment-slot[data-slot="gloves"],
+.inventory-container .equipment-slot[data-slot="back"],
+.inventory-container .equipment-slot[data-slot="legs"],
+.card .equipment-slot[data-slot="head"],
+.card .equipment-slot[data-slot="shoulders"], 
+.card .equipment-slot[data-slot="chest"],
+.card .equipment-slot[data-slot="gloves"],
+.card .equipment-slot[data-slot="back"],
+.card .equipment-slot[data-slot="legs"],
+.sidebar .equipment-slot[data-slot="head"],
+.sidebar .equipment-slot[data-slot="shoulders"], 
+.sidebar .equipment-slot[data-slot="chest"],
+.sidebar .equipment-slot[data-slot="gloves"],
+.sidebar .equipment-slot[data-slot="back"],
+.sidebar .equipment-slot[data-slot="legs"] {
+    width: 104px !important;
+    height: 104px !important;
+    min-width: 104px !important;
+    max-width: 104px !important;
     box-sizing: border-box;
     display: flex !important;
     align-items: center !important;
@@ -70,24 +92,20 @@
     position: relative;
     cursor: pointer;
     transition: all 0.3s ease;
+    padding: 2px; /* 2px buffer inside container */
 }
 
-/* Dashboard equipment grid - match inventory styling */
-.card .equipment-grid {
-    display: grid !important;
-    grid-template-columns: repeat(3, 1fr) !important;
-    gap: 6px !important;
-    max-width: 270px !important;
-    width: 270px !important;
-    box-sizing: border-box;
-    margin-top: var(--spacing-md);
-}
-
-.card .equipment-slot {
-    width: 80px !important;
-    height: 80px !important;
-    min-width: 80px !important;
-    max-width: 80px !important;
+/* WEAPON SLOTS - 288x96px content + 2px buffer + 2px border each side = 296x104px total */
+.inventory-container .equipment-slot[data-slot="primary"],
+.inventory-container .equipment-slot[data-slot="secondary"],
+.card .equipment-slot[data-slot="primary"],
+.card .equipment-slot[data-slot="secondary"],
+.sidebar .equipment-slot[data-slot="primary"],
+.sidebar .equipment-slot[data-slot="secondary"] {
+    width: 296px !important;
+    height: 104px !important;
+    min-width: 296px !important;
+    max-width: 296px !important;
     box-sizing: border-box;
     display: flex !important;
     align-items: center !important;
@@ -98,19 +116,126 @@
     position: relative;
     cursor: pointer;
     transition: all 0.3s ease;
+    padding: 2px; /* 2px buffer inside container */
 }
 
-/* Ensure all icons are consistently sized - Override all possible conflicts */
+/* Removed bracer slot */
+
+/* GRID POSITIONING */
+/* Armor in 2x3 layout: [Head, Shoulders] [Chest, Back] [Gloves, Legs] */
+/* Weapons stacked vertically: Primary, Secondary */
+
+/* Row 1: Head, Shoulders | Primary Weapon */
+.equipment-slot[data-slot="head"] { grid-column: 1; grid-row: 1; }
+.equipment-slot[data-slot="shoulders"] { grid-column: 2; grid-row: 1; }
+.equipment-slot[data-slot="primary"] { grid-column: 3; grid-row: 1; }
+
+/* Row 2: Chest, Back | Secondary Weapon */
+.equipment-slot[data-slot="chest"] { grid-column: 1; grid-row: 2; }
+.equipment-slot[data-slot="back"] { grid-column: 2; grid-row: 2; }
+.equipment-slot[data-slot="secondary"] { grid-column: 3; grid-row: 2; }
+
+/* Row 3: Gloves, Legs | Bracers */
+.equipment-slot[data-slot="gloves"] { grid-column: 1; grid-row: 3; }
+.equipment-slot[data-slot="legs"] { grid-column: 2; grid-row: 3; }
+/* Removed bracers slot */
+
+/* STANDARDIZED ICON SIZING */
+
+/* ARMOR SLOT ICONS - 64x64px */
+.equipment-slot[data-slot="head"] .item-icon img,
+.equipment-slot[data-slot="head"] .item-icon-img,
+.equipment-slot[data-slot="shoulders"] .item-icon img,
+.equipment-slot[data-slot="shoulders"] .item-icon-img,
+.equipment-slot[data-slot="chest"] .item-icon img,
+.equipment-slot[data-slot="chest"] .item-icon-img,
+.equipment-slot[data-slot="gloves"] .item-icon img,
+.equipment-slot[data-slot="gloves"] .item-icon-img,
+.equipment-slot[data-slot="back"] .item-icon img,
+.equipment-slot[data-slot="back"] .item-icon-img,
+.equipment-slot[data-slot="legs"] .item-icon img,
+.equipment-slot[data-slot="legs"] .item-icon-img {
+    width: 96px !important;
+    height: 96px !important;
+    object-fit: contain !important;
+    object-position: center !important;
+    max-width: 96px !important;
+    max-height: 96px !important;
+    display: block !important;
+}
+
+/* WEAPON & BRACER SLOT ICONS - 128x64px exact */
+.equipment-slot[data-slot="primary"] .item-icon img,
+.equipment-slot[data-slot="primary"] .item-icon-img,
+.equipment-slot[data-slot="secondary"] .item-icon img,
+.equipment-slot[data-slot="secondary"] .item-icon-img {
+    width: 288px !important;
+    height: 96px !important;
+    object-fit: cover !important;
+    object-position: center !important;
+    max-width: 288px !important;
+    max-height: 96px !important;
+    display: block !important;
+}
+
+/* INVENTORY GRID ICONS - Consistent with equipment slots */
+/* Armor items: 64x64px */
+.inventory-item[data-item-slot="head"] .item-icon img,
+.inventory-item[data-item-slot="head"] .item-icon-img,
+.inventory-item[data-item-slot="shoulders"] .item-icon img,
+.inventory-item[data-item-slot="shoulders"] .item-icon-img,
+.inventory-item[data-item-slot="chest"] .item-icon img,
+.inventory-item[data-item-slot="chest"] .item-icon-img,
+.inventory-item[data-item-slot="gloves"] .item-icon img,
+.inventory-item[data-item-slot="gloves"] .item-icon-img,
+.inventory-item[data-item-slot="back"] .item-icon img,
+.inventory-item[data-item-slot="back"] .item-icon-img,
+.inventory-item[data-item-slot="legs"] .item-icon img,
+.inventory-item[data-item-slot="legs"] .item-icon-img {
+    width: 96px !important;
+    height: 96px !important;
+    object-fit: contain !important;
+    object-position: center !important;
+    max-width: 96px !important;
+    max-height: 96px !important;
+    display: block !important;
+}
+
+/* Weapon and bracer items: 128x64px exact */
+.inventory-item[data-item-slot="primary"] .item-icon img,
+.inventory-item[data-item-slot="primary"] .item-icon-img,
+.inventory-item[data-item-slot="secondary"] .item-icon img,
+.inventory-item[data-item-slot="secondary"] .item-icon-img {
+    width: 288px !important;
+    height: 96px !important;
+    object-fit: cover !important;
+    object-position: center !important;
+    max-width: 288px !important;
+    max-height: 96px !important;
+    display: block !important;
+}
+
+/* Fallback for items without specific slot data - default to 64x64 */
+.inventory-item .item-icon img,
+.inventory-item .item-icon-img {
+    width: 96px !important;
+    height: 96px !important;
+    object-fit: contain !important;
+    object-position: center !important;
+    max-width: 96px !important;
+    max-height: 96px !important;
+    display: block !important;
+}
+
+/* Fallback for emoji/text icons */
 .inventory-container .item-icon,
 .inventory-container .equipment-slot-icon,
-.inventory-container .equipped-item .item-icon,
-body .inventory-container .item-icon,
-body .inventory-container .equipment-slot-icon,
-body .inventory-container .equipped-item .item-icon {
-    font-size: 24px !important;
+.inventory-container .equipped-item .item-icon {
+    font-size: 32px !important;
     line-height: 1 !important;
-    width: auto !important;
-    height: auto !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
 }
 
 .inventory-header {
@@ -196,13 +321,42 @@ body .inventory-container .equipped-item .item-icon {
     display: none; /* Hide text as icons should be 56x56 without text */
 }
 
-.equipped-item.rarity-common { background: rgba(157, 157, 157, 0.2); }
-.equipped-item.rarity-uncommon { background: rgba(30, 255, 0, 0.2); }
-.equipped-item.rarity-rare { background: rgba(0, 112, 221, 0.2); }
-.equipped-item.rarity-epic { background: rgba(163, 53, 238, 0.2); }
-.equipped-item.rarity-legendary { background: rgba(255, 128, 0, 0.2); }
-.equipped-item.rarity-mythic { background: rgba(230, 204, 128, 0.2); }
-.equipped-item.rarity-primal { background: rgba(0, 255, 255, 0.2); }
+/* All 7 Rarity Tiers - Equipped item styling with gray borders and rarity backgrounds */
+.equipment-slot.equipped[data-rarity="common"],
+.equipped-item.rarity-common { 
+    border-color: #666 !important;
+    background: rgba(157, 157, 157, 0.3); 
+}
+.equipment-slot.equipped[data-rarity="uncommon"],
+.equipped-item.rarity-uncommon { 
+    border-color: #666 !important;
+    background: rgba(30, 255, 0, 0.3); 
+}
+.equipment-slot.equipped[data-rarity="rare"],
+.equipped-item.rarity-rare { 
+    border-color: #666 !important;
+    background: rgba(0, 112, 221, 0.3); 
+}
+.equipment-slot.equipped[data-rarity="epic"],
+.equipped-item.rarity-epic { 
+    border-color: #666 !important;
+    background: rgba(163, 53, 238, 0.3); 
+}
+.equipment-slot.equipped[data-rarity="legendary"],
+.equipped-item.rarity-legendary { 
+    border-color: #666 !important;
+    background: rgba(255, 128, 0, 0.3); 
+}
+.equipment-slot.equipped[data-rarity="mythic"],
+.equipped-item.rarity-mythic { 
+    border-color: #666 !important;
+    background: rgba(255, 0, 0, 0.3); 
+}
+.equipment-slot.equipped[data-rarity="primal"],
+.equipped-item.rarity-primal { 
+    border-color: #666 !important;
+    background: rgba(0, 255, 255, 0.3); 
+}
 
 /* Override for equipment placeholder in inventory - only hide when items are equipped */
 .inventory-container .equipment-slot.equipped .equipment-placeholder {
@@ -223,16 +377,32 @@ body .inventory-container .equipped-item .item-icon {
 }
 
 .inventory-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.weapon-section,
+.armor-section {
+    display: flex;
+    flex-direction: column;
     gap: 10px;
 }
 
+.weapon-items,
+.armor-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: flex-start;
+}
+
+/* Base inventory item - no buffer between image and frame */
 .inventory-item {
-    width: 80px;
-    height: 80px;
+    width: 104px; /* 96px icon + 2px buffer + 2px border each side */
+    height: 104px; /* 96px icon + 2px buffer + 2px border each side */
     background: rgba(30, 30, 30, 0.9);
-    border: 2px solid;
+    border: 2px solid #666; /* Simple gray border for all items */
     border-radius: 4px;
     display: flex;
     flex-direction: column;
@@ -241,8 +411,15 @@ body .inventory-container .equipped-item .item-icon {
     cursor: pointer;
     transition: all 0.3s;
     position: relative;
-    padding: 4px;
+    padding: 2px; /* 2px buffer inside container */
     overflow: hidden;
+}
+
+/* Wider containers for weapon and bracer items - 128x64 + borders */
+.inventory-item[data-item-slot="primary"],
+.inventory-item[data-item-slot="secondary"] {
+    width: 296px !important; /* 288px icon + 2px buffer + 2px border each side */
+    height: 104px !important; /* 96px icon + 2px buffer + 2px border each side */
 }
 
 .inventory-item:hover {
@@ -264,14 +441,30 @@ body .inventory-container .equipped-item .item-icon {
     display: none; /* Hide text as icons should be 56x56 without text */
 }
 
-/* Rarity colors */
-.rarity-common { border-color: #9d9d9d; }
-.rarity-uncommon { border-color: #1eff00; }
-.rarity-rare { border-color: #0070dd; }
-.rarity-epic { border-color: #a335ee; }
-.rarity-legendary { border-color: #ff8000; }
-.rarity-mythic { border-color: #e6cc80; }
-.rarity-primal { border-color: #00ffff; }
+/* All 7 Rarity Tiers - Background colors with gray borders */
+.rarity-common { background-color: rgba(157, 157, 157, 0.3); }    /* Gray background */
+.rarity-uncommon { background-color: rgba(30, 255, 0, 0.3); }     /* Green background */
+.rarity-rare { background-color: rgba(0, 112, 221, 0.3); }        /* Blue background */
+.rarity-epic { background-color: rgba(163, 53, 238, 0.3); }       /* Purple background */
+.rarity-legendary { background-color: rgba(255, 128, 0, 0.3); }   /* Orange background */
+.rarity-mythic { background-color: rgba(255, 0, 0, 0.3); }        /* Red background */
+.rarity-primal { background-color: rgba(0, 255, 255, 0.3); }      /* Cyan background */
+
+/* Power rating overlay text in lower left corner */
+.power-rating {
+    position: absolute;
+    bottom: 2px;
+    left: 2px;
+    background: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    font-size: 9px;
+    font-weight: bold;
+    padding: 1px 3px;
+    border-radius: 2px;
+    line-height: 1;
+    z-index: 10;
+    pointer-events: none;
+}
 
 .page-loader {
     display: flex;
@@ -323,13 +516,11 @@ body .inventory-container .equipped-item .item-icon {
     flex-wrap: wrap;
 }
 
-/* FINAL ICON SIZE OVERRIDE - 56x56 pixels exact */
+/* Icon container base styling - no size override */
 .item-icon,
 .equipment-slot-icon,
 .equipped-item .item-icon,
 .inventory-item .item-icon {
-    width: 56px !important;
-    height: 56px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -337,6 +528,7 @@ body .inventory-container .equipped-item .item-icon {
     line-height: 1 !important;
     text-align: center !important;
     flex-shrink: 0 !important;
+    /* Size is controlled by specific img rules above */
 }
 
 @media (max-width: 768px) {

@@ -300,12 +300,12 @@
             grid-template-columns: repeat(3, 1fr);
             gap: var(--spacing-sm);
             margin-top: var(--spacing-md);
-            max-width: 270px;
+            max-width: 400px;
         }
 
         .equipment-slot {
-            width: 80px;
-            height: 80px;
+            width: 120px;
+            height: 120px;
             background: var(--bg-dark);
             border: 2px solid var(--border-gray);
             border-radius: 4px;
@@ -316,6 +316,55 @@
             color: var(--text-dim);
             flex-direction: column;
             padding: 4px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .equipment-slot.equipped {
+            border: 2px solid var(--border-gray);
+        }
+
+        .equipment-slot[data-rarity="common"] { border-color: #999; }
+        .equipment-slot[data-rarity="uncommon"] { border-color: #00ff00; }
+        .equipment-slot[data-rarity="rare"] { border-color: #0099ff; }
+        .equipment-slot[data-rarity="epic"] { border-color: #cc00ff; }
+        .equipment-slot[data-rarity="legendary"] { border-color: #ff9900; }
+        .equipment-slot[data-rarity="exotic"] { border-color: #ff0099; }
+
+        .equipped-item {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .item-icon {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .item-icon-img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .power-rating {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #ffcc00;
+            font-size: 10px;
+            font-weight: bold;
+            padding: 1px 4px;
+            border-radius: 2px;
+            min-width: 16px;
+            text-align: center;
         }
 
         .equipment-placeholder {
@@ -590,9 +639,6 @@
                         <div class="equipment-slot" data-slot="back">
                             <div class="equipment-placeholder">Back</div>
                         </div>
-                        <div class="equipment-slot" data-slot="bracers">
-                            <div class="equipment-placeholder">Bracers</div>
-                        </div>
                     </div>
                 </div>
 
@@ -615,73 +661,172 @@
         LAST UPDATED: 2025-08-17 CST • LOADOUTS: Equipment integration and combat simulator access
     </footer>
 
+    <script src="assets/js/api-client.js"></script>
+    <script src="assets/js/tooltips.js"></script>
     <script src="assets/js/data-manager.js"></script>
     <script src="assets/js/main.js"></script>
     <script src="assets/js/navigation.js"></script>
     <script>
-        // Equipment integration for loadouts using data manager
-        function loadEquippedItems() {
+        // Equipment integration for loadouts using backend API
+        async function loadEquippedItems() {
             try {
-                let equippedItems = {};
-                
-                if (window.CourierData) {
-                    // Get equipped items from data manager
-                    const weaponsData = window.CourierData.getWeaponsData();
-                    const armorData = window.CourierData.getArmorData();
-                    
-                    equippedItems = {
-                        primary: weaponsData.equipped?.primary,
-                        secondary: weaponsData.equipped?.secondary,
-                        ...armorData.equipped
-                    };
-                } else {
-                    // Fallback to localStorage
-                    equippedItems = JSON.parse(localStorage.getItem('courier_equipped_items')) || {};
+                if (!window.CourierAPI) {
+                    console.error('CourierAPI not available');
+                    return;
                 }
+
+                // Initialize tooltips
+                if (window.CourierTooltips) {
+                    window.CourierTooltips.init();
+                }
+
+                // Get equipped items from backend API
+                const response = await window.CourierAPI.getEquipped();
+                const equippedItems = response.equipped || {};
                 
-                // Update equipment slots with actual equipped items
-                Object.entries(equippedItems).forEach(([slot, item]) => {
+                console.log('Loaded equipped items for loadouts:', equippedItems);
+                
+                // Define slot order for the equipment grid
+                const slots = ['primary', 'secondary', 'head', 'shoulders', 'chest', 'gloves', 'legs', 'back'];
+                
+                slots.forEach(slot => {
                     const slotElement = document.querySelector(`[data-slot="${slot}"]`);
-                    if (slotElement && item) {
-                        // Replace placeholder with actual item
+                    if (!slotElement) return;
+
+                    const equippedItem = equippedItems[slot];
+                    
+                    if (equippedItem && equippedItem.id) {
+                        // Show equipped item with same styling as inventory
+                        slotElement.classList.add('equipped');
+                        slotElement.dataset.rarity = equippedItem.rarity;
+                        
+                        // Fix icon path 
+                        let iconPath = equippedItem.icon;
+                        
+                        // Add cache-busting parameter
+                        const cacheBuster = Date.now();
+                        const iconPathWithCache = `${iconPath}?v=${cacheBuster}`;
+                        
                         slotElement.innerHTML = `
-                            <div style="font-size: 14px; color: var(--text-bright);">${item.icon || '⚔️'}</div>
-                            <div style="font-size: 8px; color: var(--text-normal); text-align: center; line-height: 1.1; margin-top: 2px;">
-                                ${item.name || 'Unknown'}
+                            <div class="equipped-item rarity-${equippedItem.rarity}">
+                                <div class="item-icon">
+                                    <img src="${iconPathWithCache}" alt="${equippedItem.name}" class="item-icon-img" />
+                                </div>
+                                <div class="power-rating">${equippedItem.power_cost || 0}</div>
+                                <div style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.8); color: white; font-size: 8px; padding: 2px; text-align: center;">${equippedItem.name}</div>
                             </div>
                         `;
+
+                        // Add tooltip support
+                        slotElement.addEventListener('mouseenter', (e) => {
+                            if (window.CourierTooltips) {
+                                const tooltipItem = transformItemForTooltip(equippedItem);
+                                window.CourierTooltips.showTooltip(e, tooltipItem);
+                            }
+                        });
+
+                        slotElement.addEventListener('mouseleave', () => {
+                            if (window.CourierTooltips) {
+                                window.CourierTooltips.hideTooltip();
+                            }
+                        });
                         
-                        // Add rarity border color
-                        if (item.rarity) {
-                            const rarityColors = {
-                                common: '#888',
-                                uncommon: '#4CAF50',
-                                rare: '#2196F3',
-                                epic: '#9C27B0',
-                                legendary: '#FF9800',
-                                exotic: '#E91E63'
-                            };
-                            slotElement.style.borderColor = rarityColors[item.rarity] || '#666';
+                        // Add click functionality for weapons to open detail page
+                        if (equippedItem.type === 'weapon') {
+                            slotElement.style.cursor = 'pointer';
+                            slotElement.addEventListener('click', (e) => {
+                                window.location.href = `weapon-detail.html?id=${equippedItem.id}`;
+                            });
                         }
+                    } else {
+                        // Show empty slot placeholder
+                        slotElement.classList.remove('equipped');
+                        slotElement.removeAttribute('data-rarity');
+                        slotElement.innerHTML = `<div class="equipment-placeholder">${slot.charAt(0).toUpperCase() + slot.slice(1)}</div>`;
                     }
                 });
                 
-                console.log('Equipped items loaded:', equippedItems);
             } catch (error) {
                 console.error('Error loading equipped items:', error);
             }
         }
 
-        // Listen for equipment changes from other pages
-        window.addEventListener('storage', (e) => {
-            if (e.key === 'courier_equipped_items') {
-                console.log('Equipment changed, reloading...');
-                loadEquippedItems();
+        // Transform database format to tooltip format (same as inventory)
+        function transformItemForTooltip(item) {
+            const tooltipItem = { ...item };
+            
+            // Convert snake_case to camelCase for tooltip system
+            tooltipItem.powerCost = item.power_cost;
+            tooltipItem.itemSubtype = item.item_subtype;
+            tooltipItem.weaponType = item.weapon_type;
+            
+            // Convert separate damage fields to damage object
+            if (item.damage_min && item.damage_max) {
+                tooltipItem.damage = {
+                    min: item.damage_min,
+                    max: item.damage_max
+                };
+                tooltipItem.damageMin = item.damage_min;
+                tooltipItem.damageMax = item.damage_max;
             }
-        });
+            
+            // Convert weapon attribute snake_case to camelCase
+            if (item.type === 'weapon') {
+                tooltipItem.fireRate = item.fire_rate;
+                tooltipItem.magazineSize = item.magazine_size;
+                tooltipItem.ammoCapacity = item.ammo_capacity;
+                tooltipItem.reloadSpeed = item.reload_speed;
+                tooltipItem.adsSpeed = item.ads_speed;
+                tooltipItem.rangeEffective = item.range_effective;
+                tooltipItem.rangeMax = item.range_max;
+                tooltipItem.handling = item.handling;
+                tooltipItem.accuracy = item.accuracy;
+                tooltipItem.stability = item.stability;
+                tooltipItem.recoil = item.recoil;
+                
+                // Handle advanced stats for modified weapons
+                if (item.damage_percent || item.crit_chance_percent || 
+                    item.fire_damage_flat || item.fire_damage_percent ||
+                    item.ice_damage_flat || item.ice_damage_percent ||
+                    item.electric_damage_flat || item.electric_damage_percent ||
+                    item.poison_damage_flat || item.poison_damage_percent ||
+                    item.armor_penetration || item.damage_multiplier_vs_elites ||
+                    item.damage_multiplier_vs_bosses) {
+                    
+                    tooltipItem.advanced_stats = {
+                        damage_percent: item.damage_percent || 0,
+                        crit_chance_percent: item.crit_chance_percent || 0,
+                        fire_damage_flat: item.fire_damage_flat || 0,
+                        fire_damage_percent: item.fire_damage_percent || 0,
+                        ice_damage_flat: item.ice_damage_flat || 0,
+                        ice_damage_percent: item.ice_damage_percent || 0,
+                        electric_damage_flat: item.electric_damage_flat || 0,
+                        electric_damage_percent: item.electric_damage_percent || 0,
+                        poison_damage_flat: item.poison_damage_flat || 0,
+                        poison_damage_percent: item.poison_damage_percent || 0,
+                        armor_penetration: item.armor_penetration || 0,
+                        damage_multiplier_vs_elites: item.damage_multiplier_vs_elites || 0,
+                        damage_multiplier_vs_bosses: item.damage_multiplier_vs_bosses || 0
+                    };
+                }
+            }
+            
+            return tooltipItem;
+        }
 
-        // Refresh equipment periodically (in case storage events don't fire)
-        setInterval(loadEquippedItems, 5000);
+        // Initialize the loadouts page
+        async function initializeLoadouts() {
+            try {
+                console.log('Initializing loadouts page...');
+                await loadEquippedItems();
+                console.log('Loadouts page initialized successfully');
+            } catch (error) {
+                console.error('Error initializing loadouts page:', error);
+            }
+        }
+
+        // Initialize when the page loads
+        document.addEventListener('DOMContentLoaded', initializeLoadouts);
     </script>
 
     <script>

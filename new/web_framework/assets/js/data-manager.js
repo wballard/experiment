@@ -252,7 +252,7 @@ class CourierDataManager {
                         type: 'armor',
                         slot: 'head',
                         rarity: 'legendary',
-                        icon: 'assets/images/Icons/Armor/Helmet.png',
+                        icon: 'assets/images/Icons/Armor/Head.png',
                         armor: 180,
                         health: 280,
                         resistances: {

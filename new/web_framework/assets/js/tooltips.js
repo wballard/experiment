@@ -77,7 +77,7 @@ window.CourierTooltips = {
                     color: var(--text-bright);
                     opacity: 0.8;
                     text-align: left;
-                ">${item.type}${item.subtype ? ' - ' + item.subtype : ''}</div>
+                ">${item.itemSubtype || item.type}</div>
                 ${item.powerCost ? `
                     <div style="
                         position: absolute;
@@ -96,8 +96,9 @@ window.CourierTooltips = {
             </div>
         `;
 
-        // Add stats section
-        if (item.stats) {
+        // Add stats section - handle both item.stats and individual stat properties
+        const hasStats = item.stats || item.damage || item.armor || item.health;
+        if (hasStats) {
             html += `
                 <div style="padding: 16px; border-bottom: 1px solid var(--border-gray);">
                     <div style="
@@ -106,11 +107,144 @@ window.CourierTooltips = {
                         letter-spacing: 2px;
                         color: var(--text-dim);
                         margin-bottom: 8px;
-                    ">CORE STATS</div>
+                    ">PRIMARY STATS</div>
             `;
             
-            for (const [stat, value] of Object.entries(item.stats)) {
-                const isPositive = typeof value === 'string' && value.includes('+');
+            // Handle structured stats object
+            if (item.stats) {
+                for (const [stat, value] of Object.entries(item.stats)) {
+                    const isPositive = typeof value === 'string' && value.includes('+');
+                    html += `
+                        <div style="
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            padding: 4px 0;
+                            font-size: 12px;
+                        ">
+                            <span style="
+                                text-transform: uppercase;
+                                letter-spacing: 1px;
+                                color: var(--text-normal);
+                            ">${stat.toUpperCase()}</span>
+                            <span style="
+                                font-weight: bold;
+                                color: ${isPositive ? 'var(--stat-positive)' : 'var(--text-bright)'};
+                            ">${value}</span>
+                        </div>
+                    `;
+                }
+            } else {
+                // Handle individual stat properties for weapons and armor
+                if (item.type === 'weapon') {
+                    // Core weapon damage stats
+                    if (item.damage || (item.damageMin && item.damageMax)) {
+                        const min = item.damage?.min || item.damageMin;
+                        const max = item.damage?.max || item.damageMax;
+                        html += `<div style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 12px;"><span style="color: var(--text-normal);">DAMAGE</span><span style="font-weight: bold; color: var(--text-bright);">${min}-${max}</span></div>`;
+                    }
+                    
+                    // Add detailed weapon attributes section
+                    html += `</div>`; // Close primary stats
+                    
+                    // Weapon Details Section
+                    const hasWeaponDetails = item.fireRate || item.magazineSize || item.ammoCapacity || item.reloadSpeed || item.adsSpeed || item.handling || item.rangeEffective || item.accuracy || item.stability || item.recoil;
+                    if (hasWeaponDetails) {
+                        html += `
+                            <div style="padding: 16px; border-bottom: 1px solid var(--border-gray);">
+                                <div style="
+                                    font-size: 10px;
+                                    text-transform: uppercase;
+                                    letter-spacing: 2px;
+                                    color: var(--text-dim);
+                                    margin-bottom: 8px;
+                                ">WEAPON ATTRIBUTES</div>
+                        `;
+                        
+                        // Fire Rate
+                        if (item.fireRate) {
+                            html += `<div style="display: flex; justify-content: space-between; padding: 2px 0; font-size: 11px;"><span style="color: var(--text-normal);">Fire Rate</span><span style="font-weight: bold; color: var(--text-bright);">${item.fireRate} RPS</span></div>`;
+                        }
+                        
+                        // Magazine & Ammo
+                        if (item.magazineSize) {
+                            html += `<div style="display: flex; justify-content: space-between; padding: 2px 0; font-size: 11px;"><span style="color: var(--text-normal);">Magazine Size</span><span style="font-weight: bold; color: var(--text-bright);">${item.magazineSize}</span></div>`;
+                        }
+                        if (item.ammoCapacity) {
+                            html += `<div style="display: flex; justify-content: space-between; padding: 2px 0; font-size: 11px;"><span style="color: var(--text-normal);">Ammo Capacity</span><span style="font-weight: bold; color: var(--text-bright);">${item.ammoCapacity}</span></div>`;
+                        }
+                        
+                        // Speeds
+                        if (item.reloadSpeed) {
+                            html += `<div style="display: flex; justify-content: space-between; padding: 2px 0; font-size: 11px;"><span style="color: var(--text-normal);">Reload Speed</span><span style="font-weight: bold; color: var(--text-bright);">${item.reloadSpeed}s</span></div>`;
+                        }
+                        if (item.adsSpeed) {
+                            html += `<div style="display: flex; justify-content: space-between; padding: 2px 0; font-size: 11px;"><span style="color: var(--text-normal);">ADS Speed</span><span style="font-weight: bold; color: var(--text-bright);">${item.adsSpeed}s</span></div>`;
+                        }
+                        
+                        // Handling Stats
+                        if (item.handling) {
+                            html += `<div style="display: flex; justify-content: space-between; padding: 2px 0; font-size: 11px;"><span style="color: var(--text-normal);">Handling</span><span style="font-weight: bold; color: var(--text-bright);">${item.handling}</span></div>`;
+                        }
+                        if (item.accuracy) {
+                            html += `<div style="display: flex; justify-content: space-between; padding: 2px 0; font-size: 11px;"><span style="color: var(--text-normal);">Accuracy</span><span style="font-weight: bold; color: var(--text-bright);">${item.accuracy}</span></div>`;
+                        }
+                        if (item.stability) {
+                            html += `<div style="display: flex; justify-content: space-between; padding: 2px 0; font-size: 11px;"><span style="color: var(--text-normal);">Stability</span><span style="font-weight: bold; color: var(--text-bright);">${item.stability}</span></div>`;
+                        }
+                        if (item.recoil) {
+                            html += `<div style="display: flex; justify-content: space-between; padding: 2px 0; font-size: 11px;"><span style="color: var(--text-normal);">Recoil</span><span style="font-weight: bold; color: var(--text-bright);">${item.recoil}</span></div>`;
+                        }
+                        
+                        // Range Stats  
+                        if (item.rangeEffective) {
+                            const rangeDesc = this.getEffectiveRangeDescription(item.rangeEffective);
+                            html += `<div style="display: flex; justify-content: space-between; padding: 2px 0; font-size: 11px;"><span style="color: var(--text-normal);">Effective Range</span><span style="font-weight: bold; color: var(--text-bright);">${rangeDesc}</span></div>`;
+                        }
+                        if (item.rangeMax) {
+                            html += `<div style="display: flex; justify-content: space-between; padding: 2px 0; font-size: 11px;"><span style="color: var(--text-normal);">Max Range</span><span style="font-weight: bold; color: var(--text-bright);">${item.rangeMax}m</span></div>`;
+                        }
+                    }
+                    if (item.range) {
+                        html += `<div style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 12px;"><span style="color: var(--text-normal);">RANGE</span><span style="font-weight: bold; color: var(--text-bright);">${item.range}m</span></div>`;
+                    }
+                    if (item.reloadTime) {
+                        html += `<div style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 12px;"><span style="color: var(--text-normal);">RELOAD</span><span style="font-weight: bold; color: var(--text-bright);">${item.reloadTime}s</span></div>`;
+                    }
+                    if (item.magazineSize) {
+                        html += `<div style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 12px;"><span style="color: var(--text-normal);">MAGAZINE</span><span style="font-weight: bold; color: var(--text-bright);">${item.magazineSize}</span></div>`;
+                    }
+                } else if (item.type === 'armor') {
+                    // Armor stats
+                    if (item.armor) {
+                        html += `<div style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 12px;"><span style="color: var(--text-normal);">ARMOR</span><span style="font-weight: bold; color: var(--text-bright);">${item.armor}</span></div>`;
+                    }
+                    if (item.health) {
+                        html += `<div style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 12px;"><span style="color: var(--text-normal);">HEALTH</span><span style="font-weight: bold; color: var(--text-bright);">${item.health}</span></div>`;
+                    }
+                    if (item.shields) {
+                        html += `<div style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 12px;"><span style="color: var(--text-normal);">SHIELDS</span><span style="font-weight: bold; color: var(--text-bright);">${item.shields}</span></div>`;
+                    }
+                }
+            }
+            
+            html += `</div>`;
+        }
+        
+        // Add secondary stats section
+        if (item.secondaryStats) {
+            html += `
+                <div style="padding: 16px; border-bottom: 1px solid var(--border-gray);">
+                    <div style="
+                        font-size: 10px;
+                        text-transform: uppercase;
+                        letter-spacing: 2px;
+                        color: var(--text-dim);
+                        margin-bottom: 8px;
+                    ">SECONDARY STATS</div>
+            `;
+            
+            for (const [stat, value] of Object.entries(item.secondaryStats)) {
                 html += `
                     <div style="
                         display: flex;
@@ -120,18 +254,79 @@ window.CourierTooltips = {
                         font-size: 12px;
                     ">
                         <span style="
-                            text-transform: uppercase;
+                            text-transform: capitalize;
                             letter-spacing: 1px;
                             color: var(--text-normal);
-                        ">${stat.toUpperCase()}</span>
+                        ">${stat.replace(/([A-Z])/g, ' $1').trim()}</span>
                         <span style="
                             font-weight: bold;
-                            color: ${isPositive ? 'var(--stat-positive)' : 'var(--text-bright)'};
-                        ">${value}</span>
+                            color: var(--primary-cyan);
+                        ">+${value}</span>
                     </div>
                 `;
             }
             html += `</div>`;
+        }
+
+        // Add advanced stats section for modified weapons
+        if (item.advanced_stats) {
+            const advStats = item.advanced_stats;
+            const hasAdvancedStats = Object.values(advStats).some(val => val > 0);
+            
+            if (hasAdvancedStats) {
+                html += `
+                    <div style="padding: 16px; border-bottom: 1px solid var(--border-gray);">
+                        <div style="
+                            font-size: 10px;
+                            text-transform: uppercase;
+                            letter-spacing: 2px;
+                            color: var(--text-dim);
+                            margin-bottom: 8px;
+                        ">MODIFICATION BONUSES</div>
+                `;
+                
+                if (advStats.damage_percent > 0) {
+                    html += `<div style="display: flex; justify-content: space-between; padding: 2px 0; font-size: 11px;"><span style="color: var(--text-normal);">Damage Bonus</span><span style="font-weight: bold; color: #00ff88;">+${advStats.damage_percent}%</span></div>`;
+                }
+                if (advStats.crit_chance_percent > 0) {
+                    html += `<div style="display: flex; justify-content: space-between; padding: 2px 0; font-size: 11px;"><span style="color: var(--text-normal);">Critical Hit Chance</span><span style="font-weight: bold; color: #00ff88;">+${advStats.crit_chance_percent}%</span></div>`;
+                }
+                if (advStats.fire_damage_flat > 0) {
+                    html += `<div style="display: flex; justify-content: space-between; padding: 2px 0; font-size: 11px;"><span style="color: var(--text-normal);">Fire Damage</span><span style="font-weight: bold; color: #ff6600;">+${advStats.fire_damage_flat}</span></div>`;
+                }
+                if (advStats.fire_damage_percent > 0) {
+                    html += `<div style="display: flex; justify-content: space-between; padding: 2px 0; font-size: 11px;"><span style="color: var(--text-normal);">Damage as Fire</span><span style="font-weight: bold; color: #ff6600;">+${advStats.fire_damage_percent}%</span></div>`;
+                }
+                if (advStats.ice_damage_flat > 0) {
+                    html += `<div style="display: flex; justify-content: space-between; padding: 2px 0; font-size: 11px;"><span style="color: var(--text-normal);">Ice Damage</span><span style="font-weight: bold; color: #00ccff;">+${advStats.ice_damage_flat}</span></div>`;
+                }
+                if (advStats.ice_damage_percent > 0) {
+                    html += `<div style="display: flex; justify-content: space-between; padding: 2px 0; font-size: 11px;"><span style="color: var(--text-normal);">Damage as Ice</span><span style="font-weight: bold; color: #00ccff;">+${advStats.ice_damage_percent}%</span></div>`;
+                }
+                if (advStats.electric_damage_flat > 0) {
+                    html += `<div style="display: flex; justify-content: space-between; padding: 2px 0; font-size: 11px;"><span style="color: var(--text-normal);">Electric Damage</span><span style="font-weight: bold; color: #ffff00;">+${advStats.electric_damage_flat}</span></div>`;
+                }
+                if (advStats.electric_damage_percent > 0) {
+                    html += `<div style="display: flex; justify-content: space-between; padding: 2px 0; font-size: 11px;"><span style="color: var(--text-normal);">Damage as Electric</span><span style="font-weight: bold; color: #ffff00;">+${advStats.electric_damage_percent}%</span></div>`;
+                }
+                if (advStats.poison_damage_flat > 0) {
+                    html += `<div style="display: flex; justify-content: space-between; padding: 2px 0; font-size: 11px;"><span style="color: var(--text-normal);">Poison Damage</span><span style="font-weight: bold; color: #88ff00;">+${advStats.poison_damage_flat}</span></div>`;
+                }
+                if (advStats.poison_damage_percent > 0) {
+                    html += `<div style="display: flex; justify-content: space-between; padding: 2px 0; font-size: 11px;"><span style="color: var(--text-normal);">Damage as Poison</span><span style="font-weight: bold; color: #88ff00;">+${advStats.poison_damage_percent}%</span></div>`;
+                }
+                if (advStats.armor_penetration > 0) {
+                    html += `<div style="display: flex; justify-content: space-between; padding: 2px 0; font-size: 11px;"><span style="color: var(--text-normal);">Armor Penetration</span><span style="font-weight: bold; color: #00ff88;">+${advStats.armor_penetration}%</span></div>`;
+                }
+                if (advStats.damage_multiplier_vs_elites > 0) {
+                    html += `<div style="display: flex; justify-content: space-between; padding: 2px 0; font-size: 11px;"><span style="color: var(--text-normal);">Damage vs Elites</span><span style="font-weight: bold; color: #ff8800;">+${advStats.damage_multiplier_vs_elites}%</span></div>`;
+                }
+                if (advStats.damage_multiplier_vs_bosses > 0) {
+                    html += `<div style="display: flex; justify-content: space-between; padding: 2px 0; font-size: 11px;"><span style="color: var(--text-normal);">Damage vs Bosses</span><span style="font-weight: bold; color: #ff0088;">+${advStats.damage_multiplier_vs_bosses}%</span></div>`;
+                }
+                
+                html += `</div>`;
+            }
         }
 
         // Add description
@@ -169,6 +364,20 @@ window.CourierTooltips = {
             mythic: '255, 0, 64'
         };
         return colors[rarity] || colors.common;
+    },
+
+    getEffectiveRangeDescription(range) {
+        if (range <= 30) {
+            return "Very Close";
+        } else if (range <= 60) {
+            return "Close";
+        } else if (range <= 120) {
+            return "Medium";
+        } else if (range <= 200) {
+            return "Long";
+        } else {
+            return "Very Long";
+        }
     },
 
     updatePosition(event) {

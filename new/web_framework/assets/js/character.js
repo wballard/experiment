@@ -48,7 +48,7 @@ window.CharacterSystem = {
     
     async loadItemsData() {
         try {
-            const response = await fetch('assets/data/items.json');
+            const response = await fetch('../assets/data/item-database.json');
             if (response.ok) {
                 const data = await response.json();
                 // Combine weapons and armor into global items data

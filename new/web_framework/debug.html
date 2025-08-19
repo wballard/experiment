@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug - Courier</title>
+    <style>
+        body { font-family: monospace; background: #000; color: #0f0; padding: 20px; }
+        .test { margin: 10px 0; padding: 10px; border: 1px solid #333; }
+        .success { border-color: #0f0; }
+        .error { border-color: #f00; color: #f00; }
+        button { background: #333; color: #fff; border: 1px solid #666; padding: 10px; margin: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Courier System Debug</h1>
+    
+    <div id="results"></div>
+    
+    <button onclick="testAPI()">Test API Connection</button>
+    <button onclick="testMissionCompletion()">Test Mission Completion</button>
+    <button onclick="testInventory()">Test Inventory Load</button>
+    
+    <script src="assets/js/api-client.js"></script>
+    <script>
+        function log(message, isError = false) {
+            const div = document.createElement('div');
+            div.className = 'test ' + (isError ? 'error' : 'success');
+            div.textContent = new Date().toLocaleTimeString() + ': ' + message;
+            document.getElementById('results').appendChild(div);
+            console.log(message);
+        }
+        
+        async function testAPI() {
+            try {
+                log('Testing API connection...');
+                const health = await window.CourierAPI.healthCheck();
+                log('API Health Check SUCCESS: ' + JSON.stringify(health));
+            } catch (error) {
+                log('API Health Check FAILED: ' + error.message, true);
+            }
+        }
+        
+        async function testMissionCompletion() {
+            try {
+                log('Testing mission completion...');
+                const result = await window.CourierAPI.completeMission('patrol-1', 'patrol');
+                log('Mission completion SUCCESS: ' + JSON.stringify(result));
+            } catch (error) {
+                log('Mission completion FAILED: ' + error.message, true);
+            }
+        }
+        
+        async function testInventory() {
+            try {
+                log('Testing inventory load...');
+                const inventory = await window.CourierAPI.getInventory();
+                log('Inventory load SUCCESS: ' + inventory.inventory.length + ' items');
+                
+                // Show last 3 items
+                const lastItems = inventory.inventory.slice(-3);
+                lastItems.forEach(item => {
+                    log(`  Item: ${item.id} - ${item.name} (${item.rarity})`);
+                });
+            } catch (error) {
+                log('Inventory load FAILED: ' + error.message, true);
+            }
+        }
+        
+        // Auto-test on load
+        document.addEventListener('DOMContentLoaded', async () => {
+            log('Debug page loaded');
+            await testAPI();
+            await testInventory();
+        });
+    </script>
+</body>
+</html>

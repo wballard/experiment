@@ -6,7 +6,7 @@
       "type": "weapon",
       "subtype": "assault-rifle",
       "rarity": "legendary",
-      "icon": "🔫",
+      "icon": "auto-rifle",
       "stats": {
         "damage": 180,
         "fireRate": 450,
@@ -23,7 +23,7 @@
       "type": "weapon",
       "subtype": "shotgun",
       "rarity": "epic",
-      "icon": "💥",
+      "icon": "shotgun",
       "stats": {
         "damage": 320,
         "fireRate": 120,
@@ -40,7 +40,7 @@
       "type": "weapon",
       "subtype": "sniper",
       "rarity": "mythic",
-      "icon": "🎯",
+      "icon": "sniper",
       "stats": {
         "damage": 650,
         "fireRate": 45,
@@ -57,7 +57,7 @@
       "type": "weapon",
       "subtype": "smg",
       "rarity": "rare",
-      "icon": "🏃",
+      "icon": "smg",
       "stats": {
         "damage": 45,
         "fireRate": 850,
@@ -74,7 +74,7 @@
       "type": "weapon",
       "subtype": "pistol",
       "rarity": "legendary",
-      "icon": "🔫",
+      "icon": "pistol",
       "stats": {
         "damage": 120,
         "fireRate": 280,
@@ -91,7 +91,7 @@
       "type": "weapon",
       "subtype": "shotgun",
       "rarity": "primal",
-      "icon": "💥",
+      "icon": "shotgun",
       "stats": {
         "damage": 480,
         "fireRate": 90,
@@ -109,7 +109,7 @@
       "type": "weapon",
       "subtype": "assault-rifle",
       "rarity": "common",
-      "icon": "🔫",
+      "icon": "auto-rifle",
       "stats": {
         "damage": 65,
         "fireRate": 380,
@@ -126,7 +126,7 @@
       "type": "weapon",
       "subtype": "assault-rifle",
       "rarity": "uncommon",
-      "icon": "🔫",
+      "icon": "auto-rifle",
       "stats": {
         "damage": 95,
         "fireRate": 420,
@@ -145,7 +145,7 @@
       "type": "armor",
       "subtype": "head",
       "rarity": "legendary",
-      "icon": "⛑️",
+      "icon": "helmet",
       "stats": {
         "health": 350,
         "precision": 25,
@@ -162,7 +162,7 @@
       "type": "armor",
       "subtype": "chest",
       "rarity": "epic",
-      "icon": "🛡️",
+      "icon": "chest",
       "stats": {
         "health": 850,
         "defense": 45,
@@ -179,7 +179,7 @@
       "type": "armor",
       "subtype": "gloves",
       "rarity": "rare",
-      "icon": "🧤",
+      "icon": "arms",
       "stats": {
         "weaponDamage": 28,
         "reloadSpeed": 35,
@@ -196,7 +196,7 @@
       "type": "armor",
       "subtype": "legs",
       "rarity": "mythic",
-      "icon": "👢",
+      "icon": "boots",
       "stats": {
         "health": 420,
         "movementSpeed": 25,
@@ -213,7 +213,7 @@
       "type": "armor",
       "subtype": "shoulders",
       "rarity": "epic",
-      "icon": "🔗",
+      "icon": "shoulders",
       "stats": {
         "weaponDamage": 32,
         "armor": 28,
@@ -230,7 +230,7 @@
       "type": "armor",
       "subtype": "back",
       "rarity": "legendary",
-      "icon": "🎭",
+      "icon": "back",
       "stats": {
         "allResistances": 25,
         "shieldRegen": 45,
@@ -247,7 +247,7 @@
       "type": "armor",
       "subtype": "bracers",
       "rarity": "rare",
-      "icon": "💪",
+      "icon": "bracers",
       "stats": {
         "classAbilityPower": 45,
         "abilityRange": 20,
@@ -264,7 +264,7 @@
       "type": "armor",
       "subtype": "head",
       "rarity": "primal",
-      "icon": "👑",
+      "icon": "helmet",
       "stats": {
         "health": 520,
         "precision": 45,
@@ -282,7 +282,7 @@
       "type": "armor",
       "subtype": "head",
       "rarity": "uncommon",
-      "icon": "⛑️",
+      "icon": "helmet",
       "stats": {
         "health": 180,
         "precision": 15,

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Test - Courier</title>
+    <link rel="stylesheet" href="assets/css/design-system.css">
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="assets/css/inventory.css">
+</head>
+<body>
+    <div class="page-container">
+        <div class="page-header">
+            <h1 class="page-title">BACKEND API TEST</h1>
+            <div style="color: #00ff00; font-size: 12px;">
+                🔧 Testing Backend Integration - Clean Slate
+            </div>
+        </div>
+
+        <div class="layout-sidebar">
+            <!-- Equipment Section -->
+            <div class="sidebar">
+                <div class="card-header">
+                    <h3 class="card-title">Equipped Items</h3>
+                </div>
+                <div class="card-accent"></div>
+                
+                <div class="equipment-grid">
+                    <!-- Row 1: Head, Shoulders | Primary Weapon -->
+                    <div class="equipment-slot" data-slot="head">
+                        <div class="equipment-placeholder">Head</div>
+                    </div>
+                    <div class="equipment-slot" data-slot="shoulders">
+                        <div class="equipment-placeholder">Shoulders</div>
+                    </div>
+                    <div class="equipment-slot" data-slot="primary">
+                        <div class="equipment-placeholder">Primary</div>
+                    </div>
+                    
+                    <!-- Row 2: Chest, Back | Secondary Weapon -->
+                    <div class="equipment-slot" data-slot="chest">
+                        <div class="equipment-placeholder">Chest</div>
+                    </div>
+                    <div class="equipment-slot" data-slot="back">
+                        <div class="equipment-placeholder">Back</div>
+                    </div>
+                    <div class="equipment-slot" data-slot="secondary">
+                        <div class="equipment-placeholder">Secondary</div>
+                    </div>
+                    
+                    <!-- Row 3: Gloves, Legs | Bracers -->
+                    <div class="equipment-slot" data-slot="gloves">
+                        <div class="equipment-placeholder">Gloves</div>
+                    </div>
+                    <div class="equipment-slot" data-slot="legs">
+                        <div class="equipment-placeholder">Legs</div>
+                    </div>
+                    <div class="equipment-slot" data-slot="bracers">
+                        <div class="equipment-placeholder">Bracers</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Inventory Section -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Inventory</h2>
+                </div>
+                <div class="card-accent"></div>
+                
+                <div class="inventory-grid">
+                    <div class="armor-section">
+                        <h3>All Items</h3>
+                        <div class="armor-items inventory-items">
+                            <div class="page-loader">Loading items from API...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-top: 20px; padding: 20px; background: rgba(0,0,0,0.5); border-radius: 4px;">
+            <h3 style="color: #00ff00;">Test Instructions:</h3>
+            <ol style="color: #ccc;">
+                <li>Items should load from the backend API (SQLite database)</li>
+                <li>All equipment slots should be empty initially</li>
+                <li>Drag items from inventory to equipment slots</li>
+                <li>Items should disappear from inventory when equipped</li>
+                <li>Click equipped items to unequip them</li>
+                <li>Open this page in multiple tabs to test sync</li>
+            </ol>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="assets/js/api-client.js"></script>
+    <script src="assets/js/inventory-simple.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log('=== API TEST PAGE LOADING ===');
+            
+            try {
+                // Test API connection
+                const health = await window.CourierAPI.healthCheck();
+                console.log('API Health Check:', health);
+                
+                // Initialize simple inventory system
+                await window.SimpleInventory.init();
+                
+                console.log('=== API TEST PAGE LOADED ===');
+            } catch (error) {
+                console.error('=== API TEST PAGE FAILED ===', error);
+                document.querySelector('.armor-items').innerHTML = `
+                    <div style="color: red;">
+                        Failed to connect to backend API.<br>
+                        Make sure the backend server is running on port 3001.<br>
+                        Error: ${error.message}
+                    </div>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>

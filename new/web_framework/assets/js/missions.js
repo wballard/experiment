@@ -123,22 +123,43 @@ window.MissionSystem = {
     async launchMission(missionId) {
         // Find mission data
         let mission = null;
+        let missionType = null;
         for (let category in this.missionDatabase) {
             mission = this.missionDatabase[category].find(m => m.id === missionId);
-            if (mission) break;
+            if (mission) {
+                missionType = category;
+                break;
+            }
         }
 
         if (mission) {
-            console.log('Launching mission:', mission.name);
+            console.log('=== LAUNCHING MISSION ===');
+            console.log('Mission:', mission.name);
+            console.log('Mission ID:', missionId);
+            console.log('Mission Type:', missionType);
             
-            // Simulate mission completion and show success page
-            setTimeout(() => {
-                this.showMissionSuccess(mission);
+            // Simulate mission completion and get actual rewards from backend
+            setTimeout(async () => {
+                try {
+                    console.log('=== CALLING BACKEND API ===');
+                    const rewardResponse = await window.CourierAPI.completeMission(missionId, missionType);
+                    console.log('=== MISSION COMPLETED WITH REWARDS ===');
+                    console.log('Response:', rewardResponse);
+                    this.showMissionSuccess(mission, rewardResponse.rewards);
+                } catch (error) {
+                    console.error('=== FAILED TO COMPLETE MISSION ===');
+                    console.error('Error:', error);
+                    alert('Mission completion failed: ' + error.message);
+                    // Fallback to old system if backend fails
+                    this.showMissionSuccess(mission);
+                }
             }, 1000);
+        } else {
+            console.error('Mission not found for ID:', missionId);
         }
     },
     
-    showMissionSuccess(mission) {
+    showMissionSuccess(mission, backendRewards = null) {
         const overlay = document.getElementById('mission-success-overlay');
         const missionName = document.getElementById('success-mission-name');
         const duration = document.getElementById('success-duration');
@@ -156,22 +177,129 @@ window.MissionSystem = {
                             mission.difficulty === 'Normal' ? 'A' :
                             mission.difficulty === 'Hard' ? 'B+' : 'B';
 
-        // Set currency rewards
-        const creditsMatch = mission.rewards.find(r => r.includes('Credits:'));
-        const xpMatch = mission.rewards.find(r => r.includes('XP:'));
-        
-        if (creditsMatch) {
-            creditsElement.textContent = creditsMatch.split(': ')[1];
+        // Use backend rewards if available, otherwise parse from mission data
+        if (backendRewards) {
+            creditsElement.textContent = backendRewards.credits.toLocaleString();
+            xpElement.textContent = backendRewards.xp.toLocaleString();
+            this.generateBackendItemRewards(backendRewards, itemRewardsGrid);
+        } else {
+            // Fallback to old system
+            const creditsMatch = mission.rewards.find(r => r.includes('Credits:'));
+            const xpMatch = mission.rewards.find(r => r.includes('XP:'));
+            
+            if (creditsMatch) {
+                creditsElement.textContent = creditsMatch.split(': ')[1];
+            }
+            if (xpMatch) {
+                xpElement.textContent = xpMatch.split(': ')[1];
+            }
+            
+            this.generateItemRewards(mission, itemRewardsGrid);
         }
-        if (xpMatch) {
-            xpElement.textContent = xpMatch.split(': ')[1];
-        }
-
-        // Generate item rewards
-        this.generateItemRewards(mission, itemRewardsGrid);
 
         // Show modal
         overlay.classList.remove('hidden');
+    },
+    
+    async generateBackendItemRewards(backendRewards, container) {
+        container.innerHTML = '';
+        
+        if (!backendRewards.items || backendRewards.items.length === 0) {
+            container.innerHTML = '<div style="text-align: center; color: var(--text-dim);">No item rewards</div>';
+            return;
+        }
+
+        // Store rewards for collection (already in player inventory via backend)
+        this.currentMissionRewards = backendRewards;
+
+        try {
+            // Get fresh inventory data from backend (don't use cached data)
+            const inventoryResponse = await window.CourierAPI.getInventory();
+            
+            // Get all items from database to match against reward IDs
+            const allItems = inventoryResponse.inventory;
+            
+            // For each rewarded item ID, find the actual item data
+            const rewardItems = [];
+            backendRewards.items.forEach(rewardItemId => {
+                // Find the item in the current inventory by ID
+                const matchingItem = allItems.find(item => item.id === rewardItemId);
+                if (matchingItem) {
+                    rewardItems.push(matchingItem);
+                    console.log(`Found reward item: ${matchingItem.id} - ${matchingItem.name}, icon: ${matchingItem.icon}`);
+                } else {
+                    console.warn(`Could not find item ${rewardItemId} in inventory`);
+                    console.log('Available items in inventory:', allItems.map(item => item.id));
+                }
+            });
+
+            console.log('Found reward items:', rewardItems.map(item => `${item.id} - ${item.name}`));
+
+            rewardItems.forEach(item => {
+                const itemCard = this.createStandardItemElement(item);
+                container.appendChild(itemCard);
+            });
+        } catch (error) {
+            console.error('Error loading reward items:', error);
+            // Fallback display
+            backendRewards.items.forEach((itemId, index) => {
+                const itemCard = document.createElement('div');
+                itemCard.className = 'reward-item-card';
+                itemCard.innerHTML = `
+                    <div class="reward-item-icon">📦</div>
+                    <div class="reward-item-name">Item #${itemId}</div>
+                    <div class="reward-item-type">Equipment</div>
+                `;
+                container.appendChild(itemCard);
+            });
+        }
+    },
+    
+    createStandardItemElement(item) {
+        const itemCard = document.createElement('div');
+        // Use exact same classes as inventory system
+        itemCard.className = `inventory-item rarity-${item.rarity}`;
+        itemCard.dataset.itemId = item.id;
+        itemCard.dataset.itemSlot = item.slot;
+        
+        // Fix icon path for missions.html (same logic as inventory)
+        let iconPath = item.icon;
+        if (window.location.pathname.includes('/game/')) {
+            iconPath = '../' + item.icon;
+        }
+        
+        // Add cache-busting parameter to force reload of updated images
+        const cacheBuster = Date.now();
+        const iconPathWithCache = `${iconPath}?v=${cacheBuster}`;
+        
+        console.log('Mission reward item icon path:', iconPathWithCache, 'for item:', item.name);
+        
+        // Use exact same HTML structure as inventory system (NO text labels)
+        itemCard.innerHTML = `
+            <div class="item-icon">
+                <img src="${iconPathWithCache}" alt="${item.name}" class="item-icon-img" 
+                     onerror="console.error('Failed to load icon:', this.src); this.style.display='none'; this.parentNode.innerHTML='📦';" 
+                     onload="console.log('Successfully loaded icon:', this.src);" />
+            </div>
+            <div class="power-rating">${item.power_cost || item.powerCost || 0}</div>
+            <div style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.8); color: white; font-size: 8px; padding: 2px; text-align: center;">${item.name}</div>
+        `;
+        
+        // Add standard tooltip functionality (same as inventory)
+        itemCard.addEventListener('mouseenter', (e) => {
+            if (window.CourierTooltips && window.SimpleInventory && window.SimpleInventory.transformItemForTooltip) {
+                const tooltipItem = window.SimpleInventory.transformItemForTooltip(item);
+                window.CourierTooltips.showTooltip(e, tooltipItem);
+            }
+        });
+
+        itemCard.addEventListener('mouseleave', () => {
+            if (window.CourierTooltips) {
+                window.CourierTooltips.hideTooltip();
+            }
+        });
+        
+        return itemCard;
     },
     
     generateItemRewards(mission, container) {
@@ -235,60 +363,112 @@ window.MissionSystem = {
         }
     },
     
-    collectRewards() {
-        if (!this.currentMissionRewards || this.currentMissionRewards.length === 0) {
+    async collectRewards() {
+        if (!this.currentMissionRewards) {
             console.log('No rewards to collect');
             closeMissionSuccess();
             return;
         }
 
-        // Get current inventory from localStorage
-        let inventory = [];
-        try {
-            const savedInventory = localStorage.getItem('courierInventory');
-            if (savedInventory) {
-                inventory = JSON.parse(savedInventory);
+        // If using backend rewards, items are already in inventory
+        if (this.currentMissionRewards.items && Array.isArray(this.currentMissionRewards.items)) {
+            console.log('Backend rewards collected:', this.currentMissionRewards.items.length, 'items');
+            console.log('Credits earned:', this.currentMissionRewards.credits);
+            console.log('XP earned:', this.currentMissionRewards.xp);
+            
+            // Trigger inventory refresh if the SimpleInventory system is available
+            if (window.SimpleInventory) {
+                console.log('Refreshing inventory after mission rewards...');
+                
+                try {
+                    // Force reload both inventory and equipped items
+                    await window.SimpleInventory.loadInventory();
+                    await window.SimpleInventory.loadEquipped();
+                    
+                    // Re-render the inventory if we're on the inventory page
+                    if (window.SimpleInventory.renderInventory) {
+                        window.SimpleInventory.renderInventory();
+                    }
+                    
+                    // Re-render equipped items if we're on a page with equipment display
+                    if (window.SimpleInventory.renderEquipped) {
+                        window.SimpleInventory.renderEquipped();
+                    }
+                    
+                    // Update power budget
+                    if (window.SimpleInventory.updatePowerBudget) {
+                        window.SimpleInventory.updatePowerBudget();
+                    }
+                    
+                    console.log('Inventory fully refreshed with new mission rewards');
+                    
+                    // Show success notification
+                    this.showInventoryUpdateNotification(this.currentMissionRewards.items.length);
+                } catch (error) {
+                    console.error('Failed to refresh inventory:', error);
+                    // Still show notification even if refresh failed
+                    this.showInventoryUpdateNotification(this.currentMissionRewards.items.length);
+                }
+            } else {
+                // Still show notification even if inventory system isn't available
+                this.showInventoryUpdateNotification(this.currentMissionRewards.items.length);
             }
-        } catch (error) {
-            console.error('Error loading inventory:', error);
-        }
+        } else {
+            // Fallback for old localStorage system
+            if (this.currentMissionRewards.length === 0) {
+                console.log('No rewards to collect');
+                closeMissionSuccess();
+                return;
+            }
 
-        // Add each reward item to inventory
-        this.currentMissionRewards.forEach(rewardItem => {
-            // Generate unique ID for inventory item
-            const inventoryItem = {
-                ...rewardItem,
-                inventoryId: Date.now() + Math.random(),
-                quantity: 1
-            };
-            
-            inventory.push(inventoryItem);
-            console.log('Added to inventory:', inventoryItem.name);
-        });
+            // Get current inventory from localStorage
+            let inventory = [];
+            try {
+                const savedInventory = localStorage.getItem('courierInventory');
+                if (savedInventory) {
+                    inventory = JSON.parse(savedInventory);
+                }
+            } catch (error) {
+                console.error('Error loading inventory:', error);
+            }
 
-        // Save updated inventory
-        try {
-            localStorage.setItem('courierInventory', JSON.stringify(inventory));
-            console.log('Inventory updated with', this.currentMissionRewards.length, 'new items');
-            
-            // Update global game data if available
-            if (window.CourierGame && window.CourierGame.data) {
-                window.CourierGame.data.inventory = inventory;
+            // Add each reward item to inventory
+            this.currentMissionRewards.forEach(rewardItem => {
+                // Generate unique ID for inventory item
+                const inventoryItem = {
+                    ...rewardItem,
+                    inventoryId: Date.now() + Math.random(),
+                    quantity: 1
+                };
+                
+                inventory.push(inventoryItem);
+                console.log('Added to inventory:', inventoryItem.name);
+            });
+
+            // Save updated inventory
+            try {
+                localStorage.setItem('courierInventory', JSON.stringify(inventory));
+                console.log('Inventory updated with', this.currentMissionRewards.length, 'new items');
+                
+                // Update global game data if available
+                if (window.CourierGame && window.CourierGame.data) {
+                    window.CourierGame.data.inventory = inventory;
+                }
+                
+                // Trigger inventory update event if available
+                if (window.CourierGame && window.CourierGame.emit) {
+                    window.CourierGame.emit('inventoryUpdated', {
+                        newItems: this.currentMissionRewards
+                    });
+                }
+                
+            } catch (error) {
+                console.error('Error saving inventory:', error);
             }
-            
-            // Trigger inventory update event if available
-            if (window.CourierGame && window.CourierGame.emit) {
-                window.CourierGame.emit('inventoryUpdated', {
-                    newItems: this.currentMissionRewards
-                });
-            }
-            
-        } catch (error) {
-            console.error('Error saving inventory:', error);
         }
 
         // Clear current rewards
-        this.currentMissionRewards = [];
+        this.currentMissionRewards = null;
         
         // Show collection confirmation
         this.showRewardCollectedFeedback();
@@ -319,6 +499,57 @@ window.MissionSystem = {
             collectButton.style.backgroundColor = 'var(--primary-cyan)';
             collectButton.style.color = 'var(--bg-black)';
         }
+    },
+    
+    showInventoryUpdateNotification(itemCount) {
+        // Create a temporary notification element
+        const notification = document.createElement('div');
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #00ff88 0%, #00cc66 100%);
+            color: #000;
+            padding: 15px 20px;
+            border-radius: 6px;
+            font-weight: 600;
+            z-index: 10000;
+            box-shadow: 0 4px 12px rgba(0, 255, 136, 0.3);
+            animation: slideInRight 0.3s ease-out;
+        `;
+        notification.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="font-size: 18px;">📦</span>
+                <span>${itemCount} item${itemCount !== 1 ? 's' : ''} added to inventory!</span>
+            </div>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // Remove after 3 seconds
+        setTimeout(() => {
+            notification.style.animation = 'slideOutRight 0.3s ease-in';
+            setTimeout(() => {
+                document.body.removeChild(notification);
+            }, 300);
+        }, 3000);
+        
+        // Add CSS animations if not already present
+        if (!document.getElementById('mission-notification-styles')) {
+            const style = document.createElement('style');
+            style.id = 'mission-notification-styles';
+            style.textContent = `
+                @keyframes slideInRight {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+                @keyframes slideOutRight {
+                    from { transform: translateX(0); opacity: 1; }
+                    to { transform: translateX(100%); opacity: 0; }
+                }
+            `;
+            document.head.appendChild(style);
+        }
     }
 };
 
@@ -326,8 +557,8 @@ function closeMissionSuccess() {
     document.getElementById('mission-success-overlay').classList.add('hidden');
 }
 
-function collectRewards() {
+async function collectRewards() {
     if (window.MissionSystem) {
-        window.MissionSystem.collectRewards();
+        await window.MissionSystem.collectRewards();
     }
 }

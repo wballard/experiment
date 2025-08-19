@@ -55,6 +55,45 @@
             0%, 100% { opacity: 1; }
             50% { opacity: 0.7; }
         }
+
+        /* Equipment Icon Styles */
+        .equipment-icon {
+            width: 32px;
+            height: 32px;
+            opacity: 0.6;
+            transition: all 0.3s ease;
+            display: block;
+            margin: 0 auto 4px auto;
+        }
+
+        .equipment-slot:hover .equipment-icon {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        .equipment-label {
+            display: block;
+            font-size: 10px;
+            color: var(--text-dim);
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .equipment-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            padding: var(--spacing-sm);
+        }
+
+        /* Item Icon Image Styles - sizes controlled by inventory.css */
+        .item-icon-img {
+            display: block;
+            opacity: 0.9;
+        }
     </style>
 </head>
 <body>
@@ -110,32 +149,34 @@
                 <div class="card-accent"></div>
                 
                 <div class="equipment-grid">
-                    <div class="equipment-slot" data-slot="primary">
-                        <div class="equipment-placeholder">Primary</div>
-                    </div>
-                    <div class="equipment-slot" data-slot="secondary">
-                        <div class="equipment-placeholder">Secondary</div>
-                    </div>
+                    <!-- Row 1: Head, Shoulders | Primary Weapon -->
                     <div class="equipment-slot" data-slot="head">
                         <div class="equipment-placeholder">Head</div>
                     </div>
                     <div class="equipment-slot" data-slot="shoulders">
                         <div class="equipment-placeholder">Shoulders</div>
                     </div>
+                    <div class="equipment-slot" data-slot="primary">
+                        <div class="equipment-placeholder">Primary</div>
+                    </div>
+                    
+                    <!-- Row 2: Chest, Back | Secondary Weapon -->
                     <div class="equipment-slot" data-slot="chest">
                         <div class="equipment-placeholder">Chest</div>
                     </div>
+                    <div class="equipment-slot" data-slot="back">
+                        <div class="equipment-placeholder">Back</div>
+                    </div>
+                    <div class="equipment-slot" data-slot="secondary">
+                        <div class="equipment-placeholder">Secondary</div>
+                    </div>
+                    
+                    <!-- Row 3: Gloves, Legs -->
                     <div class="equipment-slot" data-slot="gloves">
                         <div class="equipment-placeholder">Gloves</div>
                     </div>
                     <div class="equipment-slot" data-slot="legs">
                         <div class="equipment-placeholder">Legs</div>
-                    </div>
-                    <div class="equipment-slot" data-slot="back">
-                        <div class="equipment-placeholder">Back</div>
-                    </div>
-                    <div class="equipment-slot" data-slot="bracers">
-                        <div class="equipment-placeholder">Bracers</div>
                     </div>
                 </div>
             </div>
@@ -176,7 +217,6 @@
                             <option value="gloves">GLOVES</option>
                             <option value="legs">LEGS</option>
                             <option value="back">BACK</option>
-                            <option value="bracers">BRACERS</option>
                         </select>
                     </div>
                 </div>
@@ -213,112 +253,44 @@
                     chest: null,
                     gloves: null,
                     legs: null,
-                    back: null,
-                    bracers: null
+                    back: null
                 }
             }
         };
     </script>
-    <script src="assets/js/data-manager.js"></script>
-    <script src="assets/js/main.js"></script>
-    <script src="assets/js/tooltips.js"></script>
-    <script src="assets/js/inventory.js"></script>
+    <script src="assets/js/api-client.js"></script>
+    <script src="assets/js/tooltips.js?v=17"></script>
+    <script src="assets/js/inventory-simple.js"></script>
     <script>
-        // Initialize inventory directly
-        document.addEventListener('DOMContentLoaded', () => {
-            console.log('Standalone inventory page loaded');
-            if (window.InventorySystem) {
-                window.InventorySystem.init();
-            }
+        console.log('=== INVENTORY PAGE LOADING WITH BACKEND API ===');
+        
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log('=== DOM CONTENT LOADED ===');
             
-            // Debug and force icon sizes after everything loads
-            setTimeout(() => {
-                console.log('=== DEBUGGING INVENTORY ===');
+            try {
+                // Test API connection
+                const health = await window.CourierAPI.healthCheck();
+                console.log('API Health Check:', health);
                 
-                // Check if items are loaded
-                const inventoryItems = document.querySelectorAll('.inventory-item');
-                console.log('Inventory items found:', inventoryItems.length);
+                // Initialize simple inventory system
+                await window.SimpleInventory.init();
                 
-                // Check equipment slots
-                const equipmentSlots = document.querySelectorAll('.equipment-slot');
-                console.log('Equipment slots found:', equipmentSlots.length);
+                console.log('=== INVENTORY PAGE LOADED WITH BACKEND API ===');
+            } catch (error) {
+                console.error('=== INVENTORY PAGE API FAILED ===', error);
                 
-                // Check filter system
-                console.log('InventorySystem.allItems:', window.InventorySystem?.allItems?.length || 'undefined');
-                console.log('Sample items:', window.InventorySystem?.allItems?.slice(0, 3));
-                console.log('Current filter:', window.InventorySystem?.currentFilter);
-                
-                // Check filter buttons
-                const filterBtns = document.querySelectorAll('.filter-btn');
-                console.log('Filter buttons found:', filterBtns.length);
-                filterBtns.forEach((btn, i) => {
-                    console.log(`Filter button ${i}: ${btn.textContent} - active: ${btn.classList.contains('active')}`);
-                });
-                
-                // Check all icons
-                const icons = document.querySelectorAll('.item-icon, .equipment-slot-icon, .equipped-item .item-icon');
-                console.log('Total icons found:', icons.length);
-                
-                // Force 56x56 pixel icons
-                icons.forEach((icon, index) => {
-                    const computedStyle = window.getComputedStyle(icon);
-                    console.log(`Icon ${index}: width=${computedStyle.width}, height=${computedStyle.height}, content="${icon.textContent || icon.innerHTML}"`);
-                    
-                    // Force 56x56 pixel sizing
-                    icon.style.width = '56px';
-                    icon.style.height = '56px';
-                    icon.style.fontSize = '32px';
-                    icon.style.lineHeight = '1';
-                    icon.style.display = 'flex';
-                    icon.style.alignItems = 'center';
-                    icon.style.justifyContent = 'center';
-                    icon.style.flexShrink = '0';
-                    icon.style.border = '1px solid red'; // Temporary debug border
-                });
-                
-                console.log('=== END DEBUG ===');
-                
-                // Add manual test functions to window for console testing
-                window.testFilters = {
-                    testWeapon: () => {
-                        console.log('Manual test: weapon filter');
-                        if (window.InventorySystem) {
-                            window.InventorySystem.setMainFilter('weapon');
-                        }
-                    },
-                    testArmor: () => {
-                        console.log('Manual test: armor filter');
-                        if (window.InventorySystem) {
-                            window.InventorySystem.setMainFilter('armor');
-                        }
-                    },
-                    testAll: () => {
-                        console.log('Manual test: all filter');
-                        if (window.InventorySystem) {
-                            window.InventorySystem.setMainFilter('all');
-                        }
-                    },
-                    showItems: () => {
-                        console.log('All items:', window.InventorySystem?.allItems);
-                        console.log('Current filter:', window.InventorySystem?.currentFilter);
-                    }
-                };
-                
-                console.log('=== TEST FUNCTIONS AVAILABLE ===');
-                console.log('Use these in console: testFilters.testWeapon(), testFilters.testArmor(), testFilters.showItems()');
-                
-                // Test manual filter trigger
-                setTimeout(() => {
-                    console.log('=== TESTING MANUAL FILTER ===');
-                    if (window.InventorySystem && window.InventorySystem.setMainFilter) {
-                        console.log('Testing weapon filter...');
-                        window.InventorySystem.setMainFilter('weapon');
-                    } else {
-                        console.log('InventorySystem filter methods not available');
-                    }
-                }, 3000);
-                
-            }, 2000);
+                // Show error message to user
+                const inventoryContainer = document.querySelector('.armor-items, .inventory-items');
+                if (inventoryContainer) {
+                    inventoryContainer.innerHTML = `
+                        <div style="color: red; padding: 20px; text-align: center;">
+                            <strong>Backend Connection Failed</strong><br>
+                            Make sure the backend server is running on port 3001.<br>
+                            Error: ${error.message}
+                        </div>
+                    `;
+                }
+            }
         });
     </script>
 </body>

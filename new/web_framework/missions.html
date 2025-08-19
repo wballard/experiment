@@ -6,6 +6,7 @@
     <title>Missions - Courier</title>
     <link rel="stylesheet" href="assets/css/design-system.css">
     <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="assets/css/inventory.css">
     <link rel="stylesheet" href="assets/css/missions.css">
 </head>
 <body>
@@ -185,13 +186,28 @@
             }
         };
     </script>
+    <script src="assets/js/api-client.js"></script>
+    <script src="assets/js/tooltips.js"></script>
+    <script src="assets/js/inventory-simple.js"></script>
     <script src="assets/js/missions.js"></script>
     <script>
         // Initialize missions directly
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
             console.log('Standalone missions page loaded');
+            
+            // Test API connection
+            try {
+                const health = await window.CourierAPI.healthCheck();
+                console.log('API Health Check SUCCESS:', health);
+            } catch (error) {
+                console.error('API Health Check FAILED:', error);
+                alert('Backend API not available! Make sure server is running on port 3001');
+            }
+            
             if (window.MissionSystem) {
                 window.MissionSystem.init();
+            } else {
+                console.error('MissionSystem not loaded!');
             }
         });
     </script>

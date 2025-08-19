@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Starter Inventory</title>
+</head>
+<body>
+    <h1>Test Starter Inventory Creation</h1>
+    <div id="output"></div>
+    <button onclick="testStarter()">Create Starter Inventory</button>
+    
+    <script>
+        // Copy the createStarterInventory function for testing
+        function createStarterInventory() {
+            const starterItems = [
+                // Weapons
+                {
+                    id: 'starter_rifle',
+                    inventoryId: 'inv_' + Date.now() + '_1',
+                    name: 'Standard Issue Rifle',
+                    type: 'weapon',
+                    weaponType: 'assault_rifle',
+                    rarity: 'common',
+                    icon: 'assets/images/Icons/Weapons/Auto-Rifle.png',
+                    damage: { min: 60, max: 80 },
+                    fireRate: 380,
+                    powerCost: 130,
+                    slot: 'primary',
+                    description: 'Reliable military-grade assault rifle.'
+                },
+                {
+                    id: 'starter_pistol',
+                    inventoryId: 'inv_' + Date.now() + '_2',
+                    name: 'Combat Pistol',
+                    type: 'weapon',
+                    weaponType: 'handgun',
+                    rarity: 'common',
+                    icon: 'assets/images/Icons/Weapons/Pistol.png',
+                    damage: { min: 45, max: 65 },
+                    fireRate: 280,
+                    powerCost: 85,
+                    slot: 'secondary',
+                    description: 'Standard-issue sidearm.'
+                },
+                
+                // Armor
+                {
+                    id: 'starter_helmet',
+                    inventoryId: 'inv_' + Date.now() + '_3',
+                    name: 'Combat Helmet',
+                    type: 'armor',
+                    slot: 'head',
+                    rarity: 'common',
+                    icon: 'assets/images/Icons/Armor/Head.png',
+                    armor: 120,
+                    health: 180,
+                    powerCost: 85,
+                    description: 'Basic protective headgear.'
+                }
+            ];
+            
+            console.log('Created starter inventory with', starterItems.length, 'items');
+            return starterItems;
+        }
+        
+        function testStarter() {
+            const output = document.getElementById('output');
+            output.innerHTML = '<h3>Creating starter inventory...</h3>';
+            
+            try {
+                const items = createStarterInventory();
+                output.innerHTML += `<p>Created ${items.length} items</p>`;
+                
+                items.forEach(item => {
+                    output.innerHTML += `<p>- ${item.name} (${item.type}, ${item.rarity})</p>`;
+                });
+                
+                // Save to localStorage
+                localStorage.setItem('courierInventory', JSON.stringify(items));
+                output.innerHTML += '<p><strong>Saved to localStorage</strong></p>';
+                
+                // Check what was saved
+                const saved = localStorage.getItem('courierInventory');
+                const parsed = JSON.parse(saved);
+                output.innerHTML += `<p>Verified: ${parsed.length} items in localStorage</p>`;
+                
+            } catch (error) {
+                output.innerHTML += `<p>Error: ${error.message}</p>`;
+                console.error('Error:', error);
+            }
+        }
+    </script>
+</body>
+</html>

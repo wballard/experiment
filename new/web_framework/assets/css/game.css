@@ -49,13 +49,13 @@
     overflow: hidden;
 }
 
-.equipped-item.rarity-common { background: rgba(157, 157, 157, 0.2); }
-.equipped-item.rarity-uncommon { background: rgba(30, 255, 0, 0.2); }
-.equipped-item.rarity-rare { background: rgba(0, 112, 221, 0.2); }
-.equipped-item.rarity-epic { background: rgba(163, 53, 238, 0.2); }
-.equipped-item.rarity-legendary { background: rgba(255, 128, 0, 0.2); }
-.equipped-item.rarity-mythic { background: rgba(230, 204, 128, 0.2); }
-.equipped-item.rarity-primal { background: rgba(0, 255, 255, 0.2); }
+.equipped-item.rarity-common { background: rgba(157, 157, 157, 0.3); border-color: #666; }
+.equipped-item.rarity-uncommon { background: rgba(30, 255, 0, 0.3); border-color: #666; }
+.equipped-item.rarity-rare { background: rgba(0, 112, 221, 0.3); border-color: #666; }
+.equipped-item.rarity-epic { background: rgba(163, 53, 238, 0.3); border-color: #666; }
+.equipped-item.rarity-legendary { background: rgba(255, 128, 0, 0.3); border-color: #666; }
+.equipped-item.rarity-mythic { background: rgba(255, 0, 0, 0.3); border-color: #666; }
+.equipped-item.rarity-primal { background: rgba(0, 255, 255, 0.3); border-color: #666; }
 
 .equipment-placeholder {
     color: #888;
@@ -66,8 +66,8 @@
 
 .character-container {
     display: grid;
-    grid-template-columns: 1fr 2fr;
-    gap: 30px;
+    grid-template-columns: 540px 1fr;
+    gap: var(--spacing-lg);
     max-width: 1400px;
     margin: 0 auto;
 }
