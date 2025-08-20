@@ -1,0 +1,60 @@
+name: Courier Stack
+
+networks:
+  courier:
+    driver: bridge
+
+services:
+  # traefik for the main reverse proxy and https
+  traefik:
+    restart: always
+    image: "traefik:v3.4.1"
+    container_name: "traefik"
+    networks:
+      - courier
+    command:
+      - "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entryPoints.web.address=:80"
+      - "--entryPoints.websecure.address=:443"
+      - "--certificatesresolvers.api.acme.tlschallenge=true"
+      - "--certificatesresolvers.api.acme.email=wballard@mailframe.net"
+      - "--certificatesresolvers.api.acme.storage=/letsencrypt/api.acme.json"
+      - "--certificatesresolvers.webapi.acme.tlschallenge=true"
+      - "--certificatesresolvers.webapi.acme.email=wballard@mailframe.net"
+      - "--certificatesresolvers.webapi.acme.storage=/letsencrypt/webapi.acme.json"
+      - "--certificatesresolvers.admin.acme.tlschallenge=true"
+      - "--certificatesresolvers.admin.acme.email=wballard@mailframe.net"
+      - "--certificatesresolvers.admin.acme.storage=/letsencrypt/admin.acme.json"
+      - "--accesslog=true"
+      - "--accesslog.format=json"
+      - "--serversTransport.insecureSkipVerify=true"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    volumes:
+      - /var/data/letsencrypt:/letsencrypt
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  courier-app:
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - traefik
+    ports:
+      - "3001"
+    container_name: "courier-app"
+    networks:
+      - courier
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=courier"
+      - "traefik.http.routers.courier-app.rule=Host(`admin.mailframe.net`)"
+      - "traefik.http.routers.courier-app.entrypoints=websecure"
+      - "traefik.http.routers.courier-app.tls.certresolver=admin"
+      - "traefik.http.services.courier-app.loadbalancer.server.port=3001"
