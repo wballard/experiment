@@ -2,12 +2,98 @@
 window.MissionSystem = {
     missionDatabase: {},
     
+    // Affix definitions with descriptions for tooltips
+    affixDefinitions: {
+        'Frozen': {
+            name: 'Frozen Ground',
+            icon: '❄️',
+            description: 'The ground is covered in ice, reducing movement speed by 25% and causing periodic slip damage. Ice elemental enemies deal +15% damage.',
+            effects: ['Movement Speed -25%', 'Slip Damage (50 per 3s)', 'Ice Enemy Damage +15%']
+        },
+        'Electric': {
+            name: 'Electric Storm',
+            icon: '⚡',
+            description: 'Electrical storms periodically strike the battlefield, dealing chain lightning damage. Electronic equipment has a chance to malfunction.',
+            effects: ['Chain Lightning (150 damage)', 'Equipment Malfunction (5% chance)', 'Electric Enemy Damage +15%']
+        },
+        'Scorched': {
+            name: 'Scorched Earth',
+            icon: '🔥',
+            description: 'The environment is superheated, causing constant fire damage over time. Fire elemental enemies are empowered and appear more frequently.',
+            effects: ['Fire DOT (25 per second)', 'Fire Enemy Spawn +30%', 'Fire Enemy Damage +15%']
+        },
+        'Toxic': {
+            name: 'Toxic Atmosphere',
+            icon: '☢️',
+            description: 'Poisonous gases fill the air, slowly draining health and reducing healing effectiveness. Poison immunity required for survival.',
+            effects: ['Poison DOT (15 per second)', 'Healing Effectiveness -50%', 'Poison Enemy Damage +15%']
+        },
+        'Void': {
+            name: 'Void Corruption',
+            icon: '🌌',
+            description: 'Reality itself is unstable. Random teleportation events occur, and void entities spawn unpredictably throughout the mission.',
+            effects: ['Random Teleportation', 'Void Enemy Spawns', 'Ability Cooldowns +25%']
+        },
+        'Overcharged': {
+            name: 'Overcharged Systems',
+            icon: '⚡',
+            description: 'All systems are running at maximum capacity. Abilities recharge faster but consume more energy and have a chance to overload.',
+            effects: ['Ability Cooldown -25%', 'Energy Cost +50%', 'Overload Chance 10%']
+        }
+    },
+    
     async init() {
         console.log('Mission System Initialized');
         await this.loadMissionData();
         await this.loadItemsData();
         this.populateMissions('patrol');
         this.initMissionCategoryHandlers();
+        this.initAffixTooltips();
+    },
+
+    // Initialize affix tooltips for the sidebar
+    initAffixTooltips() {
+        // Add tooltips to sidebar affixes
+        const sidebarAffixes = document.querySelectorAll('.stat-item .stat-label');
+        sidebarAffixes.forEach(affixElement => {
+            const affixText = affixElement.textContent.trim();
+            let affixKey = null;
+            
+            // Map display text to affix keys
+            if (affixText.includes('FROZEN GROUND')) affixKey = 'Frozen';
+            else if (affixText.includes('ELECTRIC STORM')) affixKey = 'Electric';
+            else if (affixText.includes('SCORCHED EARTH')) affixKey = 'Scorched';
+            
+            if (affixKey && this.affixDefinitions[affixKey]) {
+                affixElement.style.cursor = 'pointer';
+                affixElement.addEventListener('mouseenter', (e) => this.showAffixTooltip(e, affixKey));
+                affixElement.addEventListener('mouseleave', () => this.hideAffixTooltip());
+            }
+        });
+    },
+
+    // Show affix tooltip
+    showAffixTooltip(event, affixKey) {
+        const affix = this.affixDefinitions[affixKey];
+        if (!affix || !window.CourierTooltips) return;
+
+        const tooltipData = {
+            name: affix.name,
+            type: 'affix',
+            rarity: 'legendary',
+            description: affix.description,
+            effects: affix.effects,
+            icon: affix.icon
+        };
+
+        window.CourierTooltips.showTooltip(event, tooltipData);
+    },
+
+    // Hide affix tooltip
+    hideAffixTooltip() {
+        if (window.CourierTooltips) {
+            window.CourierTooltips.hideTooltip();
+        }
     },
     
     async loadMissionData() {
@@ -93,7 +179,7 @@ window.MissionSystem = {
                     ${mission.rewards.map(reward => `<span class="reward-item">${reward}</span>`).join('')}
                 </div>
                 <div class="mission-affixes">
-                    ${mission.affixes.map(affix => `<span class="mission-affix">${affix}</span>`).join('')}
+                    ${mission.affixes.map(affix => `<span class="mission-affix" data-affix="${affix}">${affix}</span>`).join('')}
                 </div>
             </div>
 
@@ -116,6 +202,19 @@ window.MissionSystem = {
                 </button>
             </div>
         `;
+
+        // Add tooltip event listeners to affixes in this mission card
+        setTimeout(() => {
+            const affixElements = card.querySelectorAll('.mission-affix[data-affix]');
+            affixElements.forEach(affixElement => {
+                const affixKey = affixElement.dataset.affix;
+                if (this.affixDefinitions[affixKey]) {
+                    affixElement.style.cursor = 'pointer';
+                    affixElement.addEventListener('mouseenter', (e) => this.showAffixTooltip(e, affixKey));
+                    affixElement.addEventListener('mouseleave', () => this.hideAffixTooltip());
+                }
+            });
+        }, 0);
 
         return card;
     },

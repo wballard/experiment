@@ -45,7 +45,9 @@
                     <div id="tierProgress" style="display: flex; gap: var(--spacing-sm); align-items: center;">
                         <!-- Tier progress will be populated by JavaScript -->
                     </div>
-                    <button class="btn btn-danger">RESET ALL</button>
+                    <button class="btn btn-danger" id="resetAllBtn">RESET ALL</button>
+                    <button class="btn btn-warning" onclick="window.SkillSystem.syncSkillData()">SYNC DATA</button>
+                    <button class="btn btn-success" onclick="window.SkillSystem.fixOverInvestments()">FIX OVER-INVESTMENTS</button>
                 </div>
             </div>
             <div class="card-accent"></div>
@@ -373,8 +375,8 @@
             }
         };
     </script>
-    <script src="assets/js/data-manager.js"></script>
-    <script src="assets/js/skills.js?v=21"></script>
+    <script src="assets/js/data-manager.js?v=3"></script>
+    <script src="assets/js/skills.js?v=30"></script>
     <script>
         // Initialize skills directly
         document.addEventListener('DOMContentLoaded', () => {

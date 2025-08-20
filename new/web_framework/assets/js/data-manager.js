@@ -1112,7 +1112,9 @@ class CourierDataManager {
      * SKILL TREE DATA METHODS
      */
     getSkillTreesData() {
-        return this.loadData(this.storageKeys.skillTrees, this.defaultData.skillTrees);
+        const data = this.loadData(this.storageKeys.skillTrees, this.defaultData.skillTrees);
+        console.log('Data manager getSkillTreesData returning:', data);
+        return data;
     }
 
     saveSkillTreesData(skillTreesData) {
@@ -1121,14 +1123,24 @@ class CourierDataManager {
 
     investSkillPoint(skillId, tree = 'class') {
         const skillTrees = this.getSkillTreesData();
+        console.log('Data manager investSkillPoint:', {
+            skillId,
+            tree,
+            available: skillTrees.available,
+            skillTrees
+        });
+        
         if (skillTrees.available > 0) {
             if (!skillTrees.invested[tree]) {
                 skillTrees.invested[tree] = {};
             }
             skillTrees.invested[tree][skillId] = (skillTrees.invested[tree][skillId] || 0) + 1;
             skillTrees.available--;
+            console.log('Investment successful, new state:', skillTrees);
             return this.saveSkillTreesData(skillTrees);
         }
+        
+        console.log('Investment failed - no available points');
         return false;
     }
 
@@ -1152,6 +1164,24 @@ class CourierDataManager {
         
         skillTrees.invested[tree] = {};
         skillTrees.available += pointsToRefund;
+        return this.saveSkillTreesData(skillTrees);
+    }
+
+    resetAllSkills() {
+        const skillTrees = this.getSkillTreesData();
+        
+        // Calculate total points to refund from all trees
+        let totalPointsToRefund = 0;
+        Object.keys(skillTrees.invested).forEach(tree => {
+            const treePoints = Object.values(skillTrees.invested[tree] || {})
+                .reduce((sum, points) => sum + points, 0);
+            totalPointsToRefund += treePoints;
+        });
+        
+        // Reset all trees and restore all points
+        skillTrees.invested = {};
+        skillTrees.available = skillTrees.total || 60;
+        
         return this.saveSkillTreesData(skillTrees);
     }
 

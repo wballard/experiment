@@ -8,11 +8,27 @@ window.SkillSystem = {
     async init() {
         console.log('Skills System Initialized');
         await this.loadSkillsData();
+        this.loadSkillInvestments();
         this.setupElementTabs();
         this.setupSkillNodes();
+        this.setupResetButton();
         this.updateSkillPointsDisplay();
         this.updateSkillLocks();
         this.updateBonusCards();
+        
+        // Debug info
+        console.log('Available skill points:', window.CourierGame.data.skillPoints.available);
+        console.log('Current element:', this.currentElement);
+        console.log('Skills database loaded:', Object.keys(this.skillsDatabase));
+        console.log('Invested skills:', window.CourierGame.data.skillPoints.invested);
+        
+        // TEMPORARY: Clear all skill investments for debugging
+        console.log('CLEARING ALL SKILL INVESTMENTS FOR DEBUGGING');
+        window.CourierGame.data.skillPoints.invested = {};
+        window.CourierGame.data.skillPoints.available = 60;
+        if (window.CourierData) {
+            localStorage.removeItem('courier_skill_points');
+        }
         
         // Generate SVG connections after everything is loaded
         setTimeout(() => {
@@ -34,21 +50,293 @@ window.SkillSystem = {
         }
     },
     
+    loadSkillInvestments() {
+        try {
+            // Initialize with default data if CourierGame.data doesn't exist
+            if (!window.CourierGame) {
+                window.CourierGame = { data: {} };
+            }
+            if (!window.CourierGame.data.skillPoints) {
+                window.CourierGame.data.skillPoints = {
+                    available: 60,
+                    total: 60,
+                    invested: {}
+                };
+            }
+            
+            // Ensure values are numbers, not NaN
+            if (isNaN(window.CourierGame.data.skillPoints.available)) {
+                window.CourierGame.data.skillPoints.available = 60;
+            }
+            if (isNaN(window.CourierGame.data.skillPoints.total)) {
+                window.CourierGame.data.skillPoints.total = 60;
+            }
+
+            // Load from data manager if available
+            if (window.CourierData) {
+                const skillTrees = window.CourierData.getSkillTreesData();
+                console.log('Raw skill trees data:', skillTrees);
+                
+                // Ensure numeric values
+                window.CourierGame.data.skillPoints.available = isNaN(skillTrees.available) ? 60 : skillTrees.available;
+                window.CourierGame.data.skillPoints.total = isNaN(skillTrees.total) ? 60 : skillTrees.total;
+                
+                // Flatten all tree investments into a single object for skills.js compatibility
+                window.CourierGame.data.skillPoints.invested = {};
+                Object.keys(skillTrees.invested || {}).forEach(tree => {
+                    Object.assign(window.CourierGame.data.skillPoints.invested, skillTrees.invested[tree] || {});
+                });
+                
+                console.log('Loaded skill investments from data manager:', window.CourierGame.data.skillPoints.invested);
+                console.log('Available points:', window.CourierGame.data.skillPoints.available);
+                console.log('Total points:', window.CourierGame.data.skillPoints.total);
+                console.log('Current element:', this.currentElement);
+            } else {
+                // Fallback to localStorage
+                const savedSkills = localStorage.getItem('courier-skill-investments');
+                if (savedSkills) {
+                    const skillData = JSON.parse(savedSkills);
+                    window.CourierGame.data.skillPoints.available = skillData.available || 60;
+                    window.CourierGame.data.skillPoints.total = skillData.total || 60;
+                    
+                    // Flatten all tree investments
+                    window.CourierGame.data.skillPoints.invested = {};
+                    Object.keys(skillData).forEach(key => {
+                        if (key !== 'available' && key !== 'total' && typeof skillData[key] === 'object') {
+                            Object.assign(window.CourierGame.data.skillPoints.invested, skillData[key]);
+                        }
+                    });
+                    
+                    console.log('Loaded skill investments from localStorage:', window.CourierGame.data.skillPoints.invested);
+                }
+            }
+        } catch (error) {
+            console.error('Error loading skill investments:', error);
+            // Ensure we have valid default data
+            window.CourierGame.data.skillPoints = {
+                available: 60,
+                total: 60,
+                invested: {}
+            };
+        }
+    },
+    
     setupElementTabs() {
         const elementTabs = document.querySelectorAll('.nav-item[data-element]');
         console.log('Found element tabs:', elementTabs.length);
         elementTabs.forEach(tab => {
             tab.addEventListener('click', () => {
+                console.log('=== SWITCHING TREES ===');
                 console.log('Element tab clicked:', tab.dataset.element);
+                console.log('Previous element:', this.currentElement);
+                
                 elementTabs.forEach(t => t.classList.remove('active'));
                 tab.classList.add('active');
                 const element = tab.dataset.element;
-                this.showElementTree(element);
+                
+                // Set current element BEFORE doing anything else
                 this.currentElement = element;
+                console.log('New element set to:', this.currentElement);
+                
+                this.showElementTree(element);
+                
+                // Reload skill investments to ensure sync when switching trees
+                console.log('Reloading skill investments for tree switch...');
+                this.loadSkillInvestments();
+                this.updateSkillPointsDisplay();
                 this.updateSkillLocks();
                 this.updateBonusCards(); // Update bonus cards when switching elements
+                
+                console.log('=== TREE SWITCH COMPLETE ===');
             });
         });
+    },
+
+    setupResetButton() {
+        const resetBtn = document.getElementById('resetAllBtn');
+        if (resetBtn) {
+            resetBtn.addEventListener('click', () => {
+                this.resetAllSkills();
+            });
+        }
+    },
+
+    resetAllSkills() {
+        // Confirm with user before resetting
+        const confirmed = confirm('Are you sure you want to reset all skill points? This action cannot be undone.');
+        if (!confirmed) return;
+
+        console.log('Resetting all skill investments...');
+        
+        // Debug: Show current state before reset
+        if (window.CourierData) {
+            console.log('Current data manager state:', window.CourierData.getSkillTreesData());
+        }
+        console.log('Current UI state:', {
+            available: window.CourierGame.data.skillPoints.available,
+            total: window.CourierGame.data.skillPoints.total,
+            invested: window.CourierGame.data.skillPoints.invested
+        });
+        
+        // Save to persistent storage FIRST
+        if (window.CourierData) {
+            try {
+                // Check if resetAllSkills method exists, otherwise use fallback
+                if (typeof window.CourierData.resetAllSkills === 'function') {
+                    const success = window.CourierData.resetAllSkills();
+                    if (!success) {
+                        console.error('Failed to reset skills via data manager');
+                        return;
+                    }
+                    console.log('Reset saved via data manager');
+                } else {
+                    // Fallback: manually reset via data manager methods
+                    console.log('resetAllSkills method not found, using fallback');
+                    const skillTrees = window.CourierData.getSkillTreesData();
+                    skillTrees.invested = {};
+                    skillTrees.available = skillTrees.total || 60;
+                    const success = window.CourierData.saveSkillTreesData(skillTrees);
+                    if (!success) {
+                        console.error('Failed to reset skills via fallback method');
+                        return;
+                    }
+                    console.log('Reset saved via data manager fallback');
+                }
+                
+                // Reload the data from data manager to sync
+                this.loadSkillInvestments();
+                
+            } catch (error) {
+                console.error('Failed to save reset via data manager:', error);
+                return;
+            }
+        } else {
+            // Fallback to localStorage
+            try {
+                localStorage.removeItem('courier-skill-investments');
+                localStorage.removeItem('courier_skill_points');
+                console.log('Reset saved to localStorage');
+                
+                // Reset local data manually for localStorage fallback
+                window.CourierGame.data.skillPoints.invested = {};
+                window.CourierGame.data.skillPoints.available = window.CourierGame.data.skillPoints.total || 60;
+                
+            } catch (error) {
+                console.error('Failed to save reset to localStorage:', error);
+                return;
+            }
+        }
+        
+        // Update UI
+        this.updateSkillPointsDisplay();
+        this.updateSkillLocks();
+        this.updateBonusCards();
+        this.updateAllConnectionLines();
+        
+        // Update all skill node displays
+        const allSkillNodes = document.querySelectorAll('.skill-node[data-skill]');
+        allSkillNodes.forEach(node => {
+            const skillId = node.dataset.skill;
+            const skill = this.getSkillData(skillId);
+            if (skill) {
+                const pointsDisplay = node.querySelector('.skill-points');
+                if (pointsDisplay) {
+                    pointsDisplay.textContent = `0/${skill.maxPoints}`;
+                }
+            }
+        });
+        
+        console.log('All skills reset successfully');
+    },
+
+    // Manual sync function to fix UI/Data Manager mismatch
+    syncSkillData() {
+        console.log('=== SYNCING SKILL DATA ===');
+        
+        if (!window.CourierData) {
+            console.log('No data manager available');
+            return;
+        }
+        
+        const dataManagerState = window.CourierData.getSkillTreesData();
+        const uiState = window.CourierGame.data.skillPoints;
+        
+        console.log('Data Manager State:', dataManagerState);
+        console.log('UI State:', uiState);
+        
+        // Calculate the correct available points based on total and invested
+        let totalInvested = 0;
+        Object.keys(dataManagerState.invested || {}).forEach(tree => {
+            Object.values(dataManagerState.invested[tree] || {}).forEach(points => {
+                totalInvested += points;
+            });
+        });
+        
+        const correctAvailable = (dataManagerState.total || 60) - totalInvested;
+        
+        console.log('Total invested across all trees:', totalInvested);
+        console.log('Correct available should be:', correctAvailable);
+        
+        // Update data manager to have correct available points
+        dataManagerState.available = correctAvailable;
+        window.CourierData.saveSkillTreesData(dataManagerState);
+        
+        // Reload UI from data manager
+        this.loadSkillInvestments();
+        this.updateSkillPointsDisplay();
+        this.updateSkillLocks();
+        
+        console.log('=== SYNC COMPLETE ===');
+    },
+
+    // Fix over-invested skills by capping them at max values
+    fixOverInvestments() {
+        console.log('=== FIXING OVER-INVESTMENTS ===');
+        
+        if (!window.CourierData) {
+            console.log('No data manager available');
+            return;
+        }
+        
+        const dataManagerState = window.CourierData.getSkillTreesData();
+        let pointsRefunded = 0;
+        let skillsFixed = 0;
+        
+        // Check each tree for over-investments
+        Object.keys(dataManagerState.invested || {}).forEach(tree => {
+            console.log(`Checking ${tree} tree for over-investments...`);
+            
+            Object.keys(dataManagerState.invested[tree] || {}).forEach(skillId => {
+                const investedPoints = dataManagerState.invested[tree][skillId];
+                const skill = this.skillsDatabase[tree]?.[skillId];
+                
+                if (skill && investedPoints > skill.maxPoints) {
+                    const excessPoints = investedPoints - skill.maxPoints;
+                    console.log(`Found over-investment: ${skillId} has ${investedPoints}/${skill.maxPoints} points (${excessPoints} excess)`);
+                    
+                    // Cap the skill at max points
+                    dataManagerState.invested[tree][skillId] = skill.maxPoints;
+                    pointsRefunded += excessPoints;
+                    skillsFixed++;
+                }
+            });
+        });
+        
+        // Add refunded points back to available
+        dataManagerState.available += pointsRefunded;
+        
+        console.log(`Fixed ${skillsFixed} skills, refunded ${pointsRefunded} points`);
+        console.log(`New available points: ${dataManagerState.available}`);
+        
+        // Save the fixed data
+        window.CourierData.saveSkillTreesData(dataManagerState);
+        
+        // Reload UI to reflect fixes
+        this.loadSkillInvestments();
+        this.updateSkillPointsDisplay();
+        this.updateSkillLocks();
+        
+        console.log('=== FIX COMPLETE ===');
     },
     
     showElementTree(element) {
@@ -114,12 +402,10 @@ window.SkillSystem = {
             guardian: {
                 name: 'Guardian',
                 skills: [
-                    // Tier 1 - Foundation
                     { id: 'shield-mastery', name: 'Shield Mastery', icon: '🛡️', maxPoints: 3, tier: 1, column: 2, prereqs: [] },
                     { id: 'defensive-stance', name: 'Defensive Stance', icon: '🔰', maxPoints: 3, tier: 1, column: 4, prereqs: [] },
                     { id: 'armor-training', name: 'Armor Training', icon: '⚔️', maxPoints: 2, tier: 1, column: 6, prereqs: [] },
                     
-                    // Tier 2 - Specialization
                     { id: 'taunt', name: 'Taunt', icon: '📢', maxPoints: 2, tier: 2, column: 1, prereqs: ['shield-mastery'] },
                     { id: 'barrier-wall', name: 'Barrier Wall', icon: '🧱', maxPoints: 5, tier: 2, column: 2, prereqs: ['shield-mastery'] },
                     { id: 'guard-ally', name: 'Guard Ally', icon: '🤝', maxPoints: 3, tier: 2, column: 3, prereqs: ['defensive-stance'] },
@@ -127,7 +413,6 @@ window.SkillSystem = {
                     { id: 'combat-medic', name: 'Combat Medic', icon: '💊', maxPoints: 3, tier: 2, column: 5, prereqs: ['armor-training'] },
                     { id: 'rally-cry', name: 'Rally Cry', icon: '📯', maxPoints: 2, tier: 2, column: 6, prereqs: ['armor-training'] },
                     
-                    // Tier 3 - Advanced
                     { id: 'shield-bash', name: 'Shield Bash', icon: '💥', maxPoints: 5, tier: 3, column: 1, prereqs: ['taunt'] },
                     { id: 'healing-aura', name: 'Healing Aura', icon: '✨', maxPoints: 4, tier: 3, column: 2, prereqs: ['barrier-wall', 'guard-ally'] },
                     { id: 'damage-reflect', name: 'Damage Reflect', icon: '↩️', maxPoints: 3, tier: 3, column: 3, prereqs: ['guard-ally', 'fortress-stance'] },
@@ -135,7 +420,6 @@ window.SkillSystem = {
                     { id: 'sanctuary', name: 'Sanctuary', icon: '⛪', maxPoints: 3, tier: 3, column: 5, prereqs: ['combat-medic'] },
                     { id: 'righteous-fury', name: 'Righteous Fury', icon: '😡', maxPoints: 4, tier: 3, column: 6, prereqs: ['rally-cry'] },
                     
-                    // Tier 4 - Elite
                     { id: 'fortress-mode', name: 'Fortress Mode', icon: '🏰', maxPoints: 4, tier: 4, column: 1, prereqs: ['shield-bash'] },
                     { id: 'divine-light', name: 'Divine Light', icon: '☀️', maxPoints: 4, tier: 4, column: 2, prereqs: ['healing-aura'] },
                     { id: 'guardian-wall', name: 'Guardian Wall', icon: '🧱', maxPoints: 4, tier: 4, column: 3, prereqs: ['damage-reflect'] },
@@ -143,12 +427,10 @@ window.SkillSystem = {
                     { id: 'mass-heal', name: 'Mass Heal', icon: '✨', maxPoints: 4, tier: 4, column: 5, prereqs: ['sanctuary'] },
                     { id: 'wrath-of-god', name: 'Wrath of God', icon: '⚡', maxPoints: 3, tier: 4, column: 6, prereqs: ['righteous-fury'] },
                     
-                    // Tier 5 - Mastery
                     { id: 'ultimate-defense', name: 'Ultimate Defense', icon: '🔆', maxPoints: 3, tier: 5, column: 1, prereqs: ['fortress-mode', 'divine-light'] },
                     { id: 'guardian-spirit', name: 'Guardian Spirit', icon: '👼', maxPoints: 2, tier: 5, column: 3, prereqs: ['guardian-wall', 'protective-dome'] },
                     { id: 'shield-master', name: 'Shield Master', icon: '🏆', maxPoints: 3, tier: 5, column: 5, prereqs: ['mass-heal', 'wrath-of-god'] },
                     
-                    // Tier 6 - Ultimates
                     { id: 'aegis-protocol', name: 'Aegis Protocol', icon: '🔮', maxPoints: 5, tier: 6, column: 2, prereqs: ['ultimate-defense', 'guardian-spirit'] },
                     { id: 'divine-intervention', name: 'Divine Intervention', icon: '⚪', maxPoints: 5, tier: 6, column: 3, prereqs: ['guardian-spirit'] },
                     { id: 'immovable-object', name: 'Immovable Object', icon: '🗿', maxPoints: 5, tier: 6, column: 4, prereqs: ['guardian-spirit', 'shield-master'] }
@@ -157,12 +439,10 @@ window.SkillSystem = {
             technomancer: {
                 name: 'Technomancer',
                 skills: [
-                    // Tier 1 - Foundation
                     { id: 'tech-mastery', name: 'Tech Mastery', icon: '💻', maxPoints: 3, tier: 1, column: 2, prereqs: [] },
                     { id: 'drone-control', name: 'Drone Control', icon: '🚁', maxPoints: 3, tier: 1, column: 4, prereqs: [] },
                     { id: 'cyber-interface', name: 'Cyber Interface', icon: '🔌', maxPoints: 2, tier: 1, column: 6, prereqs: [] },
                     
-                    // Tier 2 - Specialization
                     { id: 'scanner-drone', name: 'Scanner Drone', icon: '📡', maxPoints: 2, tier: 2, column: 1, prereqs: ['tech-mastery'] },
                     { id: 'emp-blast', name: 'EMP Blast', icon: '⚡', maxPoints: 5, tier: 2, column: 2, prereqs: ['tech-mastery'] },
                     { id: 'combat-drone', name: 'Combat Drone', icon: '🤖', maxPoints: 3, tier: 2, column: 3, prereqs: ['drone-control'] },
@@ -170,7 +450,6 @@ window.SkillSystem = {
                     { id: 'digital-armor', name: 'Digital Armor', icon: '🛡️', maxPoints: 3, tier: 2, column: 5, prereqs: ['cyber-interface'] },
                     { id: 'neural-link', name: 'Neural Link', icon: '🧠', maxPoints: 2, tier: 2, column: 6, prereqs: ['cyber-interface'] },
                     
-                    // Tier 3 - Advanced
                     { id: 'drone-swarm', name: 'Drone Swarm', icon: '🐝', maxPoints: 5, tier: 3, column: 1, prereqs: ['scanner-drone'] },
                     { id: 'system-override', name: 'System Override', icon: '🔓', maxPoints: 4, tier: 3, column: 2, prereqs: ['emp-blast', 'combat-drone'] },
                     { id: 'ai-assistant', name: 'AI Assistant', icon: '🤖', maxPoints: 3, tier: 3, column: 3, prereqs: ['combat-drone', 'hacking-tools'] },
@@ -178,7 +457,6 @@ window.SkillSystem = {
                     { id: 'digital-fortress', name: 'Digital Fortress', icon: '🔒', maxPoints: 3, tier: 3, column: 5, prereqs: ['digital-armor'] },
                     { id: 'neural-hack', name: 'Neural Hack', icon: '🧠', maxPoints: 4, tier: 3, column: 6, prereqs: ['neural-link'] },
                     
-                    // Tier 4 - Elite
                     { id: 'tech-swarm', name: 'Tech Swarm', icon: '🐝', maxPoints: 4, tier: 4, column: 1, prereqs: ['drone-swarm'] },
                     { id: 'system-crash', name: 'System Crash', icon: '💥', maxPoints: 4, tier: 4, column: 2, prereqs: ['system-override'] },
                     { id: 'ai-companion', name: 'AI Companion', icon: '🤖', maxPoints: 4, tier: 4, column: 3, prereqs: ['ai-assistant'] },
@@ -186,12 +464,10 @@ window.SkillSystem = {
                     { id: 'quantum-shield', name: 'Quantum Shield', icon: '🔮', maxPoints: 4, tier: 4, column: 5, prereqs: ['digital-fortress'] },
                     { id: 'mind-virus', name: 'Mind Virus', icon: '🦠', maxPoints: 3, tier: 4, column: 6, prereqs: ['neural-hack'] },
                     
-                    // Tier 5 - Mastery
                     { id: 'tech-master', name: 'Tech Master', icon: '👑', maxPoints: 3, tier: 5, column: 1, prereqs: ['tech-swarm', 'system-crash'] },
                     { id: 'drone-master', name: 'Drone Master', icon: '🎖️', maxPoints: 2, tier: 5, column: 3, prereqs: ['ai-companion', 'data-storm'] },
                     { id: 'cyber-god', name: 'Cyber God', icon: '🔥', maxPoints: 3, tier: 5, column: 5, prereqs: ['quantum-shield', 'mind-virus'] },
                     
-                    // Tier 6 - Ultimates
                     { id: 'ghost-protocol', name: 'Ghost Protocol', icon: '👻', maxPoints: 5, tier: 6, column: 2, prereqs: ['tech-master', 'drone-master'] },
                     { id: 'system-apocalypse', name: 'System Apocalypse', icon: '💀', maxPoints: 5, tier: 6, column: 3, prereqs: ['drone-master'] },
                     { id: 'digital-god', name: 'Digital God', icon: '🔥', maxPoints: 5, tier: 6, column: 4, prereqs: ['drone-master', 'cyber-god'] }
@@ -200,12 +476,10 @@ window.SkillSystem = {
             infiltrator: {
                 name: 'Infiltrator',
                 skills: [
-                    // Tier 1 - Foundation
                     { id: 'stealth-training', name: 'Stealth Training', icon: '👤', maxPoints: 3, tier: 1, column: 2, prereqs: [] },
                     { id: 'blade-mastery', name: 'Blade Mastery', icon: '🗡️', maxPoints: 3, tier: 1, column: 4, prereqs: [] },
                     { id: 'agility', name: 'Agility', icon: '🤸', maxPoints: 2, tier: 1, column: 6, prereqs: [] },
                     
-                    // Simplified tier structure for other classes - basic progression
                     { id: 'shadow-step', name: 'Shadow Step', icon: '🌚', maxPoints: 2, tier: 2, column: 2, prereqs: ['stealth-training'] },
                     { id: 'poison-blade', name: 'Poison Blade', icon: '🐍', maxPoints: 5, tier: 2, column: 4, prereqs: ['blade-mastery'] },
                     { id: 'lockpicking', name: 'Lockpicking', icon: '🔑', maxPoints: 3, tier: 2, column: 6, prereqs: ['agility'] },
@@ -230,7 +504,6 @@ window.SkillSystem = {
             psion: {
                 name: 'Psion',
                 skills: [
-                    // Tier 1 - Foundation  
                     { id: 'mental-focus', name: 'Mental Focus', icon: '🧠', maxPoints: 3, tier: 1, column: 2, prereqs: [] },
                     { id: 'telekinesis', name: 'Telekinesis', icon: '🤏', maxPoints: 3, tier: 1, column: 4, prereqs: [] },
                     { id: 'mind-reading', name: 'Mind Reading', icon: '👁️', maxPoints: 2, tier: 1, column: 6, prereqs: [] },
@@ -259,7 +532,6 @@ window.SkillSystem = {
             medic: {
                 name: 'Medic',
                 skills: [
-                    // Tier 1 - Foundation
                     { id: 'first-aid', name: 'First Aid', icon: '🏥', maxPoints: 3, tier: 1, column: 2, prereqs: [] },
                     { id: 'medical-training', name: 'Medical Training', icon: '💊', maxPoints: 3, tier: 1, column: 4, prereqs: [] },
                     { id: 'triage', name: 'Triage', icon: '🩺', maxPoints: 2, tier: 1, column: 6, prereqs: [] },
@@ -293,175 +565,43 @@ window.SkillSystem = {
     populateElementTree(element, container) {
         console.log('Populating tree for element:', element);
         
-        const elementTrees = {
-            ice: {
-                tiers: [
-                    {
-                        title: "TIER 1 - FROST FOUNDATION",
-                        skills: [
-                            { id: 'ice-mastery', icon: '❄️', points: '0/3', column: 1 },
-                            { id: 'freeze-weapon', icon: '🗡️', points: '0/5', column: 3 },
-                            { id: 'cold-resistance', icon: '🛡️', points: '0/2', column: 5 }
-                        ]
-                    },
-                    {
-                        title: "TIER 2 - CRYOGENIC SPECIALIZATION",
-                        skills: [
-                            { id: 'ice-shard', icon: '💎', points: '0/3', column: 1, locked: true },
-                            { id: 'freeze-zone', icon: '🧊', points: '0/4', column: 3, locked: true },
-                            { id: 'shatter-damage', icon: '💥', points: '0/3', column: 5, locked: true }
-                        ]
-                    },
-                    {
-                        title: "TIER 3 - ABSOLUTE ZERO MASTERY",
-                        skills: [
-                            { id: 'blizzard-storm', icon: '🌨️', points: '0/5', column: 2, locked: true },
-                            { id: 'ice-combination', icon: '⚡', points: '0/2', column: 4, locked: true }
-                        ]
-                    },
-                    {
-                        title: "TIER 4 - TRANSCENDENCE",
-                        skills: [
-                            { id: 'cryogenic-master', icon: '❄️', points: '0/1', column: 3, locked: true, capstone: true }
-                        ]
-                    }
-                ]
-            },
-            electric: {
-                tiers: [
-                    {
-                        title: "TIER 1 - SPARK FOUNDATION",
-                        skills: [
-                            { id: 'shock-mastery', icon: '⚡', points: '0/3', column: 1 },
-                            { id: 'electric-weapon', icon: '🗲', points: '0/5', column: 3 },
-                            { id: 'surge-protection', icon: '🛡️', points: '0/2', column: 5 }
-                        ]
-                    },
-                    {
-                        title: "TIER 2 - HIGH VOLTAGE SPECIALIZATION",
-                        skills: [
-                            { id: 'lightning-bolt', icon: '🌩️', points: '0/3', column: 1, locked: true },
-                            { id: 'electric-field', icon: '⚡', points: '0/4', column: 3, locked: true },
-                            { id: 'chain-lightning', icon: '🔗', points: '0/3', column: 5, locked: true }
-                        ]
-                    },
-                    {
-                        title: "TIER 3 - STORM MASTERY",
-                        skills: [
-                            { id: 'thunderstorm', icon: '🌪️', points: '0/5', column: 2, locked: true },
-                            { id: 'electric-combination', icon: '🔥', points: '0/2', column: 4, locked: true }
-                        ]
-                    },
-                    {
-                        title: "TIER 4 - TRANSCENDENCE",
-                        skills: [
-                            { id: 'storm-god', icon: '⚡', points: '0/1', column: 3, locked: true, capstone: true }
-                        ]
-                    }
-                ]
-            },
-            earth: {
-                tiers: [
-                    {
-                        title: "TIER 1 - STONE FOUNDATION",
-                        skills: [
-                            { id: 'earth-mastery', icon: '🌍', points: '0/3', column: 1 },
-                            { id: 'stone-weapon', icon: '🗿', points: '0/5', column: 3 },
-                            { id: 'rock-armor', icon: '🛡️', points: '0/2', column: 5 }
-                        ]
-                    },
-                    {
-                        title: "TIER 2 - SEISMIC SPECIALIZATION",
-                        skills: [
-                            { id: 'boulder-throw', icon: '🪨', points: '0/3', column: 1, locked: true },
-                            { id: 'earthquake', icon: '🌊', points: '0/4', column: 3, locked: true },
-                            { id: 'stone-spikes', icon: '🗿', points: '0/3', column: 5, locked: true }
-                        ]
-                    },
-                    {
-                        title: "TIER 3 - TECTONIC MASTERY",
-                        skills: [
-                            { id: 'mountain-rage', icon: '⛰️', points: '0/5', column: 2, locked: true },
-                            { id: 'earth-combination', icon: '🌿', points: '0/2', column: 4, locked: true }
-                        ]
-                    },
-                    {
-                        title: "TIER 4 - TRANSCENDENCE",
-                        skills: [
-                            { id: 'earthquake-god', icon: '🌍', points: '0/1', column: 3, locked: true, capstone: true }
-                        ]
-                    }
-                ]
-            },
-            nature: {
-                tiers: [
-                    {
-                        title: "TIER 1 - GROWTH FOUNDATION",
-                        skills: [
-                            { id: 'nature-mastery', icon: '🌿', points: '0/3', column: 1 },
-                            { id: 'thorn-weapon', icon: '🌹', points: '0/5', column: 3 },
-                            { id: 'bark-skin', icon: '🛡️', points: '0/2', column: 5 }
-                        ]
-                    },
-                    {
-                        title: "TIER 2 - VERDANT SPECIALIZATION",
-                        skills: [
-                            { id: 'poison-dart', icon: '🎯', points: '0/3', column: 1, locked: true },
-                            { id: 'entangle-vines', icon: '🌿', points: '0/4', column: 3, locked: true },
-                            { id: 'toxic-cloud', icon: '☁️', points: '0/3', column: 5, locked: true }
-                        ]
-                    },
-                    {
-                        title: "TIER 3 - PRIMAL MASTERY",
-                        skills: [
-                            { id: 'nature-wrath', icon: '🌳', points: '0/5', column: 2, locked: true },
-                            { id: 'nature-combination', icon: '⚡', points: '0/2', column: 4, locked: true }
-                        ]
-                    },
-                    {
-                        title: "TIER 4 - TRANSCENDENCE",
-                        skills: [
-                            { id: 'plague-god', icon: '🌿', points: '0/1', column: 3, locked: true, capstone: true }
-                        ]
-                    }
-                ]
-            }
-        };
-
-        const elementData = elementTrees[element];
-        if (!elementData) {
-            container.innerHTML = '<div class="tier-section"><h3 class="tier-title">Coming Soon</h3></div>';
+        // Use actual skills.json data for elemental trees
+        if (!this.skillsDatabase[element]) {
+            container.innerHTML = '<div style="text-align: center; color: var(--text-dim); padding: var(--spacing-xl);">Coming Soon</div>';
             return;
         }
 
-        let html = '';
-        elementData.tiers.forEach(tier => {
-            html += `
-                <div class="tier-section">
-                    <h3 class="tier-title">${tier.title}</h3>
-                    <div class="skills-row">
-            `;
+        // Create a simplified grid layout without tier labels
+        let html = '<div class="skills-row" style="grid-template-columns: repeat(5, 1fr); gap: 30px; justify-items: center; max-width: 600px; margin: 0 auto; padding: 20px;">';
+        
+        const skills = this.skillsDatabase[element];
+        const skillEntries = Object.entries(skills);
+        
+        skillEntries.forEach(([skillId, skill], index) => {
+            const currentPoints = window.CourierGame.data.skillPoints.invested[skillId] || 0;
+            const canInvest = this.canInvestInSkill(skillId);
             
-            tier.skills.forEach(skill => {
-                const lockedClass = skill.locked ? ' locked' : '';
-                const capstoneClass = skill.capstone ? ' capstone' : '';
-                const connectionHtml = skill.locked ? '<div class="skill-connection vertical"></div>' : '';
-                
-                html += `
-                    <div class="skill-node${lockedClass}${capstoneClass}" data-skill="${skill.id}" style="grid-column: ${skill.column};">
-                        ${connectionHtml}
-                        <div class="skill-icon">${skill.icon}</div>
-                        <div class="skill-points">${skill.points}</div>
-                    </div>
-                `;
-            });
+            let stateClass = 'locked';
+            if (currentPoints > 0) {
+                stateClass = 'invested';
+            } else if (canInvest) {
+                stateClass = 'available';
+            }
+            
+            // Simple grid positioning - 3 skills per row
+            const row = Math.floor(index / 3) + 1;
+            const col = (index % 3) + 1;
             
             html += `
-                    </div>
+                <div class="skill-node ${stateClass}" data-skill="${skillId}" style="grid-row: ${row}; grid-column: ${col};">
+                    <div class="skill-icon">${skill.icon || '✨'}</div>
+                    <div class="skill-points">${currentPoints}/${skill.maxPoints}</div>
+                    <div class="skill-name">${skill.name}</div>
                 </div>
             `;
         });
-
+        
+        html += '</div>';
         container.innerHTML = html;
         
         // Re-setup skill nodes for the new tree
@@ -480,12 +620,18 @@ window.SkillSystem = {
             // Add new listeners
             const newSkillNodes = document.querySelectorAll('.skill-node');
             newSkillNodes.forEach(node => {
-                node.addEventListener('click', () => {
-                    if (!node.classList.contains('locked')) {
-                        const skillId = node.dataset.skill;
-                        if (this.checkPrerequisites(skillId)) {
-                            this.investSkillPoint(skillId);
-                        }
+                node.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const skillId = node.dataset.skill;
+                    console.log('Skill clicked:', skillId);
+                    
+                    // Use canInvestInSkill which handles both class and elemental trees properly
+                    if (this.canInvestInSkill(skillId)) {
+                        console.log('Investing in skill:', skillId);
+                        this.investSkillPoint(skillId);
+                    } else {
+                        console.log('Cannot invest in skill:', skillId);
                     }
                 });
 
@@ -525,8 +671,43 @@ window.SkillSystem = {
         if (!skill) return;
         
         if (currentPoints < skill.maxPoints && window.CourierGame.data.skillPoints.available > 0) {
-            window.CourierGame.data.skillPoints.invested[skillId] = currentPoints + 1;
-            window.CourierGame.data.skillPoints.available--;
+            // Save to persistent storage via data manager
+            if (window.CourierData) {
+                const success = window.CourierData.investSkillPoint(skillId, this.currentElement);
+                if (!success) {
+                    console.error('Failed to save skill point investment - may be out of points or save failed');
+                    return;
+                }
+                
+                // Update local data after successful save
+                window.CourierGame.data.skillPoints.invested[skillId] = currentPoints + 1;
+                window.CourierGame.data.skillPoints.available--;
+                console.log(`Saved skill point investment: ${skillId} in ${this.currentElement} tree`);
+            } else {
+                // Fallback to localStorage if data manager not available
+                try {
+                    const savedSkills = localStorage.getItem('courier-skill-investments') || '{}';
+                    const skillData = JSON.parse(savedSkills);
+                    if (!skillData[this.currentElement]) {
+                        skillData[this.currentElement] = {};
+                    }
+                    skillData[this.currentElement][skillId] = currentPoints + 1;
+                    
+                    // Also update available points
+                    if (!skillData.available) skillData.available = 60;
+                    skillData.available--;
+                    
+                    localStorage.setItem('courier-skill-investments', JSON.stringify(skillData));
+                    
+                    // Update local data after successful save
+                    window.CourierGame.data.skillPoints.invested[skillId] = currentPoints + 1;
+                    window.CourierGame.data.skillPoints.available--;
+                    console.log(`Fallback save: ${skillId} in ${this.currentElement} tree`);
+                } catch (error) {
+                    console.error('Failed to save skill investment to localStorage:', error);
+                    return;
+                }
+            }
             
             this.updateSkillNodeDisplay(skillId);
             this.updateSkillPointsDisplay();
@@ -563,24 +744,84 @@ window.SkillSystem = {
     },
     
     canInvestInSkill(skillId) {
-        const skill = this.skillsDatabase[this.currentElement]?.[skillId];
-        if (!skill) return false;
+        console.log(`\n=== Checking canInvestInSkill for: ${skillId} ===`);
+        const skill = this.getSkillData(skillId);
+        console.log('Skill data:', skill);
+        if (!skill) {
+            console.log('❌ No skill data found');
+            return false;
+        }
 
         const currentPoints = window.CourierGame.data.skillPoints.invested[skillId] || 0;
-        if (currentPoints >= skill.maxPoints) return false;
-        if (window.CourierGame.data.skillPoints.available <= 0) return false;
+        console.log('Current points:', currentPoints, 'Max points:', skill.maxPoints);
+        console.log('Available skill points:', window.CourierGame.data.skillPoints.available);
+        
+        if (currentPoints >= skill.maxPoints) {
+            console.log('❌ Skill is already maxed');
+            return false;
+        }
+        if (window.CourierGame.data.skillPoints.available <= 0) {
+            console.log('❌ No available skill points');
+            return false;
+        }
 
         // For class tree, check tier unlocking and prerequisites
         if (this.currentElement === 'class') {
-            if (!this.isTierUnlocked(skill.tier)) return false;
-            if (!this.checkPrerequisites(skillId)) return false;
+            console.log('Class tree skill, tier:', skill.tier);
+            
+            // Tier 1 skills are always available
+            if (skill.tier === 1) {
+                console.log('✅ Tier 1 class skill - always available');
+                return true;
+            }
+            
+            // Higher tiers require points in previous tier: 5pts for tier 2, 10pts for tier 3, etc.
+            const requiredPoints = (skill.tier - 1) * 5;
+            const totalClassPoints = this.getTotalTreeInvestment('class');
+            console.log(`Tier ${skill.tier} requires ${requiredPoints} total class points, have: ${totalClassPoints}`);
+            
+            if (totalClassPoints < requiredPoints) {
+                console.log('❌ Not enough total class points for tier');
+                return false;
+            }
+            
+            const prereqsMet = this.checkPrerequisites(skillId);
+            console.log('Prerequisites met:', prereqsMet);
+            if (!prereqsMet) {
+                console.log('❌ Prerequisites not met');
+                return false;
+            }
+            
+            console.log('✅ Class skill can be invested in');
             return true;
         }
 
-        // For elemental trees, check tier requirements
-        if (skill.tier === 2 && this.getTierInvestment(this.currentElement, 1) < 5) return false;
-        if (skill.tier === 3 && this.getTierInvestment(this.currentElement, 2) < 10) return false;
+        // For elemental trees, tier 1 skills are always available once tree is unlocked
+        console.log('Elemental tree skill, requirements:', skill.requirements);
+        
+        // TODO: Check if elemental tree is unlocked at player level 20/40
+        // For now, assume all tier 1 elemental skills are available
+        if (!skill.requirements || skill.requirements === 'None') {
+            console.log('✅ Elemental tier 1 skill - available');
+            return true;
+        }
+        
+        // Higher tier elemental skills require total points in the tree
+        const totalTreePoints = this.getTotalTreeInvestment(this.currentElement);
+        console.log('Total tree points:', totalTreePoints);
+        
+        // Parse requirements: "5 points in Fire tree" -> need 5 points
+        const match = skill.requirements.match(/(\d+) points in (\w+) tree/);
+        if (match) {
+            const requiredPoints = parseInt(match[1]);
+            console.log('Required points:', requiredPoints, 'Have:', totalTreePoints);
+            if (isNaN(totalTreePoints) || totalTreePoints < requiredPoints) {
+                console.log('❌ Not enough points in tree');
+                return false;
+            }
+        }
 
+        console.log('✅ Elemental skill can be invested in');
         return true;
     },
     
@@ -648,21 +889,28 @@ window.SkillSystem = {
     
     updateSkillPointsDisplay() {
         // Calculate available points based on total minus invested
-        const totalInvested = this.getTotalInvestedPoints();
-        const totalPoints = window.CourierGame.data.skillPoints.total;
+        const totalInvested = this.getTotalInvestedPoints() || 0;
+        const totalPoints = window.CourierGame.data.skillPoints.total || 60;
         const availablePoints = Math.max(0, totalPoints - totalInvested);
         
-        // Update the global state
-        window.CourierGame.data.skillPoints.available = availablePoints;
+        console.log('updateSkillPointsDisplay:', {
+            totalInvested,
+            totalPoints,
+            availablePoints
+        });
+        
+        // Update the global state with safe values
+        window.CourierGame.data.skillPoints.available = isNaN(availablePoints) ? 60 : availablePoints;
+        window.CourierGame.data.skillPoints.total = isNaN(totalPoints) ? 60 : totalPoints;
         
         const availableElement = document.getElementById('availablePoints');
         const totalElement = document.getElementById('totalPoints');
         
         if (availableElement) {
-            availableElement.textContent = availablePoints;
+            availableElement.textContent = window.CourierGame.data.skillPoints.available;
         }
         if (totalElement) {
-            totalElement.textContent = totalPoints;
+            totalElement.textContent = window.CourierGame.data.skillPoints.total;
         }
         
         this.updateTierProgress();
@@ -707,27 +955,40 @@ window.SkillSystem = {
     },
     
     updateSkillLocks() {
-        // Handle class tree with tier progression system
+        // Handle class tree with simplified three-state system
         if (this.currentElement === 'class') {
-            const skillNodes = document.querySelectorAll('.skill-node[data-prereqs]');
+            const skillNodes = document.querySelectorAll('.skill-node[data-skill]');
             skillNodes.forEach(node => {
                 const skillId = node.dataset.skill;
                 const skill = this.skillsDatabase.class?.[skillId];
                 if (!skill) return;
                 
                 const currentPoints = window.CourierGame.data.skillPoints.invested[skillId] || 0;
-                const tierUnlocked = this.isTierUnlocked(skill.tier);
-                const hasPrereqs = this.checkPrerequisites(skillId);
+                
+                console.log(`updateSkillLocks: ${skillId} - tier:${skill.tier}, points:${currentPoints}/${skill.maxPoints}`);
                 
                 // Remove all state classes first
                 node.classList.remove('locked', 'available', 'invested');
                 
+                // Apply simplified three-state system
                 if (currentPoints > 0) {
+                    // State 2: INVESTED - has points invested
                     node.classList.add('invested');
-                } else if (tierUnlocked && hasPrereqs) {
+                    console.log(`${skillId} -> INVESTED (${currentPoints}/${skill.maxPoints})`);
+                } else if (this.canInvestInSkill(skillId)) {
+                    // State 1: AVAILABLE - can invest points
                     node.classList.add('available');
+                    console.log(`${skillId} -> AVAILABLE`);
                 } else {
+                    // State 3: LOCKED - cannot invest yet
                     node.classList.add('locked');
+                    console.log(`${skillId} -> LOCKED`);
+                }
+                
+                // Update the visual points display
+                const pointsDisplay = node.querySelector('.skill-points');
+                if (pointsDisplay) {
+                    pointsDisplay.textContent = `${currentPoints}/${skill.maxPoints}`;
                 }
             });
             
@@ -735,20 +996,36 @@ window.SkillSystem = {
             return;
         }
 
-        // Handle elemental trees with tier system
+        // Handle elemental trees with simplified three-state system
         if (!this.skillsDatabase[this.currentElement]) return;
 
         Object.keys(this.skillsDatabase[this.currentElement]).forEach(skillId => {
             const node = document.querySelector(`[data-skill="${skillId}"]`);
             if (!node) return;
 
-            if (this.canInvestInSkill(skillId)) {
-                node.classList.remove('locked');
+            const currentPoints = window.CourierGame.data.skillPoints.invested[skillId] || 0;
+            const skill = this.skillsDatabase[this.currentElement][skillId];
+            
+            // Remove all state classes first
+            node.classList.remove('locked', 'available', 'invested');
+            
+            // Apply simplified three-state system
+            if (currentPoints > 0) {
+                // State 2: INVESTED - has points invested
+                node.classList.add('invested');
+            } else if (this.canInvestInSkill(skillId)) {
+                // State 1: AVAILABLE - can invest points
+                node.classList.add('available');
             } else {
+                // State 3: LOCKED - cannot invest yet
                 node.classList.add('locked');
             }
 
-            this.updateSkillNodeDisplay(skillId);
+            // Update the visual points display
+            const pointsDisplay = node.querySelector('.skill-points');
+            if (pointsDisplay) {
+                pointsDisplay.textContent = `${currentPoints}/${skill.maxPoints}`;
+            }
         });
     },
     
@@ -786,12 +1063,58 @@ window.SkillSystem = {
         return points;
     },
 
+    getTotalTreeInvestment(element) {
+        let points = 0;
+        
+        // Safety check for invested points data
+        if (!window.CourierGame?.data?.skillPoints?.invested) {
+            return 0;
+        }
+        
+        const invested = window.CourierGame.data.skillPoints.invested;
+        
+        if (element === 'class') {
+            if (this.currentClass === 'outlaw') {
+                // Use original skillsDatabase for Outlaw
+                Object.keys(this.skillsDatabase[element] || {}).forEach(skillId => {
+                    const skillPoints = invested[skillId];
+                    if (typeof skillPoints === 'number' && !isNaN(skillPoints)) {
+                        points += skillPoints;
+                    }
+                });
+            } else {
+                // Use generated class data for other classes
+                const classData = this.getClassSkillData(this.currentClass);
+                if (classData && classData.skills) {
+                    classData.skills.forEach(skill => {
+                        const skillPoints = invested[skill.id];
+                        if (typeof skillPoints === 'number' && !isNaN(skillPoints)) {
+                            points += skillPoints;
+                        }
+                    });
+                }
+            }
+        } else {
+            // For elemental trees, use skillsDatabase
+            Object.keys(this.skillsDatabase[element] || {}).forEach(skillId => {
+                const skillPoints = invested[skillId];
+                if (typeof skillPoints === 'number' && !isNaN(skillPoints)) {
+                    points += skillPoints;
+                }
+            });
+        }
+        
+        return points;
+    },
+
     isTierUnlocked(tier) {
         if (tier === 1) return true; // Tier 1 is always unlocked
         
-        // For tier N, you need 5 points in tier N-1
-        const previousTierPoints = this.getTierInvestment('class', tier - 1);
-        return previousTierPoints >= 5;
+        // For tier N, you need (N-1)*5 total points in the class tree
+        // Tier 2: 5 points, Tier 3: 10 points, Tier 4: 15 points, etc.
+        const requiredPoints = (tier - 1) * 5;
+        const totalClassPoints = this.getTotalTreeInvestment('class');
+        return totalClassPoints >= requiredPoints;
     },
     
     showSkillTooltip(event, skillId) {
@@ -1161,8 +1484,15 @@ window.SkillSystem = {
         return elementWheel[primaryElement] ? elementWheel[primaryElement].map(e => e.toUpperCase()) : [];
     },
 
-    // Prerequisite System for Class Trees
+    // Simplified Prerequisite System - Only Tier Requirements for Class Trees
     checkPrerequisites(skillId) {
+        // For class trees, simplified to only require tier unlock (no individual skill prerequisites)
+        if (this.currentElement === 'class') {
+            console.log(`Class skill ${skillId} - prerequisites simplified to tier requirement only`);
+            return true; // Only tier requirement matters now
+        }
+        
+        // For elemental trees, keep the old prerequisite system if needed
         const skillNode = document.querySelector(`[data-skill="${skillId}"]`);
         if (!skillNode) return false;
 

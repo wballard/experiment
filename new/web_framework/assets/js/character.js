@@ -35,6 +35,14 @@ window.CharacterSystem = {
     
     loadEquippedItems() {
         try {
+            // Ensure CourierGame object exists
+            if (!window.CourierGame) {
+                window.CourierGame = { data: {} };
+            }
+            if (!window.CourierGame.data) {
+                window.CourierGame.data = {};
+            }
+
             const savedItems = localStorage.getItem('courierEquippedItems');
             if (savedItems) {
                 const parsedItems = JSON.parse(savedItems);
@@ -48,6 +56,14 @@ window.CharacterSystem = {
     
     async loadItemsData() {
         try {
+            // Ensure CourierGame object exists
+            if (!window.CourierGame) {
+                window.CourierGame = { data: {} };
+            }
+            if (!window.CourierGame.data) {
+                window.CourierGame.data = {};
+            }
+
             const response = await fetch('../assets/data/item-database.json');
             if (response.ok) {
                 const data = await response.json();
@@ -72,6 +88,15 @@ window.CharacterSystem = {
     
     updateEquippedItemsDisplay() {
         console.log('Character system updating equipped items display');
+        
+        // Ensure CourierGame object exists
+        if (!window.CourierGame) {
+            window.CourierGame = { data: {} };
+        }
+        if (!window.CourierGame.data) {
+            window.CourierGame.data = {};
+        }
+        
         console.log('Current equipped items:', window.CourierGame.data.equippedItems);
         
         const equipmentSlots = document.querySelectorAll('.equipment-slot');
@@ -205,19 +230,19 @@ window.CharacterSystem = {
             description: 'Improves movement speed and agility',
             secondaryStats: [
                 { name: 'Movement Speed', value: '+1.5% per point', color: '#00ffff' },
-                { name: 'Dodge Chance', value: '+0.4% per point', color: '#00ffff' },
                 { name: 'Reload Speed', value: '+1.8% per point', color: '#ffff00' },
-                { name: 'Weapon Swap Speed', value: '+2% per point', color: '#ffff00' }
+                { name: 'Weapon Swap Speed', value: '+2% per point', color: '#ffff00' },
+                { name: 'Action Speed', value: '+0.8% per point', color: '#00ffff' }
             ]
         },
         resonance: {
             name: 'RESONANCE',
-            description: 'Enhances elemental abilities and energy management',
+            description: 'Enhances elemental abilities and shield technology',
             secondaryStats: [
                 { name: 'Elemental Damage', value: '+2.8% per point', color: '#9945ff' },
                 { name: 'Ability Cooldown', value: '-0.6% per point', color: '#9945ff' },
-                { name: 'Energy Capacity', value: '+8 per point', color: '#00ffff' },
-                { name: 'Energy Regen', value: '+0.5/sec per point', color: '#00ffff' }
+                { name: 'Energy Shield', value: '+4 per point', color: '#00ffff' },
+                { name: 'Shield Regen', value: '+0.3/sec per point', color: '#00ffff' }
             ]
         },
         defense: {
@@ -227,12 +252,268 @@ window.CharacterSystem = {
                 { name: 'Damage Reduction', value: '+0.8% per point', color: '#0080ff' },
                 { name: 'Armor Effectiveness', value: '+1.2% per point', color: '#0080ff' },
                 { name: 'Shield Capacity', value: '+25 per point', color: '#00ffff' },
-                { name: 'Block Chance', value: '+0.3% per point', color: '#ffff00' }
+                { name: 'Resistance Bonus', value: '+0.2% per point', color: '#ffff00' }
+            ]
+        }
+    },
+
+    // Stat breakdown data for offensive and defensive stat tooltips
+    statBreakdowns: {
+        // Offensive Stats
+        'primary-dps': {
+            name: 'Primary DPS',
+            total: 2847,
+            sources: [
+                { name: 'Force Attribute', value: 1420, color: '#ff6600' },
+                { name: 'Assault Rifle', value: 950, color: '#00ff88' },
+                { name: 'Weapon Mods', value: 285, color: '#ffaa00' },
+                { name: 'Skills', value: 192, color: '#aa88ff' }
+            ]
+        },
+        'secondary-dps': {
+            name: 'Secondary DPS',
+            total: 1523,
+            sources: [
+                { name: 'Force Attribute', value: 720, color: '#ff6600' },
+                { name: 'Combat Pistol', value: 485, color: '#00ff88' },
+                { name: 'Weapon Mods', value: 215, color: '#ffaa00' },
+                { name: 'Skills', value: 103, color: '#aa88ff' }
+            ]
+        },
+        'melee-dps': {
+            name: 'Melee DPS',
+            total: 892,
+            sources: [
+                { name: 'Force Attribute', value: 450, color: '#ff6600' },
+                { name: 'Momentum Attribute', value: 285, color: '#ff6600' },
+                { name: 'Combat Knife', value: 95, color: '#00ff88' },
+                { name: 'Skills', value: 62, color: '#aa88ff' }
+            ]
+        },
+        'crit-chance': {
+            name: 'Critical Hit Chance',
+            total: 28,
+            unit: '%',
+            sources: [
+                { name: 'Focus Attribute', value: 12, color: '#ff6600' },
+                { name: 'Tactical Visor', value: 8, color: '#0080ff' },
+                { name: 'Weapon Mods', value: 5, color: '#ffaa00' },
+                { name: 'Skills', value: 3, color: '#aa88ff' }
+            ]
+        },
+        'crit-damage': {
+            name: 'Critical Hit Damage',
+            total: 185,
+            unit: '%',
+            sources: [
+                { name: 'Force Attribute', value: 95, color: '#ff6600' },
+                { name: 'Precision Scope', value: 45, color: '#ffaa00' },
+                { name: 'Skills', value: 35, color: '#aa88ff' },
+                { name: 'Base Value', value: 10, color: '#666666' }
+            ]
+        },
+        'weak-spot-damage': {
+            name: 'Weak Spot Multiplier',
+            total: 2.45,
+            unit: 'x',
+            sources: [
+                { name: 'Base Multiplier', value: 1.5, color: '#666666' },
+                { name: 'Focus Attribute', value: 0.6, color: '#ff6600' },
+                { name: 'Weapon Mods', value: 0.25, color: '#ffaa00' },
+                { name: 'Skills', value: 0.1, color: '#aa88ff' }
+            ]
+        },
+        'fire-damage': {
+            name: 'Fire Damage Bonus',
+            total: 342,
+            unit: ' damage',
+            sources: [
+                { name: 'Resonance Attribute', value: 185, color: '#ff6600' },
+                { name: 'Incendiary Rounds', value: 95, color: '#ffaa00' },
+                { name: 'Skills', value: 62, color: '#aa88ff' }
+            ]
+        },
+        'ice-damage': {
+            name: 'Ice Damage Bonus',
+            total: 185,
+            unit: ' damage',
+            sources: [
+                { name: 'Resonance Attribute', value: 125, color: '#ff6600' },
+                { name: 'Cryo Mods', value: 60, color: '#ffaa00' }
+            ]
+        },
+        'electric-damage': {
+            name: 'Electric Damage Bonus',
+            total: 278,
+            unit: ' damage',
+            sources: [
+                { name: 'Resonance Attribute', value: 165, color: '#ff6600' },
+                { name: 'Shock Mods', value: 85, color: '#ffaa00' },
+                { name: 'Skills', value: 28, color: '#aa88ff' }
+            ]
+        },
+        'poison-damage': {
+            name: 'Poison Damage Bonus',
+            total: 156,
+            unit: ' damage',
+            sources: [
+                { name: 'Resonance Attribute', value: 95, color: '#ff6600' },
+                { name: 'Toxic Rounds', value: 45, color: '#ffaa00' },
+                { name: 'Skills', value: 16, color: '#aa88ff' }
+            ]
+        },
+        'accuracy': {
+            name: 'Weapon Accuracy',
+            total: 85,
+            unit: '%',
+            sources: [
+                { name: 'Focus Attribute', value: 25, color: '#ff6600' },
+                { name: 'Weapon Base', value: 35, color: '#00ff88' },
+                { name: 'Tactical Visor', value: 15, color: '#0080ff' },
+                { name: 'Weapon Mods', value: 10, color: '#ffaa00' }
+            ]
+        },
+        'range': {
+            name: 'Effective Range',
+            total: 125,
+            unit: 'm',
+            sources: [
+                { name: 'Weapon Base', value: 85, color: '#00ff88' },
+                { name: 'Barrel Mods', value: 25, color: '#ffaa00' },
+                { name: 'Skills', value: 15, color: '#aa88ff' }
+            ]
+        },
+        'reload-speed': {
+            name: 'Reload Speed',
+            total: 1.8,
+            unit: 's',
+            sources: [
+                { name: 'Momentum Attribute', value: -0.7, color: '#ff6600' },
+                { name: 'Weapon Base', value: 2.4, color: '#00ff88' },
+                { name: 'Fast Reload Mod', value: -0.3, color: '#ffaa00' },
+                { name: 'Skills', value: 0.4, color: '#aa88ff' }
+            ]
+        },
+        'fire-rate': {
+            name: 'Rate of Fire',
+            total: 420,
+            unit: ' RPM',
+            sources: [
+                { name: 'Weapon Base', value: 380, color: '#00ff88' },
+                { name: 'Momentum Attribute', value: 25, color: '#ff6600' },
+                { name: 'Skills', value: 15, color: '#aa88ff' }
+            ]
+        },
+
+        // Defensive Stats
+        'total-health': {
+            name: 'Total Health',
+            total: 3250,
+            sources: [
+                { name: 'Vigor Attribute', value: 1850, color: '#ff6600' },
+                { name: 'Quantum Armor', value: 450, color: '#0080ff' },
+                { name: 'Tactical Visor', value: 180, color: '#0080ff' },
+                { name: 'Combat Boots', value: 285, color: '#0080ff' },
+                { name: 'Skills', value: 485, color: '#aa88ff' }
+            ]
+        },
+        'health-regen': {
+            name: 'Health Regeneration',
+            total: 165,
+            unit: '/sec',
+            sources: [
+                { name: 'Vigor Attribute', value: 95, color: '#ff6600' },
+                { name: 'Life Support Mod', value: 45, color: '#ffaa00' },
+                { name: 'Skills', value: 25, color: '#aa88ff' }
+            ]
+        },
+        'energy-shield': {
+            name: 'Energy Shield',
+            total: 850,
+            sources: [
+                { name: 'Resonance Attribute', value: 425, color: '#ff6600' },
+                { name: 'Shield Generator', value: 285, color: '#0080ff' },
+                { name: 'Skills', value: 140, color: '#aa88ff' }
+            ]
+        },
+        'shield-regen': {
+            name: 'Shield Regeneration',
+            total: 42,
+            unit: '/sec',
+            sources: [
+                { name: 'Resonance Attribute', value: 28, color: '#ff6600' },
+                { name: 'Shield Mods', value: 14, color: '#ffaa00' }
+            ]
+        },
+        'total-armor': {
+            name: 'Total Armor',
+            total: 1320,
+            sources: [
+                { name: 'Defense Attribute', value: 495, color: '#ff6600' },
+                { name: 'Quantum Armor', value: 320, color: '#0080ff' },
+                { name: 'Tactical Visor', value: 145, color: '#0080ff' },
+                { name: 'Combat Pants', value: 185, color: '#0080ff' },
+                { name: 'Combat Boots', value: 175, color: '#0080ff' }
+            ]
+        },
+        'damage-reduction': {
+            name: 'Damage Reduction',
+            total: 35,
+            unit: '%',
+            sources: [
+                { name: 'Defense Attribute', value: 18, color: '#ff6600' },
+                { name: 'Armor Value', value: 12, color: '#0080ff' },
+                { name: 'Skills', value: 5, color: '#aa88ff' }
+            ]
+        },
+        'fire-resistance': {
+            name: 'Fire Resistance',
+            total: 15,
+            unit: '%',
+            sources: [
+                { name: 'Defense Attribute', value: 8, color: '#ff6600' },
+                { name: 'Heat Shield Mod', value: 7, color: '#ffaa00' }
+            ]
+        },
+        'ice-resistance': {
+            name: 'Ice Resistance',
+            total: 12,
+            unit: '%',
+            sources: [
+                { name: 'Defense Attribute', value: 8, color: '#ff6600' },
+                { name: 'Insulation Mod', value: 4, color: '#ffaa00' }
+            ]
+        },
+        'electric-resistance': {
+            name: 'Electric Resistance',
+            total: 18,
+            unit: '%',
+            sources: [
+                { name: 'Defense Attribute', value: 8, color: '#ff6600' },
+                { name: 'Grounding Mod', value: 10, color: '#ffaa00' }
+            ]
+        },
+        'earth-resistance': {
+            name: 'Earth Resistance',
+            total: 8,
+            unit: '%',
+            sources: [
+                { name: 'Defense Attribute', value: 8, color: '#ff6600' }
+            ]
+        },
+        'nature-resistance': {
+            name: 'Nature Resistance',
+            total: 22,
+            unit: '%',
+            sources: [
+                { name: 'Defense Attribute', value: 8, color: '#ff6600' },
+                { name: 'Bio Filter Mod', value: 14, color: '#ffaa00' }
             ]
         }
     },
     
     setupStatTooltips() {
+        // Setup tooltips for main character stats
         const statItems = document.querySelectorAll('.stat-item');
         
         statItems.forEach(statItem => {
@@ -261,6 +542,32 @@ window.CharacterSystem = {
                     this.hideStatTooltip();
                 });
             }
+        });
+
+        // Setup tooltips for offensive and defensive stats
+        this.setupOffensiveDefensiveTooltips();
+    },
+
+    setupOffensiveDefensiveTooltips() {
+        // Setup tooltips for both offensive and defensive stats
+        const allStats = document.querySelectorAll('.offensive-stat, .defense-stat, .resistance-stat');
+        
+        allStats.forEach(statElement => {
+            const valueElement = statElement.querySelector('.offensive-stat-value, .defense-stat-value, .resistance-value');
+            if (!valueElement) return;
+
+            const statId = valueElement.id;
+            if (!statId || !this.statBreakdowns[statId]) return;
+
+            statElement.style.cursor = 'pointer';
+            
+            statElement.addEventListener('mouseenter', (e) => {
+                this.showStatBreakdownTooltip(e, this.statBreakdowns[statId]);
+            });
+            
+            statElement.addEventListener('mouseleave', () => {
+                this.hideStatTooltip();
+            });
         });
     },
     
@@ -315,6 +622,60 @@ window.CharacterSystem = {
         tooltip.style.left = x + 'px';
         tooltip.style.top = y + 'px';
     },
+
+    showStatBreakdownTooltip(event, statData) {
+        // Remove existing tooltip
+        this.hideStatTooltip();
+        
+        const tooltip = document.createElement('div');
+        tooltip.className = 'stat-tooltip';
+        
+        let html = `
+            <div class="tooltip-header">
+                <div class="tooltip-name text-cyan">${statData.name}</div>
+                <div class="tooltip-total">Total: ${statData.total}${statData.unit || ''}</div>
+            </div>
+            <div class="tooltip-body">
+                <div class="stat-section-title">STAT SOURCES</div>
+        `;
+        
+        statData.sources.forEach(source => {
+            const isNegative = source.value < 0;
+            const displayValue = isNegative ? source.value : `+${source.value}`;
+            html += `
+                <div class="stat-source-item">
+                    <span class="source-name">${source.name}</span>
+                    <span class="source-value" style="color: ${source.color}">${displayValue}${statData.unit || ''}</span>
+                </div>
+            `;
+        });
+        
+        html += `</div>`;
+        
+        tooltip.innerHTML = html;
+        document.body.appendChild(tooltip);
+        
+        // Position tooltip
+        const rect = event.target.closest('.offensive-stat, .defense-stat, .resistance-stat').getBoundingClientRect();
+        const tooltipRect = tooltip.getBoundingClientRect();
+        
+        let x = rect.right + 15;
+        let y = rect.top;
+        
+        // Adjust if tooltip goes off screen
+        if (x + tooltipRect.width > window.innerWidth) {
+            x = rect.left - tooltipRect.width - 15;
+        }
+        if (y + tooltipRect.height > window.innerHeight) {
+            y = window.innerHeight - tooltipRect.height - 10;
+        }
+        if (y < 10) {
+            y = 10;
+        }
+        
+        tooltip.style.left = x + 'px';
+        tooltip.style.top = y + 'px';
+    },
     
     hideStatTooltip() {
         const tooltip = document.querySelector('.stat-tooltip');
@@ -325,6 +686,14 @@ window.CharacterSystem = {
     
     updatePowerBudget() {
         let totalPowerUsed = 0;
+        
+        // Ensure CourierGame object exists
+        if (!window.CourierGame) {
+            window.CourierGame = { data: {} };
+        }
+        if (!window.CourierGame.data) {
+            window.CourierGame.data = {};
+        }
         
         if (window.CourierGame.data.equippedItems) {
             Object.values(window.CourierGame.data.equippedItems).forEach(item => {

@@ -72,25 +72,27 @@
         }
 
         /* Defense Stats Styles */
-        .defense-stats {
+        .defense-stats,
+        .offensive-stats {
             display: flex;
             flex-direction: column;
             gap: var(--spacing-lg);
         }
 
-        .defense-category {
+        .defense-category,
+        .offensive-category {
             background: var(--bg-medium);
             border: 1px solid var(--border-gray);
             border-radius: 4px;
             padding: var(--spacing-md);
         }
 
-        .defense-category-title {
+        .defense-category-title,
+        .offensive-category-title {
             display: flex;
             align-items: center;
             gap: var(--spacing-sm);
             font-size: 14px;
-            color: var(--primary-cyan);
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 1px;
@@ -99,17 +101,28 @@
             padding-bottom: var(--spacing-sm);
         }
 
-        .defense-icon {
+        .defense-category-title {
+            color: var(--primary-cyan);
+        }
+
+        .offensive-category-title {
+            color: var(--primary-orange);
+        }
+
+        .defense-icon,
+        .offensive-icon {
             font-size: 16px;
         }
 
-        .defense-grid {
+        .defense-grid,
+        .offensive-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
             gap: var(--spacing-sm);
         }
 
-        .defense-stat {
+        .defense-stat,
+        .offensive-stat {
             background: var(--bg-dark);
             border: 1px solid var(--border-gray);
             border-radius: 4px;
@@ -123,7 +136,13 @@
             background: var(--bg-light);
         }
 
-        .defense-stat-label {
+        .offensive-stat:hover {
+            border-color: var(--primary-orange);
+            background: var(--bg-light);
+        }
+
+        .defense-stat-label,
+        .offensive-stat-label {
             font-size: 11px;
             color: var(--text-dim);
             text-transform: uppercase;
@@ -131,7 +150,8 @@
             margin-bottom: var(--spacing-xs);
         }
 
-        .defense-stat-value {
+        .defense-stat-value,
+        .offensive-stat-value {
             font-size: 16px;
             color: var(--text-bright);
             font-weight: 600;
@@ -214,6 +234,69 @@
         }
 
         /* Dashboard uses inventory.css for equipment styling */
+
+        /* Stat Source Tooltip Styles */
+        .stat-tooltip {
+            position: fixed;
+            background: var(--bg-dark);
+            border: 1px solid var(--border-gray);
+            border-radius: 4px;
+            min-width: 280px;
+            max-width: 350px;
+            z-index: 10000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.8);
+            font-family: var(--font-body);
+            pointer-events: none;
+        }
+
+        .tooltip-header {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-gray);
+            background: linear-gradient(135deg, rgba(255, 102, 0, 0.1) 0%, rgba(0, 255, 136, 0.1) 100%);
+        }
+
+        .tooltip-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--primary-cyan);
+            margin-bottom: 4px;
+        }
+
+        .tooltip-total {
+            font-size: 12px;
+            color: var(--text-bright);
+            font-weight: 600;
+        }
+
+        .tooltip-body {
+            padding: 12px 16px;
+        }
+
+        .stat-section-title {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-dim);
+            margin-bottom: 8px;
+            border-bottom: 1px solid var(--border-gray);
+            padding-bottom: 4px;
+        }
+
+        .stat-source-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 4px 0;
+            font-size: 12px;
+        }
+
+        .source-name {
+            color: var(--text-normal);
+        }
+
+        .source-value {
+            font-weight: 600;
+        }
     </style>
 </head>
 <body>
@@ -359,6 +442,112 @@
                 </div>
             </div>
 
+            <!-- Offensive Stats Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Offensive Stats</h2>
+                </div>
+                <div class="card-accent"></div>
+                
+                <div class="offensive-stats">
+                    <!-- Weapon Damage -->
+                    <div class="offensive-category">
+                        <h3 class="offensive-category-title">
+                            <span class="offensive-icon">⚔️</span>
+                            Weapon Damage
+                        </h3>
+                        <div class="offensive-grid">
+                            <div class="offensive-stat">
+                                <div class="offensive-stat-label">Primary DPS</div>
+                                <div class="offensive-stat-value" id="primary-dps">2,847</div>
+                            </div>
+                            <div class="offensive-stat">
+                                <div class="offensive-stat-label">Secondary DPS</div>
+                                <div class="offensive-stat-value" id="secondary-dps">1,523</div>
+                            </div>
+                            <div class="offensive-stat">
+                                <div class="offensive-stat-label">Melee DPS</div>
+                                <div class="offensive-stat-value" id="melee-dps">892</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Critical Stats -->
+                    <div class="offensive-category">
+                        <h3 class="offensive-category-title">
+                            <span class="offensive-icon">💥</span>
+                            Critical Stats
+                        </h3>
+                        <div class="offensive-grid">
+                            <div class="offensive-stat">
+                                <div class="offensive-stat-label">Crit Chance</div>
+                                <div class="offensive-stat-value" id="crit-chance">28%</div>
+                            </div>
+                            <div class="offensive-stat">
+                                <div class="offensive-stat-label">Crit Damage</div>
+                                <div class="offensive-stat-value" id="crit-damage">185%</div>
+                            </div>
+                            <div class="offensive-stat">
+                                <div class="offensive-stat-label">Weak Spot Multiplier</div>
+                                <div class="offensive-stat-value" id="weak-spot-damage">2.45x</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Elemental Damage -->
+                    <div class="offensive-category">
+                        <h3 class="offensive-category-title">
+                            <span class="offensive-icon">🔥</span>
+                            Elemental Damage
+                        </h3>
+                        <div class="offensive-grid">
+                            <div class="offensive-stat">
+                                <div class="offensive-stat-label">Fire Damage</div>
+                                <div class="offensive-stat-value" id="fire-damage">+342</div>
+                            </div>
+                            <div class="offensive-stat">
+                                <div class="offensive-stat-label">Ice Damage</div>
+                                <div class="offensive-stat-value" id="ice-damage">+185</div>
+                            </div>
+                            <div class="offensive-stat">
+                                <div class="offensive-stat-label">Electric Damage</div>
+                                <div class="offensive-stat-value" id="electric-damage">+278</div>
+                            </div>
+                            <div class="offensive-stat">
+                                <div class="offensive-stat-label">Poison Damage</div>
+                                <div class="offensive-stat-value" id="poison-damage">+156</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Combat Performance -->
+                    <div class="offensive-category">
+                        <h3 class="offensive-category-title">
+                            <span class="offensive-icon">🎯</span>
+                            Combat Performance
+                        </h3>
+                        <div class="offensive-grid">
+                            <div class="offensive-stat">
+                                <div class="offensive-stat-label">Accuracy</div>
+                                <div class="offensive-stat-value" id="accuracy">85%</div>
+                            </div>
+                            <div class="offensive-stat">
+                                <div class="offensive-stat-label">Range</div>
+                                <div class="offensive-stat-value" id="range">125m</div>
+                            </div>
+                            <div class="offensive-stat">
+                                <div class="offensive-stat-label">Reload Speed</div>
+                                <div class="offensive-stat-value" id="reload-speed">1.8s</div>
+                            </div>
+                            <div class="offensive-stat">
+                                <div class="offensive-stat-label">Fire Rate</div>
+                                <div class="offensive-stat-value" id="fire-rate">420 RPM</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Defense Stats Card -->
             <div class="card">
                 <div class="card-header">
@@ -367,11 +556,11 @@
                 <div class="card-accent"></div>
                 
                 <div class="defense-stats">
-                    <!-- Health & Energy -->
+                    <!-- Health & Shields -->
                     <div class="defense-category">
                         <h3 class="defense-category-title">
                             <span class="defense-icon">❤️</span>
-                            Health & Energy
+                            Health & Shields
                         </h3>
                         <div class="defense-grid">
                             <div class="defense-stat">
@@ -383,12 +572,12 @@
                                 <div class="defense-stat-value" id="health-regen">165/sec</div>
                             </div>
                             <div class="defense-stat">
-                                <div class="defense-stat-label">Energy</div>
-                                <div class="defense-stat-value" id="total-energy">1,125</div>
+                                <div class="defense-stat-label">Energy Shield</div>
+                                <div class="defense-stat-value" id="energy-shield">850</div>
                             </div>
                             <div class="defense-stat">
-                                <div class="defense-stat-label">Energy Regen</div>
-                                <div class="defense-stat-value" id="energy-regen">58/sec</div>
+                                <div class="defense-stat-label">Shield Regen</div>
+                                <div class="defense-stat-value" id="shield-regen">42/sec</div>
                             </div>
                         </div>
                     </div>
@@ -407,14 +596,6 @@
                             <div class="defense-stat">
                                 <div class="defense-stat-label">Damage Reduction</div>
                                 <div class="defense-stat-value" id="damage-reduction">35%</div>
-                            </div>
-                            <div class="defense-stat">
-                                <div class="defense-stat-label">Block Chance</div>
-                                <div class="defense-stat-value" id="block-chance">18%</div>
-                            </div>
-                            <div class="defense-stat">
-                                <div class="defense-stat-label">Dodge Chance</div>
-                                <div class="defense-stat-value" id="dodge-chance">12%</div>
                             </div>
                         </div>
                     </div>
@@ -507,105 +688,20 @@
     <script src="../assets/js/api-client.js"></script>
     <script src="../assets/js/tooltips.js?v=17"></script>
     <script src="../assets/js/inventory-simple.js"></script>
+    <script src="../assets/js/character.js"></script>
     <script>
         console.log('=== DASHBOARD LOADING WITH BACKEND API ===');
         
-        // Core attribute data for tooltips
-        const coreAttributeData = {
-            vigor: {
-                name: 'VIGOR',
-                rarity: 'epic',
-                itemSubtype: 'Core Attribute',
-                powerCost: 0,
-                description: 'Increases health, health regeneration, and resistance to damage over time effects. Higher Vigor allows you to survive longer in combat.',
-                stats: {
-                    'Health': '+12 per point',
-                    'Health Regen': '+0.6 per second per point',
-                    'DoT Resistance': '+0.4% per point'
-                }
-            },
-            focus: {
-                name: 'FOCUS',
-                rarity: 'epic', 
-                itemSubtype: 'Core Attribute',
-                powerCost: 0,
-                description: 'Improves energy capacity, energy regeneration, and critical hit chance. Essential for using abilities and landing precision shots.',
-                stats: {
-                    'Energy': '+3.5 per point',
-                    'Energy Regen': '+0.18 per second per point',
-                    'Critical Chance': '+0.15% per point'
-                }
-            },
-            force: {
-                name: 'FORCE',
-                rarity: 'epic',
-                itemSubtype: 'Core Attribute', 
-                powerCost: 0,
-                description: 'Increases weapon damage, critical hit damage, and carrying capacity. The primary damage-dealing attribute.',
-                stats: {
-                    'Weapon Damage': '+1.2% per point',
-                    'Critical Damage': '+1.8% per point',
-                    'Carry Weight': '+2 kg per point'
-                }
-            },
-            momentum: {
-                name: 'MOMENTUM',
-                rarity: 'epic',
-                itemSubtype: 'Core Attribute',
-                powerCost: 0,
-                description: 'Enhances movement speed, dodge chance, and reload speed. Improves overall mobility and combat fluidity.',
-                stats: {
-                    'Movement Speed': '+0.8% per point',
-                    'Dodge Chance': '+0.12% per point',
-                    'Reload Speed': '+0.5% per point'
-                }
-            },
-            resonance: {
-                name: 'RESONANCE',
-                rarity: 'epic',
-                itemSubtype: 'Core Attribute',
-                powerCost: 0,
-                description: 'Boosts elemental damage, ability power, and mana efficiency. Key attribute for energy-based combat styles.',
-                stats: {
-                    'Elemental Damage': '+1.5% per point',
-                    'Ability Power': '+1.2% per point',
-                    'Energy Efficiency': '+0.8% per point'
-                }
-            },
-            defense: {
-                name: 'DEFENSE',
-                rarity: 'epic',
-                itemSubtype: 'Core Attribute',
-                powerCost: 0,
-                description: 'Increases armor, block chance, and damage reduction. Essential for tanking and surviving heavy damage.',
-                stats: {
-                    'Armor': '+8 per point',
-                    'Block Chance': '+0.2% per point',
-                    'Damage Reduction': '+0.15% per point'
-                }
+        // Initialize global game state object
+        window.CourierGame = {
+            data: {
+                items: {},
+                equippedItems: {},
+                playerLevel: 60,
+                paragonLevel: 40
             }
         };
-
-        function initCoreAttributeTooltips() {
-            const statItems = document.querySelectorAll('.stat-item[data-stat]');
-            
-            statItems.forEach(statItem => {
-                const statType = statItem.dataset.stat;
-                const attributeData = coreAttributeData[statType];
-                
-                if (attributeData && window.CourierTooltips) {
-                    statItem.addEventListener('mouseenter', (e) => {
-                        window.CourierTooltips.showTooltip(e, attributeData);
-                    });
-                    
-                    statItem.addEventListener('mouseleave', () => {
-                        window.CourierTooltips.hideTooltip();
-                    });
-                }
-            });
-            
-            console.log('Core attribute tooltips initialized for', statItems.length, 'attributes');
-        }
+        
         
         document.addEventListener('DOMContentLoaded', async () => {
             console.log('=== DOM CONTENT LOADED ===');
@@ -626,8 +722,12 @@
                 window.SimpleInventory.renderEquipped();
                 window.SimpleInventory.updatePowerBudget();
                 
-                // Initialize core attribute tooltips
-                initCoreAttributeTooltips();
+                
+                // Initialize character system for stat source tooltips
+                if (window.CharacterSystem) {
+                    await window.CharacterSystem.init();
+                    console.log('Character system initialized for stat tooltips');
+                }
                 
                 console.log('=== DASHBOARD LOADED WITH BACKEND API ===');
             } catch (error) {

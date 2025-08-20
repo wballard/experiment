@@ -295,17 +295,40 @@
             margin-top: var(--spacing-xl);
         }
 
+        .equipment-preview .card-header {
+            margin-bottom: var(--spacing-md);
+        }
+
+        .equipment-preview .card-title {
+            font-size: 16px;
+            color: var(--primary-cyan);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 0;
+        }
+
+        .equipment-preview .card-accent {
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary-cyan) 0%, transparent 100%);
+            margin-bottom: var(--spacing-md);
+        }
+
         .equipment-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: var(--spacing-sm);
+            display: grid !important;
+            grid-template-columns: 104px 104px 296px !important;
+            grid-template-rows: 104px 104px 104px !important;
+            gap: 4px !important;
+            max-width: 520px !important;
+            width: 520px !important;
+            box-sizing: border-box;
             margin-top: var(--spacing-md);
-            max-width: 400px;
         }
 
         .equipment-slot {
-            width: 120px;
-            height: 120px;
+            width: 104px;
+            height: 104px;
             background: var(--bg-dark);
             border: 2px solid var(--border-gray);
             border-radius: 4px;
@@ -318,6 +341,14 @@
             padding: 4px;
             position: relative;
             transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .equipment-slot[data-slot="primary"],
+        .equipment-slot[data-slot="secondary"] {
+            width: 296px;
+            height: 104px;
+            grid-row: span 1;
         }
 
         .equipment-slot.equipped {
@@ -369,14 +400,15 @@
 
         .equipment-placeholder {
             color: var(--text-dim);
-            font-size: 8px;
+            font-size: 10px;
             text-align: center;
-            line-height: 1.1;
+            line-height: 1.2;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             word-wrap: break-word;
             max-width: 100%;
-            padding: 2px;
+            padding: 4px;
+            font-weight: 500;
         }
 
         /* Action Buttons */
@@ -578,7 +610,7 @@
             <!-- Main Loadout Card -->
             <div class="loadout-card">
                 <div class="loadout-header">
-                    <h1 class="loadout-title">Boss Killer</h1>
+                    <h1 class="loadout-title">Current Build</h1>
                     <button class="edit-button" onclick="window.location.href='edit-loadout.html'">Edit Loadout</button>
                 </div>
 
@@ -603,6 +635,14 @@
                     <!-- Will be populated by JavaScript -->
                 </div>
 
+                <!-- Aura Section -->
+                <div class="ability-section">
+                    <h3 class="section-title">Active Auras</h3>
+                    <div class="passive-section" id="active-auras">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                </div>
+
                 <!-- Class Passives -->
                 <div class="ability-section" style="margin-top: var(--spacing-xl);">
                     <h3 class="section-title">Class Passives</h3>
@@ -613,31 +653,40 @@
 
                 <!-- Equipment Preview -->
                 <div class="equipment-preview">
-                    <h3 class="section-title">Equipment</h3>
+                    <div class="card-header">
+                        <h3 class="card-title">Equipped Items</h3>
+                    </div>
+                    <div class="card-accent"></div>
+                    
                     <div class="equipment-grid">
-                        <div class="equipment-slot" data-slot="primary">
-                            <div class="equipment-placeholder">Primary</div>
-                        </div>
-                        <div class="equipment-slot" data-slot="secondary">
-                            <div class="equipment-placeholder">Secondary</div>
-                        </div>
+                        <!-- Row 1: Head, Shoulders | Primary Weapon -->
                         <div class="equipment-slot" data-slot="head">
                             <div class="equipment-placeholder">Head</div>
                         </div>
                         <div class="equipment-slot" data-slot="shoulders">
                             <div class="equipment-placeholder">Shoulders</div>
                         </div>
+                        <div class="equipment-slot" data-slot="primary">
+                            <div class="equipment-placeholder">Primary</div>
+                        </div>
+                        
+                        <!-- Row 2: Chest, Back | Secondary Weapon -->
                         <div class="equipment-slot" data-slot="chest">
                             <div class="equipment-placeholder">Chest</div>
                         </div>
+                        <div class="equipment-slot" data-slot="back">
+                            <div class="equipment-placeholder">Back</div>
+                        </div>
+                        <div class="equipment-slot" data-slot="secondary">
+                            <div class="equipment-placeholder">Secondary</div>
+                        </div>
+                        
+                        <!-- Row 3: Gloves, Legs -->
                         <div class="equipment-slot" data-slot="gloves">
                             <div class="equipment-placeholder">Gloves</div>
                         </div>
                         <div class="equipment-slot" data-slot="legs">
                             <div class="equipment-placeholder">Legs</div>
-                        </div>
-                        <div class="equipment-slot" data-slot="back">
-                            <div class="equipment-placeholder">Back</div>
                         </div>
                     </div>
                 </div>
@@ -686,8 +735,8 @@
                 
                 console.log('Loaded equipped items for loadouts:', equippedItems);
                 
-                // Define slot order for the equipment grid
-                const slots = ['primary', 'secondary', 'head', 'shoulders', 'chest', 'gloves', 'legs', 'back'];
+                // Define slot order for the equipment grid (matching dashboard layout)
+                const slots = ['head', 'shoulders', 'primary', 'chest', 'back', 'secondary', 'gloves', 'legs'];
                 
                 slots.forEach(slot => {
                     const slotElement = document.querySelector(`[data-slot="${slot}"]`);
@@ -843,7 +892,15 @@
             try {
                 if (window.CourierData) {
                     const skillData = window.CourierData.getSkillTreesData();
-                    currentSkillPoints.invested = skillData.invested.class || {};
+                    // Load all skill tree investments (class + elemental)
+                    currentSkillPoints.invested = {
+                        class: skillData.invested.class || {},
+                        fire: skillData.invested.fire || {},
+                        ice: skillData.invested.ice || {},
+                        electric: skillData.invested.electric || {},
+                        earth: skillData.invested.earth || {},
+                        nature: skillData.invested.nature || {}
+                    };
                     currentSkillPoints.available = skillData.available;
                     currentSkillPoints.total = skillData.total;
                     console.log('Loaded skill investments from data manager:', currentSkillPoints.invested);
@@ -852,25 +909,31 @@
                     const savedSkills = localStorage.getItem('courier-skill-investments');
                     if (savedSkills) {
                         const parsed = JSON.parse(savedSkills);
-                        currentSkillPoints.invested = parsed.class || {};
+                        currentSkillPoints.invested = {
+                            class: parsed.class || {},
+                            fire: parsed.fire || {},
+                            ice: parsed.ice || {},
+                            electric: parsed.electric || {},
+                            earth: parsed.earth || {},
+                            nature: parsed.nature || {}
+                        };
                         console.log('Loaded skill investments from localStorage:', currentSkillPoints.invested);
                     } else {
-                        // Demo data if no saved skills
+                        // Initialize with empty data - no demo skills
                         currentSkillPoints.invested = {
-                            'dead-eye': 3,
-                            'quick-hands': 2,
-                            'sniper-specialist': 2,
-                            'fan-hammer': 5,
-                            'bullet-time': 4,
-                            'never-miss': 3,
-                            'ace-hole': 2,
-                            'high-noon': 5
+                            class: {},
+                            fire: {},
+                            ice: {},
+                            electric: {},
+                            earth: {},
+                            nature: {}
                         };
+                        console.log('No saved skills found - starting with empty skill set');
                     }
                 }
             } catch (error) {
                 console.error('Error loading skill investments:', error);
-                currentSkillPoints.invested = {};
+                currentSkillPoints.invested = { class: {}, fire: {}, ice: {}, electric: {}, earth: {}, nature: {} };
             }
         }
 
@@ -883,6 +946,7 @@
                     console.log('Skills data loaded for loadouts');
                     loadCurrentSkillInvestments();
                     populateLoadout();
+                    console.log('Loadout populated with real purchased skills');
                 } else {
                     console.error('Failed to load skills data');
                 }
@@ -896,6 +960,7 @@
             populateUltimateAbilities();
             populateActiveAbilities();
             populateKeyPassives();
+            populateAuras();
             populateClassPassives();
         }
 
@@ -903,40 +968,74 @@
             const container = document.getElementById('ultimate-abilities');
             if (!container) return;
 
-            const ultimateSkills = ['high-noon', 'dead-mans-hand', 'perfect-shot'];
-            let html = '';
-            let hasUltimate = false;
-
-            ultimateSkills.forEach(skillId => {
-                const invested = currentSkillPoints.invested[skillId] || 0;
-                if (invested > 0) {
-                    const skill = skillsDatabase.class?.[skillId];
-                    if (skill) {
-                        const iconMap = {
-                            'high-noon': '🌅',
-                            'dead-mans-hand': '🃏', 
-                            'perfect-shot': '🎯'
-                        };
-
-                        html += `
-                            <div class="ability-slot ultimate-slot" data-skill="${skillId}">
-                                <div class="ability-icon">${iconMap[skillId]}</div>
-                                <div class="ability-name">${skill.name}</div>
-                                <div class="ability-cooldown">120s cooldown • Rank ${invested}</div>
-                            </div>
-                        `;
-                        hasUltimate = true;
+            // Dynamically find all ultimate skills (tier 6) that the player has invested in
+            const availableUltimateSkills = [];
+            
+            // Check class tree ultimates
+            if (skillsDatabase.class) {
+                Object.keys(skillsDatabase.class).forEach(skillId => {
+                    const skill = skillsDatabase.class[skillId];
+                    const invested = currentSkillPoints.invested.class?.[skillId] || 0;
+                    if (skill.tier === 6 && invested > 0) {
+                        availableUltimateSkills.push({
+                            id: skillId,
+                            skill: skill,
+                            invested: invested,
+                            tree: 'class'
+                        });
                     }
+                });
+            }
+            
+            // Check elemental tree ultimates (capstone skills)
+            ['fire', 'ice', 'electric', 'earth', 'nature'].forEach(element => {
+                if (skillsDatabase[element]) {
+                    Object.keys(skillsDatabase[element]).forEach(skillId => {
+                        const skill = skillsDatabase[element][skillId];
+                        const invested = currentSkillPoints.invested[element]?.[skillId] || 0;
+                        // Look for capstone skills (typically 1 max point and high requirements)
+                        if (skill.maxPoints === 1 && invested > 0 && skill.requirements && skill.requirements.includes('15 points')) {
+                            availableUltimateSkills.push({
+                                id: skillId,
+                                skill: skill,
+                                invested: invested,
+                                tree: element
+                            });
+                        }
+                    });
                 }
             });
 
+            let html = '';
+            let hasUltimate = false;
+
+            availableUltimateSkills.forEach(ultimate => {
+                const iconMap = {
+                    // Class ultimates
+                    'high-noon': '🌅',
+                    'dead-mans-hand': '🃏', 
+                    'perfect-shot': '🎯',
+                    'legendary-outlaw': '🤠',
+                    // Elemental ultimates
+                    'pyroclasm-lord': '🔥',
+                    'cryogenic-master': '❄️',
+                    'storm-god': '⚡',
+                    'earthquake-god': '🌍',
+                    'plague-god': '🌿'
+                };
+
+                html += `
+                    <div class="ability-slot ultimate-slot" data-skill="${ultimate.id}">
+                        <div class="ability-icon">${ultimate.skill.icon || iconMap[ultimate.id] || '✨'}</div>
+                        <div class="ability-name">${ultimate.skill.name}</div>
+                        <div class="ability-cooldown">${ultimate.tree.toUpperCase()} • Rank ${ultimate.invested}</div>
+                    </div>
+                `;
+                hasUltimate = true;
+            });
+
             if (!hasUltimate) {
-                // Get all available ultimates the player has learned
-                const availableUltimates = ultimateSkills.filter(skillId => {
-                    const invested = currentSkillPoints.invested[skillId] || 0;
-                    return invested > 0;
-                });
-                
+                // Show empty slot if no ultimates are available
                 html = `
                     <div class="ability-slot ultimate-slot empty-slot" onclick="showSkillSelector('ultimate')">
                         <div class="ability-icon">+</div>
@@ -984,9 +1083,9 @@
             for (let i = 0; i < 6; i++) {
                 const assignedSkill = currentLoadoutSlots.actives[i];
                 
-                if (assignedSkill && currentSkillPoints.invested[assignedSkill] > 0) {
+                if (assignedSkill && currentSkillPoints.invested.class[assignedSkill] > 0) {
                     const skill = skillsDatabase.class?.[assignedSkill];
-                    const invested = currentSkillPoints.invested[assignedSkill];
+                    const invested = currentSkillPoints.invested.class[assignedSkill];
                     const currentEffect = skill.effects[invested - 1] || skill.description;
                     
                     html += `
@@ -1018,7 +1117,7 @@
             let html = '';
 
             keyPassives.forEach(skillId => {
-                const invested = currentSkillPoints.invested[skillId] || 0;
+                const invested = currentSkillPoints.invested.class[skillId] || 0;
                 if (invested > 0) {
                     const skill = skillsDatabase.class?.[skillId];
                     if (skill) {
@@ -1048,6 +1147,68 @@
             container.innerHTML = html;
         }
 
+        function populateAuras() {
+            const container = document.getElementById('active-auras');
+            if (!container) return;
+
+            let html = '';
+            let auraCount = 0;
+
+            // Elemental aura skills - skills that provide continuous passive effects
+            const auraSkills = {
+                fire: ['flame-weapon', 'heat-resistance', 'combustion-mastery'],
+                ice: ['frost-armor', 'ice-mastery', 'cold-resistance'],
+                electric: ['static-field', 'lightning-mastery', 'shock-resistance'],
+                earth: ['stone-skin', 'earth-mastery', 'ground-resistance'],
+                nature: ['healing-aura', 'nature-mastery', 'poison-resistance']
+            };
+
+            const elementalIcons = {
+                fire: '🔥',
+                ice: '❄️',
+                electric: '⚡',
+                earth: '🌍',
+                nature: '🌿'
+            };
+
+            Object.keys(auraSkills).forEach(tree => {
+                auraSkills[tree].forEach(skillId => {
+                    const invested = currentSkillPoints.invested[tree]?.[skillId] || 0;
+                    if (invested > 0) {
+                        const skill = skillsDatabase[tree]?.[skillId];
+                        if (skill) {
+                            const currentEffect = skill.effects[invested - 1] || skill.description;
+                            
+                            html += `
+                                <div class="passive-slot aura-slot">
+                                    <div class="passive-icon">${elementalIcons[tree]}</div>
+                                    <div class="passive-info">
+                                        <div class="passive-name">${skill.name} (${invested}/${skill.maxPoints})</div>
+                                        <div class="passive-desc">${currentEffect}</div>
+                                    </div>
+                                </div>
+                            `;
+                            auraCount++;
+                        }
+                    }
+                });
+            });
+
+            if (auraCount === 0) {
+                html = `
+                    <div class="passive-slot" style="opacity: 0.5;">
+                        <div class="passive-icon">🌀</div>
+                        <div class="passive-info">
+                            <div class="passive-name">No active auras</div>
+                            <div class="passive-desc">Invest in elemental skills to gain passive aura effects</div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            container.innerHTML = html;
+        }
+
         function populateClassPassives() {
             const container = document.getElementById('class-passives');
             if (!container) return;
@@ -1055,9 +1216,12 @@
             let html = '';
             let passiveCount = 0;
 
-            Object.keys(currentSkillPoints.invested).forEach(skillId => {
-                const invested = currentSkillPoints.invested[skillId];
-                if (invested > 0) {
+            // Active skills that should not appear in the passives list
+            const activeSkills = ['fan-hammer', 'ricochet-roulette', 'gunslinger-focus', 'all-in', 'bullet-time', 'vanish', 'high-noon', 'dead-mans-hand', 'perfect-shot'];
+
+            Object.keys(currentSkillPoints.invested.class).forEach(skillId => {
+                const invested = currentSkillPoints.invested.class[skillId];
+                if (invested > 0 && !activeSkills.includes(skillId)) {
                     const skill = skillsDatabase.class?.[skillId];
                     if (skill && skill.tier <= 5) { // Don't show ultimates here
                         const currentEffect = skill.effects[invested - 1];
@@ -1072,6 +1236,29 @@
                         }
                     }
                 }
+            });
+
+            // Add elemental passives (all elemental skills are typically passive auras or effects)
+            const elementalTrees = ['fire', 'ice', 'electric', 'earth', 'nature'];
+            elementalTrees.forEach(tree => {
+                Object.keys(currentSkillPoints.invested[tree] || {}).forEach(skillId => {
+                    const invested = currentSkillPoints.invested[tree][skillId];
+                    if (invested > 0) {
+                        const skill = skillsDatabase[tree]?.[skillId];
+                        if (skill) {
+                            const currentEffect = skill.effects[invested - 1];
+                            if (currentEffect) {
+                                html += `
+                                    <div class="passive-item">
+                                        <span class="passive-item-name">${skill.name} (${invested}/${skill.maxPoints}):</span>
+                                        <span class="passive-item-desc">${currentEffect}</span>
+                                    </div>
+                                `;
+                                passiveCount++;
+                            }
+                        }
+                    }
+                });
             });
 
             if (passiveCount === 0) {
@@ -1107,7 +1294,7 @@
             
             availableSkills.forEach(skillId => {
                 const skill = skillsDatabase.class[skillId];
-                const invested = currentSkillPoints.invested[skillId];
+                const invested = currentSkillPoints.invested.class[skillId];
                 const iconMap = {
                     'high-noon': '🌅', 'dead-mans-hand': '🃏', 'perfect-shot': '🎯',
                     'fan-hammer': '🌪️', 'ricochet-roulette': '🪃', 'gunslinger-focus': '🎲',
@@ -1133,15 +1320,53 @@
         }
         
         function getAvailableSkillsForSlot(slotType) {
-            const ultimateSkills = ['high-noon', 'dead-mans-hand', 'perfect-shot'];
-            const activeSkills = ['fan-hammer', 'ricochet-roulette', 'gunslinger-focus', 'all-in', 'bullet-time', 'vanish'];
-            
-            const targetSkills = slotType === 'ultimate' ? ultimateSkills : activeSkills;
-            
-            return targetSkills.filter(skillId => {
-                const invested = currentSkillPoints.invested[skillId] || 0;
-                return invested > 0;
-            });
+            if (slotType === 'ultimate') {
+                // Dynamically get all ultimate skills the player has learned
+                const availableUltimateSkills = [];
+                
+                // Check class tree ultimates (tier 6)
+                if (skillsDatabase.class) {
+                    Object.keys(skillsDatabase.class).forEach(skillId => {
+                        const skill = skillsDatabase.class[skillId];
+                        const invested = currentSkillPoints.invested.class?.[skillId] || 0;
+                        if (skill.tier === 6 && invested > 0) {
+                            availableUltimateSkills.push(skillId);
+                        }
+                    });
+                }
+                
+                // Check elemental tree ultimates (capstone skills)
+                ['fire', 'ice', 'electric', 'earth', 'nature'].forEach(element => {
+                    if (skillsDatabase[element]) {
+                        Object.keys(skillsDatabase[element]).forEach(skillId => {
+                            const skill = skillsDatabase[element][skillId];
+                            const invested = currentSkillPoints.invested[element]?.[skillId] || 0;
+                            // Look for capstone skills (typically 1 max point and high requirements)
+                            if (skill.maxPoints === 1 && invested > 0 && skill.requirements && skill.requirements.includes('15 points')) {
+                                availableUltimateSkills.push(skillId);
+                            }
+                        });
+                    }
+                });
+                
+                return availableUltimateSkills;
+            } else {
+                // For active skills, dynamically find skills with abilities/cooldowns
+                const activeSkills = [];
+                
+                if (skillsDatabase.class) {
+                    Object.keys(skillsDatabase.class).forEach(skillId => {
+                        const skill = skillsDatabase.class[skillId];
+                        const invested = currentSkillPoints.invested.class?.[skillId] || 0;
+                        // Look for active skills (skills with cooldowns mentioned in effects)
+                        if (invested > 0 && skill.effects && skill.effects.some(effect => effect.includes('cooldown'))) {
+                            activeSkills.push(skillId);
+                        }
+                    });
+                }
+                
+                return activeSkills;
+            }
         }
         
         function assignSkillToSlot(skillId, slotType, slotIndex) {
@@ -1189,56 +1414,11 @@
         const loadoutTabs = document.querySelectorAll('.loadout-tab');
         const loadoutTitle = document.querySelector('.loadout-title');
         
-        // Predefined loadout builds with specific skill allocations
+        // Predefined loadout builds - these will copy from current purchased skills
         const predefinedLoadouts = {
-            'boss-killer': {
-                name: 'Boss Killer',
-                skills: {
-                    'dead-eye': 3,
-                    'sniper-specialist': 2,
-                    'fan-hammer': 5,
-                    'bullet-time': 4,
-                    'never-miss': 3,
-                    'ace-hole': 2,
-                    'high-noon': 5
-                }
-            },
-            'mob-clear': {
-                name: 'Mob Clear',
-                skills: {
-                    'quick-hands': 3,
-                    'shotgun-specialist': 2,
-                    'hair-trigger': 3,
-                    'mark-death': 5,
-                    'explosive-rounds': 4,
-                    'ricochet-roulette': 3,
-                    'all-in': 2
-                }
-            },
-            'pvp-duelist': {
-                name: 'PvP Duelist',
-                skills: {
-                    'lucky-charm': 2,
-                    'gunslinger-focus': 2,
-                    'quick-draw': 3,
-                    'vanish': 4,
-                    'lucky-streak': 4,
-                    'roll-dice': 3,
-                    'master-gunslinger': 3,
-                    'perfect-shot': 3
-                }
-            },
-            'support': {
-                name: 'Support',
-                skills: {
-                    'dead-eye': 2,
-                    'steady-aim': 3,
-                    'run-gun': 4,
-                    'desperado': 3,
-                    'handgun-specialist': 2,
-                    'mark-death': 3,
-                    'ace-hole': 2
-                }
+            'current': {
+                name: 'Current Build',
+                skills: null // Will be set to actual purchased skills
             }
         };
 
@@ -1250,25 +1430,19 @@
                 loadoutTabs.forEach(t => t.classList.remove('active'));
                 this.classList.add('active');
                 
-                let loadoutKey = '';
+                // Handle loadout selection - all tabs now show current purchased skills
                 switch(loadoutId) {
-                    case '1': loadoutKey = 'boss-killer'; break;
-                    case '2': loadoutKey = 'mob-clear'; break;
-                    case '3': loadoutKey = 'pvp-duelist'; break;
-                    case '4': loadoutKey = 'support'; break;
+                    case '1':
+                    case '2':
+                    case '3':
+                    case '4':
+                        loadoutTitle.textContent = 'Current Build';
+                        // Skills are already loaded from data manager/localStorage
+                        populateLoadout();
+                        break;
                     case '5': 
                         window.location.href = 'edit-loadout.html';
                         return;
-                }
-                
-                const loadout = predefinedLoadouts[loadoutKey];
-                if (loadout) {
-                    loadoutTitle.textContent = loadout.name;
-                    currentSkillPoints.invested = { ...loadout.skills };
-                    populateLoadout();
-                    
-                    // Auto-save this loadout configuration
-                    saveCurrentLoadout(loadout.name);
                 }
             });
         });
@@ -1297,12 +1471,14 @@
                 const loadoutData = localStorage.getItem(`courier-loadout-${loadoutName.toLowerCase().replace(/\s+/g, '-')}`);
                 if (loadoutData) {
                     const parsed = JSON.parse(loadoutData);
-                    currentSkillPoints.invested = parsed.skillInvestments || {};
+                    currentSkillPoints.invested = parsed.skillInvestments || { class: {}, fire: {}, ice: {}, electric: {}, earth: {}, nature: {} };
                     
                     // Update localStorage with new skill investments
                     const savedSkills = localStorage.getItem('courier-skill-investments') || '{}';
                     const skillData = JSON.parse(savedSkills);
-                    skillData.class = currentSkillPoints.invested;
+                    Object.keys(currentSkillPoints.invested).forEach(tree => {
+                        skillData[tree] = currentSkillPoints.invested[tree];
+                    });
                     localStorage.setItem('courier-skill-investments', JSON.stringify(skillData));
                     
                     populateLoadout();

@@ -60,7 +60,7 @@
     "shotgun-specialist": {
       "name": "Shotgun Specialist",
       "description": "Close-quarters combat expertise with spread weapons.",
-      "maxPoints": 2, 
+      "maxPoints": 2,
       "tier": 2,
       "requirements": "Quick Hands (1 point)",
       "effects": [
@@ -341,7 +341,7 @@
       "name": "Legendary Outlaw",
       "description": "Capstone: Become the ultimate gunslinger of legend.",
       "maxPoints": 3,
-      "tier": 6,
+      "tier": 7,
       "requirements": "High Noon (1 point), Dead Man's Hand (1 point), and Perfect Shot (1 point)",
       "effects": [
         "All chance-based effects minimum 25% proc rate",
@@ -354,7 +354,6 @@
     "combustion-mastery": {
       "name": "Combustion Mastery",
       "icon": "🔥",
-      "tier": 1,
       "maxPoints": 3,
       "description": "Increases fire damage and burn effects.",
       "effects": [
@@ -367,7 +366,6 @@
     "flame-weapon": {
       "name": "Flame Weapon",
       "icon": "⚔️",
-      "tier": 1,
       "maxPoints": 5,
       "description": "Weapons deal fire damage with ignite chance.",
       "effects": [
@@ -382,7 +380,6 @@
     "heat-resistance": {
       "name": "Heat Resistance",
       "icon": "🛡️",
-      "tier": 1,
       "maxPoints": 2,
       "description": "Provides fire resistance and immunity to self-inflicted fire damage.",
       "effects": [
@@ -394,7 +391,6 @@
     "fireball": {
       "name": "Fireball",
       "icon": "💥",
-      "tier": 2,
       "maxPoints": 3,
       "description": "Launch explosive fireball projectile.",
       "effects": [
@@ -402,12 +398,11 @@
         "+50% explosion radius, +25% damage",
         "Fireball pierces through enemies"
       ],
-      "requirements": "5 points in Tier 1"
+      "requirements": "5 points in Fire tree"
     },
     "flame-wall": {
       "name": "Flame Wall",
       "icon": "🧱",
-      "tier": 2,
       "maxPoints": 4,
       "description": "Create wall of fire blocking passage.",
       "effects": [
@@ -416,12 +411,11 @@
         "Wall width +50%, spreads fire on contact",
         "Can create multiple walls simultaneously"
       ],
-      "requirements": "5 points in Tier 1"
+      "requirements": "5 points in Fire tree"
     },
     "burning-ground": {
       "name": "Burning Ground",
       "icon": "🌋",
-      "tier": 2,
       "maxPoints": 3,
       "description": "Create area of burning ground.",
       "effects": [
@@ -429,12 +423,11 @@
         "Area size +100%, duration +50%",
         "Burning ground follows enemies"
       ],
-      "requirements": "5 points in Tier 1"
+      "requirements": "5 points in Fire tree"
     },
     "phoenix-surge": {
       "name": "Phoenix Surge",
       "icon": "🔥",
-      "tier": 3,
       "maxPoints": 5,
       "description": "Ultimate fire transformation ability.",
       "effects": [
@@ -444,37 +437,34 @@
         "Movement leaves burning trail",
         "Resurrection on death during surge"
       ],
-      "requirements": "10 points in Tier 2"
+      "requirements": "10 points in Fire tree"
     },
     "fire-combination": {
       "name": "Combination Mastery",
       "icon": "⚡",
-      "tier": 3,
       "maxPoints": 2,
       "description": "Enhances fire combination abilities.",
       "effects": [
         "Combination abilities cost -25% power",
         "Combination effects last +50% longer"
       ],
-      "requirements": "10 points in Tier 2"
+      "requirements": "10 points in Fire tree"
     },
     "pyroclasm-lord": {
       "name": "Pyroclasm Lord",
       "icon": "🔥",
-      "tier": 4,
       "maxPoints": 1,
       "description": "Become the ultimate master of Fire and destruction. This capstone ability grants incredible fire mastery and resistance.",
       "effects": [
         "+100% Fire Potency • +50% Fire Resistance • All Fire abilities ignore 50% of enemy Fire Resistance • Burn buildup decays 50% slower (5% per second)"
       ],
-      "requirements": "15 points in Tier 3"
+      "requirements": "15 points in Fire tree"
     }
   },
   "ice": {
     "cryogenic-mastery": {
       "name": "Cryogenic Mastery",
       "icon": "❄️",
-      "tier": 1,
       "maxPoints": 3,
       "description": "Increases ice damage and slow effects.",
       "effects": [
@@ -487,7 +477,6 @@
     "frost-weapon": {
       "name": "Frost Weapon",
       "icon": "⚔️",
-      "tier": 1,
       "maxPoints": 5,
       "description": "Weapons deal ice damage with slow chance.",
       "effects": [
@@ -502,7 +491,6 @@
     "cold-resistance": {
       "name": "Cold Resistance",
       "icon": "🛡️",
-      "tier": 1,
       "maxPoints": 2,
       "description": "Provides ice resistance and immunity to slowing effects.",
       "effects": [
@@ -514,7 +502,6 @@
     "ice-shard": {
       "name": "Ice Shard",
       "icon": "🧊",
-      "tier": 2,
       "maxPoints": 3,
       "description": "Launch piercing ice projectile.",
       "effects": [
@@ -522,12 +509,11 @@
         "Shard splits into 3 on impact",
         "Each shard can freeze targets"
       ],
-      "requirements": "5 points in Tier 1"
+      "requirements": "5 points in Ice tree"
     },
     "ice-barrier": {
       "name": "Ice Barrier",
       "icon": "🧱",
-      "tier": 2,
       "maxPoints": 4,
       "description": "Create defensive ice wall.",
       "effects": [
@@ -536,12 +522,11 @@
         "Barrier explodes when destroyed",
         "Multiple barriers can be maintained"
       ],
-      "requirements": "5 points in Tier 1"
+      "requirements": "5 points in Ice tree"
     },
     "frozen-zone": {
       "name": "Frozen Zone",
       "icon": "🌀",
-      "tier": 2,
       "maxPoints": 3,
       "description": "Create area that slows enemies.",
       "effects": [
@@ -549,12 +534,11 @@
         "Zone also damages enemies over time",
         "Zone moves with caster"
       ],
-      "requirements": "5 points in Tier 1"
+      "requirements": "5 points in Ice tree"
     },
     "winters-embrace": {
       "name": "Winter's Embrace",
       "icon": "❄️",
-      "tier": 3,
       "maxPoints": 5,
       "description": "Freeze all enemies in large area.",
       "effects": [
@@ -564,37 +548,34 @@
         "Allies gain ice immunity and damage bonus",
         "Effect can be maintained by spending power over time"
       ],
-      "requirements": "10 points in Tier 2"
+      "requirements": "10 points in Ice tree"
     },
     "ice-combination": {
       "name": "Combination Mastery",
       "icon": "⚡",
-      "tier": 3,
       "maxPoints": 2,
       "description": "Enhances ice combination abilities.",
       "effects": [
         "Combination abilities cost -25% power",
         "Ice combinations have +50% area of effect"
       ],
-      "requirements": "10 points in Tier 2"
+      "requirements": "10 points in Ice tree"
     },
     "cryogenic-master": {
       "name": "Cryogenic Master",
       "icon": "❄️",
-      "tier": 4,
       "maxPoints": 1,
       "description": "Become the ultimate master of Ice and Freeze. This capstone ability grants incredible ice mastery and control.",
       "effects": [
         "+100% Ice Potency • +50% Ice Resistance • All Ice abilities ignore 50% of enemy Ice Resistance • +50% freeze buildup rate on all Ice damage"
       ],
-      "requirements": "15 points in Tier 3"
+      "requirements": "15 points in Ice tree"
     }
   },
   "electric": {
     "electrical-mastery": {
       "name": "Electrical Mastery",
       "icon": "⚡",
-      "tier": 1,
       "maxPoints": 3,
       "description": "Increases electric damage and chain effects.",
       "effects": [
@@ -607,7 +588,6 @@
     "shock-weapon": {
       "name": "Shock Weapon",
       "icon": "⚔️",
-      "tier": 1,
       "maxPoints": 5,
       "description": "Weapons deal electric damage with stun chance.",
       "effects": [
@@ -622,7 +602,6 @@
     "conductivity": {
       "name": "Conductivity",
       "icon": "🛡️",
-      "tier": 1,
       "maxPoints": 2,
       "description": "Provides electric resistance and energy gain.",
       "effects": [
@@ -634,7 +613,6 @@
     "lightning-bolt": {
       "name": "Lightning Bolt",
       "icon": "⚡",
-      "tier": 2,
       "maxPoints": 3,
       "description": "Instant electric attack.",
       "effects": [
@@ -642,12 +620,11 @@
         "Bolt chains through all enemies in line",
         "Each chain increases damage"
       ],
-      "requirements": "5 points in Tier 1"
+      "requirements": "5 points in Electric tree"
     },
     "tesla-coil": {
       "name": "Tesla Coil",
       "icon": "🔌",
-      "tier": 2,
       "maxPoints": 4,
       "description": "Deploy electrical generator.",
       "effects": [
@@ -656,12 +633,11 @@
         "Coil chains between multiple targets",
         "Multiple coils can be deployed"
       ],
-      "requirements": "5 points in Tier 1"
+      "requirements": "5 points in Electric tree"
     },
     "electric-field": {
       "name": "Electric Field",
       "icon": "⚡",
-      "tier": 2,
       "maxPoints": 3,
       "description": "Create damaging electric area.",
       "effects": [
@@ -669,12 +645,11 @@
         "Field stuns enemies who enter",
         "Field follows caster movement"
       ],
-      "requirements": "5 points in Tier 1"
+      "requirements": "5 points in Electric tree"
     },
     "storm-lord": {
       "name": "Storm Lord",
       "icon": "🌩️",
-      "tier": 3,
       "maxPoints": 5,
       "description": "Continuous lightning strikes in area.",
       "effects": [
@@ -684,37 +659,34 @@
         "Allies gain electric damage bonus",
         "Storm can be guided and redirected"
       ],
-      "requirements": "10 points in Tier 2"
+      "requirements": "10 points in Electric tree"
     },
     "electric-combination": {
       "name": "Combination Mastery",
       "icon": "⚡",
-      "tier": 3,
       "maxPoints": 2,
       "description": "Enhances electric combination abilities.",
       "effects": [
         "Combination abilities cost -25% power",
         "Electric combinations chain +100% more times"
       ],
-      "requirements": "10 points in Tier 2"
+      "requirements": "10 points in Electric tree"
     },
     "storm-god": {
       "name": "Storm God",
       "icon": "⚡",
-      "tier": 4,
       "maxPoints": 1,
       "description": "Become the ultimate master of lightning and storms. This capstone ability grants incredible electric mastery and unlimited power.",
       "effects": [
         "+100% Electric Potency • +50% Electric Resistance • All Electric abilities ignore 50% of enemy Electric Resistance • Chain damage no longer diminishes with jumps"
       ],
-      "requirements": "15 points in Tier 3"
+      "requirements": "15 points in Electric tree"
     }
   },
   "earth": {
     "geological-mastery": {
       "name": "Geological Mastery",
       "icon": "🌍",
-      "tier": 1,
       "maxPoints": 3,
       "description": "Increases earth damage and damage reduction.",
       "effects": [
@@ -727,7 +699,6 @@
     "stone-weapon": {
       "name": "Stone Weapon",
       "icon": "⚔️",
-      "tier": 1,
       "maxPoints": 5,
       "description": "Weapons deal earth damage with knockdown chance.",
       "effects": [
@@ -742,7 +713,6 @@
     "seismic-stability": {
       "name": "Seismic Stability",
       "icon": "🛡️",
-      "tier": 1,
       "maxPoints": 2,
       "description": "Immunity to displacement and standing damage bonus.",
       "effects": [
@@ -754,7 +724,6 @@
     "earth-spike": {
       "name": "Earth Spike",
       "icon": "⛰️",
-      "tier": 2,
       "maxPoints": 3,
       "description": "Summon damaging stone spike.",
       "effects": [
@@ -762,12 +731,11 @@
         "Spike creates line of smaller spikes",
         "Spikes remain as terrain obstacles"
       ],
-      "requirements": "5 points in Tier 1"
+      "requirements": "5 points in Earth tree"
     },
     "stone-wall": {
       "name": "Stone Wall",
       "icon": "🧱",
-      "tier": 2,
       "maxPoints": 4,
       "description": "Create defensive earth barrier.",
       "effects": [
@@ -776,12 +744,11 @@
         "Wall can be climbed for elevation advantage",
         "Multiple walls can be maintained"
       ],
-      "requirements": "5 points in Tier 1"
+      "requirements": "5 points in Earth tree"
     },
     "earthquake": {
       "name": "Earthquake",
       "icon": "🌋",
-      "tier": 2,
       "maxPoints": 3,
       "description": "Create damaging ground tremor.",
       "effects": [
@@ -789,12 +756,11 @@
         "Earthquake knocks down all enemies",
         "Effect spreads outward in waves"
       ],
-      "requirements": "5 points in Tier 1"
+      "requirements": "5 points in Earth tree"
     },
     "mountains-fury": {
       "name": "Mountain's Fury",
       "icon": "⛰️",
-      "tier": 3,
       "maxPoints": 5,
       "description": "Reshape battlefield terrain.",
       "effects": [
@@ -804,37 +770,34 @@
         "Allies gain movement bonuses on earth terrain",
         "Can create massive walls and chasms"
       ],
-      "requirements": "10 points in Tier 2"
+      "requirements": "10 points in Earth tree"
     },
     "earth-combination": {
       "name": "Combination Mastery",
       "icon": "⚡",
-      "tier": 3,
       "maxPoints": 2,
       "description": "Enhances earth combination abilities.",
       "effects": [
         "Combination abilities cost -25% power",
         "Earth combinations create permanent terrain"
       ],
-      "requirements": "10 points in Tier 2"
+      "requirements": "10 points in Earth tree"
     },
     "earthquake-god": {
       "name": "Earthquake God",
       "icon": "🌍",
-      "tier": 4,
       "maxPoints": 1,
       "description": "Become the ultimate master of Earth and stone. This capstone ability grants incredible earth mastery and permanence.",
       "effects": [
         "+100% Earth Potency • +50% Earth Resistance • All Earth abilities ignore 50% of enemy Earth Resistance • Fracture buildup never decays"
       ],
-      "requirements": "15 points in Tier 3"
+      "requirements": "15 points in Earth tree"
     }
   },
   "nature": {
     "natural-mastery": {
       "name": "Natural Mastery",
       "icon": "🌿",
-      "tier": 1,
       "maxPoints": 3,
       "description": "Increases nature damage and healing effectiveness.",
       "effects": [
@@ -847,7 +810,6 @@
     "living-weapon": {
       "name": "Living Weapon",
       "icon": "⚔️",
-      "tier": 1,
       "maxPoints": 5,
       "description": "Weapons deal nature damage with heal chance.",
       "effects": [
@@ -862,7 +824,6 @@
     "natural-resistance": {
       "name": "Natural Resistance",
       "icon": "🛡️",
-      "tier": 1,
       "maxPoints": 2,
       "description": "Provides nature resistance and regeneration.",
       "effects": [
@@ -874,7 +835,6 @@
     "healing-burst": {
       "name": "Healing Burst",
       "icon": "💚",
-      "tier": 2,
       "maxPoints": 3,
       "description": "Instant area healing.",
       "effects": [
@@ -882,12 +842,11 @@
         "Also removes negative status effects",
         "Grants temporary damage resistance"
       ],
-      "requirements": "5 points in Tier 1"
+      "requirements": "5 points in Nature tree"
     },
     "thorn-barrier": {
       "name": "Thorn Barrier",
       "icon": "🌹",
-      "tier": 2,
       "maxPoints": 4,
       "description": "Create damaging plant wall.",
       "effects": [
@@ -896,12 +855,11 @@
         "Barrier grows larger over time",
         "Multiple barriers can be maintained"
       ],
-      "requirements": "5 points in Tier 1"
+      "requirements": "5 points in Nature tree"
     },
     "natures-blessing": {
       "name": "Nature's Blessing",
       "icon": "✨",
-      "tier": 2,
       "maxPoints": 3,
       "description": "Create healing area over time.",
       "effects": [
@@ -909,12 +867,11 @@
         "Area also boosts ally damage",
         "Effect follows allies"
       ],
-      "requirements": "5 points in Tier 1"
+      "requirements": "5 points in Nature tree"
     },
     "world-tree": {
       "name": "World Tree",
       "icon": "🌳",
-      "tier": 3,
       "maxPoints": 5,
       "description": "Summon massive healing tree.",
       "effects": [
@@ -924,30 +881,28 @@
         "Allies gain nature damage bonus near tree",
         "Tree can move and attack enemies"
       ],
-      "requirements": "10 points in Tier 2"
+      "requirements": "10 points in Nature tree"
     },
     "nature-combination": {
       "name": "Combination Mastery",
       "icon": "⚡",
-      "tier": 3,
       "maxPoints": 2,
       "description": "Enhances nature combination abilities.",
       "effects": [
         "Combination abilities cost -25% power",
         "Nature combinations provide continuous healing"
       ],
-      "requirements": "10 points in Tier 2"
+      "requirements": "10 points in Nature tree"
     },
     "plague-god": {
       "name": "Plague God",
       "icon": "🌿",
-      "tier": 4,
       "maxPoints": 1,
       "description": "Become the ultimate master of toxins and life. This capstone ability grants incredible nature mastery and spreading power.",
       "effects": [
         "+100% Nature Potency • +50% Nature Resistance • All Nature abilities ignore 50% of enemy Nature Resistance • Toxin buildup spreads on any damage, not just contact"
       ],
-      "requirements": "15 points in Tier 3"
+      "requirements": "15 points in Nature tree"
     }
   }
 }

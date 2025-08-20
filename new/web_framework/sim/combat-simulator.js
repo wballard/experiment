@@ -555,17 +555,46 @@ class CombatSimulator {
         
         // Apply armor reduction
         const armorReduction = this.monster.armor / (this.monster.armor + 100);
+        const originalPhysicalDamage = finalDamage;
         finalDamage = Math.floor(finalDamage * (1 - armorReduction));
+        const armorMitigatedDamage = originalPhysicalDamage - finalDamage;
         
         // Apply elemental damage
-        let elementalDamage = 0;
+        let totalElementalDamage = 0;
+        let elementalDamageDetails = [];
+        const elementalIcons = {
+            fire: '🔥',
+            ice: '❄️', 
+            electric: '⚡',
+            earth: '🌍',
+            nature: '🌿',
+            poison: '☢️'
+        };
+        
         Object.entries(stats.elementalDamage || {}).forEach(([element, damage]) => {
-            const resistance = this.monster.resistances[element] || 0;
-            const elementalPortion = Math.floor(damage * (1 - resistance / 100));
-            elementalDamage += elementalPortion;
+            if (damage > 0) {
+                const resistance = this.monster.resistances[element] || 0;
+                const elementalPortion = Math.floor(damage * (1 - resistance / 100));
+                const mitigatedDamage = damage - elementalPortion;
+                const icon = elementalIcons[element] || '✨';
+                
+                if (elementalPortion > 0) {
+                    totalElementalDamage += elementalPortion;
+                    if (resistance > 0 && mitigatedDamage > 0) {
+                        // Show mitigation: "15 🔥fire (5 mitigated)"
+                        elementalDamageDetails.push(`${elementalPortion} ${icon}${element} (${mitigatedDamage} mitigated)`);
+                    } else {
+                        // No mitigation: "20 🔥fire"
+                        elementalDamageDetails.push(`${elementalPortion} ${icon}${element}`);
+                    }
+                } else if (resistance >= 100) {
+                    // Completely blocked: "🔥fire blocked"
+                    elementalDamageDetails.push(`${icon}${element} blocked`);
+                }
+            }
         });
         
-        finalDamage += elementalDamage;
+        finalDamage += totalElementalDamage;
         
         // Ensure minimum damage
         finalDamage = Math.max(1, finalDamage);
@@ -579,7 +608,18 @@ class CombatSimulator {
         // Log the attack
         let logMessage = `Dealt ${finalDamage} damage`;
         if (isCrit) logMessage += ' (CRITICAL!)';
-        if (elementalDamage > 0) logMessage += ` (+${elementalDamage} elemental)`;
+        
+        // Show armor mitigation if any
+        if (armorMitigatedDamage > 0) {
+            const physicalAfterArmor = finalDamage - totalElementalDamage;
+            logMessage += ` [${physicalAfterArmor} physical (${armorMitigatedDamage} blocked by armor)]`;
+        }
+        
+        // Show elemental damage details
+        if (elementalDamageDetails.length > 0) {
+            logMessage += ` (+${elementalDamageDetails.join(', ')})`;
+        }
+        
         logMessage += ` [${this.ammo.current}/${this.ammo.max}]`;
         
         this.logCombat(logMessage, isCrit ? 'crit' : 'damage');

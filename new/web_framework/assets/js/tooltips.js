@@ -379,6 +379,51 @@ window.CourierTooltips = {
                 }
                 
                 html += `</div>`;
+            } else if (item.type === 'affix') {
+                // Special handling for affixes
+                html += `
+                    <div style="
+                        padding: 16px;
+                        background-color: rgba(255, 255, 255, 0.02);
+                    ">
+                        <div style="
+                            font-size: 11px;
+                            line-height: 1.4;
+                            color: var(--text-normal);
+                            font-style: italic;
+                            margin-bottom: 12px;
+                        ">${item.description}</div>
+                `;
+                
+                if (item.effects && item.effects.length > 0) {
+                    html += `
+                        <div style="
+                            font-size: 10px;
+                            text-transform: uppercase;
+                            letter-spacing: 2px;
+                            color: var(--text-dim);
+                            margin-bottom: 8px;
+                        ">EFFECTS</div>
+                    `;
+                    
+                    item.effects.forEach(effect => {
+                        const isNegative = effect.includes('-') || effect.includes('DOT') || effect.includes('Malfunction');
+                        const color = isNegative ? '#ff6666' : 'var(--primary-cyan)';
+                        html += `
+                            <div style="
+                                display: flex;
+                                justify-content: flex-start;
+                                align-items: center;
+                                padding: 2px 0;
+                                font-size: 11px;
+                                color: ${color};
+                                font-weight: bold;
+                            ">• ${effect}</div>
+                        `;
+                    });
+                }
+                
+                html += `</div>`;
             } else {
                 // Regular description for non-mods
                 html += `
