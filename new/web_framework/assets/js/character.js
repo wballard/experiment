@@ -126,8 +126,40 @@ window.CharacterSystem = {
     
     showItemTooltip(event, item) {
         if (window.CourierTooltips) {
-            window.CourierTooltips.showTooltip(event, item);
+            // Preprocess the item to ensure it has advanced_stats if it's a modified weapon
+            const processedItem = this.preprocessItemForTooltip(item);
+            window.CourierTooltips.showTooltip(event, processedItem);
         }
+    },
+
+    // Preprocess items to ensure they have advanced_stats properly formatted for tooltips
+    preprocessItemForTooltip(item) {
+        if (!item || item.type !== 'weapon') {
+            return item;
+        }
+
+        const processedItem = { ...item };
+        
+        // For modified weapons, populate advanced_stats object from database fields
+        if (item.id && item.id.includes('_modified_')) {
+            processedItem.advanced_stats = {
+                damage_percent: item.damage_percent || 0,
+                crit_chance_percent: item.crit_chance_percent || 0,
+                fire_damage_flat: item.fire_damage_flat || 0,
+                fire_damage_percent: item.fire_damage_percent || 0,
+                ice_damage_flat: item.ice_damage_flat || 0,
+                ice_damage_percent: item.ice_damage_percent || 0,
+                electric_damage_flat: item.electric_damage_flat || 0,
+                electric_damage_percent: item.electric_damage_percent || 0,
+                poison_damage_flat: item.poison_damage_flat || 0,
+                poison_damage_percent: item.poison_damage_percent || 0,
+                armor_penetration: item.armor_penetration || 0,
+                damage_multiplier_vs_elites: item.damage_multiplier_vs_elites || 0,
+                damage_multiplier_vs_bosses: item.damage_multiplier_vs_bosses || 0
+            };
+        }
+
+        return processedItem;
     },
     
     hideItemTooltip() {

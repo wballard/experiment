@@ -212,7 +212,7 @@ window.CourierTooltips = {
                         html += `<div style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 12px;"><span style="color: var(--text-normal);">RELOAD</span><span style="font-weight: bold; color: var(--text-bright);">${item.reloadTime}s</span></div>`;
                     }
                     if (item.magazineSize) {
-                        html += `<div style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 12px;"><span style="color: var(--text-normal);">MAGAZINE</span><span style="font-weight: bold; color: var(--text-bright);">${item.magazineSize}</span></div>`;
+                        html += `<div style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 12px;"><span style="color: var(--text-normal);">Magazine Size</span><span style="font-weight: bold; color: var(--text-bright);">${item.magazineSize}</span></div>`;
                     }
                 } else if (item.type === 'armor') {
                     // Armor stats
