@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weapon Modification System - Courier Game Specification</title>
+    <link rel="stylesheet" href="../assets/css/design-system.css">
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <style>
+        .spec-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--spacing-xl);
+        }
+        
+        .spec-section {
+            margin-bottom: var(--spacing-xl);
+            padding: var(--spacing-lg);
+            background: var(--bg-medium);
+            border: 1px solid var(--border-gray);
+            border-radius: 8px;
+        }
+        
+        .spec-section h2 {
+            color: var(--primary-cyan);
+            margin-bottom: var(--spacing-md);
+            border-bottom: 1px solid var(--border-gray);
+            padding-bottom: var(--spacing-sm);
+        }
+        
+        .spec-section h3 {
+            color: var(--text-bright);
+            margin: var(--spacing-md) 0 var(--spacing-sm) 0;
+        }
+        
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .feature-list li {
+            padding: var(--spacing-sm) 0;
+            border-bottom: 1px solid var(--bg-light);
+        }
+        
+        .feature-list li:before {
+            content: "✓";
+            color: var(--primary-cyan);
+            font-weight: bold;
+            margin-right: var(--spacing-sm);
+        }
+        
+        .code-block {
+            background: var(--bg-dark);
+            border: 1px solid var(--border-gray);
+            border-radius: 4px;
+            padding: var(--spacing-md);
+            margin: var(--spacing-sm) 0;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            overflow-x: auto;
+        }
+        
+        .api-endpoint {
+            background: var(--bg-light);
+            border-left: 3px solid var(--primary-cyan);
+            padding: var(--spacing-sm) var(--spacing-md);
+            margin: var(--spacing-sm) 0;
+        }
+        
+        .api-method {
+            color: var(--primary-orange);
+            font-weight: bold;
+        }
+        
+        .database-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: var(--spacing-md) 0;
+        }
+        
+        .database-table th,
+        .database-table td {
+            border: 1px solid var(--border-gray);
+            padding: var(--spacing-sm);
+            text-align: left;
+        }
+        
+        .database-table th {
+            background: var(--bg-light);
+            color: var(--text-bright);
+        }
+        
+        .flow-step {
+            background: var(--bg-light);
+            border: 1px solid var(--border-gray);
+            border-radius: 4px;
+            padding: var(--spacing-md);
+            margin: var(--spacing-sm) 0;
+            position: relative;
+        }
+        
+        .flow-step:before {
+            content: counter(step-counter);
+            counter-increment: step-counter;
+            position: absolute;
+            left: -15px;
+            top: var(--spacing-sm);
+            background: var(--primary-cyan);
+            color: var(--bg-black);
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .flow-container {
+            counter-reset: step-counter;
+        }
+        
+        .mod-category {
+            background: var(--bg-dark);
+            border: 1px solid var(--border-gray);
+            border-radius: 4px;
+            padding: var(--spacing-md);
+            margin: var(--spacing-sm) 0;
+        }
+        
+        .mod-category h4 {
+            color: var(--primary-orange);
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .implementation-status {
+            color: var(--primary-cyan);
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="spec-container">
+        <header>
+            <h1>Weapon Modification System</h1>
+            <p class="text-dim">Comprehensive specification for the Courier weapon modification and enhancement system</p>
+            <p><strong>Status:</strong> <span class="implementation-status">✅ Fully Implemented</span></p>
+            <p><strong>Version:</strong> 1.0 | <strong>Last Updated:</strong> August 2025</p>
+        </header>
+
+        <div class="spec-section">
+            <h2>1. System Overview</h2>
+            <p>The Weapon Modification System allows players to enhance their weapons with various modifications (mods) that improve stats, add special effects, and customize weapon behavior. The system maintains weapon progression while providing meaningful customization choices.</p>
+            
+            <h3>Core Principles</h3>
+            <ul class="feature-list">
+                <li><strong>Power Budget Balance:</strong> Modifications consume power budget, preventing overpowered combinations</li>
+                <li><strong>Categorical Organization:</strong> Mods are categorized into Attachment and Catalyst types with different rules</li>
+                <li><strong>Persistent Modifications:</strong> Modified weapons are saved as unique items in inventory</li>
+                <li><strong>Visual Clarity:</strong> Clear display of base vs. modified stats throughout the UI</li>
+                <li><strong>Atomic Replacement:</strong> Modified weapons replace originals to prevent inventory bloat</li>
+            </ul>
+        </div>
+
+        <div class="spec-section">
+            <h2>2. Mod Categories & Rules</h2>
+            
+            <div class="mod-category">
+                <h4>Attachment Mods</h4>
+                <p><strong>Types:</strong> Scope, Magazine, Barrel, Foregrip, Stock</p>
+                <p><strong>Behavior:</strong> Always modifiable on any weapon (base or modified)</p>
+                <p><strong>Purpose:</strong> Provide direct weapon stat improvements and handling modifications</p>
+                <p><strong>Examples:</strong></p>
+                <ul>
+                    <li>Red Dot Sight (+5 accuracy, +2% crit chance)</li>
+                    <li>Extended Mag (+5 magazine size, +35 ammo capacity)</li>
+                    <li>Heavy Barrel (+8 damage, +15 range, -10 stability)</li>
+                </ul>
+            </div>
+
+            <div class="mod-category">
+                <h4>Catalyst Mods</h4>
+                <p><strong>Types:</strong> Targeting, Power, AI, Ballistics, Neural</p>
+                <p><strong>Behavior:</strong> Permanent once applied to modified weapons, but can be added to empty slots</p>
+                <p><strong>Purpose:</strong> Provide advanced effects like elemental damage, critical bonuses, and special abilities</p>
+                <p><strong>Examples:</strong></p>
+                <ul>
+                    <li>Basic Combat AI (+4% damage, 6-10 ice damage, +5% armor penetration)</li>
+                    <li>Quantum Calculator (+9% damage, 18-28 poison damage, +8% poison damage)</li>
+                    <li>Basic Neural Link (+4% critical hit chance, +2% damage)</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="spec-section">
+            <h2>3. Power Budget System</h2>
+            <p>The power budget system ensures game balance by limiting the total modification power that can be applied to a weapon.</p>
+            
+            <h3>Calculation Rules</h3>
+            <div class="code-block">
+Base Weapon Power Cost: 110
+Equipped Mods Power Cost: 45
+Modified Weapon Total Power: 155
+
+Display Format: "155 (110)"
+- First number: Total power including modifications
+- Second number: Base weapon power cost
+            </div>
+            
+            <h3>Power Budget Enforcement</h3>
+            <ul class="feature-list">
+                <li>Players have a maximum power budget limit</li>
+                <li>Modified weapons consume more power budget than base weapons</li>
+                <li>Power cost is calculated dynamically based on equipped mods</li>
+                <li>System prevents equipping mods that would exceed budget</li>
+            </ul>
+        </div>
+
+        <div class="spec-section">
+            <h2>4. User Workflow</h2>
+            
+            <div class="flow-container">
+                <div class="flow-step">
+                    <h4>Weapon Selection</h4>
+                    <p>Player navigates to weapon detail page from inventory or equipped items panel</p>
+                </div>
+                
+                <div class="flow-step">
+                    <h4>Mod Management</h4>
+                    <p>Player can equip/unequip mods in available slots, with real-time stat preview</p>
+                </div>
+                
+                <div class="flow-step">
+                    <h4>Save Modified Weapon</h4>
+                    <p>Player clicks "Save Weapon" to create a modified version in inventory</p>
+                </div>
+                
+                <div class="flow-step">
+                    <h4>Atomic Replacement</h4>
+                    <p>System replaces original weapon with modified version, preserving equipped status and mod assignments</p>
+                </div>
+                
+                <div class="flow-step">
+                    <h4>Continued Modification</h4>
+                    <p>Player can further modify the weapon, with catalyst mods becoming permanent</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="spec-section">
+            <h2>5. Database Schema</h2>
+            
+            <h3>Items Table (Enhanced)</h3>
+            <table class="database-table">
+                <thead>
+                    <tr>
+                        <th>Column</th>
+                        <th>Type</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>power_cost</td>
+                        <td>INTEGER</td>
+                        <td>Current total power cost (including modifications)</td>
+                    </tr>
+                    <tr>
+                        <td>base_power_cost</td>
+                        <td>INTEGER</td>
+                        <td>Original weapon power cost (for modified weapons)</td>
+                    </tr>
+                    <tr>
+                        <td>damage_percent</td>
+                        <td>REAL</td>
+                        <td>Percentage damage bonus from mods</td>
+                    </tr>
+                    <tr>
+                        <td>crit_chance_percent</td>
+                        <td>REAL</td>
+                        <td>Critical hit chance bonus</td>
+                    </tr>
+                    <tr>
+                        <td>fire_damage_flat</td>
+                        <td>REAL</td>
+                        <td>Flat fire damage bonus</td>
+                    </tr>
+                    <tr>
+                        <td>fire_damage_percent</td>
+                        <td>REAL</td>
+                        <td>Percentage of damage converted to fire</td>
+                    </tr>
+                    <tr>
+                        <td>ice_damage_flat</td>
+                        <td>REAL</td>
+                        <td>Flat ice damage bonus</td>
+                    </tr>
+                    <tr>
+                        <td>ice_damage_percent</td>
+                        <td>REAL</td>
+                        <td>Percentage of damage converted to ice</td>
+                    </tr>
+                    <tr>
+                        <td>electric_damage_flat</td>
+                        <td>REAL</td>
+                        <td>Flat electric damage bonus</td>
+                    </tr>
+                    <tr>
+                        <td>electric_damage_percent</td>
+                        <td>REAL</td>
+                        <td>Percentage of damage converted to electric</td>
+                    </tr>
+                    <tr>
+                        <td>poison_damage_flat</td>
+                        <td>REAL</td>
+                        <td>Flat poison damage bonus</td>
+                    </tr>
+                    <tr>
+                        <td>poison_damage_percent</td>
+                        <td>REAL</td>
+                        <td>Percentage of damage converted to poison</td>
+                    </tr>
+                    <tr>
+                        <td>armor_penetration</td>
+                        <td>REAL</td>
+                        <td>Armor penetration percentage</td>
+                    </tr>
+                    <tr>
+                        <td>damage_multiplier_vs_elites</td>
+                        <td>REAL</td>
+                        <td>Damage bonus vs elite enemies</td>
+                    </tr>
+                    <tr>
+                        <td>damage_multiplier_vs_bosses</td>
+                        <td>REAL</td>
+                        <td>Damage bonus vs boss enemies</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Modified Weapon ID Format</h3>
+            <div class="code-block">
+Original Weapon ID: w009
+Modified Weapon ID: w009_modified_1755647402533
+
+Format: {original_id}_modified_{timestamp}
+            </div>
+        </div>
+
+        <div class="spec-section">
+            <h2>6. API Endpoints</h2>
+            
+            <div class="api-endpoint">
+                <div class="api-method">GET</div>
+                <strong>/api/player/{playerId}/weapon/{weaponId}/mods</strong>
+                <p>Retrieve currently equipped mods for a specific weapon</p>
+            </div>
+            
+            <div class="api-endpoint">
+                <div class="api-method">GET</div>
+                <strong>/api/player/{playerId}/mods</strong>
+                <p>Get all available mods in player inventory for equipping</p>
+            </div>
+            
+            <div class="api-endpoint">
+                <div class="api-method">POST</div>
+                <strong>/api/player/{playerId}/weapon/{weaponId}/equip-mod</strong>
+                <p>Equip a mod to a specific weapon slot</p>
+                <div class="code-block">
+{
+  "modSlot": "scope",
+  "modId": "scope001"
+}
+                </div>
+            </div>
+            
+            <div class="api-endpoint">
+                <div class="api-method">POST</div>
+                <strong>/api/player/{playerId}/weapon/{weaponId}/unequip-mod</strong>
+                <p>Remove a mod from a weapon slot</p>
+                <div class="code-block">
+{
+  "modSlot": "scope"
+}
+                </div>
+            </div>
+            
+            <div class="api-endpoint">
+                <div class="api-method">POST</div>
+                <strong>/api/player/{playerId}/weapon/{weaponId}/save-modified</strong>
+                <p>Save weapon with modifications as new inventory item</p>
+                <div class="code-block">
+{
+  "modifiedStats": {
+    "damage_min": 90,
+    "damage_max": 130,
+    "damage_percent": 5,
+    "fire_damage_flat": 15
+  },
+  "modifiedPowerCost": 155
+}
+                </div>
+            </div>
+            
+            <div class="api-endpoint">
+                <div class="api-method">DELETE</div>
+                <strong>/api/admin/cleanup-modified-weapons</strong>
+                <p>Admin utility to remove all modified weapons for testing</p>
+            </div>
+        </div>
+
+        <div class="spec-section">
+            <h2>7. Frontend Implementation</h2>
+            
+            <h3>Weapon Detail Page</h3>
+            <ul class="feature-list">
+                <li><strong>Mod Slot Display:</strong> Visual grid showing equipped and available mod slots</li>
+                <li><strong>Category Separation:</strong> Attachment and Catalyst mods displayed in separate sections</li>
+                <li><strong>Real-time Preview:</strong> Stats update immediately when mods are equipped/unequipped</li>
+                <li><strong>Power Display:</strong> Shows "155 (110)" format for modified weapons</li>
+                <li><strong>Save Functionality:</strong> "Save Weapon" button to persist modifications</li>
+                <li><strong>Modification State:</strong> Visual indicators for permanent vs. modifiable slots</li>
+            </ul>
+            
+            <h3>Tooltip System</h3>
+            <ul class="feature-list">
+                <li><strong>Mod Descriptions:</strong> Line-by-line display of modifications instead of italicized text</li>
+                <li><strong>Color Coding:</strong> Positive stats in cyan, regular stats in white</li>
+                <li><strong>Structured Format:</strong> Flavor text followed by "MODIFICATIONS" section</li>
+                <li><strong>Weapon Tooltips:</strong> Advanced stats section for modification bonuses</li>
+            </ul>
+            
+            <h3>Navigation Integration</h3>
+            <ul class="feature-list">
+                <li><strong>Inventory Links:</strong> Weapons clickable to navigate to detail page</li>
+                <li><strong>Dashboard Integration:</strong> Equipped items panel links to weapon details</li>
+                <li><strong>Proper Routing:</strong> Relative paths handle different folder structures</li>
+            </ul>
+        </div>
+
+        <div class="spec-section">
+            <h2>8. Technical Implementation Details</h2>
+            
+            <h3>Database Transactions</h3>
+            <p>Modified weapon saving uses atomic transactions to ensure data consistency:</p>
+            <div class="code-block">
+BEGIN TRANSACTION
+1. Create new modified weapon item
+2. Update player_inventory (replace original with modified)
+3. Update player_equipped (if weapon was equipped)
+4. Update weapon_mods (transfer mod assignments)
+COMMIT
+            </div>
+            
+            <h3>Error Handling</h3>
+            <ul class="feature-list">
+                <li><strong>Database Scope:</strong> Fixed callback scope issues in SQLite operations</li>
+                <li><strong>API Fallbacks:</strong> Direct fetch fallbacks for browser connectivity issues</li>
+                <li><strong>Transaction Rollback:</strong> Automatic rollback on any step failure</li>
+                <li><strong>Validation:</strong> Server-side validation of mod compatibility and power budget</li>
+            </ul>
+            
+            <h3>Performance Considerations</h3>
+            <ul class="feature-list">
+                <li><strong>Efficient Queries:</strong> Single queries for inventory operations</li>
+                <li><strong>Client Caching:</strong> Frontend caches mod and weapon data</li>
+                <li><strong>Lazy Loading:</strong> Weapon details loaded on demand</li>
+                <li><strong>Optimistic UI:</strong> Immediate stat updates before server confirmation</li>
+            </ul>
+        </div>
+
+        <div class="spec-section">
+            <h2>9. Data Examples</h2>
+            
+            <h3>Base Weapon</h3>
+            <div class="code-block">
+{
+  "id": "w009",
+  "name": "Basic Shotgun",
+  "type": "weapon",
+  "power_cost": 110,
+  "base_power_cost": null,
+  "damage_min": 80,
+  "damage_max": 120,
+  "fire_rate": 1.2,
+  "magazine_size": 8
+}
+            </div>
+            
+            <h3>Modified Weapon</h3>
+            <div class="code-block">
+{
+  "id": "w009_modified_1755647402533",
+  "name": "Basic Shotgun (Modified)",
+  "type": "weapon",
+  "power_cost": 155,
+  "base_power_cost": 110,
+  "damage_min": 90,
+  "damage_max": 130,
+  "damage_percent": 5,
+  "fire_damage_flat": 15,
+  "fire_damage_percent": 10
+}
+            </div>
+            
+            <h3>Mod Description Format</h3>
+            <div class="code-block">
+"Basic AI assistance for combat operations.
++4% damage
+6-10 bonus ice damage
++5% armor penetration"
+            </div>
+        </div>
+
+        <div class="spec-section">
+            <h2>10. Testing & Quality Assurance</h2>
+            
+            <h3>Test Scenarios</h3>
+            <ul class="feature-list">
+                <li><strong>Basic Modification:</strong> Equip attachment mods and save weapon</li>
+                <li><strong>Catalyst Permanence:</strong> Verify catalyst mods become permanent after save</li>
+                <li><strong>Power Budget:</strong> Test power budget calculations and limits</li>
+                <li><strong>Inventory Replacement:</strong> Confirm original weapon is replaced, not duplicated</li>
+                <li><strong>Navigation:</strong> Test weapon detail navigation from all entry points</li>
+                <li><strong>Tooltip Display:</strong> Verify mod tooltips show line-by-line format</li>
+                <li><strong>Server Stability:</strong> Ensure no crashes during modification operations</li>
+            </ul>
+            
+            <h3>Admin Tools</h3>
+            <ul class="feature-list">
+                <li><strong>Cleanup Endpoint:</strong> Remove all modified weapons for testing</li>
+                <li><strong>Health Check:</strong> API health monitoring endpoint</li>
+                <li><strong>Database Reset:</strong> Recreate database with updated schema</li>
+            </ul>
+        </div>
+
+        <div class="spec-section">
+            <h2>11. Future Enhancements</h2>
+            
+            <h3>Planned Features</h3>
+            <ul class="feature-list">
+                <li><strong>Mod Crafting:</strong> Create custom mods from materials</li>
+                <li><strong>Set Bonuses:</strong> Benefits from using mods from the same manufacturer</li>
+                <li><strong>Legendary Mods:</strong> Ultra-rare mods with unique effects</li>
+                <li><strong>Mod Trading:</strong> Player-to-player mod exchange system</li>
+                <li><strong>Weapon Presets:</strong> Save and load modification configurations</li>
+                <li><strong>Enhanced Tooltips:</strong> Damage per second calculations</li>
+                <li><strong>Mod Comparison:</strong> Side-by-side mod stat comparisons</li>
+            </ul>
+            
+            <h3>Technical Debt</h3>
+            <ul class="feature-list">
+                <li><strong>Code Consolidation:</strong> Merge duplicate inventory systems</li>
+                <li><strong>Type Safety:</strong> Add TypeScript interfaces for mod data</li>
+                <li><strong>Unit Tests:</strong> Comprehensive test coverage for all workflows</li>
+                <li><strong>Performance Optimization:</strong> Database indexing for mod queries</li>
+            </ul>
+        </div>
+
+        <footer style="margin-top: var(--spacing-xl); padding-top: var(--spacing-lg); border-top: 1px solid var(--border-gray); text-align: center; color: var(--text-dim);">
+            <p>Courier Weapon Modification System Specification v1.0</p>
+            <p>Comprehensive documentation of implemented features and system architecture</p>
+        </footer>
+    </div>
+</body>
+</html>

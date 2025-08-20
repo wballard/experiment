@@ -38,7 +38,10 @@
       "Bash(open:*)",
       "Bash(npm install)",
       "Bash(npm start)",
-      "Bash(node server.js)"
+      "Bash(node server.js)",
+      "Bash(npm run dev:*)",
+      "Bash(git add:*)",
+      "Bash(git push:*)"
     ],
     "deny": [],
     "ask": [],

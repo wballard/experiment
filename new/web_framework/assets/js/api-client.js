@@ -1,6 +1,6 @@
 // Simple API client for Courier backend
 class CourierAPI {
-    constructor(baseUrl = 'http://localhost:3001/api') {
+    constructor(baseUrl = '/api') {
         this.baseUrl = baseUrl;
         this.playerId = 1; // Default player
     }
