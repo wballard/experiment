@@ -189,7 +189,7 @@ window.SimpleInventory = {
             div.addEventListener('click', (e) => {
                 // Only navigate if not dragging
                 if (!div.classList.contains('dragging')) {
-                    window.location.href = `weapon-detail.html?id=${item.id}`;
+                    window.location.href = `../weapon-detail.html?id=${item.id}`;
                 }
             });
             
@@ -271,7 +271,7 @@ window.SimpleInventory = {
                     slotElement.addEventListener('click', (e) => {
                         // Prevent unequip behavior and navigate to weapon detail
                         e.stopPropagation();
-                        window.location.href = `weapon-detail.html?id=${equippedItem.id}`;
+                        window.location.href = `../weapon-detail.html?id=${equippedItem.id}`;
                     });
                 }
             } else {

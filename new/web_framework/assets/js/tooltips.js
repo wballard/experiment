@@ -331,16 +331,67 @@ window.CourierTooltips = {
 
         // Add description
         if (item.description) {
-            html += `
-                <div style="
-                    padding: 16px;
-                    font-size: 11px;
-                    line-height: 1.4;
-                    color: var(--text-normal);
-                    font-style: italic;
-                    background-color: rgba(255, 255, 255, 0.02);
-                ">${item.description}</div>
-            `;
+            // Special handling for mods - parse line by line
+            if (item.type === 'mod' && item.description.includes('\n')) {
+                const lines = item.description.split('\n');
+                const flavorText = lines[0]; // First line is usually flavor text
+                const modifications = lines.slice(1).filter(line => line.trim()); // Rest are modifications
+                
+                html += `
+                    <div style="
+                        padding: 16px;
+                        background-color: rgba(255, 255, 255, 0.02);
+                    ">
+                        <div style="
+                            font-size: 11px;
+                            line-height: 1.4;
+                            color: var(--text-normal);
+                            font-style: italic;
+                            margin-bottom: 8px;
+                        ">${flavorText}</div>
+                `;
+                
+                if (modifications.length > 0) {
+                    html += `
+                        <div style="
+                            font-size: 10px;
+                            text-transform: uppercase;
+                            letter-spacing: 2px;
+                            color: var(--text-dim);
+                            margin-bottom: 8px;
+                        ">MODIFICATIONS</div>
+                    `;
+                    
+                    modifications.forEach(mod => {
+                        const isPositive = mod.includes('+');
+                        html += `
+                            <div style="
+                                display: flex;
+                                justify-content: flex-start;
+                                align-items: center;
+                                padding: 2px 0;
+                                font-size: 11px;
+                                color: ${isPositive ? 'var(--primary-cyan)' : 'var(--text-bright)'};
+                                font-weight: ${isPositive ? 'bold' : 'normal'};
+                            ">${mod}</div>
+                        `;
+                    });
+                }
+                
+                html += `</div>`;
+            } else {
+                // Regular description for non-mods
+                html += `
+                    <div style="
+                        padding: 16px;
+                        font-size: 11px;
+                        line-height: 1.4;
+                        color: var(--text-normal);
+                        font-style: italic;
+                        background-color: rgba(255, 255, 255, 0.02);
+                    ">${item.description}</div>
+                `;
+            }
         }
 
         this.tooltipElement.innerHTML = html;
