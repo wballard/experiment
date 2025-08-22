@@ -1,9 +1,9 @@
 /**
- * COURIER V4 - Data Importer
- * Extracts data from existing data-manager.js and imports into v4 database structure
+ * COURIER - Data Importer
+ * Extracts data from existing data-manager.js and imports into database structure
  */
 
-const Database = require('./database-v4');
+const Database = require('./database');
 const fs = require('fs');
 const path = require('path');
 

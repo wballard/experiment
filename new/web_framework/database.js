@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt');
 
 class Database {
     constructor() {
-        this.db = new sqlite3.Database(path.join(__dirname, 'courier-v4.db'));
+        this.db = new sqlite3.Database(path.join(__dirname, 'courier.db'));
         this.init();
     }
 
@@ -218,12 +218,9 @@ class Database {
             
             // Load test items
             this.loadTestItems();
-            
-            // Initialize test data
-            this.initializeTestData();
         });
 
-        console.log('Database v4 initialized with Player->Character hierarchy');
+        console.log('Database initialized with Player->Character hierarchy');
     }
 
     initializeCharacterClasses() {
@@ -430,48 +427,6 @@ class Database {
                 });
 
                 stmt.finalize();
-            }
-        });
-    }
-
-    initializeTestData() {
-        // Create test player and character for demo
-        this.db.get("SELECT COUNT(*) as count FROM players", (err, row) => {
-            if (!err && row.count === 0) {
-                console.log('Creating test player and character...');
-                
-                // Create test player
-                this.db.run(`
-                    INSERT INTO players (id, email, password_hash, display_name)
-                    VALUES (1, 'test@courier.com', 'test_hash', 'Test Player')
-                `, (err) => {
-                    if (err) {
-                        console.error('Error creating test player:', err);
-                        return;
-                    }
-                    
-                    // Create test character "Loki" level 2 outlaw
-                    this.db.run(`
-                        INSERT INTO characters (id, player_id, name, class_id, level, experience, experience_to_next, skill_points_available, is_active)
-                        VALUES (1, 1, 'Loki', 'outlaw', 2, 1500, 1100, 2, TRUE)
-                    `, (err) => {
-                        if (err) {
-                            console.error('Error creating test character:', err);
-                            return;
-                        }
-                        
-                        console.log('✅ Test character "Loki" (Level 2 Outlaw) created');
-                        
-                        // Initialize equipment slots for the character
-                        const slots = ['primary', 'secondary', 'head', 'shoulders', 'chest', 'gloves', 'legs', 'back'];
-                        slots.forEach(slot => {
-                            this.db.run(`
-                                INSERT INTO character_equipped (character_id, slot, item_id)
-                                VALUES (1, ?, NULL)
-                            `, [slot]);
-                        });
-                    });
-                });
             }
         });
     }
@@ -1039,95 +994,6 @@ class Database {
                         };
                     });
                     resolve(mods);
-                }
-            });
-        });
-    }
-
-    // Skill system methods for v4
-    async getSkillTrees(characterLevel = 1) {
-        return new Promise((resolve, reject) => {
-            // Return hardcoded skill trees for now
-            const trees = [
-                // Class trees - always available
-                { tree_id: 'doctor', tree_name: 'Doctor', tree_type: 'class', available: true, unlocked: true },
-                { tree_id: 'outlaw', tree_name: 'Outlaw', tree_type: 'class', available: true, unlocked: true },
-                { tree_id: 'sentinel', tree_name: 'Sentinel', tree_type: 'class', available: true, unlocked: true },
-                { tree_id: 'infiltrator', tree_name: 'Infiltrator', tree_type: 'class', available: true, unlocked: true },
-                
-                // Elemental trees - level-based unlocking
-                { 
-                    tree_id: 'fire', 
-                    tree_name: 'Fire', 
-                    tree_type: 'elemental', 
-                    available: characterLevel >= 20,
-                    unlocked: characterLevel >= 20
-                },
-                { 
-                    tree_id: 'ice', 
-                    tree_name: 'Ice', 
-                    tree_type: 'elemental', 
-                    available: characterLevel >= 20,
-                    unlocked: characterLevel >= 20
-                },
-                { 
-                    tree_id: 'electric', 
-                    tree_name: 'Electric', 
-                    tree_type: 'elemental', 
-                    available: characterLevel >= 20,
-                    unlocked: characterLevel >= 20
-                },
-                { 
-                    tree_id: 'earth', 
-                    tree_name: 'Earth', 
-                    tree_type: 'elemental', 
-                    available: characterLevel >= 40,
-                    unlocked: characterLevel >= 40
-                },
-                { 
-                    tree_id: 'nature', 
-                    tree_name: 'Nature', 
-                    tree_type: 'elemental', 
-                    available: characterLevel >= 40,
-                    unlocked: characterLevel >= 40
-                }
-            ];
-            resolve(trees);
-        });
-    }
-
-    async getSkillsForTree(treeId, characterId = null) {
-        return new Promise((resolve, reject) => {
-            // For now, return the basic skills from the skills table
-            this.db.all(`
-                SELECT * FROM skills WHERE tree = ?
-            `, [treeId], (err, skills) => {
-                if (err) {
-                    reject(err);
-                    return;
-                }
-                
-                // If characterId provided, get their skill investments
-                if (characterId) {
-                    this.db.all(`
-                        SELECT skill_id, level as current_rank 
-                        FROM character_skills 
-                        WHERE character_id = ?
-                    `, [characterId], (err, investments) => {
-                        if (err) {
-                            reject(err);
-                            return;
-                        }
-                        
-                        const playerSkills = {};
-                        investments.forEach(inv => {
-                            playerSkills[inv.skill_id] = inv.current_rank;
-                        });
-                        
-                        resolve({ skills, playerSkills });
-                    });
-                } else {
-                    resolve({ skills, playerSkills: {} });
                 }
             });
         });

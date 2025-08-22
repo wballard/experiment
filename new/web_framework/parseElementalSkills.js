@@ -2,7 +2,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const Database = require('./database.js');
+const Database = require('./database');
 
 class ElementalSkillParser {
     constructor() {
