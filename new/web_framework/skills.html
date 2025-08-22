@@ -4,9 +4,196 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Skills - Courier</title>
-    <link rel="stylesheet" href="assets/css/design-system.css?v=22">
-    <link rel="stylesheet" href="assets/css/main.css?v=22">
-    <link rel="stylesheet" href="assets/css/skills.css?v=22">
+    <link rel="stylesheet" href="assets/css/design-system.css?v=12">
+    <link rel="stylesheet" href="assets/css/main.css?v=12">
+    <link rel="stylesheet" href="assets/css/skills.css?v=12">
+    <style>
+        /* Force display styles */
+        .tree-tab { 
+            display: inline-block !important;
+            margin: 5px !important; 
+            padding: 10px 15px !important; 
+            background: #333 !important; 
+            color: white !important; 
+            border: 1px solid #555 !important; 
+            cursor: pointer !important; 
+            border-radius: 4px !important;
+            transition: all 0.3s !important;
+            font-size: 14px !important;
+            z-index: 1000 !important;
+            position: relative !important;
+        }
+        .tree-tab:hover { background: #555 !important; }
+        .tree-tab.active { background: #007acc !important; }
+        
+        .skill { 
+            display: block !important;
+            border: 1px solid #555 !important; 
+            padding: 15px !important; 
+            margin: 10px 0 !important; 
+            background: #2a2a2a !important; 
+            border-radius: 6px !important;
+            cursor: pointer !important;
+            transition: all 0.3s !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
+            min-height: 80px !important;
+        }
+        .skill:hover {
+            border-color: #00d4ff !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 4px 12px rgba(0,212,255,0.3) !important;
+        }
+        
+        .tier-header {
+            display: block !important;
+            color: #ffd700 !important;
+            margin: 20px 0 10px !important;
+            padding: 10px !important;
+            background: rgba(255,215,0,0.1) !important;
+            border-left: 3px solid #ffd700 !important;
+            border-radius: 4px !important;
+            font-size: 16px !important;
+            font-weight: bold !important;
+        }
+        
+        .skills-grid {
+            display: grid !important;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)) !important;
+            gap: 15px !important;
+            margin-bottom: 20px !important;
+            width: 100% !important;
+        }
+        
+        .skill-name { 
+            color: white !important; 
+            font-weight: bold !important; 
+            font-size: 16px !important; 
+            display: block !important;
+            margin-bottom: 5px !important;
+        }
+        .skill-meta { 
+            color: #00d4ff !important; 
+            font-size: 12px !important; 
+            margin: 5px 0 !important; 
+            display: block !important;
+        }
+        .skill-desc { 
+            color: #ccc !important; 
+            font-size: 13px !important; 
+            line-height: 1.4 !important; 
+            display: block !important;
+        }
+        
+        /* Make sure skill container is visible */
+        #skillContainer {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            height: auto !important;
+            overflow: visible !important;
+            position: relative !important;
+        }
+        
+        #skillTreeTabs {
+            display: block !important;
+            visibility: visible !important;
+            margin: 20px 0 !important;
+            padding: 10px !important;
+            background: rgba(0,0,0,0.3) !important;
+            border-radius: 6px !important;
+        }
+        
+        /* Enhanced skill states */
+        .skill-available {
+            border-color: #00d4ff !important;
+            cursor: pointer !important;
+        }
+        
+        .skill-available:hover {
+            background: rgba(0, 212, 255, 0.1) !important;
+        }
+        
+        .skill-invested {
+            border-color: #00ff88 !important;
+            background: rgba(0, 255, 136, 0.1) !important;
+        }
+        
+        .skill-locked {
+            border-color: #555 !important;
+            cursor: not-allowed !important;
+        }
+        
+        .skill-upgrade-hint {
+            color: #00ff88 !important;
+            font-size: 11px !important;
+            margin-top: 5px !important;
+            font-style: italic !important;
+        }
+        
+        /* Tooltip styles */
+        .skill-tooltip {
+            position: fixed !important;
+            background: rgba(0, 0, 0, 0.95) !important;
+            border: 1px solid #555 !important;
+            border-radius: 6px !important;
+            padding: 15px !important;
+            max-width: 300px !important;
+            color: white !important;
+            font-size: 13px !important;
+            line-height: 1.4 !important;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8) !important;
+            z-index: 1000 !important;
+        }
+        
+        .tooltip-header {
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            margin-bottom: 8px !important;
+            color: #00d4ff !important;
+            font-size: 14px !important;
+        }
+        
+        .tooltip-rank {
+            color: #ffd700 !important;
+            font-weight: bold !important;
+        }
+        
+        .tooltip-type {
+            color: #aaa !important;
+            font-size: 11px !important;
+            text-transform: uppercase !important;
+            margin-bottom: 8px !important;
+        }
+        
+        .tooltip-description {
+            margin-bottom: 10px !important;
+            color: #ccc !important;
+        }
+        
+        .tooltip-effects {
+            margin-bottom: 10px !important;
+        }
+        
+        .effect-rank {
+            margin: 3px 0 !important;
+            padding-left: 10px !important;
+            color: #999 !important;
+            font-size: 12px !important;
+        }
+        
+        .effect-rank.active {
+            color: #00ff88 !important;
+            font-weight: bold !important;
+        }
+        
+        .tooltip-cooldown, .tooltip-cost {
+            color: #ffd700 !important;
+            font-size: 11px !important;
+            margin: 2px 0 !important;
+        }
+    </style>
 </head>
 <body>
     <!-- Navigation Header -->
@@ -19,7 +206,7 @@
             </div>
         </div>
         <div class="nav-menu">
-            <a href="game/dashboard.html" class="nav-item">CHARACTER</a>
+            <a href="dashboard.html" class="nav-item">CHARACTER</a>
             <a href="inventory.html" class="nav-item">INVENTORY</a>
             <a href="missions.html" class="nav-item">MISSIONS</a>
             <a href="skills.html" class="nav-item active">SKILLS</a>
@@ -33,214 +220,547 @@
     <!-- Skills Content -->
     <div class="page-container">
         <div class="page-header">
-            <h1 class="page-title">CLASS AND ELEMENTAL SKILLS</h1>
+            <h1 class="page-title">SKILL TREES</h1>
         </div>
         
+        <!-- Skill Points Display -->
         <div class="card">
             <div class="card-header">
-                <h2 class="card-title">Skill Points</h2>
-                <div style="display: flex; gap: var(--spacing-lg); align-items: center;">
-                    <span class="text-dim">Available: <span class="text-cyan" id="availablePoints">60</span></span>
-                    <span class="text-dim">Total: <span class="text-cyan" id="totalPoints">60</span></span>
-                    <div id="tierProgress" style="display: flex; gap: var(--spacing-sm); align-items: center;">
-                        <!-- Tier progress will be populated by JavaScript -->
-                    </div>
-                    <button class="btn btn-danger" id="resetAllBtn">RESET ALL</button>
+                <h2 class="card-title">Available Points</h2>
+                <div class="skill-points-display">
+                    <span class="points-available" id="availablePoints">2</span>
+                    <span class="points-label">/ <span id="totalPoints">2</span> Skill Points</span>
                 </div>
             </div>
             <div class="card-accent"></div>
 
-            <div class="nav-menu" style="justify-content: center; margin-bottom: var(--spacing-lg);">
-                <button class="nav-item active" data-element="class" id="classTab">🛡️ GUARDIAN</button>
-                <button class="nav-item" data-element="ice">❄️ ICE</button>
-                <button class="nav-item" data-element="electric">⚡ ELECTRIC</button>
-                <button class="nav-item" data-element="fire">🔥 FIRE</button>
-                <button class="nav-item" data-element="nature">🌿 NATURE</button>
-                <button class="nav-item" data-element="earth">🌍 EARTH</button>
+            <!-- Tree Navigation Tabs -->
+            <div class="tree-tabs" id="skillTreeTabs">
+                <!-- Tabs will be dynamically generated -->
             </div>
 
-            <!-- Debug Class Selector -->
-            <div style="display: flex; justify-content: center; margin-bottom: var(--spacing-md);">
-                <div style="background: var(--bg-dark); border: 1px solid var(--border-gray); padding: var(--spacing-sm); border-radius: 4px;">
-                    <label style="color: var(--text-dim); font-size: 11px; margin-right: var(--spacing-sm);">DEBUG: Change Class</label>
-                    <select id="debugClassSelector" style="background: var(--bg-medium); border: 1px solid var(--border-gray); color: var(--text-normal); padding: 4px 8px; border-radius: 4px; font-size: 11px;">
-                        <option value="outlaw">🎯 Outlaw (Gunslinger)</option>
-                        <option value="guardian" selected>🛡️ Guardian (Tank/Support)</option>
-                        <option value="technomancer">⚡ Technomancer (Tech Caster)</option>
-                        <option value="infiltrator">🗡️ Infiltrator (Stealth/Melee)</option>
-                        <option value="psion">🧬 Psion (Psychic)</option>
-                        <option value="medic">💊 Medic (Healer/Support)</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="skill-tree-container" style="margin-top: var(--spacing-lg);">
-                <!-- Class Tree (will be populated dynamically based on character class) -->
-                <div class="skill-tree" id="class-tree" style="display: block;">
-                    <!-- Will be populated by JavaScript based on character's class -->
-                </div>
-
-                <!-- Fire Skill Tree -->
-                <div class="skill-tree" id="fire-tree" style="display: none;">
-                    <div class="tier-section">
-                        <h3 class="tier-title">TIER 1 - IGNITION FOUNDATION</h3>
-                        <div class="skills-row">
-                            <div class="skill-node" data-skill="combustion-mastery" style="grid-column: 1;">
-                                <div class="skill-icon">🔥</div>
-                                <div class="skill-points">0/3</div>
-                            </div>
-                            <div class="skill-node" data-skill="flame-weapon" style="grid-column: 3;">
-                                <div class="skill-icon">⚔️</div>
-                                <div class="skill-points">0/5</div>
-                            </div>
-                            <div class="skill-node" data-skill="heat-resistance" style="grid-column: 5;">
-                                <div class="skill-icon">🛡️</div>
-                                <div class="skill-points">0/2</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="tier-section">
-                        <h3 class="tier-title">TIER 2 - INFERNO SPECIALIZATION</h3>
-                        <div class="skills-row">
-                            <div class="skill-node locked" data-skill="fireball" style="grid-column: 1;">
-                                <div class="skill-icon">💥</div>
-                                <div class="skill-points">0/3</div>
-                            </div>
-                            <div class="skill-node locked" data-skill="flame-wall" style="grid-column: 3;">
-                                <div class="skill-icon">🧱</div>
-                                <div class="skill-points">0/4</div>
-                            </div>
-                            <div class="skill-node locked" data-skill="burning-ground" style="grid-column: 5;">
-                                <div class="skill-icon">🌋</div>
-                                <div class="skill-points">0/3</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="tier-section">
-                        <h3 class="tier-title">TIER 3 - CONFLAGRATION MASTERY</h3>
-                        <div class="skills-row">
-                            <div class="skill-node locked" data-skill="phoenix-surge" style="grid-column: 2;">
-                                <div class="skill-icon">🔥</div>
-                                <div class="skill-points">0/5</div>
-                            </div>
-                            <div class="skill-node locked" data-skill="fire-combination" style="grid-column: 4;">
-                                <div class="skill-icon">⚡</div>
-                                <div class="skill-points">0/2</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="tier-section">
-                        <h3 class="tier-title">TIER 4 - TRANSCENDENCE</h3>
-                        <div class="skills-row">
-                            <div class="skill-node locked capstone" data-skill="pyroclasm-lord" style="grid-column: 3;">
-                                <div class="skill-icon">🔥</div>
-                                <div class="skill-points">0/1</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Other skill trees will be loaded dynamically -->
-                <div class="skill-tree" id="ice-tree" style="display: none;"></div>
-                <div class="skill-tree" id="electric-tree" style="display: none;"></div>
-                <div class="skill-tree" id="earth-tree" style="display: none;"></div>
-                <div class="skill-tree" id="nature-tree" style="display: none;"></div>
-            </div>
-        </div>
-
-        <!-- Active Bonuses and Elemental Synergy Cards -->
-        <div style="display: flex; gap: var(--spacing-lg); margin-top: var(--spacing-xl);">
-            <div class="card" style="flex: 1;">
-                <div class="card-header">
-                    <h2 class="card-title">ACTIVE BONUSES</h2>
-                </div>
-                <div class="card-accent"></div>
-                <div class="summary-content" id="active-bonuses">
-                    <div class="bonus-item">
-                        <span class="bonus-name">No bonuses active</span>
-                        <span class="bonus-value">--</span>
+            <!-- Skill Tree Container -->
+            <div class="skill-tree-container" style="min-height: 400px; padding: 20px;">
+                <div class="skill-tree active" id="skillContainer" style="width: 100%; display: block !important; visibility: visible !important;">
+                    <div id="skillLoadingMessage" style="text-align: center; color: #666; padding: 40px;">
+                        Loading skills...
                     </div>
                 </div>
             </div>
-
-            <div class="card" style="flex: 1;">
-                <div class="card-header">
-                    <h2 class="card-title">ELEMENTAL SYNERGY</h2>
-                </div>
-                <div class="card-accent"></div>
-                <div class="summary-content" id="elemental-synergy">
-                    <div class="bonus-item">
-                        <span class="bonus-name">Primary Element</span>
-                        <span class="bonus-value" id="primary-element">NONE</span>
-                    </div>
-                    <div class="bonus-item">
-                        <span class="bonus-name">Secondary Element</span>
-                        <span class="bonus-value" id="secondary-element">NONE</span>
-                    </div>
-                    <div class="bonus-item">
-                        <span class="bonus-name">Combo Potential</span>
-                        <span class="bonus-value" id="combo-potential">--</span>
-                    </div>
-                    <div class="bonus-item">
-                        <span class="bonus-name">Next Unlock</span>
-                        <span class="bonus-value" id="next-unlock">LVL 1</span>
-                    </div>
-                </div>
+            
+            <!-- Action Buttons -->
+            <div class="skill-actions">
+                <button class="btn btn-secondary" id="resetSkills">Reset All Skills</button>
+                <button class="btn btn-primary" id="saveSkills">Save Changes</button>
             </div>
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer style="padding: 20px; text-align: center; font-size: 10px; color: #666; border-top: 1px solid #333; margin-top: 40px;">
-        <a href="changelog.html" style="color: #666; text-decoration: none; border-bottom: 1px dotted #666;">CHANGELOG</a> • 
-        <a href="specs/index.html" style="color: #666; text-decoration: none; border-bottom: 1px dotted #666;">SPECS</a> • 
-        <a href="tuning/index.html" style="color: #666; text-decoration: none; border-bottom: 1px dotted #666;">TUNING</a> • 
-        <a href="admin/index.html" style="color: #666; text-decoration: none; border-bottom: 1px dotted #666;">ADMIN</a> • 
-        <button id="boostButton" style="background: #28a745; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 11px; margin: 0 10px;">🚀 BOOST</button> •
-        LAST UPDATED: 2025-08-17 CST • SKILLS: Tier 4 capstone progression • ADMIN: Item creation console
-    </footer>
-
-    <!-- Initialize global game state -->
-    <script>
-        window.CourierGame = {
-            data: {
-                playerLevel: 60,
-                paragonLevel: 40,
-                skillPoints: {
-                    available: 60, // 1 per level, will be updated dynamically
-                    total: 60, // 1 per level
-                    invested: {}
-                }
-            }
-        };
-    </script>
+    <!-- Scripts -->
     <script src="assets/js/api-client-v4.js"></script>
     <script src="assets/js/character-header.js"></script>
-    <script src="assets/js/boost-system.js"></script>
-    <script src="assets/js/data-manager.js?v=3"></script>
-    <script src="assets/js/skills.js?v=30"></script>
+    
     <script>
-        // Character header is handled by character-header.js
-
-        // Initialize skills directly
-        document.addEventListener('DOMContentLoaded', async () => {
-            console.log('Standalone skills page loaded');
+        console.log('🚀 Skills System Loading...');
+        
+        let currentTree = null;
+        let skillTrees = [];
+        let currentSkills = [];
+        let playerSkills = {};
+        let skillData = { availablePoints: 60, totalPoints: 60 };
+        let playerLevel = 2; // Will be set from character data
+        
+        async function initSkills() {
+            console.log('🎯 Initializing Skills...');
             
-            // Character header loaded automatically by character-header.js
-            
-            // All skill data now comes from database
-            console.log('Loading skill data from database...');
-            window.CourierGame.data.skillPoints.invested = {};
-            window.CourierGame.data.skillPoints.available = 2; // Will be updated from character data
-            
-            if (window.SkillSystem) {
-                await window.SkillSystem.init();
-                window.SkillSystem.setupDebugClassSelector();
+            try {
+                // Get character level first
+                if (window.CharacterHeader && window.CharacterHeader.character) {
+                    playerLevel = window.CharacterHeader.character.level || 2;
+                } else if (window.CourierAPI && window.CourierAPI.character) {
+                    playerLevel = window.CourierAPI.character.level || 2;
+                }
+                
+                console.log('📊 Character level detected:', playerLevel);
+                
+                // Update skill points based on level
+                skillData.availablePoints = playerLevel;
+                skillData.totalPoints = playerLevel;
+                
+                // Load skill trees with actual character level
+                console.log('📋 Loading skill trees...');
+                const treesResponse = await fetch(`/api/skills/trees?level=${playerLevel}&playerId=1`);
+                const treesData = await treesResponse.json();
+                
+                console.log('Trees API result:', treesData.success, treesData.trees?.length);
+                
+                if (treesData.success && treesData.trees?.length > 0) {
+                    skillTrees = treesData.trees;
+                    
+                    // Try to get character's class from character header data
+                    let characterClass = null;
+                    if (window.CharacterHeader && window.CharacterHeader.character) {
+                        characterClass = window.CharacterHeader.character.class;
+                    }
+                    
+                    // Try CourierAPI if available
+                    if (!characterClass && window.CourierAPI && window.CourierAPI.character) {
+                        characterClass = window.CourierAPI.character.class;
+                    }
+                    
+                    // Fallback for testing
+                    if (!characterClass) {
+                        characterClass = 'outlaw';
+                        console.warn('Character class not detected in init, defaulting to outlaw');
+                    }
+                    
+                    console.log('🎯 Init: Character class detected as:', characterClass);
+                    
+                    // Set initial tree to character's class (should always be available)
+                    if (characterClass && skillTrees.find(tree => tree.tree_id === characterClass)) {
+                        currentTree = characterClass;
+                        console.log('🎯 Init: Set currentTree to character class:', currentTree);
+                    } else {
+                        // Fallback to first available tree if character class not found
+                        currentTree = skillTrees.find(tree => tree.available)?.tree_id || skillTrees[0].tree_id;
+                        console.warn('🎯 Init: Character class not found, fallback to:', currentTree);
+                    }
+                    
+                    // Create tabs
+                    createTabs();
+                    
+                    // Load first tree
+                    await loadCurrentTree();
+                    
+                    // Update points display
+                    updatePointsDisplay();
+                    
+                    console.log('✅ Skills initialized successfully');
+                } else {
+                    throw new Error('No skill trees found');
+                }
+                
+            } catch (error) {
+                console.error('❌ Error initializing skills:', error);
+                document.getElementById('skillLoadingMessage').innerHTML = 
+                    `<div style="color: red;">Error loading skills: ${error.message}</div>`;
             }
-        });
+        }
+        
+        function createTabs() {
+            const tabsContainer = document.getElementById('skillTreeTabs');
+            if (!tabsContainer) return;
+            
+            tabsContainer.innerHTML = '';
+            
+            // Get character's class - try multiple sources
+            let characterClass = null;
+            
+            // Try character header first
+            if (window.CharacterHeader && window.CharacterHeader.character) {
+                characterClass = window.CharacterHeader.character.class;
+            }
+            
+            // Try CourierAPI if available
+            if (!characterClass && window.CourierAPI && window.CourierAPI.character) {
+                characterClass = window.CourierAPI.character.class;
+            }
+            
+            // Fallback: Look for 'outlaw' since that's our test character
+            if (!characterClass) {
+                characterClass = 'outlaw'; // Default for testing
+                console.warn('🔧 CreateTabs: Character class not detected, defaulting to outlaw');
+            }
+            
+            console.log('🔧 CreateTabs: Character class detected:', characterClass);
+            console.log('🔧 CreateTabs: Current tree is:', currentTree);
+            
+            // Only show character's class tree + elemental trees
+            const elementalOrder = ['ice', 'electric', 'fire', 'nature', 'earth'];
+            
+            // Get character's class tree - ensure it exists
+            let characterClassTree = skillTrees.find(tree => 
+                tree.tree_type === 'class' && tree.tree_id === characterClass
+            );
+            
+            // If not found, try to find any class tree as fallback
+            if (!characterClassTree) {
+                characterClassTree = skillTrees.find(tree => tree.tree_type === 'class');
+                if (characterClassTree) {
+                    characterClass = characterClassTree.tree_id;
+                    console.warn('Using fallback class tree:', characterClassTree.tree_name);
+                }
+            }
+            
+            console.log('Character class tree found:', characterClassTree);
+            
+            // Get elemental trees in correct order
+            const elementalTrees = skillTrees.filter(tree => tree.tree_type === 'elemental')
+                .sort((a, b) => elementalOrder.indexOf(a.tree_id) - elementalOrder.indexOf(b.tree_id));
+            
+            // Create tabs: Character's class first, then elemental trees
+            const orderedTrees = [];
+            if (characterClassTree) {
+                orderedTrees.push(characterClassTree);
+                console.log('🔧 CreateTabs: Added character class tree first:', characterClassTree.tree_name);
+                
+                // If currentTree doesn't match the character class, fix it
+                if (currentTree !== characterClass) {
+                    console.warn('🔧 CreateTabs: currentTree mismatch! currentTree:', currentTree, 'characterClass:', characterClass);
+                    currentTree = characterClass;
+                }
+            } else {
+                console.error('🔧 CreateTabs: No character class tree found! Available trees:', skillTrees.map(t => `${t.tree_id} (${t.tree_type})`));
+            }
+            orderedTrees.push(...elementalTrees);
+            
+            orderedTrees.forEach(tree => {
+                const button = document.createElement('button');
+                button.textContent = `${getTreeIcon(tree.tree_id)} ${tree.tree_name}`;
+                button.className = `tree-tab ${tree.tree_id === currentTree ? 'active' : ''}`;
+                
+                if (!tree.available) {
+                    button.style.opacity = '0.5';
+                    button.style.cursor = 'not-allowed';
+                    button.title = tree.tree_type === 'elemental' ? 
+                        `Unlocks at level ${tree.tree_id === 'ice' || tree.tree_id === 'electric' ? '20' : '40'}` :
+                        'Not available';
+                } else {
+                    button.onclick = () => switchTree(tree.tree_id);
+                }
+                
+                tabsContainer.appendChild(button);
+            });
+            
+            console.log(`✅ Created ${orderedTrees.length} tabs: ${characterClass} class + ${elementalTrees.length} elemental`);
+        }
+        
+        async function loadCurrentTree() {
+            try {
+                console.log(`🌳 Loading tree: ${currentTree}`);
+                const response = await fetch(`/api/skills/tree/${currentTree}?playerId=1`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    currentSkills = data.skills;
+                    playerSkills = data.playerSkills || {};
+                    console.log(`🌳 Loaded ${currentSkills.length} skills for ${currentTree}`);
+                    
+                    renderSkills();
+                } else {
+                    throw new Error(data.error);
+                }
+            } catch (error) {
+                console.error('Error loading tree:', error);
+                document.getElementById('skillContainer').innerHTML = 
+                    `<div style="color: red; padding: 20px;">Error loading skills: ${error.message}</div>`;
+            }
+        }
+        
+        function renderSkills() {
+            const skillContainer = document.getElementById('skillContainer');
+            if (!skillContainer) return;
+            
+            const currentTreeData = skillTrees.find(t => t.tree_id === currentTree);
+            const treeName = currentTreeData?.tree_name || currentTree;
+            
+            // Create header with unlock information
+            let headerContent = `<h3 style="color: #00d4ff; margin-bottom: 20px;">${treeName.toUpperCase()} SKILLS</h3>`;
+            
+            // Add unlock status for elemental trees
+            if (currentTreeData?.tree_type === 'elemental') {
+                const isUnlocked = currentTreeData.available;
+                const unlockLevel = ['ice', 'electric'].includes(currentTree) ? 20 : 40;
+                
+                if (isUnlocked) {
+                    headerContent += `
+                        <div style="background: rgba(0, 255, 136, 0.1); border: 1px solid #00ff88; border-radius: 6px; padding: 15px; margin-bottom: 20px;">
+                            <div style="color: #00ff88; font-weight: bold; font-size: 14px; margin-bottom: 5px;">
+                                ✅ ELEMENTAL TREE UNLOCKED
+                            </div>
+                            <div style="color: #ccc; font-size: 12px;">
+                                This elemental tree was unlocked at level ${unlockLevel}. You can now invest points in these skills.
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    headerContent += `
+                        <div style="background: rgba(255, 100, 100, 0.1); border: 1px solid #ff6464; border-radius: 6px; padding: 15px; margin-bottom: 20px;">
+                            <div style="color: #ff6464; font-weight: bold; font-size: 14px; margin-bottom: 5px;">
+                                🔒 ELEMENTAL TREE LOCKED
+                            </div>
+                            <div style="color: #ccc; font-size: 12px;">
+                                This elemental tree unlocks at <strong>level ${unlockLevel}</strong>. 
+                                ${playerLevel < unlockLevel ? 
+                                    `You need ${unlockLevel - playerLevel} more levels to unlock it.` : 
+                                    'Requirements met - should be unlocked soon!'}
+                            </div>
+                        </div>
+                    `;
+                }
+            } else {
+                // Class tree header
+                headerContent += `
+                    <div style="background: rgba(0, 212, 255, 0.1); border: 1px solid #00d4ff; border-radius: 6px; padding: 15px; margin-bottom: 20px;">
+                        <div style="color: #00d4ff; font-weight: bold; font-size: 14px; margin-bottom: 5px;">
+                            🎯 CLASS SKILL TREE
+                        </div>
+                        <div style="color: #ccc; font-size: 12px;">
+                            Your ${treeName} class skills. Available from level 1.
+                        </div>
+                    </div>
+                `;
+            }
+            
+            skillContainer.innerHTML = headerContent;
+            
+            if (currentSkills.length === 0) {
+                skillContainer.innerHTML += '<p>No skills found for this tree.</p>';
+                return;
+            }
+            
+            // Group by tier
+            const skillsByTier = {};
+            currentSkills.forEach(skill => {
+                if (!skillsByTier[skill.tier]) skillsByTier[skill.tier] = [];
+                skillsByTier[skill.tier].push(skill);
+            });
+            
+            // Render each tier
+            Object.keys(skillsByTier).sort((a, b) => parseInt(a) - parseInt(b)).forEach(tier => {
+                const tierDiv = document.createElement('div');
+                tierDiv.innerHTML = `<div class="tier-header">TIER ${tier} (${skillsByTier[tier].length} skills)</div>`;
+                
+                const skillsGrid = document.createElement('div');
+                skillsGrid.className = 'skills-grid';
+                
+                skillsByTier[tier].forEach(skill => {
+                    const currentRank = playerSkills[skill.skill_id] || 0;
+                    const skillDiv = document.createElement('div');
+                    skillDiv.className = 'skill';
+                    skillDiv.dataset.skillId = skill.skill_id;
+                    
+                    // Check if skill can be upgraded
+                    const isTreeUnlocked = currentTreeData?.available !== false;
+                    const canUpgrade = currentRank < skill.max_rank && 
+                                     skillData.availablePoints > 0 && 
+                                     isTreeUnlocked;
+                    
+                    let upgradeHint = '';
+                    if (!isTreeUnlocked) {
+                        upgradeHint = `<div class="skill-upgrade-hint" style="color: #ff6464;">Tree locked - unlock at level ${['ice', 'electric'].includes(currentTree) ? '20' : '40'}</div>`;
+                    } else if (canUpgrade) {
+                        upgradeHint = '<div class="skill-upgrade-hint">Click to upgrade</div>';
+                    }
+                    
+                    skillDiv.innerHTML = `
+                        <div class="skill-name">${getSkillIcon(skill.skill_type)} ${skill.skill_name}</div>
+                        <div class="skill-meta">${skill.skill_type.toUpperCase()} • ${currentRank}/${skill.max_rank}</div>
+                        <div class="skill-desc">${skill.description}</div>
+                        ${upgradeHint}
+                    `;
+                    
+                    // Style based on skill state
+                    if (!isTreeUnlocked) {
+                        skillDiv.classList.add('skill-tree-locked');
+                        skillDiv.style.opacity = '0.4';
+                        skillDiv.style.borderColor = '#666';
+                        skillDiv.style.background = 'rgba(100, 100, 100, 0.1)';
+                        skillDiv.style.cursor = 'not-allowed';
+                    } else if (currentRank > 0) {
+                        skillDiv.style.borderColor = '#00ff88';
+                        skillDiv.style.background = 'rgba(0, 255, 136, 0.1)';
+                        skillDiv.classList.add('skill-invested');
+                    } else if (canUpgrade) {
+                        skillDiv.classList.add('skill-available');
+                    } else {
+                        skillDiv.classList.add('skill-locked');
+                        skillDiv.style.opacity = '0.6';
+                    }
+                    
+                    // Add hover effects
+                    skillDiv.onmouseenter = () => {
+                        if (isTreeUnlocked && (canUpgrade || currentRank > 0)) {
+                            skillDiv.style.transform = 'translateY(-3px) scale(1.02)';
+                            skillDiv.style.boxShadow = '0 8px 25px rgba(0, 212, 255, 0.4)';
+                            skillDiv.style.zIndex = '10';
+                        }
+                        
+                        // Always show tooltip, even for locked skills
+                        showSkillTooltip(skill, skillDiv, currentRank, isTreeUnlocked);
+                    };
+                    
+                    skillDiv.onmouseleave = () => {
+                        skillDiv.style.transform = 'translateY(0) scale(1)';
+                        skillDiv.style.boxShadow = 'none';
+                        skillDiv.style.zIndex = '1';
+                        hideSkillTooltip();
+                    };
+                    
+                    // Add click handler for skill investment
+                    skillDiv.onclick = () => {
+                        if (canUpgrade) {
+                            investSkillPoint(skill);
+                        }
+                    };
+                    
+                    skillsGrid.appendChild(skillDiv);
+                });
+                
+                tierDiv.appendChild(skillsGrid);
+                skillContainer.appendChild(tierDiv);
+            });
+            
+            console.log(`✅ Rendered ${currentSkills.length} skills`);
+        }
+        
+        async function switchTree(treeId) {
+            if (treeId === currentTree) return;
+            
+            console.log(`🔄 Switching to ${treeId}`);
+            currentTree = treeId;
+            
+            // Update tabs
+            document.querySelectorAll('.tree-tab').forEach(tab => {
+                const treeData = skillTrees.find(t => t.tree_id === treeId);
+                const isActive = treeData && tab.textContent.includes(treeData.tree_name);
+                tab.classList.toggle('active', isActive);
+            });
+            
+            await loadCurrentTree();
+        }
+        
+        function getTreeIcon(treeId) {
+            const icons = {
+                'doctor': '🏥', 'outlaw': '🤠', 'sentinel': '🛡️', 'infiltrator': '👤',
+                'fire': '🔥', 'ice': '❄️', 'electric': '⚡', 'earth': '🌍', 'nature': '🌿'
+            };
+            return icons[treeId] || '⭐';
+        }
+        
+        function getSkillIcon(skillType) {
+            const icons = { 'passive': '🔮', 'active': '⚡', 'ultimate': '💫' };
+            return icons[skillType] || '⭐';
+        }
+        
+        // Tooltip functions
+        let currentTooltip = null;
+        
+        function showSkillTooltip(skill, element, currentRank, isTreeUnlocked = true) {
+            hideSkillTooltip();
+            
+            const tooltip = document.createElement('div');
+            tooltip.className = 'skill-tooltip';
+            
+            let lockWarning = '';
+            if (!isTreeUnlocked) {
+                const unlockLevel = ['ice', 'electric'].includes(currentTree) ? 20 : 40;
+                lockWarning = `
+                    <div style="background: rgba(255, 100, 100, 0.2); border: 1px solid #ff6464; border-radius: 4px; padding: 8px; margin-bottom: 10px;">
+                        <div style="color: #ff6464; font-weight: bold; font-size: 12px;">🔒 TREE LOCKED</div>
+                        <div style="color: #ccc; font-size: 11px;">Unlocks at level ${unlockLevel}</div>
+                    </div>
+                `;
+            }
+            
+            tooltip.innerHTML = `
+                ${lockWarning}
+                <div class="tooltip-header">
+                    <strong>${getSkillIcon(skill.skill_type)} ${skill.skill_name}</strong>
+                    <span class="tooltip-rank">${currentRank}/${skill.max_rank}</span>
+                </div>
+                <div class="tooltip-type">${skill.skill_type.toUpperCase()}</div>
+                <div class="tooltip-description">${skill.description}</div>
+                ${skill.effects_per_rank ? `
+                    <div class="tooltip-effects">
+                        <strong>Effects:</strong>
+                        ${Object.entries(skill.effects_per_rank).map(([rank, effect]) => 
+                            `<div class="effect-rank ${parseInt(rank) <= currentRank ? 'active' : ''}">
+                                Rank ${rank}: ${effect}
+                            </div>`
+                        ).join('')}
+                    </div>
+                ` : ''}
+                ${skill.cooldown > 0 ? `<div class="tooltip-cooldown">Cooldown: ${skill.cooldown}s</div>` : ''}
+                ${skill.power_cost > 0 ? `<div class="tooltip-cost">Power Cost: ${skill.power_cost}</div>` : ''}
+            `;
+            
+            // Position tooltip
+            const rect = element.getBoundingClientRect();
+            tooltip.style.position = 'fixed';
+            tooltip.style.left = (rect.right + 10) + 'px';
+            tooltip.style.top = rect.top + 'px';
+            tooltip.style.zIndex = '1000';
+            
+            document.body.appendChild(tooltip);
+            currentTooltip = tooltip;
+        }
+        
+        function hideSkillTooltip() {
+            if (currentTooltip) {
+                currentTooltip.remove();
+                currentTooltip = null;
+            }
+        }
+        
+        // Skill investment function
+        async function investSkillPoint(skill) {
+            try {
+                console.log(`💰 Investing point in ${skill.skill_name}`);
+                
+                // Simulate API call (you can implement actual API later)
+                const response = await fetch(`/api/player/1/skills/invest`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        skillId: skill.skill_id,
+                        skillTree: currentTree
+                    })
+                });
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    if (result.success) {
+                        // Update local state
+                        playerSkills[skill.skill_id] = (playerSkills[skill.skill_id] || 0) + 1;
+                        skillData.availablePoints--;
+                        
+                        // Update display
+                        document.getElementById('availablePoints').textContent = skillData.availablePoints;
+                        
+                        // Re-render skills to show updated state
+                        renderSkills();
+                        
+                        console.log(`✅ Successfully invested in ${skill.skill_name}`);
+                    } else {
+                        console.error('Skill investment failed:', result.error);
+                    }
+                } else {
+                    console.log(`⚠️ API not implemented yet for skill investment`);
+                    // For now, just update locally for demo
+                    playerSkills[skill.skill_id] = (playerSkills[skill.skill_id] || 0) + 1;
+                    skillData.availablePoints--;
+                    document.getElementById('availablePoints').textContent = skillData.availablePoints;
+                    renderSkills();
+                }
+                
+            } catch (error) {
+                console.error('Error investing skill point:', error);
+            }
+        }
+        
+        // Update skill points display
+        function updatePointsDisplay() {
+            if (document.getElementById('availablePoints')) {
+                document.getElementById('availablePoints').textContent = skillData.availablePoints || 0;
+            }
+            if (document.getElementById('totalPoints')) {
+                document.getElementById('totalPoints').textContent = skillData.totalPoints || playerLevel;
+            }
+        }
+        
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', initSkills);
     </script>
 </body>
 </html>

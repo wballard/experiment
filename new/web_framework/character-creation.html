@@ -375,7 +375,7 @@
 
                 <div style="text-align: center; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(74, 158, 255, 0.1); color: #94a3b8; font-size: 0.85rem;">
                     <a href="classes.html" style="color: #4a9eff; text-decoration: none; font-weight: 500;">📚 Detailed Class Guide</a> • 
-                    <a href="game/dashboard.html" style="color: #4a9eff; text-decoration: none; font-weight: 500;">View Demo</a>
+                    <a href="dashboard.html" style="color: #4a9eff; text-decoration: none; font-weight: 500;">View Demo</a>
                 </div>
             </div>
         </div>
@@ -569,7 +569,7 @@
                 if (result.success) {
                     showSuccess(`${characterName} created successfully! Entering game...`);
                     setTimeout(() => {
-                        window.location.href = '/game/dashboard.html';
+                        window.location.href = '/dashboard.html';
                     }, 1500);
                 } else {
                     showError(result.error || 'Failed to create character');

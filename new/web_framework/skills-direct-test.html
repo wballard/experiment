@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skills Direct Test - Courier</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            background: #1a1a1a; 
+            color: white; 
+            padding: 20px; 
+            margin: 0;
+        }
+        .debug { 
+            background: #300; 
+            padding: 10px; 
+            margin: 10px 0; 
+            border: 1px solid #600; 
+            border-radius: 4px;
+        }
+        .tree-tab { 
+            margin: 5px; 
+            padding: 10px 15px; 
+            background: #333; 
+            color: white; 
+            border: 1px solid #555; 
+            cursor: pointer; 
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+        .tree-tab:hover { background: #555; }
+        .tree-tab.active { background: #007acc; }
+        
+        .skill { 
+            border: 1px solid #555; 
+            padding: 15px; 
+            margin: 10px 0; 
+            background: #2a2a2a; 
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .skill:hover {
+            border-color: #00d4ff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,212,255,0.3);
+        }
+        
+        .tier-header {
+            color: #ffd700;
+            margin: 20px 0 10px;
+            padding: 10px;
+            background: rgba(255,215,0,0.1);
+            border-left: 3px solid #ffd700;
+            border-radius: 4px;
+        }
+        
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .skill-name { color: white; font-weight: bold; font-size: 16px; }
+        .skill-meta { color: #00d4ff; font-size: 12px; margin: 5px 0; }
+        .skill-desc { color: #ccc; font-size: 13px; line-height: 1.4; }
+    </style>
+</head>
+<body>
+    <h1>🎯 Skills System Direct Test</h1>
+    <div id="debug" class="debug">Starting test...</div>
+    
+    <h2>Available Skill Trees</h2>
+    <div id="tabs"></div>
+    
+    <h2>Skills</h2>
+    <div id="skills"></div>
+
+    <script>
+        console.log('🚀 Direct Skills Test Starting...');
+        
+        async function runSkillsTest() {
+            const debug = document.getElementById('debug');
+            const tabs = document.getElementById('tabs');
+            const skills = document.getElementById('skills');
+            
+            debug.innerHTML = '🔧 Testing API endpoints...<br>';
+            
+            try {
+                // Test 1: Fetch skill trees
+                debug.innerHTML += '📋 Fetching skill trees...<br>';
+                const treesResponse = await fetch('/api/skills/trees?level=60&playerId=1');
+                
+                if (!treesResponse.ok) {
+                    throw new Error(`HTTP ${treesResponse.status}: ${treesResponse.statusText}`);
+                }
+                
+                const treesData = await treesResponse.json();
+                debug.innerHTML += `Trees API Response: ${treesResponse.status}<br>`;
+                debug.innerHTML += `Success: ${treesData.success}<br>`;
+                debug.innerHTML += `Trees Count: ${treesData.trees ? treesData.trees.length : 0}<br>`;
+                
+                if (!treesData.success) {
+                    throw new Error(`API Error: ${treesData.error || 'Unknown error'}`);
+                }
+                
+                if (!treesData.trees || treesData.trees.length === 0) {
+                    throw new Error('No skill trees returned from API');
+                }
+                
+                // Create tabs
+                debug.innerHTML += `✅ Creating ${treesData.trees.length} tabs...<br>`;
+                tabs.innerHTML = '';
+                
+                treesData.trees.forEach((tree, index) => {
+                    const tab = document.createElement('button');
+                    tab.className = 'tree-tab' + (index === 0 ? ' active' : '');
+                    tab.textContent = `${getTreeIcon(tree.tree_id)} ${tree.tree_name}`;
+                    tab.onclick = () => loadTree(tree.tree_id, tree.tree_name, treesData.trees);
+                    tabs.appendChild(tab);
+                });
+                
+                // Load first tree
+                debug.innerHTML += '🌳 Loading first tree...<br>';
+                await loadTree(treesData.trees[0].tree_id, treesData.trees[0].tree_name, treesData.trees);
+                
+                debug.innerHTML += '✅ Skills test completed successfully!<br>';
+                
+            } catch (error) {
+                debug.innerHTML += `❌ ERROR: ${error.message}<br>`;
+                console.error('Skills test error:', error);
+                skills.innerHTML = `<div style="color: red; padding: 20px;">Error: ${error.message}</div>`;
+            }
+        }
+        
+        async function loadTree(treeId, treeName, allTrees) {
+            const debug = document.getElementById('debug');
+            const skills = document.getElementById('skills');
+            
+            // Update tab states
+            document.querySelectorAll('.tree-tab').forEach(tab => {
+                tab.classList.toggle('active', tab.textContent.includes(treeName));
+            });
+            
+            debug.innerHTML += `🔄 Loading ${treeName} (${treeId})...<br>`;
+            
+            try {
+                const response = await fetch(`/api/skills/tree/${treeId}?playerId=1`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                debug.innerHTML += `Skills API Response: ${response.status}<br>`;
+                debug.innerHTML += `Skills Success: ${data.success}<br>`;
+                debug.innerHTML += `Skills Count: ${data.skills ? data.skills.length : 0}<br>`;
+                
+                if (!data.success) {
+                    throw new Error(`Skills API Error: ${data.error || 'Unknown error'}`);
+                }
+                
+                if (!data.skills || data.skills.length === 0) {
+                    skills.innerHTML = `<div style="color: orange; padding: 20px;">No skills found for ${treeName}</div>`;
+                    return;
+                }
+                
+                // Render skills
+                skills.innerHTML = `<h3 style="color: #00d4ff; margin-bottom: 20px;">${treeName.toUpperCase()} SKILLS (${data.skills.length} total)</h3>`;
+                
+                // Group by tier
+                const skillsByTier = {};
+                data.skills.forEach(skill => {
+                    if (!skillsByTier[skill.tier]) skillsByTier[skill.tier] = [];
+                    skillsByTier[skill.tier].push(skill);
+                });
+                
+                // Render each tier
+                const sortedTiers = Object.keys(skillsByTier).sort((a, b) => parseInt(a) - parseInt(b));
+                
+                sortedTiers.forEach(tier => {
+                    const tierDiv = document.createElement('div');
+                    tierDiv.innerHTML = `<div class="tier-header">TIER ${tier} (${skillsByTier[tier].length} skills)</div>`;
+                    
+                    const skillsGrid = document.createElement('div');
+                    skillsGrid.className = 'skills-grid';
+                    
+                    skillsByTier[tier].forEach(skill => {
+                        const skillDiv = document.createElement('div');
+                        skillDiv.className = 'skill';
+                        skillDiv.innerHTML = `
+                            <div class="skill-name">${getSkillIcon(skill.skill_type)} ${skill.skill_name}</div>
+                            <div class="skill-meta">${skill.skill_type.toUpperCase()} • 0/${skill.max_rank}</div>
+                            <div class="skill-desc">${skill.description}</div>
+                        `;
+                        skillsGrid.appendChild(skillDiv);
+                    });
+                    
+                    tierDiv.appendChild(skillsGrid);
+                    skills.appendChild(tierDiv);
+                });
+                
+                debug.innerHTML += `✅ Rendered ${data.skills.length} skills in ${sortedTiers.length} tiers<br>`;
+                
+            } catch (error) {
+                debug.innerHTML += `❌ SKILL LOAD ERROR: ${error.message}<br>`;
+                skills.innerHTML = `<div style="color: red; padding: 20px;">Error loading ${treeName}: ${error.message}</div>`;
+                console.error('Skill load error:', error);
+            }
+        }
+        
+        function getTreeIcon(treeId) {
+            const icons = {
+                'doctor': '🏥', 'outlaw': '🤠', 'sentinel': '🛡️', 'infiltrator': '👤',
+                'fire': '🔥', 'ice': '❄️', 'electric': '⚡', 'earth': '🌍', 'nature': '🌿'
+            };
+            return icons[treeId] || '⭐';
+        }
+        
+        function getSkillIcon(skillType) {
+            const icons = { 'passive': '🔮', 'active': '⚡', 'ultimate': '💫' };
+            return icons[skillType] || '⭐';
+        }
+        
+        // Start test when page loads
+        document.addEventListener('DOMContentLoaded', runSkillsTest);
+    </script>
+</body>
+</html>

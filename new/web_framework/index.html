@@ -214,7 +214,7 @@
         <div class="form-links">
             <p><a href="#" onclick="alert('Password reset functionality would be implemented')">Forgot Password?</a></p>
             <p>Don't have an account? <a href="public/register.html">Create Account</a></p>
-            <p><a href="game/dashboard.html">← Skip to Demo</a></p>
+            <p><a href="dashboard.html">← Skip to Demo</a></p>
         </div>
     </div>
 
@@ -313,7 +313,7 @@
                     if (charactersResult.success && charactersResult.characters.length > 0) {
                         // Has characters, go to game
                         setTimeout(() => {
-                            window.location.href = '/game/dashboard.html';
+                            window.location.href = '/dashboard.html';
                         }, 1000);
                     } else {
                         // No characters, go to character creation

@@ -286,29 +286,29 @@ function createAPIRoutes() {
     // Get active character (default player id = 1)
     router.get('/character/active', async (req, res) => {
         try {
-            const playerId = 1; // Default active player
-            const player = await new Promise((resolve, reject) => {
-                db.db.get("SELECT * FROM players WHERE id = ?", [playerId], (err, row) => {
-                    if (err) reject(err);
-                    else resolve(row);
-                });
-            });
+            const playerId = 1; // Default active player - in v4 this should come from session
             
-            if (!player) {
-                res.status(404).json({ success: false, error: 'Character not found' });
+            // Get active character for the player using v4 database methods
+            const character = await db.getActiveCharacter(playerId);
+            
+            if (!character) {
+                res.status(404).json({ success: false, error: 'No active character found' });
                 return;
             }
             
             res.json({ 
                 success: true, 
                 character: {
-                    id: player.id,
-                    name: player.name,
-                    level: player.level,
-                    paragonLevel: player.paragon_level || 0,
-                    class: player.class,
-                    experience: calculateExpForLevel(player.level) + 500, // Current level XP + some progress
-                    paragonExperience: (player.paragon_level || 0) * 4000
+                    id: character.id,
+                    name: character.name,
+                    level: character.level,
+                    paragonLevel: character.paragon_level || 0,
+                    class: character.class_id, // v4 uses class_id
+                    class_name: character.class_name,
+                    experience: character.experience,
+                    experience_to_next: character.experience_to_next,
+                    skill_points_available: character.skill_points_available,
+                    skill_points_invested: character.skill_points_invested
                 }
             });
         } catch (error) {
@@ -427,6 +427,154 @@ function createAPIRoutes() {
             res.json(result);
         } catch (error) {
             console.error('Error resetting skills:', error);
+            res.status(500).json({ success: false, error: error.message });
+        }
+    });
+
+    // === SKILL SYSTEM API ENDPOINTS ===
+
+    // Get all skill trees with level-based availability
+    router.get('/skills/trees', async (req, res) => {
+        try {
+            const playerLevel = parseInt(req.query.level) || 1;
+            
+            // Use v4 database method to get skill trees
+            const trees = await db.getSkillTrees(playerLevel);
+            
+            res.json({ success: true, trees });
+        } catch (error) {
+            console.error('Error getting skill trees:', error);
+            res.status(500).json({ success: false, error: error.message });
+        }
+    });
+
+    // Get skills for a specific tree
+    router.get('/skills/tree/:treeId', async (req, res) => {
+        try {
+            const treeId = req.params.treeId;
+            const playerId = req.query.playerId;
+            
+            // Get character ID from player ID (for v4 database)
+            let characterId = null;
+            if (playerId) {
+                const character = await db.getActiveCharacter(playerId);
+                characterId = character?.id;
+            }
+            
+            // Use v4 database method to get skills for tree
+            const result = await db.getSkillsForTree(treeId, characterId);
+            
+            // Format skills for frontend compatibility
+            const formattedSkills = result.skills.map(skill => ({
+                skill_id: skill.id,
+                skill_name: skill.name,
+                description: skill.description,
+                tier: skill.tier,
+                max_rank: skill.max_level,
+                skill_type: skill.class_id ? 'passive' : 'active', // Basic fallback
+                tree_id: treeId,
+                icon: skill.icon,
+                prerequisites: skill.prerequisites ? JSON.parse(skill.prerequisites) : [],
+                cooldown: 0, // Default for now
+                power_cost: 0 // Default for now
+            }));
+            
+            res.json({ 
+                success: true, 
+                skills: formattedSkills,
+                playerSkills: result.playerSkills || {},
+                treeInfo: {
+                    tree_id: treeId,
+                    tree_type: ['doctor', 'outlaw', 'sentinel', 'infiltrator'].includes(treeId) ? 'class' : 'elemental',
+                    max_tiers: ['doctor', 'outlaw', 'sentinel', 'infiltrator'].includes(treeId) ? 6 : 4
+                }
+            });
+        } catch (error) {
+            console.error('Error getting tree skills:', error);
+            res.status(500).json({ success: false, error: error.message });
+        }
+    });
+
+    // Get player's skill point allocation and available points
+    router.get('/player/:playerId/skills', async (req, res) => {
+        try {
+            const playerId = req.params.playerId;
+            const skillData = await db.getPlayerSkills(playerId);
+            
+            res.json({ 
+                success: true, 
+                skillData: {
+                    totalPoints: skillData.total,
+                    availablePoints: skillData.available,
+                    investedByTree: skillData.invested
+                }
+            });
+        } catch (error) {
+            console.error('Error getting player skills:', error);
+            res.status(500).json({ success: false, error: error.message });
+        }
+    });
+
+    // Invest skill points
+    router.post('/player/:playerId/skills/invest', async (req, res) => {
+        try {
+            const playerId = req.params.playerId;
+            const { skillId, skillTree } = req.body;
+            
+            if (!skillId || !skillTree) {
+                return res.status(400).json({ 
+                    success: false, 
+                    error: 'skillId and skillTree are required' 
+                });
+            }
+            
+            const result = await db.investSkillPoint(playerId, skillId, skillTree);
+            res.json(result);
+        } catch (error) {
+            console.error('Error investing skill point:', error);
+            res.status(500).json({ success: false, error: error.message });
+        }
+    });
+
+    // Reset player skills
+    router.post('/player/:playerId/skills/reset', async (req, res) => {
+        try {
+            const playerId = req.params.playerId;
+            const result = await db.resetPlayerSkills(playerId);
+            res.json(result);
+        } catch (error) {
+            console.error('Error resetting skills:', error);
+            res.status(500).json({ success: false, error: error.message });
+        }
+    });
+
+    // Unlock elemental tree for player
+    router.post('/player/:playerId/skills/unlock-elemental', async (req, res) => {
+        try {
+            const playerId = req.params.playerId;
+            const { elementalTree } = req.body;
+            
+            if (!elementalTree || !['fire', 'ice', 'electric', 'earth', 'nature'].includes(elementalTree)) {
+                return res.status(400).json({ 
+                    success: false, 
+                    error: 'Valid elementalTree is required' 
+                });
+            }
+            
+            // Add elemental tree unlock to player_elemental_unlocks table
+            const result = await new Promise((resolve, reject) => {
+                db.db.run(`
+                    INSERT OR IGNORE INTO player_elemental_unlocks (player_id, element, unlocked_at_level, unlock_order)
+                    VALUES (?, ?, 20, 1)
+                `, [playerId, elementalTree], function(err) {
+                    if (err) reject(err);
+                    else resolve({ success: true, changes: this.changes });
+                });
+            });
+            
+            res.json(result);
+        } catch (error) {
+            console.error('Error unlocking elemental tree:', error);
             res.status(500).json({ success: false, error: error.message });
         }
     });
