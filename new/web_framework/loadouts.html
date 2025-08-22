@@ -710,7 +710,8 @@
         LAST UPDATED: 2025-08-17 CST • LOADOUTS: Equipment integration and combat simulator access
     </footer>
 
-    <script src="assets/js/api-client.js"></script>
+    <script src="assets/js/api-client-v4.js"></script>
+    <script src="assets/js/character-header.js"></script>
     <script src="assets/js/tooltips.js"></script>
     <script src="assets/js/data-manager.js"></script>
     <script src="assets/js/main.js"></script>
@@ -887,52 +888,52 @@
             invested: {}
         };
         
-        // Load current skill investments from data manager
-        function loadCurrentSkillInvestments() {
+        // Load character skill data from API
+        async function loadCurrentSkillInvestments() {
             try {
-                if (window.CourierData) {
-                    const skillData = window.CourierData.getSkillTreesData();
-                    // Load all skill tree investments (class + elemental)
-                    currentSkillPoints.invested = {
-                        class: skillData.invested.class || {},
-                        fire: skillData.invested.fire || {},
-                        ice: skillData.invested.ice || {},
-                        electric: skillData.invested.electric || {},
-                        earth: skillData.invested.earth || {},
-                        nature: skillData.invested.nature || {}
-                    };
-                    currentSkillPoints.available = skillData.available;
-                    currentSkillPoints.total = skillData.total;
-                    console.log('Loaded skill investments from data manager:', currentSkillPoints.invested);
+                console.log('Loading character skill data...');
+                
+                // Initialize with empty data (no skills invested by default)
+                currentSkillPoints.invested = {
+                    class: {},
+                    fire: {},
+                    ice: {},
+                    electric: {},
+                    earth: {},
+                    nature: {}
+                };
+                
+                if (!window.CourierAPI) {
+                    console.error('CourierAPI not available, using empty skill data');
+                    currentSkillPoints.available = 1;
+                    currentSkillPoints.total = 1;
+                    return;
+                }
+                
+                // Load active character data
+                const characterResponse = await window.CourierAPI.loadActiveCharacter();
+                if (characterResponse.success && characterResponse.character) {
+                    const character = characterResponse.character;
+                    
+                    // Set skill points based on character level
+                    currentSkillPoints.available = character.skill_points_available || 1;
+                    currentSkillPoints.total = character.level || 1;
+                    
+                    console.log(`Character Level ${character.level}: ${currentSkillPoints.available}/${currentSkillPoints.total} skill points`);
+                    
+                    // TODO: Load actual skill investments from character_skills table
+                    // For now, character has no skills invested (level 1)
+                    console.log('Character skill investments loaded (empty for level 1 character)');
                 } else {
-                    // Fallback to localStorage
-                    const savedSkills = localStorage.getItem('courier-skill-investments');
-                    if (savedSkills) {
-                        const parsed = JSON.parse(savedSkills);
-                        currentSkillPoints.invested = {
-                            class: parsed.class || {},
-                            fire: parsed.fire || {},
-                            ice: parsed.ice || {},
-                            electric: parsed.electric || {},
-                            earth: parsed.earth || {},
-                            nature: parsed.nature || {}
-                        };
-                        console.log('Loaded skill investments from localStorage:', currentSkillPoints.invested);
-                    } else {
-                        // Initialize with empty data - no demo skills
-                        currentSkillPoints.invested = {
-                            class: {},
-                            fire: {},
-                            ice: {},
-                            electric: {},
-                            earth: {},
-                            nature: {}
-                        };
-                        console.log('No saved skills found - starting with empty skill set');
-                    }
+                    console.error('Failed to load character data, using defaults');
+                    currentSkillPoints.available = 1;
+                    currentSkillPoints.total = 1;
                 }
             } catch (error) {
-                console.error('Error loading skill investments:', error);
+                console.error('Error loading character skill data:', error);
+                // Use safe defaults for level 1 character
+                currentSkillPoints.available = 1;
+                currentSkillPoints.total = 1;
                 currentSkillPoints.invested = { class: {}, fire: {}, ice: {}, electric: {}, earth: {}, nature: {} };
             }
         }
@@ -944,9 +945,9 @@
                 if (response.ok) {
                     skillsDatabase = await response.json();
                     console.log('Skills data loaded for loadouts');
-                    loadCurrentSkillInvestments();
+                    await loadCurrentSkillInvestments();
                     populateLoadout();
-                    console.log('Loadout populated with real purchased skills');
+                    console.log('Loadout populated with real character skill data');
                 } else {
                     console.error('Failed to load skills data');
                 }
@@ -1492,7 +1493,7 @@
         }
         
         // Activate loadout button using data manager
-        document.querySelector('.btn-activate').addEventListener('click', function() {
+        document.querySelector('.btn-activate').addEventListener('click', async function() {
             const activeTab = document.querySelector('.loadout-tab.active');
             const loadoutId = activeTab?.dataset.loadout;
             let success = false;
@@ -1512,7 +1513,7 @@
                     
                     if (success) {
                         // Reload current skill investments to show the activated loadout
-                        loadCurrentSkillInvestments();
+                        await loadCurrentSkillInvestments();
                         populateLoadout();
                     }
                 }

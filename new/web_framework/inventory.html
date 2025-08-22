@@ -135,7 +135,7 @@
                 <div style="margin-bottom: var(--spacing-lg);">
                     <div style="display: flex; justify-content: space-between; margin-bottom: var(--spacing-xs);">
                         <span class="text-dim">USED</span>
-                        <span class="text-cyan"><span class="power-used">0</span> / <span class="power-max">2140</span></span>
+                        <span class="text-cyan"><span class="power-used">0</span> / <span class="power-max">300</span></span>
                     </div>
                     <div class="power-progress-bar">
                         <div class="power-progress-fill" style="width: 0%;"></div>
@@ -235,6 +235,7 @@
         <a href="changelog.html" style="color: #666; text-decoration: none; border-bottom: 1px dotted #666;">CHANGELOG</a> • 
         <a href="specs/index.html" style="color: #666; text-decoration: none; border-bottom: 1px dotted #666;">SPECS</a> • 
         <a href="tuning/index.html" style="color: #666; text-decoration: none; border-bottom: 1px dotted #666;">TUNING</a> • 
+        <button id="boostButton" style="background: #28a745; color: white; border: none; padding: 4px 8px; border-radius: 3px; cursor: pointer; font-size: 10px; margin: 0 5px;">🚀 BOOST</button> • 
         LAST UPDATED: 2025-08-16 11:52 PM CST • FILTERS: [ALL] [WEAPON] [ARMOR] [SLOT] with dropdown selection • SPECS: Complete documentation system
     </footer>
 
@@ -258,16 +259,23 @@
             }
         };
     </script>
-    <script src="assets/js/api-client.js"></script>
+    <script src="assets/js/api-client-v4.js"></script>
+    <script src="assets/js/character-header.js"></script>
+    <script src="assets/js/icon-mapper.js"></script>
     <script src="assets/js/tooltips.js?v=17"></script>
+    <script src="assets/js/boost-system.js"></script>
     <script src="assets/js/inventory-simple.js"></script>
     <script>
         console.log('=== INVENTORY PAGE LOADING WITH BACKEND API ===');
+        
+        // Character header is handled by character-header.js
         
         document.addEventListener('DOMContentLoaded', async () => {
             console.log('=== DOM CONTENT LOADED ===');
             
             try {
+                // Character header loaded automatically by character-header.js
+                
                 // Test API connection
                 const health = await window.CourierAPI.healthCheck();
                 console.log('API Health Check:', health);
@@ -289,6 +297,23 @@
                             Error: ${error.message}
                         </div>
                     `;
+                }
+            }
+        });
+
+        // Auto-refresh inventory when page gains focus (user returns from missions page)
+        window.addEventListener('focus', async () => {
+            console.log('Inventory page gained focus - refreshing data...');
+            if (window.SimpleInventory) {
+                try {
+                    await window.SimpleInventory.loadInventory();
+                    await window.SimpleInventory.loadEquipped();
+                    window.SimpleInventory.renderInventory();
+                    window.SimpleInventory.renderEquipped();
+                    window.SimpleInventory.updatePowerBudget();
+                    console.log('Inventory refreshed successfully');
+                } catch (error) {
+                    console.error('Failed to refresh inventory:', error);
                 }
             }
         });

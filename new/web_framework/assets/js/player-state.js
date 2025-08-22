@@ -5,12 +5,16 @@ window.PlayerState = {
     async init() {
         console.log('PlayerState: Loading player data...');
         try {
-            const response = await fetch('assets/data/player-state.json');
+            const response = await fetch('/api/player/state');
             if (!response.ok) {
                 throw new Error(`Failed to load player state: ${response.status}`);
             }
             
-            this.data = await response.json();
+            const result = await response.json();
+            if (!result.success) {
+                throw new Error(`Failed to load player state: ${result.error}`);
+            }
+            this.data = result.playerState;
             console.log('PlayerState: Player data loaded successfully', this.data);
             
             // Initialize CourierGame data structure for compatibility
@@ -31,10 +35,12 @@ window.PlayerState = {
     async populateEquippedItems() {
         // Load item database to get full item objects
         try {
-            const itemsResponse = await fetch('assets/data/item-database.json');
+            const itemsResponse = await fetch('/api/items/database');
             if (itemsResponse.ok) {
-                const itemDatabase = await itemsResponse.json();
-                const allItems = [...itemDatabase.weapons, ...itemDatabase.armor, ...itemDatabase.bracers];
+                const result = await itemsResponse.json();
+                if (result.success) {
+                    const itemDatabase = result.items;
+                    const allItems = [...itemDatabase.weapons, ...itemDatabase.armor, ...itemDatabase.bracers];
                 
                 // Create items lookup
                 const itemsLookup = {};
@@ -51,6 +57,9 @@ window.PlayerState = {
                 }
                 
                 console.log('PlayerState: Equipped items populated:', window.CourierGame.data.equippedItems);
+                } else {
+                    console.error('Failed to load item database:', result.error);
+                }
             } else {
                 // Fallback to test inventory items
                 await this.loadTestInventoryItems();

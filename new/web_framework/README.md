@@ -200,7 +200,7 @@ This unified structure replaces the previous split architecture:
    - Equipment grid display
    - Navigation system
 
-4. **Skills System** (`game/elements/skills.html`)
+4. **Skills System** (`skills.html`)
    - WoW-style skill trees
    - Interactive tooltips
    - Connection lines between tiers

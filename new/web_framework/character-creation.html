@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Character Creation - Courier</title>
+    <link rel="stylesheet" href="assets/css/design-system.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            overflow-x: hidden;
+        }
+
+        .creation-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .logo-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #4a9eff, #00d4aa);
+            border-radius: 12px;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .page-title {
+            color: #ffffff;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 0 0 0.5rem 0;
+            letter-spacing: 1px;
+        }
+
+        .page-subtitle {
+            color: #94a3b8;
+            font-size: 1.1rem;
+            margin: 0 0 2rem 0;
+        }
+
+        .creation-content {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 3rem;
+            align-items: start;
+        }
+
+        .classes-section {
+            background: rgba(26, 26, 46, 0.8);
+            border: 1px solid rgba(74, 158, 255, 0.2);
+            border-radius: 12px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .section-title {
+            color: #ffffff;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 0 0 1.5rem 0;
+        }
+
+        .class-grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .class-card {
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(74, 158, 255, 0.2);
+            border-radius: 8px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .class-card:hover {
+            border-color: rgba(74, 158, 255, 0.5);
+            background: rgba(0, 0, 0, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .class-card.selected {
+            border-color: #4a9eff;
+            background: rgba(74, 158, 255, 0.1);
+        }
+
+        .class-name {
+            color: #ffffff;
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 0 0 0.5rem 0;
+        }
+
+        .class-description {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            margin: 0 0 1rem 0;
+        }
+
+        .class-stats {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(74, 158, 255, 0.2);
+        }
+
+        .class-stat {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-name {
+            color: #94a3b8;
+        }
+
+        .stat-value {
+            color: #4a9eff;
+            font-weight: 500;
+        }
+
+        .class-traits {
+            margin-top: 0.75rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid rgba(74, 158, 255, 0.1);
+        }
+
+        .trait-title {
+            color: #4a9eff;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .trait-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+        }
+
+        .trait-tag {
+            background: rgba(74, 158, 255, 0.15);
+            color: #4a9eff;
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            border: 1px solid rgba(74, 158, 255, 0.3);
+        }
+
+        .class-balance-info {
+            margin-top: 0.75rem;
+            padding: 0.5rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 4px;
+            font-size: 0.75rem;
+            color: #94a3b8;
+            line-height: 1.3;
+        }
+
+        .character-form {
+            background: rgba(26, 26, 46, 0.8);
+            border: 1px solid rgba(74, 158, 255, 0.2);
+            border-radius: 12px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+            height: fit-content;
+            position: sticky;
+            top: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            color: #e2e8f0;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(74, 158, 255, 0.2);
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+            box-sizing: border-box;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #4a9eff;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .form-input::placeholder {
+            color: #64748b;
+        }
+
+        .selected-class {
+            background: rgba(74, 158, 255, 0.1);
+            border: 1px solid rgba(74, 158, 255, 0.3);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .selected-class-name {
+            color: #4a9eff;
+            font-size: 1rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 0.875rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4a9eff, #00d4aa);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 25px rgba(74, 158, 255, 0.3);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: rgba(0, 0, 0, 0.3);
+            color: #94a3b8;
+            border: 1px solid rgba(74, 158, 255, 0.2);
+            margin-bottom: 1rem;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(0, 0, 0, 0.4);
+            color: #ffffff;
+        }
+
+        .error-message {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+            padding: 0.75rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .success-message {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            color: #86efac;
+            padding: 0.75rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-left: 0.5rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .creation-content {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .character-form {
+                position: static;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="creation-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo-icon">C</div>
+            <h1 class="page-title">Create Character</h1>
+            <p class="page-subtitle">Choose your path in the Courier universe</p>
+        </div>
+
+        <div class="creation-content">
+            <!-- Classes Section -->
+            <div class="classes-section">
+                <h2 class="section-title">Select Class</h2>
+                <div class="class-grid" id="class-grid">
+                    <!-- Classes will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Character Form -->
+            <div class="character-form">
+                <div id="error-message" class="error-message"></div>
+                <div id="success-message" class="success-message"></div>
+
+                <div id="selected-class-display" class="selected-class" style="display: none;">
+                    <div class="selected-class-name" id="selected-class-name">No class selected</div>
+                </div>
+
+                <form id="character-form">
+                    <div class="form-group">
+                        <label for="character-name" class="form-label">Character Name</label>
+                        <input type="text" id="character-name" class="form-input" 
+                               placeholder="Enter character name" required maxlength="30">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" id="create-btn" disabled>
+                        Create Character
+                        <span id="create-loading" class="loading" style="display: none;"></span>
+                    </button>
+                </form>
+
+
+                <div style="text-align: center; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(74, 158, 255, 0.1); color: #94a3b8; font-size: 0.85rem;">
+                    <a href="classes.html" style="color: #4a9eff; text-decoration: none; font-weight: 500;">📚 Detailed Class Guide</a> • 
+                    <a href="game/dashboard.html" style="color: #4a9eff; text-decoration: none; font-weight: 500;">View Demo</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedClass = null;
+        let availableClasses = [];
+
+        // Message handling
+        function showError(message) {
+            const errorEl = document.getElementById('error-message');
+            errorEl.textContent = message;
+            errorEl.style.display = 'block';
+            document.getElementById('success-message').style.display = 'none';
+        }
+
+        function showSuccess(message) {
+            const successEl = document.getElementById('success-message');
+            successEl.textContent = message;
+            successEl.style.display = 'block';
+            document.getElementById('error-message').style.display = 'none';
+        }
+
+        function hideMessages() {
+            document.getElementById('error-message').style.display = 'none';
+            document.getElementById('success-message').style.display = 'none';
+        }
+
+        // Check authentication
+        async function checkAuth() {
+            try {
+                const response = await fetch('/api/auth/status');
+                const result = await response.json();
+                
+                if (!result.authenticated) {
+                    window.location.href = '/';
+                    return false;
+                }
+                return true;
+            } catch (error) {
+                window.location.href = '/';
+                return false;
+            }
+        }
+
+        // Load character classes
+        async function loadClasses() {
+            try {
+                const response = await fetch('/api/character-classes');
+                const result = await response.json();
+                
+                if (result.success) {
+                    availableClasses = result.classes;
+                    renderClasses();
+                } else {
+                    showError('Failed to load character classes');
+                }
+            } catch (error) {
+                showError('Failed to connect to server');
+            }
+        }
+
+        // Render character classes
+        function renderClasses() {
+            const classGrid = document.getElementById('class-grid');
+            
+            const classTraits = {
+                'operative': ['Balanced', 'Versatile', 'Reliable'],
+                'specialist': ['High-Tech', 'Precision', 'Energy-Focused'],
+                'guardian': ['Defensive', 'Durable', 'Heavy Armor'],
+                'outlaw': ['Agile', 'Critical Strikes', 'Mobile']
+            };
+
+            const classPlaystyles = {
+                'operative': 'Well-rounded combat effectiveness with access to all weapon types and balanced survivability.',
+                'specialist': 'Technology-focused gameplay with enhanced gadgets and energy weapons, but lower durability.',
+                'guardian': 'Tank-style play with heavy armor and defensive abilities, trading mobility for survivability.',
+                'outlaw': 'Fast-paced combat with emphasis on critical hits and mobility over raw durability.'
+            };
+            
+            classGrid.innerHTML = availableClasses.map(cls => `
+                <div class="class-card" data-class-id="${cls.id}" onclick="selectClass('${cls.id}')">
+                    <div class="class-name">${cls.name}</div>
+                    <div class="class-description">${cls.description}</div>
+                    
+                    <div class="class-stats">
+                        <div class="class-stat">
+                            <span class="stat-name">Health</span>
+                            <span class="stat-value">${cls.base_health}</span>
+                        </div>
+                        <div class="class-stat">
+                            <span class="stat-name">Energy Shield</span>
+                            <span class="stat-value">${cls.base_energy_shield}</span>
+                        </div>
+                        <div class="class-stat">
+                            <span class="stat-name">Crit Chance</span>
+                            <span class="stat-value">${(cls.base_crit_chance * 100).toFixed(0)}%</span>
+                        </div>
+                        <div class="class-stat">
+                            <span class="stat-name">Crit Damage</span>
+                            <span class="stat-value">${cls.base_crit_damage.toFixed(1)}x</span>
+                        </div>
+                    </div>
+
+                    <div class="class-traits">
+                        <div class="trait-title">Combat Style</div>
+                        <div class="trait-list">
+                            ${classTraits[cls.id].map(trait => `<span class="trait-tag">${trait}</span>`).join('')}
+                        </div>
+                    </div>
+
+                    <div class="class-balance-info">
+                        ${classPlaystyles[cls.id]}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Select character class
+        function selectClass(classId) {
+            const classData = availableClasses.find(c => c.id === classId);
+            if (!classData) return;
+
+            selectedClass = classData;
+
+            // Update visual selection
+            document.querySelectorAll('.class-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            document.querySelector(`[data-class-id="${classId}"]`).classList.add('selected');
+
+            // Update selected class display
+            const display = document.getElementById('selected-class-display');
+            const nameEl = document.getElementById('selected-class-name');
+            nameEl.textContent = `Selected: ${classData.name}`;
+            display.style.display = 'block';
+
+            // Enable create button
+            document.getElementById('create-btn').disabled = false;
+
+            hideMessages();
+        }
+
+        // Create character
+        document.getElementById('character-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            hideMessages();
+
+            if (!selectedClass) {
+                showError('Please select a character class');
+                return;
+            }
+
+            const characterName = document.getElementById('character-name').value.trim();
+            if (!characterName) {
+                showError('Please enter a character name');
+                return;
+            }
+
+            if (characterName.length < 2) {
+                showError('Character name must be at least 2 characters');
+                return;
+            }
+
+            if (characterName.length > 30) {
+                showError('Character name must be less than 30 characters');
+                return;
+            }
+
+            const createBtn = document.getElementById('create-btn');
+            const loading = document.getElementById('create-loading');
+
+            createBtn.disabled = true;
+            loading.style.display = 'inline-block';
+
+            try {
+                const response = await fetch('/api/characters', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        name: characterName,
+                        classId: selectedClass.id
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showSuccess(`${characterName} created successfully! Entering game...`);
+                    setTimeout(() => {
+                        window.location.href = '/game/dashboard.html';
+                    }, 1500);
+                } else {
+                    showError(result.error || 'Failed to create character');
+                    createBtn.disabled = false;
+                }
+            } catch (error) {
+                showError('Network error. Please try again.');
+                createBtn.disabled = false;
+            } finally {
+                loading.style.display = 'none';
+            }
+        });
+
+        // Logout function
+        async function logout() {
+            try {
+                await fetch('/api/auth/logout', { method: 'POST' });
+                window.location.href = '/';
+            } catch (error) {
+                window.location.href = '/';
+            }
+        }
+
+        // Initialize page
+        async function init() {
+            const authenticated = await checkAuth();
+            if (authenticated) {
+                await loadClasses();
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>

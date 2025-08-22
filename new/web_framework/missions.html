@@ -186,7 +186,8 @@
             }
         };
     </script>
-    <script src="assets/js/api-client.js"></script>
+    <script src="assets/js/api-client-v4.js"></script>
+    <script src="assets/js/character-header.js"></script>
     <script src="assets/js/tooltips.js"></script>
     <script src="assets/js/inventory-simple.js"></script>
     <script src="assets/js/missions.js"></script>
@@ -208,6 +209,14 @@
                 window.MissionSystem.init();
             } else {
                 console.error('MissionSystem not loaded!');
+            }
+            
+            // Initialize SimpleInventory for reward collection
+            if (window.SimpleInventory) {
+                console.log('Initializing SimpleInventory on missions page...');
+                await window.SimpleInventory.init();
+            } else {
+                console.error('SimpleInventory not loaded!');
             }
         });
     </script>

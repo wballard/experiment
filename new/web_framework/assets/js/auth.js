@@ -84,30 +84,36 @@ window.AuthSystem = {
         setTimeout(() => {
             console.log(`${action} attempt for:`, email);
             
-            // Simulate success (in real app, this would be actual API call)
-            localStorage.setItem('courierUser', JSON.stringify({
-                email: email,
-                loginTime: new Date().toISOString(),
-                level: 60,
-                paragonLevel: 40
-            }));
+            // Auth is now handled by server-side session management
+            console.log(`${action} successful for user: ${email}`);
             
             successCallback();
         }, 1500);
     },
     
-    logout() {
-        localStorage.removeItem('courierUser');
+    async logout() {
+        try {
+            await fetch('/api/auth/logout', { method: 'POST' });
+        } catch (error) {
+            console.error('Logout error:', error);
+        }
         window.location.href = '../index.html';
     },
     
-    getCurrentUser() {
-        const userData = localStorage.getItem('courierUser');
-        return userData ? JSON.parse(userData) : null;
+    async getCurrentUser() {
+        try {
+            const response = await fetch('/api/auth/status');
+            const result = await response.json();
+            return result.authenticated ? result.user : null;
+        } catch (error) {
+            console.error('Auth check error:', error);
+            return null;
+        }
     },
     
-    isAuthenticated() {
-        return this.getCurrentUser() !== null;
+    async isAuthenticated() {
+        const user = await this.getCurrentUser();
+        return user !== null;
     }
 };
 

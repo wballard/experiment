@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Character Classes - Courier</title>
+    <link rel="stylesheet" href="assets/css/design-system.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        .page-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .logo-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #4a9eff, #00d4aa);
+            border-radius: 12px;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .page-title {
+            color: #ffffff;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 0 0 0.5rem 0;
+            letter-spacing: 1px;
+        }
+
+        .page-subtitle {
+            color: #94a3b8;
+            font-size: 1.1rem;
+            margin: 0 0 2rem 0;
+        }
+
+        .classes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .class-overview {
+            background: rgba(26, 26, 46, 0.8);
+            border: 1px solid rgba(74, 158, 255, 0.2);
+            border-radius: 12px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .class-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .class-icon {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, #4a9eff, #00d4aa);
+            border-radius: 8px;
+            margin-right: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .class-title {
+            color: #ffffff;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .class-description {
+            color: #94a3b8;
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        @media (max-width: 600px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .stat-card {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(74, 158, 255, 0.1);
+            border-radius: 6px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .stat-label {
+            color: #94a3b8;
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-value {
+            color: #4a9eff;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .stat-variance {
+            color: #64748b;
+            font-size: 0.75rem;
+            margin-top: 0.25rem;
+        }
+
+        .traits-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            color: #ffffff;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .traits-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .trait-tag {
+            background: rgba(74, 158, 255, 0.15);
+            color: #4a9eff;
+            font-size: 0.85rem;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            border: 1px solid rgba(74, 158, 255, 0.3);
+        }
+
+        .playstyle-section {
+            background: rgba(74, 158, 255, 0.05);
+            border: 1px solid rgba(74, 158, 255, 0.1);
+            border-radius: 6px;
+            padding: 1rem;
+        }
+
+        .playstyle-text {
+            color: #e2e8f0;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        .balance-note {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-top: 3rem;
+            text-align: center;
+        }
+
+        .balance-title {
+            color: #86efac;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .balance-text {
+            color: #94a3b8;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        .nav-links {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4a9eff, #00d4aa);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 25px rgba(74, 158, 255, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(0, 0, 0, 0.3);
+            color: #94a3b8;
+            border: 1px solid rgba(74, 158, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(0, 0, 0, 0.4);
+            color: #ffffff;
+        }
+
+        @media (max-width: 768px) {
+            .classes-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-links {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo-icon">C</div>
+            <h1 class="page-title">Character Classes</h1>
+            <p class="page-subtitle">Choose your combat specialization and playstyle</p>
+        </div>
+
+        <!-- Classes Grid -->
+        <div class="classes-grid" id="classes-grid">
+            <!-- Classes will be loaded here -->
+        </div>
+
+        <!-- Balance Information -->
+        <div class="balance-note">
+            <div class="balance-title">⚖️ Fair & Balanced Design</div>
+            <p class="balance-text">
+                All classes have identical power budgets (300) for fair itemization. Health varies by ±2% (98-102), energy shields by ±4% (48-52), and critical stats vary to create distinct combat styles. The Outlaw excels at critical strikes, Guardian prioritizes survivability, Specialist has enhanced shields, and Operative provides balanced performance.
+            </p>
+        </div>
+
+        <!-- Navigation -->
+        <div class="nav-links">
+            <a href="/character-creation.html" class="btn btn-primary">Create Character</a>
+            <a href="/" class="btn btn-secondary">Back to Login</a>
+        </div>
+    </div>
+
+    <script src="assets/js/api-client-v4.js"></script>
+    <script>
+        let availableClasses = [];
+
+        // Class details data
+        const classDetails = {
+            'operative': {
+                icon: 'O',
+                traits: ['Balanced', 'Versatile', 'Reliable', 'All-Rounder'],
+                playstyle: 'The Operative is the perfect starting class for new players. With balanced stats and no major weaknesses, Operatives excel at adapting to any situation. They have equal proficiency with all weapon types and maintain steady survivability throughout the game. Choose Operative if you want a dependable, well-rounded character that can handle any challenge.'
+            },
+            'specialist': {
+                icon: 'S',
+                traits: ['High-Tech', 'Precision', 'Energy-Focused', 'Gadget Master'],
+                playstyle: 'Specialists leverage advanced technology and precision weaponry to dominate the battlefield. With slightly higher power capacity, they can equip more advanced gear but trade some durability for technological superiority. Perfect for players who enjoy energy weapons, gadgets, and tactical gameplay over brute force approaches.'
+            },
+            'guardian': {
+                icon: 'G',
+                traits: ['Defensive', 'Durable', 'Heavy Armor', 'Tank'],
+                playstyle: 'Guardians are the ultimate defensive specialists, built to withstand punishment and protect allies. With higher base health but lower power capacity, they excel with heavy armor and defensive equipment. Choose Guardian if you prefer to tank damage, control the battlefield, and outlast your enemies through superior survivability.'
+            },
+            'outlaw': {
+                icon: 'R',
+                traits: ['Agile', 'Critical Strikes', 'Mobile', 'Glass Cannon'],
+                playstyle: 'Outlaws are agile combatants who rely on speed, precision, and critical strikes to win fights. With balanced stats that favor mobility and critical hit potential, they excel at hit-and-run tactics and high-damage bursts. Perfect for players who enjoy fast-paced combat and high-risk, high-reward gameplay.'
+            }
+        };
+
+        // Load character classes
+        async function loadClasses() {
+            try {
+                const response = await window.CourierAPI.getCharacterClasses();
+                
+                if (response.success) {
+                    availableClasses = response.classes;
+                    renderClasses();
+                } else {
+                    document.getElementById('classes-grid').innerHTML = '<p style="color: #ff6b6b; text-align: center;">Failed to load character classes</p>';
+                }
+            } catch (error) {
+                console.error('Failed to load classes:', error);
+                document.getElementById('classes-grid').innerHTML = '<p style="color: #ff6b6b; text-align: center;">Failed to connect to server</p>';
+            }
+        }
+
+        // Render character classes
+        function renderClasses() {
+            const classesGrid = document.getElementById('classes-grid');
+            
+            classesGrid.innerHTML = availableClasses.map(cls => {
+                const details = classDetails[cls.id] || {};
+                const healthVariance = cls.base_health === 100 ? 'Baseline' : 
+                    (cls.base_health > 100 ? `+${cls.base_health - 100}` : `${cls.base_health - 100}`);
+
+                return `
+                    <div class="class-overview">
+                        <div class="class-header">
+                            <div class="class-icon">${details.icon || cls.name[0]}</div>
+                            <div class="class-title">${cls.name}</div>
+                        </div>
+
+                        <div class="class-description">${cls.description}</div>
+
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-label">Base Health</div>
+                                <div class="stat-value">${cls.base_health}</div>
+                                <div class="stat-variance">${healthVariance}</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-label">Energy Shield</div>
+                                <div class="stat-value">${cls.base_energy_shield}</div>
+                                <div class="stat-variance">${cls.base_energy_shield === 50 ? 'Baseline' : (cls.base_energy_shield > 50 ? `+${cls.base_energy_shield - 50}` : `${cls.base_energy_shield - 50}`)}</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-label">Crit Chance</div>
+                                <div class="stat-value">${(cls.base_crit_chance * 100).toFixed(0)}%</div>
+                                <div class="stat-variance">${cls.base_crit_chance === 0.05 ? 'Baseline' : (cls.base_crit_chance > 0.05 ? `+${((cls.base_crit_chance - 0.05) * 100).toFixed(0)}%` : `${((cls.base_crit_chance - 0.05) * 100).toFixed(0)}%`)}</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-label">Crit Damage</div>
+                                <div class="stat-value">${cls.base_crit_damage.toFixed(1)}x</div>
+                                <div class="stat-variance">${cls.base_crit_damage === 1.5 ? 'Baseline' : (cls.base_crit_damage > 1.5 ? `+${(cls.base_crit_damage - 1.5).toFixed(1)}x` : `${(cls.base_crit_damage - 1.5).toFixed(1)}x`)}</div>
+                            </div>
+                        </div>
+
+                        <div class="traits-section">
+                            <div class="section-title">Combat Traits</div>
+                            <div class="traits-list">
+                                ${(details.traits || []).map(trait => `<span class="trait-tag">${trait}</span>`).join('')}
+                            </div>
+                        </div>
+
+                        <div class="playstyle-section">
+                            <div class="section-title">Playstyle</div>
+                            <p class="playstyle-text">${details.playstyle || 'No detailed information available.'}</p>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Initialize page
+        loadClasses();
+    </script>
+</body>
+</html>

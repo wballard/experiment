@@ -3,64 +3,335 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Courier - Sci-Fi ARPG</title>
-    <link rel="stylesheet" href="assets/css/main.css">
-    <link rel="stylesheet" href="assets/css/landing.css">
+    <title>Courier - Login</title>
+    <link rel="stylesheet" href="assets/css/design-system.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        .auth-container {
+            background: rgba(26, 26, 46, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(74, 158, 255, 0.2);
+            border-radius: 12px;
+            padding: 3rem 2.5rem;
+            max-width: 400px;
+            width: 100%;
+            margin: 2rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo-section {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .logo-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #4a9eff, #00d4aa);
+            border-radius: 12px;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .logo-icon::before {
+            content: "C";
+        }
+
+        .page-title {
+            color: #ffffff;
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 0 0 0.5rem 0;
+        }
+
+        .page-subtitle {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            margin: 0 0 2rem 0;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            color: #e2e8f0;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(74, 158, 255, 0.3);
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+            box-sizing: border-box;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #4a9eff;
+            box-shadow: 0 0 0 3px rgba(74, 158, 255, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 0.875rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4a9eff, #00d4aa);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 20px rgba(74, 158, 255, 0.3);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading-spinner {
+            display: none;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+            margin-right: 0.5rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .form-links {
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .form-links a {
+            color: #4a9eff;
+            text-decoration: none;
+            font-size: 0.875rem;
+        }
+
+        .form-links a:hover {
+            text-decoration: underline;
+        }
+
+        .form-links p {
+            color: #94a3b8;
+            font-size: 0.875rem;
+            margin: 0.5rem 0;
+        }
+
+        .alert {
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+            display: none;
+        }
+
+        .alert-error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+        }
+
+        .alert-success {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            color: #86efac;
+        }
+    </style>
 </head>
 <body>
-    <!-- Landing Page -->
-    <div class="landing-container">
-        <div class="hero-section">
-            <div class="logo-container">
-                <div class="logo-icon"></div>
-                <h1 class="game-title">COURIER</h1>
-                <p class="game-subtitle">Sci-Fi Action RPG • Power Budget System</p>
-            </div>
-            
-            <div class="hero-content">
-                <h2>Master the Power Budget System</h2>
-                <p>Strategic equipment choices meet fast-paced sci-fi action in this innovative web-based ARPG.</p>
-                
-                <div class="cta-buttons">
-                    <button class="btn btn-primary" onclick="location.href='public/register.html'">Play Now</button>
-                    <button class="btn btn-secondary" onclick="location.href='game/dashboard.html'">View Demo</button>
-                </div>
-            </div>
+    <div class="auth-container">
+        <div class="logo-section">
+            <div class="logo-icon"></div>
+            <h1 class="page-title">Welcome Back</h1>
+            <p class="page-subtitle">Sign in to continue your mission</p>
         </div>
 
-        <div class="features-section">
-            <div class="feature-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">⚡</div>
-                    <h3>Power Budget System</h3>
-                    <p>Strategic equipment management with rarity efficiency multipliers</p>
-                </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon">🔥</div>
-                    <h3>Elemental Combat</h3>
-                    <p>Five-element system with combination abilities and status effects</p>
-                </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon">🌐</div>
-                    <h3>Web-First Design</h3>
-                    <p>Play anywhere with persistent progress and cross-device sync</p>
-                </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon">🎯</div>
-                    <h3>Mission System</h3>
-                    <p>Time-based missions with weekly rotating modifiers</p>
-                </div>
-            </div>
-        </div>
+        <div id="error-message" class="alert alert-error"></div>
+        <div id="success-message" class="alert alert-success"></div>
 
-        <div class="version-info">
-            <p>Demo Version 0.3.4 • <a href="#" class="changelog-link">View Changelog</a></p>
+        <form id="login-form">
+            <div class="form-group">
+                <label for="login-email">Email Address</label>
+                <input type="email" id="login-email" name="email" required>
+            </div>
+
+            <div class="form-group">
+                <label for="login-password">Password</label>
+                <input type="password" id="login-password" name="password" required>
+            </div>
+
+            <button type="submit" id="login-btn" class="btn btn-primary">
+                <span id="login-loading" class="loading-spinner"></span>
+                Sign In
+            </button>
+        </form>
+
+        <div class="form-links">
+            <p><a href="#" onclick="alert('Password reset functionality would be implemented')">Forgot Password?</a></p>
+            <p>Don't have an account? <a href="public/register.html">Create Account</a></p>
+            <p><a href="game/dashboard.html">← Skip to Demo</a></p>
         </div>
     </div>
 
-    <script src="assets/js/landing.js"></script>
+    <script>
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check if already authenticated
+            checkAuth();
+            
+            // Setup form handler
+            document.getElementById('login-form').addEventListener('submit', handleLogin);
+            
+            // Auto-clear messages after a delay
+            setTimeout(() => {
+                hideMessages();
+            }, 5000);
+            
+            // Clear messages on form interaction
+            document.getElementById('login-email').addEventListener('input', () => {
+                // Clear messages
+                hideMessages();
+            });
+        });
+
+        // Message handling
+        function showError(message) {
+            const errorEl = document.getElementById('error-message');
+            errorEl.textContent = message;
+            errorEl.style.display = 'block';
+            document.getElementById('success-message').style.display = 'none';
+        }
+
+        function showSuccess(message) {
+            const successEl = document.getElementById('success-message');
+            successEl.textContent = message;
+            successEl.style.display = 'block';
+            document.getElementById('error-message').style.display = 'none';
+        }
+
+        function hideMessages() {
+            document.getElementById('error-message').style.display = 'none';
+            document.getElementById('success-message').style.display = 'none';
+        }
+
+        // API calls
+        async function apiCall(endpoint, data) {
+            const response = await fetch(`/api${endpoint}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            });
+            
+            return await response.json();
+        }
+
+        // Check if already authenticated (optional, don't force redirect)
+        async function checkAuth() {
+            try {
+                const response = await fetch('/api/auth/status');
+                const result = await response.json();
+                
+                if (result.authenticated) {
+                    // Show a message that user is already logged in
+                    showSuccess('Already logged in! You can go to the game or stay here.');
+                }
+            } catch (error) {
+                console.log('Auth check failed, staying on login page');
+            }
+        }
+
+        // Login form handler
+        async function handleLogin(e) {
+            e.preventDefault();
+            hideMessages();
+            
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const loginBtn = document.getElementById('login-btn');
+            const loading = document.getElementById('login-loading');
+            
+            loginBtn.disabled = true;
+            loading.style.display = 'inline-block';
+            
+            try {
+                const result = await apiCall('/auth/login', { email, password });
+                
+                if (result.success) {
+                    showSuccess('Login successful! Checking for characters...');
+                    
+                    // Check if user has characters
+                    const charactersResponse = await fetch('/api/characters');
+                    const charactersResult = await charactersResponse.json();
+                    
+                    if (charactersResult.success && charactersResult.characters.length > 0) {
+                        // Has characters, go to game
+                        setTimeout(() => {
+                            window.location.href = '/game/dashboard.html';
+                        }, 1000);
+                    } else {
+                        // No characters, go to character creation
+                        setTimeout(() => {
+                            window.location.href = '/character-creation.html';
+                        }, 1000);
+                    }
+                } else {
+                    showError(result.error || 'Login failed');
+                }
+            } catch (error) {
+                showError('Connection failed. Please try again.');
+                console.error('Login error:', error);
+            } finally {
+                loginBtn.disabled = false;
+                loading.style.display = 'none';
+            }
+        }
+    </script>
 </body>
 </html>

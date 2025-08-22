@@ -7,6 +7,19 @@ const app = express();
 const port = process.env.PORT || 3001;
 const db = new Database();
 
+// Experience calculation function
+function calculateExpForLevel(level) {
+    // XP formula: Base requirement increases with each level
+    // Level 1: 0 XP, Level 2: 1000 XP, Level 3: 2100 XP, etc.
+    if (level <= 1) return 0;
+    
+    let totalExp = 0;
+    for (let i = 2; i <= level; i++) {
+        totalExp += Math.floor(1000 * Math.pow(1.1, i - 2));
+    }
+    return totalExp;
+}
+
 // Middleware
 app.use(cors());
 app.use(express.json());
@@ -231,6 +244,191 @@ function createAPIRoutes() {
     // Health check
     router.get('/health', (req, res) => {
         res.json({ success: true, message: 'Courier Backend API is running', timestamp: new Date().toISOString() });
+    });
+
+    // === AUTH ENDPOINTS ===
+    
+    // Check auth status
+    router.get('/auth/status', (req, res) => {
+        // Simple mock auth - always authenticated for demo
+        res.json({ success: true, authenticated: true });
+    });
+    
+    // Login endpoint
+    router.post('/auth/login', (req, res) => {
+        // Simple mock login - always succeeds for demo
+        const { email, password } = req.body;
+        res.json({ success: true, message: 'Login successful', user: { email } });
+    });
+    
+    // Logout endpoint
+    router.post('/auth/logout', (req, res) => {
+        res.json({ success: true, message: 'Logout successful' });
+    });
+    
+    // Get characters endpoint
+    router.get('/characters', async (req, res) => {
+        try {
+            const characters = await new Promise((resolve, reject) => {
+                db.db.all("SELECT * FROM players", (err, rows) => {
+                    if (err) reject(err);
+                    else resolve(rows);
+                });
+            });
+            res.json({ success: true, characters });
+        } catch (error) {
+            res.status(500).json({ success: false, error: error.message });
+        }
+    });
+
+    // === CHARACTER ENDPOINTS ===
+    
+    // Get active character (default player id = 1)
+    router.get('/character/active', async (req, res) => {
+        try {
+            const playerId = 1; // Default active player
+            const player = await new Promise((resolve, reject) => {
+                db.db.get("SELECT * FROM players WHERE id = ?", [playerId], (err, row) => {
+                    if (err) reject(err);
+                    else resolve(row);
+                });
+            });
+            
+            if (!player) {
+                res.status(404).json({ success: false, error: 'Character not found' });
+                return;
+            }
+            
+            res.json({ 
+                success: true, 
+                character: {
+                    id: player.id,
+                    name: player.name,
+                    level: player.level,
+                    paragonLevel: player.paragon_level || 0,
+                    class: player.class,
+                    experience: calculateExpForLevel(player.level) + 500, // Current level XP + some progress
+                    paragonExperience: (player.paragon_level || 0) * 4000
+                }
+            });
+        } catch (error) {
+            console.error('Error getting active character:', error);
+            res.status(500).json({ success: false, error: error.message });
+        }
+    });
+
+    // === SKILL ENDPOINTS ===
+    
+    // Get skills data (replaces skills.json)
+    router.get('/skills/data', async (req, res) => {
+        try {
+            const fs = require('fs');
+            const path = require('path');
+            const skillsPath = path.join(__dirname, 'assets/data/skills.json');
+            const skillsData = JSON.parse(fs.readFileSync(skillsPath, 'utf8'));
+            res.json({ success: true, skills: skillsData });
+        } catch (error) {
+            console.error('Error loading skills data:', error);
+            res.status(500).json({ success: false, error: error.message });
+        }
+    });
+    
+    // Get missions data (replaces missions.json)
+    router.get('/missions/data', async (req, res) => {
+        try {
+            const fs = require('fs');
+            const path = require('path');
+            const missionsPath = path.join(__dirname, 'assets/data/missions.json');
+            const missionsData = JSON.parse(fs.readFileSync(missionsPath, 'utf8'));
+            res.json({ success: true, missions: missionsData });
+        } catch (error) {
+            console.error('Error loading missions data:', error);
+            res.status(500).json({ success: false, error: error.message });
+        }
+    });
+    
+    // Get items data (replaces items.json)
+    router.get('/items/data', async (req, res) => {
+        try {
+            const fs = require('fs');
+            const path = require('path');
+            const itemsPath = path.join(__dirname, 'assets/data/items.json');
+            const itemsData = JSON.parse(fs.readFileSync(itemsPath, 'utf8'));
+            res.json({ success: true, items: itemsData });
+        } catch (error) {
+            console.error('Error loading items data:', error);
+            res.status(500).json({ success: false, error: error.message });
+        }
+    });
+    
+    // Get item database (replaces item-database.json)
+    router.get('/items/database', async (req, res) => {
+        try {
+            const fs = require('fs');
+            const path = require('path');
+            const itemDbPath = path.join(__dirname, 'assets/data/item-database.json');
+            const itemDbData = JSON.parse(fs.readFileSync(itemDbPath, 'utf8'));
+            res.json({ success: true, items: itemDbData });
+        } catch (error) {
+            console.error('Error loading item database:', error);
+            res.status(500).json({ success: false, error: error.message });
+        }
+    });
+    
+    // Get player state data (replaces player-state.json)
+    router.get('/player/state', async (req, res) => {
+        try {
+            const fs = require('fs');
+            const path = require('path');
+            const playerStatePath = path.join(__dirname, 'assets/data/player-state.json');
+            const playerStateData = JSON.parse(fs.readFileSync(playerStatePath, 'utf8'));
+            res.json({ success: true, playerState: playerStateData });
+        } catch (error) {
+            console.error('Error loading player state:', error);
+            res.status(500).json({ success: false, error: error.message });
+        }
+    });
+    
+    // Get player skills
+    router.get('/player/:playerId/skills', async (req, res) => {
+        try {
+            const playerId = req.params.playerId;
+            const skills = await db.getPlayerSkills(playerId);
+            res.json({ success: true, skills });
+        } catch (error) {
+            console.error('Error getting player skills:', error);
+            res.status(500).json({ success: false, error: error.message });
+        }
+    });
+    
+    // Invest skill point
+    router.post('/player/:playerId/skills/invest', async (req, res) => {
+        try {
+            const playerId = req.params.playerId;
+            const { skillId, skillTree } = req.body;
+            
+            if (!skillId || !skillTree) {
+                return res.status(400).json({ success: false, error: 'skillId and skillTree are required' });
+            }
+            
+            const result = await db.investSkillPoint(playerId, skillId, skillTree);
+            res.json(result);
+        } catch (error) {
+            console.error('Error investing skill point:', error);
+            res.status(500).json({ success: false, error: error.message });
+        }
+    });
+    
+    // Reset all skills
+    router.post('/player/:playerId/skills/reset', async (req, res) => {
+        try {
+            const playerId = req.params.playerId;
+            const result = await db.resetPlayerSkills(playerId);
+            res.json(result);
+        } catch (error) {
+            console.error('Error resetting skills:', error);
+            res.status(500).json({ success: false, error: error.message });
+        }
     });
 
     return router;

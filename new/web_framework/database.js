@@ -116,6 +116,19 @@ class Database {
                 )
             `);
 
+            // Player skills table
+            this.db.run(`
+                CREATE TABLE IF NOT EXISTS player_skills (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    player_id INTEGER NOT NULL,
+                    skill_id TEXT NOT NULL,
+                    points_invested INTEGER DEFAULT 0,
+                    skill_tree TEXT NOT NULL, -- class, fire, ice, electric, earth, nature
+                    FOREIGN KEY (player_id) REFERENCES players (id),
+                    UNIQUE(player_id, skill_id)
+                )
+            `);
+
             // Insert default player if none exists
             this.db.get("SELECT COUNT(*) as count FROM players", (err, row) => {
                 if (!err && row.count === 0) {
@@ -1744,6 +1757,111 @@ class Database {
                 } catch (error) {
                     this.db.run("ROLLBACK");
                     reject(error);
+                }
+            });
+        });
+    }
+
+    // === SKILL MANAGEMENT METHODS ===
+    
+    // Get player skill points and investments
+    getPlayerSkills(playerId) {
+        return new Promise((resolve, reject) => {
+            // First get player level for total skill points
+            this.db.get("SELECT level FROM players WHERE id = ?", [playerId], (err, player) => {
+                if (err) {
+                    reject(err);
+                    return;
+                }
+                
+                const totalPoints = player ? player.level : 60;
+                
+                // Get all skill investments
+                this.db.all(`
+                    SELECT skill_id, points_invested, skill_tree 
+                    FROM player_skills 
+                    WHERE player_id = ?
+                `, [playerId], (err, skills) => {
+                    if (err) {
+                        reject(err);
+                        return;
+                    }
+                    
+                    // Calculate total invested points
+                    const totalInvested = skills.reduce((sum, skill) => sum + skill.points_invested, 0);
+                    const availablePoints = Math.max(0, totalPoints - totalInvested);
+                    
+                    // Organize skills by tree
+                    const skillTrees = {};
+                    skills.forEach(skill => {
+                        if (!skillTrees[skill.skill_tree]) {
+                            skillTrees[skill.skill_tree] = {};
+                        }
+                        skillTrees[skill.skill_tree][skill.skill_id] = skill.points_invested;
+                    });
+                    
+                    resolve({
+                        total: totalPoints,
+                        available: availablePoints,
+                        invested: skillTrees
+                    });
+                });
+            });
+        });
+    }
+    
+    // Invest points in a skill
+    investSkillPoint(playerId, skillId, skillTree) {
+        return new Promise((resolve, reject) => {
+            this.db.serialize(() => {
+                this.db.run("BEGIN TRANSACTION");
+                
+                // Check if player has available points
+                this.getPlayerSkills(playerId).then(skillData => {
+                    if (skillData.available <= 0) {
+                        this.db.run("ROLLBACK");
+                        resolve({ success: false, error: 'No available skill points' });
+                        return;
+                    }
+                    
+                    // Insert or update skill investment
+                    this.db.run(`
+                        INSERT INTO player_skills (player_id, skill_id, points_invested, skill_tree)
+                        VALUES (?, ?, 1, ?)
+                        ON CONFLICT(player_id, skill_id) DO UPDATE SET
+                        points_invested = points_invested + 1
+                    `, [playerId, skillId, skillTree], (err) => {
+                        if (err) {
+                            this.db.run("ROLLBACK");
+                            reject(err);
+                        } else {
+                            this.db.run("COMMIT", (commitErr) => {
+                                if (commitErr) {
+                                    reject(commitErr);
+                                } else {
+                                    resolve({ success: true, changes: 1 });
+                                }
+                            });
+                        }
+                    });
+                }).catch(err => {
+                    this.db.run("ROLLBACK");
+                    reject(err);
+                });
+            });
+        });
+    }
+    
+    // Reset all skill points for a player
+    resetPlayerSkills(playerId) {
+        return new Promise((resolve, reject) => {
+            this.db.run(`
+                DELETE FROM player_skills WHERE player_id = ?
+            `, [playerId], function(err) {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve({ success: true, changes: this.changes });
                 }
             });
         });

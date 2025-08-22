@@ -126,14 +126,19 @@ window.InventorySystem = {
     
     async generateRandomInventory() {
         try {
-            // Load the item database
-            const response = await fetch('assets/data/item-database.json');
+            // Load the item database from API
+            const response = await fetch('/api/items/database');
             if (!response.ok) {
                 console.error('Failed to load item database');
                 return this.createFallbackInventory();
             }
             
-            const database = await response.json();
+            const result = await response.json();
+            if (!result.success) {
+                console.error('Failed to load item database:', result.error);
+                return this.createFallbackInventory();
+            }
+            const database = result.items;
             console.log('Item database loaded:', 
                 database.weapons.length + database.armor.length + database.bracers.length, 'total items');
             
@@ -696,9 +701,10 @@ window.InventorySystem = {
     async loadAndMigrateFromJson() {
         try {
             console.log('No items in data manager, attempting migration from JSON...');
-            const response = await fetch('assets/data/items.json');
+            const response = await fetch('/api/items/data');
             if (response.ok) {
-                const data = await response.json();
+                const result = await response.json();
+                const data = result.success ? result.items : null;
                 
                 // Migrate weapons to data manager
                 if (data.weapons && window.CourierData) {
@@ -726,11 +732,12 @@ window.InventorySystem = {
         try {
             console.log('=== LOADING JSON FALLBACK ===');
             console.log('Attempting to load items from JSON...');
-            const response = await fetch('assets/data/items.json');
-            console.log('JSON fetch response:', response.status, response.statusText);
+            const response = await fetch('/api/items/data');
+            console.log('API fetch response:', response.status, response.statusText);
             
             if (response.ok) {
-                const data = await response.json();
+                const result = await response.json();
+                const data = result.success ? result.items : null;
                 console.log('JSON data loaded successfully');
                 console.log('Weapons count:', Object.keys(data.weapons || {}).length);
                 console.log('Armor count:', Object.keys(data.armor || {}).length);

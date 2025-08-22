@@ -3,13 +3,18 @@
 window.SkillSystem = {
     skillsDatabase: {},
     currentElement: 'class',
-    currentClass: 'outlaw',
+    currentClass: 'guardian', // Will be set dynamically from character data
     
     async init() {
         console.log('Skills System Initialized');
+        await this.loadCharacterClass();
         await this.loadSkillsData();
-        this.loadSkillInvestments();
+        await this.loadSkillInvestments();
         this.setupElementTabs();
+        
+        // Populate the class tree based on character's actual class
+        this.showElementTree('class');
+        
         this.setupSkillNodes();
         this.setupResetButton();
         this.updateSkillPointsDisplay();
@@ -22,12 +27,26 @@ window.SkillSystem = {
         console.log('Skills database loaded:', Object.keys(this.skillsDatabase));
         console.log('Invested skills:', window.CourierGame.data.skillPoints.invested);
         
-        // TEMPORARY: Clear all skill investments for debugging
-        console.log('CLEARING ALL SKILL INVESTMENTS FOR DEBUGGING');
+        // CLEAR ALL SKILL INVESTMENTS AND RESET TO CHARACTER LEVEL
+        console.log('CLEARING ALL SKILL INVESTMENTS AND RESETTING TO CHARACTER LEVEL');
         window.CourierGame.data.skillPoints.invested = {};
-        window.CourierGame.data.skillPoints.available = 60;
+        
+        // Get character level dynamically if available
+        const characterLevel = window.CharacterHeader?.currentCharacter?.level || window.CourierGame?.data?.playerLevel || 60;
+        window.CourierGame.data.skillPoints.total = characterLevel;
+        window.CourierGame.data.skillPoints.available = characterLevel;
+        
+        console.log(`Reset skill points: Level ${characterLevel} = ${characterLevel} total points, ${characterLevel} available`);
+        
+        // All skill data now comes from database via API
         if (window.CourierData) {
-            localStorage.removeItem('courier_skill_points');
+            // Also reset in data manager if it exists
+            const resetData = {
+                available: characterLevel,
+                total: characterLevel,
+                invested: {}
+            };
+            window.CourierData.saveSkillTreesData(resetData);
         }
         
         // Generate SVG connections after everything is loaded
@@ -38,10 +57,15 @@ window.SkillSystem = {
     
     async loadSkillsData() {
         try {
-            const response = await fetch('assets/data/skills.json?v=17');
+            const response = await fetch('/api/skills/data');
             if (response.ok) {
-                this.skillsDatabase = await response.json();
-                console.log('Skills data loaded:', Object.keys(this.skillsDatabase));
+                const data = await response.json();
+                if (data.success) {
+                    this.skillsDatabase = data.skills;
+                    console.log('Skills data loaded from database:', Object.keys(this.skillsDatabase));
+                } else {
+                    console.error('Failed to load skills data:', data.error);
+                }
             } else {
                 console.error('Failed to load skills data');
             }
@@ -50,72 +74,99 @@ window.SkillSystem = {
         }
     },
     
-    loadSkillInvestments() {
+    async loadCharacterClass() {
+        try {
+            const response = await fetch('/api/character/active');
+            if (response.ok) {
+                const data = await response.json();
+                if (data.success && data.character) {
+                    // Convert class name to lowercase for consistency
+                    this.currentClass = data.character.class.toLowerCase();
+                    console.log('Loaded character class:', this.currentClass);
+                    
+                    // Update the class tab display
+                    this.updateClassTab();
+                } else {
+                    console.warn('Failed to load character data, using default class');
+                }
+            }
+        } catch (error) {
+            console.error('Error loading character class:', error);
+        }
+    },
+    
+    updateClassTab() {
+        const classTab = document.getElementById('classTab');
+        if (classTab) {
+            const classInfo = this.getClassInfo(this.currentClass);
+            classTab.innerHTML = `${classInfo.icon} ${classInfo.name.toUpperCase()}`;
+            console.log(`Updated class tab to: ${classInfo.name}`);
+        }
+    },
+    
+    async loadSkillInvestments() {
         try {
             // Initialize with default data if CourierGame.data doesn't exist
             if (!window.CourierGame) {
                 window.CourierGame = { data: {} };
             }
+            
+            // Get character level dynamically
+            const characterLevel = window.CharacterHeader?.currentCharacter?.level || window.CourierGame?.data?.playerLevel || 60;
+            
             if (!window.CourierGame.data.skillPoints) {
                 window.CourierGame.data.skillPoints = {
-                    available: 60,
-                    total: 60,
+                    available: characterLevel,
+                    total: characterLevel,
                     invested: {}
                 };
             }
             
-            // Ensure values are numbers, not NaN
-            if (isNaN(window.CourierGame.data.skillPoints.available)) {
-                window.CourierGame.data.skillPoints.available = 60;
-            }
-            if (isNaN(window.CourierGame.data.skillPoints.total)) {
-                window.CourierGame.data.skillPoints.total = 60;
-            }
-
-            // Load from data manager if available
-            if (window.CourierData) {
-                const skillTrees = window.CourierData.getSkillTreesData();
-                console.log('Raw skill trees data:', skillTrees);
-                
-                // Ensure numeric values
-                window.CourierGame.data.skillPoints.available = isNaN(skillTrees.available) ? 60 : skillTrees.available;
-                window.CourierGame.data.skillPoints.total = isNaN(skillTrees.total) ? 60 : skillTrees.total;
-                
-                // Flatten all tree investments into a single object for skills.js compatibility
-                window.CourierGame.data.skillPoints.invested = {};
-                Object.keys(skillTrees.invested || {}).forEach(tree => {
-                    Object.assign(window.CourierGame.data.skillPoints.invested, skillTrees.invested[tree] || {});
-                });
-                
-                console.log('Loaded skill investments from data manager:', window.CourierGame.data.skillPoints.invested);
-                console.log('Available points:', window.CourierGame.data.skillPoints.available);
-                console.log('Total points:', window.CourierGame.data.skillPoints.total);
-                console.log('Current element:', this.currentElement);
-            } else {
-                // Fallback to localStorage
-                const savedSkills = localStorage.getItem('courier-skill-investments');
-                if (savedSkills) {
-                    const skillData = JSON.parse(savedSkills);
-                    window.CourierGame.data.skillPoints.available = skillData.available || 60;
-                    window.CourierGame.data.skillPoints.total = skillData.total || 60;
-                    
-                    // Flatten all tree investments
-                    window.CourierGame.data.skillPoints.invested = {};
-                    Object.keys(skillData).forEach(key => {
-                        if (key !== 'available' && key !== 'total' && typeof skillData[key] === 'object') {
-                            Object.assign(window.CourierGame.data.skillPoints.invested, skillData[key]);
-                        }
-                    });
-                    
-                    console.log('Loaded skill investments from localStorage:', window.CourierGame.data.skillPoints.invested);
+            // Load skill data from database API
+            try {
+                const response = await fetch('/api/player/1/skills');
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success) {
+                        console.log('Loaded skill data from database:', data.skills);
+                        
+                        // Convert the database format to the UI format
+                        window.CourierGame.data.skillPoints.total = data.skills.total;
+                        window.CourierGame.data.skillPoints.available = data.skills.available;
+                        
+                        // Flatten skill trees into a single invested object
+                        window.CourierGame.data.skillPoints.invested = {};
+                        Object.keys(data.skills.invested || {}).forEach(tree => {
+                            Object.assign(window.CourierGame.data.skillPoints.invested, data.skills.invested[tree] || {});
+                        });
+                        
+                        console.log('Skill points loaded from database:', {
+                            available: window.CourierGame.data.skillPoints.available,
+                            total: window.CourierGame.data.skillPoints.total,
+                            invested: window.CourierGame.data.skillPoints.invested
+                        });
+                        return;
+                    }
                 }
+            } catch (error) {
+                console.error('Error loading skills from database:', error);
             }
+            
+            // Fallback to clean state if database load fails
+            console.log('Using clean skill state as fallback');
+            window.CourierGame.data.skillPoints = {
+                available: characterLevel,
+                total: characterLevel,
+                invested: {}
+            };
+            
         } catch (error) {
             console.error('Error loading skill investments:', error);
             // Ensure we have valid default data
+            const characterLevel = window.CharacterHeader?.currentCharacter?.level || window.CourierGame?.data?.playerLevel || 60;
             window.CourierGame.data.skillPoints = {
-                available: 60,
-                total: 60,
+                available: characterLevel,
+                total: characterLevel,
                 invested: {}
             };
         }
@@ -155,76 +206,45 @@ window.SkillSystem = {
     setupResetButton() {
         const resetBtn = document.getElementById('resetAllBtn');
         if (resetBtn) {
-            resetBtn.addEventListener('click', () => {
-                this.resetAllSkills();
+            resetBtn.addEventListener('click', async () => {
+                await this.resetAllSkills();
             });
         }
     },
 
-    resetAllSkills() {
+    async resetAllSkills() {
         // Confirm with user before resetting
         const confirmed = confirm('Are you sure you want to reset all skill points? This action cannot be undone.');
         if (!confirmed) return;
 
         console.log('Resetting all skill investments...');
         
-        // Debug: Show current state before reset
-        if (window.CourierData) {
-            console.log('Current data manager state:', window.CourierData.getSkillTreesData());
-        }
-        console.log('Current UI state:', {
-            available: window.CourierGame.data.skillPoints.available,
-            total: window.CourierGame.data.skillPoints.total,
-            invested: window.CourierGame.data.skillPoints.invested
-        });
-        
-        // Save to persistent storage FIRST
-        if (window.CourierData) {
-            try {
-                // Check if resetAllSkills method exists, otherwise use fallback
-                if (typeof window.CourierData.resetAllSkills === 'function') {
-                    const success = window.CourierData.resetAllSkills();
-                    if (!success) {
-                        console.error('Failed to reset skills via data manager');
-                        return;
-                    }
-                    console.log('Reset saved via data manager');
-                } else {
-                    // Fallback: manually reset via data manager methods
-                    console.log('resetAllSkills method not found, using fallback');
-                    const skillTrees = window.CourierData.getSkillTreesData();
-                    skillTrees.invested = {};
-                    skillTrees.available = skillTrees.total || 60;
-                    const success = window.CourierData.saveSkillTreesData(skillTrees);
-                    if (!success) {
-                        console.error('Failed to reset skills via fallback method');
-                        return;
-                    }
-                    console.log('Reset saved via data manager fallback');
+        try {
+            // Reset skills via database API
+            const response = await fetch('/api/player/1/skills/reset', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
                 }
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                console.log('Successfully reset all skills in database');
                 
-                // Reload the data from data manager to sync
-                this.loadSkillInvestments();
+                // Reload skill data from database
+                await this.loadSkillInvestments();
                 
-            } catch (error) {
-                console.error('Failed to save reset via data manager:', error);
+            } else {
+                console.error('Failed to reset skills:', result.error);
+                alert('Failed to reset skills: ' + (result.error || 'Unknown error'));
                 return;
             }
-        } else {
-            // Fallback to localStorage
-            try {
-                localStorage.removeItem('courier-skill-investments');
-                localStorage.removeItem('courier_skill_points');
-                console.log('Reset saved to localStorage');
-                
-                // Reset local data manually for localStorage fallback
-                window.CourierGame.data.skillPoints.invested = {};
-                window.CourierGame.data.skillPoints.available = window.CourierGame.data.skillPoints.total || 60;
-                
-            } catch (error) {
-                console.error('Failed to save reset to localStorage:', error);
-                return;
-            }
+        } catch (error) {
+            console.error('Error resetting skills:', error);
+            alert('Error resetting skills. Please try again.');
+            return;
         }
         
         // Update UI
@@ -363,12 +383,7 @@ window.SkillSystem = {
     populateClassTree(container) {
         console.log('Populating class tree for:', this.currentClass);
         
-        // If we're showing the Outlaw class, don't modify the existing static HTML
-        if (this.currentClass === 'outlaw') {
-            return;
-        }
-        
-        // For other classes, generate skill trees matching the Outlaw style
+        // Generate skill trees for any class (including outlaw)
         const classSkillData = this.getClassSkillData(this.currentClass);
         let html = `
             <svg class="skill-connections-svg" id="class-connections-svg">
@@ -620,7 +635,7 @@ window.SkillSystem = {
             // Add new listeners
             const newSkillNodes = document.querySelectorAll('.skill-node');
             newSkillNodes.forEach(node => {
-                node.addEventListener('click', (e) => {
+                node.addEventListener('click', async (e) => {
                     e.preventDefault();
                     e.stopPropagation();
                     const skillId = node.dataset.skill;
@@ -629,7 +644,7 @@ window.SkillSystem = {
                     // Use canInvestInSkill which handles both class and elemental trees properly
                     if (this.canInvestInSkill(skillId)) {
                         console.log('Investing in skill:', skillId);
-                        this.investSkillPoint(skillId);
+                        await this.investSkillPoint(skillId);
                     } else {
                         console.log('Cannot invest in skill:', skillId);
                     }
@@ -664,55 +679,46 @@ window.SkillSystem = {
         }
     },
     
-    investSkillPoint(skillId) {
+    async investSkillPoint(skillId) {
         const currentPoints = window.CourierGame.data.skillPoints.invested[skillId] || 0;
         const skill = this.getSkillData(skillId);
         
         if (!skill) return;
         
         if (currentPoints < skill.maxPoints && window.CourierGame.data.skillPoints.available > 0) {
-            // Save to persistent storage via data manager
-            if (window.CourierData) {
-                const success = window.CourierData.investSkillPoint(skillId, this.currentElement);
-                if (!success) {
-                    console.error('Failed to save skill point investment - may be out of points or save failed');
-                    return;
-                }
+            try {
+                // Save to database API
+                const response = await fetch('/api/player/1/skills/invest', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        skillId: skillId,
+                        skillTree: this.currentElement
+                    })
+                });
                 
-                // Update local data after successful save
-                window.CourierGame.data.skillPoints.invested[skillId] = currentPoints + 1;
-                window.CourierGame.data.skillPoints.available--;
-                console.log(`Saved skill point investment: ${skillId} in ${this.currentElement} tree`);
-            } else {
-                // Fallback to localStorage if data manager not available
-                try {
-                    const savedSkills = localStorage.getItem('courier-skill-investments') || '{}';
-                    const skillData = JSON.parse(savedSkills);
-                    if (!skillData[this.currentElement]) {
-                        skillData[this.currentElement] = {};
-                    }
-                    skillData[this.currentElement][skillId] = currentPoints + 1;
-                    
-                    // Also update available points
-                    if (!skillData.available) skillData.available = 60;
-                    skillData.available--;
-                    
-                    localStorage.setItem('courier-skill-investments', JSON.stringify(skillData));
-                    
+                const result = await response.json();
+                
+                if (result.success) {
                     // Update local data after successful save
                     window.CourierGame.data.skillPoints.invested[skillId] = currentPoints + 1;
                     window.CourierGame.data.skillPoints.available--;
-                    console.log(`Fallback save: ${skillId} in ${this.currentElement} tree`);
-                } catch (error) {
-                    console.error('Failed to save skill investment to localStorage:', error);
-                    return;
+                    console.log(`Successfully invested point in ${skillId} (${this.currentElement} tree)`);
+                    
+                    this.updateSkillNodeDisplay(skillId);
+                    this.updateSkillPointsDisplay();
+                    this.updateSkillLocks();
+                    this.updateBonusCards();
+                } else {
+                    console.error('Failed to invest skill point:', result.error);
+                    alert('Failed to invest skill point: ' + (result.error || 'Unknown error'));
                 }
+            } catch (error) {
+                console.error('Error investing skill point:', error);
+                alert('Error investing skill point. Please try again.');
             }
-            
-            this.updateSkillNodeDisplay(skillId);
-            this.updateSkillPointsDisplay();
-            this.updateSkillLocks();
-            this.updateBonusCards();
         }
     },
     

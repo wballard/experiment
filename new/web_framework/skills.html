@@ -40,25 +40,23 @@
             <div class="card-header">
                 <h2 class="card-title">Skill Points</h2>
                 <div style="display: flex; gap: var(--spacing-lg); align-items: center;">
-                    <span class="text-dim">Available: <span class="text-cyan" id="availablePoints">15</span></span>
+                    <span class="text-dim">Available: <span class="text-cyan" id="availablePoints">60</span></span>
                     <span class="text-dim">Total: <span class="text-cyan" id="totalPoints">60</span></span>
                     <div id="tierProgress" style="display: flex; gap: var(--spacing-sm); align-items: center;">
                         <!-- Tier progress will be populated by JavaScript -->
                     </div>
                     <button class="btn btn-danger" id="resetAllBtn">RESET ALL</button>
-                    <button class="btn btn-warning" onclick="window.SkillSystem.syncSkillData()">SYNC DATA</button>
-                    <button class="btn btn-success" onclick="window.SkillSystem.fixOverInvestments()">FIX OVER-INVESTMENTS</button>
                 </div>
             </div>
             <div class="card-accent"></div>
 
             <div class="nav-menu" style="justify-content: center; margin-bottom: var(--spacing-lg);">
-                <button class="nav-item active" data-element="class" id="classTab">🎯 OUTLAW</button>
-                <button class="nav-item" data-element="fire">🔥 FIRE</button>
+                <button class="nav-item active" data-element="class" id="classTab">🛡️ GUARDIAN</button>
                 <button class="nav-item" data-element="ice">❄️ ICE</button>
                 <button class="nav-item" data-element="electric">⚡ ELECTRIC</button>
-                <button class="nav-item" data-element="earth">🌍 EARTH</button>
+                <button class="nav-item" data-element="fire">🔥 FIRE</button>
                 <button class="nav-item" data-element="nature">🌿 NATURE</button>
+                <button class="nav-item" data-element="earth">🌍 EARTH</button>
             </div>
 
             <!-- Debug Class Selector -->
@@ -66,8 +64,8 @@
                 <div style="background: var(--bg-dark); border: 1px solid var(--border-gray); padding: var(--spacing-sm); border-radius: 4px;">
                     <label style="color: var(--text-dim); font-size: 11px; margin-right: var(--spacing-sm);">DEBUG: Change Class</label>
                     <select id="debugClassSelector" style="background: var(--bg-medium); border: 1px solid var(--border-gray); color: var(--text-normal); padding: 4px 8px; border-radius: 4px; font-size: 11px;">
-                        <option value="outlaw" selected>🎯 Outlaw (Gunslinger)</option>
-                        <option value="guardian">🛡️ Guardian (Tank/Support)</option>
+                        <option value="outlaw">🎯 Outlaw (Gunslinger)</option>
+                        <option value="guardian" selected>🛡️ Guardian (Tank/Support)</option>
                         <option value="technomancer">⚡ Technomancer (Tech Caster)</option>
                         <option value="infiltrator">🗡️ Infiltrator (Stealth/Melee)</option>
                         <option value="psion">🧬 Psion (Psychic)</option>
@@ -77,166 +75,9 @@
             </div>
 
             <div class="skill-tree-container" style="margin-top: var(--spacing-lg);">
-                <!-- Outlaw Class Tree -->
+                <!-- Class Tree (will be populated dynamically based on character class) -->
                 <div class="skill-tree" id="class-tree" style="display: block;">
-                    <svg class="skill-connections-svg" id="class-connections-svg">
-                        <!-- Connection lines will be dynamically generated here -->
-                    </svg>
-                    <div class="unified-skill-grid">
-                        <!-- Row 1 - Foundation Skills -->
-                        <div class="skill-node available" data-skill="dead-eye" data-prereqs="[]" style="grid-row: 1; grid-column: 2;">
-                            <div class="skill-icon">🎯</div>
-                            <div class="skill-points">0/3</div>
-                            <div class="skill-name">Dead Eye</div>
-                        </div>
-                        <div class="skill-node available" data-skill="quick-hands" data-prereqs="[]" style="grid-row: 1; grid-column: 4;">
-                            <div class="skill-icon">🤏</div>
-                            <div class="skill-points">0/3</div>
-                            <div class="skill-name">Quick Hands</div>
-                        </div>
-                        <div class="skill-node available" data-skill="lucky-charm" data-prereqs="[]" style="grid-row: 1; grid-column: 6;">
-                            <div class="skill-icon">🍀</div>
-                            <div class="skill-points">0/2</div>
-                            <div class="skill-name">Lucky Charm</div>
-                        </div>
-
-                        <!-- Row 2 - Weapon Specialists -->
-                        <div class="skill-node locked" data-skill="handgun-specialist" data-prereqs="[&quot;dead-eye&quot;]" style="grid-row: 2; grid-column: 1;">
-                            <div class="skill-icon">🔫</div>
-                            <div class="skill-points">0/2</div>
-                            <div class="skill-name">Handgun</div>
-                        </div>
-                        <div class="skill-node locked" data-skill="sniper-specialist" data-prereqs="[&quot;dead-eye&quot;]" style="grid-row: 2; grid-column: 2;">
-                            <div class="skill-icon">🔍</div>
-                            <div class="skill-points">0/2</div>
-                            <div class="skill-name">Sniper</div>
-                        </div>
-                        <div class="skill-node locked" data-skill="shotgun-specialist" data-prereqs="[&quot;quick-hands&quot;]" style="grid-row: 2; grid-column: 3;">
-                            <div class="skill-icon">💥</div>
-                            <div class="skill-points">0/2</div>
-                            <div class="skill-name">Shotgun</div>
-                        </div>
-                        <div class="skill-node locked" data-skill="steady-aim" data-prereqs="[&quot;quick-hands&quot;]" style="grid-row: 2; grid-column: 4;">
-                            <div class="skill-icon">🎯</div>
-                            <div class="skill-points">0/3</div>
-                            <div class="skill-name">Steady Aim</div>
-                        </div>
-                        <div class="skill-node locked" data-skill="hair-trigger" data-prereqs="[&quot;lucky-charm&quot;]" style="grid-row: 2; grid-column: 5;">
-                            <div class="skill-icon">⚡</div>
-                            <div class="skill-points">0/3</div>
-                            <div class="skill-name">Hair Trigger</div>
-                        </div>
-                        <div class="skill-node locked" data-skill="gunslinger-focus" data-prereqs="[&quot;lucky-charm&quot;]" style="grid-row: 2; grid-column: 6;">
-                            <div class="skill-icon">🎲</div>
-                            <div class="skill-points">0/2</div>
-                            <div class="skill-name">Focus</div>
-                        </div>
-
-                        <!-- Row 3 - Advanced Abilities -->
-                        <div class="skill-node locked" data-skill="ricochet-roulette" data-prereqs="[&quot;handgun-specialist&quot;]" style="grid-row: 3; grid-column: 1;">
-                            <div class="skill-icon">🪃</div>
-                            <div class="skill-points">0/5</div>
-                            <div class="skill-name">Ricochet</div>
-                        </div>
-                        <div class="skill-node locked" data-skill="fan-hammer" data-prereqs="[&quot;sniper-specialist&quot;,&quot;shotgun-specialist&quot;]" style="grid-row: 3; grid-column: 2;">
-                            <div class="skill-icon">🌪️</div>
-                            <div class="skill-points">0/5</div>
-                            <div class="skill-name">Fan Hammer</div>
-                        </div>
-                        <div class="skill-node locked" data-skill="mark-death" data-prereqs="[&quot;shotgun-specialist&quot;,&quot;steady-aim&quot;]" style="grid-row: 3; grid-column: 3;">
-                            <div class="skill-icon">💀</div>
-                            <div class="skill-points">0/5</div>
-                            <div class="skill-name">Mark Death</div>
-                        </div>
-                        <div class="skill-node locked" data-skill="run-gun" data-prereqs="[&quot;steady-aim&quot;]" style="grid-row: 3; grid-column: 4;">
-                            <div class="skill-icon">🏃</div>
-                            <div class="skill-points">0/4</div>
-                            <div class="skill-name">Run & Gun</div>
-                        </div>
-                        <div class="skill-node locked" data-skill="quick-draw" data-prereqs="[&quot;hair-trigger&quot;]" style="grid-row: 3; grid-column: 5;">
-                            <div class="skill-icon">⚡</div>
-                            <div class="skill-points">0/3</div>
-                            <div class="skill-name">Quick Draw</div>
-                        </div>
-                        <div class="skill-node locked" data-skill="lucky-streak" data-prereqs="[&quot;gunslinger-focus&quot;]" style="grid-row: 3; grid-column: 6;">
-                            <div class="skill-icon">⭐</div>
-                            <div class="skill-points">0/4</div>
-                            <div class="skill-name">Lucky Streak</div>
-                        </div>
-
-                        <!-- Row 4 - Elite Skills -->
-                        <div class="skill-node locked" data-skill="all-in" data-prereqs="[&quot;ricochet-roulette&quot;]" style="grid-row: 4; grid-column: 1;">
-                            <div class="skill-icon">🃏</div>
-                            <div class="skill-points">0/4</div>
-                            <div class="skill-name">All In</div>
-                        </div>
-                        <div class="skill-node locked" data-skill="bullet-time" data-prereqs="[&quot;fan-hammer&quot;]" style="grid-row: 4; grid-column: 2;">
-                            <div class="skill-icon">⏰</div>
-                            <div class="skill-points">0/4</div>
-                            <div class="skill-name">Bullet Time</div>
-                        </div>
-                        <div class="skill-node locked" data-skill="explosive-rounds" data-prereqs="[&quot;mark-death&quot;]" style="grid-row: 4; grid-column: 3;">
-                            <div class="skill-icon">💣</div>
-                            <div class="skill-points">0/4</div>
-                            <div class="skill-name">Explosive</div>
-                        </div>
-                        <div class="skill-node locked" data-skill="desperado" data-prereqs="[&quot;run-gun&quot;]" style="grid-row: 4; grid-column: 4;">
-                            <div class="skill-icon">💀</div>
-                            <div class="skill-points">0/4</div>
-                            <div class="skill-name">Desperado</div>
-                        </div>
-                        <div class="skill-node locked" data-skill="vanish" data-prereqs="[&quot;quick-draw&quot;]" style="grid-row: 4; grid-column: 5;">
-                            <div class="skill-icon">👻</div>
-                            <div class="skill-points">0/4</div>
-                            <div class="skill-name">Vanish</div>
-                        </div>
-                        <div class="skill-node locked" data-skill="roll-dice" data-prereqs="[&quot;lucky-streak&quot;]" style="grid-row: 4; grid-column: 6;">
-                            <div class="skill-icon">🎲</div>
-                            <div class="skill-points">0/3</div>
-                            <div class="skill-name">Roll Dice</div>
-                        </div>
-
-                        <!-- Row 5 - Mastery Skills -->
-                        <div class="skill-node locked" data-skill="never-miss" data-prereqs="[&quot;all-in&quot;,&quot;bullet-time&quot;]" style="grid-row: 5; grid-column: 1;">
-                            <div class="skill-icon">🎯</div>
-                            <div class="skill-points">0/3</div>
-                            <div class="skill-name">Never Miss</div>
-                        </div>
-                        <div class="skill-node locked" data-skill="ace-hole" data-prereqs="[&quot;explosive-rounds&quot;,&quot;desperado&quot;]" style="grid-row: 5; grid-column: 3;">
-                            <div class="skill-icon">🃏</div>
-                            <div class="skill-points">0/2</div>
-                            <div class="skill-name">Ace in Hole</div>
-                        </div>
-                        <div class="skill-node locked" data-skill="master-gunslinger" data-prereqs="[&quot;vanish&quot;,&quot;roll-dice&quot;]" style="grid-row: 5; grid-column: 5;">
-                            <div class="skill-icon">👑</div>
-                            <div class="skill-points">0/3</div>
-                            <div class="skill-name">Master</div>
-                        </div>
-
-                        <!-- Row 6 - Ultimate Skills -->
-                        <div class="skill-node locked ultimate" data-skill="high-noon" data-prereqs="[&quot;never-miss&quot;,&quot;ace-hole&quot;]" style="grid-row: 6; grid-column: 2;">
-                            <div class="skill-icon">🌅</div>
-                            <div class="skill-points">0/5</div>
-                            <div class="skill-name">High Noon</div>
-                        </div>
-                        <div class="skill-node locked ultimate" data-skill="dead-mans-hand" data-prereqs="[&quot;ace-hole&quot;]" style="grid-row: 6; grid-column: 3;">
-                            <div class="skill-icon">🃏</div>
-                            <div class="skill-points">0/5</div>
-                            <div class="skill-name">Dead Hand</div>
-                        </div>
-                        <div class="skill-node locked ultimate" data-skill="perfect-shot" data-prereqs="[&quot;ace-hole&quot;,&quot;master-gunslinger&quot;]" style="grid-row: 6; grid-column: 4;">
-                            <div class="skill-icon">🎯</div>
-                            <div class="skill-points">0/5</div>
-                            <div class="skill-name">Perfect Shot</div>
-                        </div>
-
-                        <!-- Row 7 - Legendary Capstone -->
-                        <div class="skill-node locked capstone" data-skill="legendary-outlaw" data-prereqs="[&quot;high-noon&quot;,&quot;dead-mans-hand&quot;,&quot;perfect-shot&quot;]" style="grid-row: 7; grid-column: 3;">
-                            <div class="skill-icon">🤠</div>
-                            <div class="skill-points">0/3</div>
-                            <div class="skill-name">Legendary</div>
-                        </div>
-                    </div>
+                    <!-- Will be populated by JavaScript based on character's class -->
                 </div>
 
                 <!-- Fire Skill Tree -->
@@ -358,6 +199,7 @@
         <a href="specs/index.html" style="color: #666; text-decoration: none; border-bottom: 1px dotted #666;">SPECS</a> • 
         <a href="tuning/index.html" style="color: #666; text-decoration: none; border-bottom: 1px dotted #666;">TUNING</a> • 
         <a href="admin/index.html" style="color: #666; text-decoration: none; border-bottom: 1px dotted #666;">ADMIN</a> • 
+        <button id="boostButton" style="background: #28a745; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 11px; margin: 0 10px;">🚀 BOOST</button> •
         LAST UPDATED: 2025-08-17 CST • SKILLS: Tier 4 capstone progression • ADMIN: Item creation console
     </footer>
 
@@ -368,21 +210,34 @@
                 playerLevel: 60,
                 paragonLevel: 40,
                 skillPoints: {
-                    available: 60, // Will be recalculated based on invested points
-                    total: 60,
+                    available: 60, // 1 per level, will be updated dynamically
+                    total: 60, // 1 per level
                     invested: {}
                 }
             }
         };
     </script>
+    <script src="assets/js/api-client-v4.js"></script>
+    <script src="assets/js/character-header.js"></script>
+    <script src="assets/js/boost-system.js"></script>
     <script src="assets/js/data-manager.js?v=3"></script>
     <script src="assets/js/skills.js?v=30"></script>
     <script>
+        // Character header is handled by character-header.js
+
         // Initialize skills directly
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
             console.log('Standalone skills page loaded');
+            
+            // Character header loaded automatically by character-header.js
+            
+            // All skill data now comes from database
+            console.log('Loading skill data from database...');
+            window.CourierGame.data.skillPoints.invested = {};
+            window.CourierGame.data.skillPoints.available = 2; // Will be updated from character data
+            
             if (window.SkillSystem) {
-                window.SkillSystem.init();
+                await window.SkillSystem.init();
                 window.SkillSystem.setupDebugClassSelector();
             }
         });

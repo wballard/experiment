@@ -327,9 +327,6 @@
         <!-- Character Page -->
         <div class="page-header">
             <h1 class="page-title">CHARACTER OVERVIEW</h1>
-            <div style="color: #ff6600; font-size: 12px; margin-top: 10px;">
-                🔧 DASHBOARD v1.10 - Copy Inventory Exactly
-            </div>
         </div>
 
         <div class="grid-2" style="gap: var(--spacing-md);">
@@ -502,10 +499,6 @@
                         </h3>
                         <div class="offensive-grid">
                             <div class="offensive-stat">
-                                <div class="offensive-stat-label">Fire Damage</div>
-                                <div class="offensive-stat-value" id="fire-damage">+342</div>
-                            </div>
-                            <div class="offensive-stat">
                                 <div class="offensive-stat-label">Ice Damage</div>
                                 <div class="offensive-stat-value" id="ice-damage">+185</div>
                             </div>
@@ -514,8 +507,16 @@
                                 <div class="offensive-stat-value" id="electric-damage">+278</div>
                             </div>
                             <div class="offensive-stat">
-                                <div class="offensive-stat-label">Poison Damage</div>
-                                <div class="offensive-stat-value" id="poison-damage">+156</div>
+                                <div class="offensive-stat-label">Fire Damage</div>
+                                <div class="offensive-stat-value" id="fire-damage">+342</div>
+                            </div>
+                            <div class="offensive-stat">
+                                <div class="offensive-stat-label">Nature Damage</div>
+                                <div class="offensive-stat-value" id="nature-damage">+156</div>
+                            </div>
+                            <div class="offensive-stat">
+                                <div class="offensive-stat-label">Earth Damage</div>
+                                <div class="offensive-stat-value" id="earth-damage">+0</div>
                             </div>
                         </div>
                     </div>
@@ -608,13 +609,6 @@
                         </h3>
                         <div class="resistance-grid">
                             <div class="resistance-stat">
-                                <div class="resistance-icon fire">🔥</div>
-                                <div class="resistance-info">
-                                    <div class="resistance-label">Fire</div>
-                                    <div class="resistance-value" id="fire-resistance">15%</div>
-                                </div>
-                            </div>
-                            <div class="resistance-stat">
                                 <div class="resistance-icon ice">❄️</div>
                                 <div class="resistance-info">
                                     <div class="resistance-label">Ice</div>
@@ -629,10 +623,10 @@
                                 </div>
                             </div>
                             <div class="resistance-stat">
-                                <div class="resistance-icon earth">🌍</div>
+                                <div class="resistance-icon fire">🔥</div>
                                 <div class="resistance-info">
-                                    <div class="resistance-label">Earth</div>
-                                    <div class="resistance-value" id="earth-resistance">8%</div>
+                                    <div class="resistance-label">Fire</div>
+                                    <div class="resistance-value" id="fire-resistance">15%</div>
                                 </div>
                             </div>
                             <div class="resistance-stat">
@@ -640,6 +634,13 @@
                                 <div class="resistance-info">
                                     <div class="resistance-label">Nature</div>
                                     <div class="resistance-value" id="nature-resistance">22%</div>
+                                </div>
+                            </div>
+                            <div class="resistance-stat">
+                                <div class="resistance-icon earth">🌍</div>
+                                <div class="resistance-info">
+                                    <div class="resistance-label">Earth</div>
+                                    <div class="resistance-value" id="earth-resistance">8%</div>
                                 </div>
                             </div>
                         </div>
@@ -685,10 +686,11 @@
     </footer>
 
     <!-- Load page-specific components -->
-    <script src="../assets/js/api-client.js"></script>
+    <script src="../assets/js/api-client-v4.js"></script>
+    <script src="../assets/js/character-header.js"></script>
     <script src="../assets/js/tooltips.js?v=17"></script>
     <script src="../assets/js/inventory-simple.js"></script>
-    <script src="../assets/js/character.js"></script>
+    <!-- REMOVED character.js - it was interfering with equipped items display -->
     <script>
         console.log('=== DASHBOARD LOADING WITH BACKEND API ===');
         
@@ -702,6 +704,726 @@
             }
         };
         
+        // Transform item data for tooltip system (comprehensive version)
+        function transformItemForTooltip(item) {
+            const tooltipItem = { ...item };
+            
+            // Convert snake_case to camelCase for tooltip system
+            tooltipItem.powerCost = item.power_cost;
+            tooltipItem.itemSubtype = item.item_subtype;
+            tooltipItem.weaponType = item.weapon_type;
+            
+            // Convert separate damage fields to damage object
+            if (item.damage_min && item.damage_max) {
+                tooltipItem.damage = {
+                    min: item.damage_min,
+                    max: item.damage_max
+                };
+                tooltipItem.damageMin = item.damage_min;
+                tooltipItem.damageMax = item.damage_max;
+            }
+            
+            // Convert all weapon stats from snake_case to camelCase
+            if (item.type === 'weapon') {
+                tooltipItem.fireRate = item.fire_rate;
+                tooltipItem.magazineSize = item.magazine_size;
+                tooltipItem.ammoCapacity = item.ammo_capacity;
+                tooltipItem.reloadSpeed = item.reload_speed;
+                tooltipItem.adsSpeed = item.ads_speed;
+                tooltipItem.rangeEffective = item.range_effective;
+                tooltipItem.rangeMax = item.range_max;
+                tooltipItem.critChance = item.crit_chance;
+                tooltipItem.critDamage = item.crit_damage;
+                tooltipItem.critMultiplier = item.crit_damage; // Same as critDamage
+                tooltipItem.handling = item.handling;
+                tooltipItem.accuracy = item.accuracy;
+                tooltipItem.stability = item.stability;
+                tooltipItem.recoil = item.recoil;
+                
+                // Convert percentages to proper format
+                if (item.crit_chance) {
+                    tooltipItem.critChance = item.crit_chance * 100; // Convert to percentage
+                }
+            }
+            
+            return tooltipItem;
+        }
+
+        // Setup stat tooltips (replaces CharacterSystem functionality)
+        function setupStatTooltips() {
+            console.log('Setting up stat tooltips...');
+            
+            // Setup core attribute tooltips
+            const statItems = document.querySelectorAll('.stat-item');
+            console.log('Found stat items:', statItems.length);
+            statItems.forEach(statItem => {
+                statItem.addEventListener('mouseenter', (e) => {
+                    if (window.CourierTooltips) {
+                        const stat = statItem.dataset.stat;
+                        const tooltipData = getStatTooltipData(stat);
+                        if (tooltipData) {
+                            window.CourierTooltips.showTooltip(e, tooltipData);
+                        }
+                    }
+                });
+                
+                statItem.addEventListener('mouseleave', () => {
+                    if (window.CourierTooltips) {
+                        window.CourierTooltips.hideTooltip();
+                    }
+                });
+            });
+            
+            // Setup offensive stat tooltips
+            const offensiveStats = document.querySelectorAll('.offensive-stat');
+            console.log('Found offensive stats:', offensiveStats.length);
+            offensiveStats.forEach(offensiveStat => {
+                offensiveStat.addEventListener('mouseenter', (e) => {
+                    if (window.CourierTooltips) {
+                        const statLabel = offensiveStat.querySelector('.offensive-stat-label');
+                        const statValue = offensiveStat.querySelector('.offensive-stat-value');
+                        if (statLabel && statValue) {
+                            const tooltipData = getDetailedOffensiveTooltip(statLabel.textContent, statValue.textContent);
+                            window.CourierTooltips.showTooltip(e, tooltipData);
+                        }
+                    }
+                });
+                
+                offensiveStat.addEventListener('mouseleave', () => {
+                    if (window.CourierTooltips) {
+                        window.CourierTooltips.hideTooltip();
+                    }
+                });
+            });
+            
+            // Setup defensive stat tooltips
+            const defensiveStats = document.querySelectorAll('.defense-stat');
+            console.log('Found defensive stats:', defensiveStats.length);
+            defensiveStats.forEach(defensiveStat => {
+                defensiveStat.addEventListener('mouseenter', (e) => {
+                    if (window.CourierTooltips) {
+                        const statLabel = defensiveStat.querySelector('.defense-stat-label');
+                        const statValue = defensiveStat.querySelector('.defense-stat-value');
+                        if (statLabel && statValue) {
+                            const tooltipData = getDetailedDefensiveTooltip(statLabel.textContent, statValue.textContent);
+                            window.CourierTooltips.showTooltip(e, tooltipData);
+                        }
+                    }
+                });
+                
+                defensiveStat.addEventListener('mouseleave', () => {
+                    if (window.CourierTooltips) {
+                        window.CourierTooltips.hideTooltip();
+                    }
+                });
+            });
+        }
+        
+        // Get detailed breakdown for offensive stats
+        function getDetailedOffensiveTooltip(statName, currentValue) {
+            const equippedItems = window.CourierGame?.data?.equippedItems || {};
+            const calculatedStats = calculateCharacterStats(equippedItems);
+            
+            // Build description as HTML with proper line breaks
+            let sources = [];
+            
+            // Different logic based on stat type
+            switch(statName) {
+                case 'Primary DPS':
+                case 'Secondary DPS':
+                case 'Melee DPS':
+                    sources.push("Base Character: 0");
+                    Object.entries(equippedItems).forEach(([slot, item]) => {
+                        if (item && item.type === 'weapon') {
+                            const dps = item.damage_min ? ((item.damage_min + item.damage_max) / 2 * (item.fire_rate || 60) / 60) : 0;
+                            if (dps > 0) sources.push(`${item.name}: +${Math.round(dps)}`);
+                        }
+                    });
+                    break;
+                    
+                case 'Crit Chance':
+                    sources.push("Base Character: 5%");
+                    Object.entries(equippedItems).forEach(([slot, item]) => {
+                        if (item && item.crit_chance) {
+                            sources.push(`${item.name}: +${(item.crit_chance * 100).toFixed(1)}%`);
+                        }
+                    });
+                    break;
+                    
+                case 'Crit Damage':
+                    sources.push("Base Character: 150%");
+                    Object.entries(equippedItems).forEach(([slot, item]) => {
+                        if (item && item.crit_damage && item.crit_damage > 1) {
+                            sources.push(`${item.name}: +${((item.crit_damage - 1) * 100).toFixed(0)}%`);
+                        }
+                    });
+                    break;
+                    
+                case 'Fire Damage':
+                case 'Ice Damage':
+                case 'Electric Damage':
+                case 'Nature Damage':
+                case 'Earth Damage':
+                    let damageType = statName.toLowerCase().replace(' damage', '_damage');
+                    // Handle nature damage mapping (poison in database)
+                    if (damageType === 'nature_damage') {
+                        damageType = 'poison_damage';
+                    }
+                    sources.push("Base Character: 0");
+                    Object.entries(equippedItems).forEach(([slot, item]) => {
+                        if (item && item.type === 'mod' && item[damageType + '_flat']) {
+                            sources.push(`${item.name}: +${item[damageType + '_flat']}`);
+                        }
+                    });
+                    break;
+                    
+                default:
+                    sources.push("Base Character: varies");
+                    sources.push("Equipment bonuses calculated from equipped items");
+            }
+            
+            // Format sources as HTML with each on a separate line
+            const sourcesHtml = sources.map(source => 
+                `<div style="padding: 4px 0; font-size: 12px; color: var(--text-normal); font-weight: normal;">• ${source}</div>`
+            ).join('');
+            
+            return {
+                name: statName,
+                description: `<div style="margin-bottom: 8px; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim);">Sources</div>${sourcesHtml}`,
+                type: 'stat',
+                rarity: 'common',
+                value: currentValue,
+                customHtml: true
+            };
+        }
+        
+        // Get detailed breakdown for defensive stats
+        function getDetailedDefensiveTooltip(statName, currentValue) {
+            const equippedItems = window.CourierGame?.data?.equippedItems || {};
+            const calculatedStats = calculateCharacterStats(equippedItems);
+            
+            let sources = [];
+            
+            switch(statName) {
+                case 'Health':
+                    sources.push("Base Character: 100");
+                    Object.entries(equippedItems).forEach(([slot, item]) => {
+                        if (item && item.health) {
+                            sources.push(`${item.name}: +${item.health}`);
+                        }
+                    });
+                    break;
+                    
+                case 'Health Regen':
+                    sources.push("Base: 5% of total health per second");
+                    sources.push(`Current: ${Math.round(calculatedStats.health * 0.05)}/sec`);
+                    break;
+                    
+                case 'Energy Shield':
+                    sources.push("Base: 30% of total health");
+                    sources.push(`Current: ${Math.round(calculatedStats.health * 0.3)}`);
+                    break;
+                    
+                case 'Armor':
+                    sources.push("Base Character: 0");
+                    Object.entries(equippedItems).forEach(([slot, item]) => {
+                        if (item && item.armor) {
+                            sources.push(`${item.name}: +${item.armor}`);
+                        }
+                    });
+                    break;
+                    
+                case 'Fire Resistance':
+                case 'Ice Resistance':
+                case 'Electric Resistance':
+                    const resType = statName.toLowerCase().replace(' resistance', '');
+                    sources.push("Base Character: 0%");
+                    Object.entries(equippedItems).forEach(([slot, item]) => {
+                        if (item && item.resistances && item.resistances[resType]) {
+                            sources.push(`${item.name}: +${item.resistances[resType]}%`);
+                        }
+                    });
+                    break;
+                    
+                default:
+                    sources.push("Base Character: varies");
+                    sources.push("Equipment bonuses calculated from equipped items");
+            }
+            
+            // Format sources as HTML with each on a separate line
+            const sourcesHtml = sources.map(source => 
+                `<div style="padding: 4px 0; font-size: 12px; color: var(--text-normal); font-weight: normal;">• ${source}</div>`
+            ).join('');
+            
+            return {
+                name: statName,
+                description: `<div style="margin-bottom: 8px; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim);">Sources</div>${sourcesHtml}`,
+                type: 'stat',
+                rarity: 'common',
+                value: currentValue,
+                customHtml: true
+            };
+        }
+        
+        // Calculate real character stats from equipped items
+        function calculateCharacterStats(equippedItems) {
+            const baseStats = {
+                health: 100,
+                power_max: 300, // Base power capacity
+                armor: 0,
+                crit_chance: 5, // 5% base
+                crit_damage: 150, // 150% base (1.5x multiplier)
+                accuracy: 75,
+                stability: 50,
+                fire_resistance: 0,
+                ice_resistance: 0,
+                electric_resistance: 0,
+                power_used: 0,
+                fire_damage: 0,
+                ice_damage: 0,
+                electric_damage: 0
+            };
+            
+            const totalStats = { ...baseStats };
+            
+            // Add stats from each equipped item
+            Object.values(equippedItems).forEach(item => {
+                if (item) {
+                    totalStats.health += item.health || 0;
+                    totalStats.armor += item.armor || 0;
+                    totalStats.power_used += item.power_cost || 0;
+                    
+                    // Add power capacity from armor (some armor increases max power)
+                    if (item.type === 'armor' && item.power) {
+                        totalStats.power_max += item.power || 0;
+                    }
+                    
+                    // Add resistances
+                    if (item.resistances) {
+                        totalStats.ice_resistance += item.resistances.ice || 0;
+                        totalStats.electric_resistance += item.resistances.electric || 0;
+                        totalStats.fire_resistance += item.resistances.fire || 0;
+                        totalStats.nature_resistance += item.resistances.nature || 0;
+                        totalStats.earth_resistance += item.resistances.earth || 0;
+                    }
+                    
+                    // Add weapon stats
+                    if (item.type === 'weapon') {
+                        totalStats.crit_chance += (item.crit_chance * 100) || 0;
+                        totalStats.crit_damage += ((item.crit_damage - 1) * 100) || 0;
+                        totalStats.accuracy += item.accuracy || 0;
+                        totalStats.stability += item.stability || 0;
+                    }
+                    
+                    // Add elemental damage from mods
+                    if (item.type === 'mod') {
+                        totalStats.ice_damage += item.ice_damage_flat || 0;
+                        totalStats.electric_damage += item.electric_damage_flat || 0;
+                        totalStats.fire_damage += item.fire_damage_flat || 0;
+                        totalStats.nature_damage += item.nature_damage_flat || 0;
+                        totalStats.earth_damage += item.earth_damage_flat || 0;
+                    }
+                }
+            });
+            
+            // Calculate available power
+            totalStats.power_available = totalStats.power_max - totalStats.power_used;
+            
+            return totalStats;
+        }
+        
+        // Update dashboard stats display with real values
+        function updateDashboardStats(calculatedStats) {
+            // Update power budget section
+            const powerUsedElement = document.querySelector('.power-used');
+            const powerMaxElement = document.querySelector('.power-max');
+            const powerAvailableElement = document.querySelector('.power-available');
+            const powerProgressFill = document.querySelector('.power-progress-fill');
+            
+            if (powerUsedElement) powerUsedElement.textContent = calculatedStats.power_used;
+            if (powerMaxElement) powerMaxElement.textContent = calculatedStats.power_max;
+            if (powerAvailableElement) powerAvailableElement.textContent = calculatedStats.power_available;
+            
+            // Update power progress bar
+            if (powerProgressFill && calculatedStats.power_max > 0) {
+                const percentage = (calculatedStats.power_used / calculatedStats.power_max) * 100;
+                powerProgressFill.style.width = `${Math.min(percentage, 100)}%`;
+            }
+            
+            // Update stat values in the UI
+            const statElements = {
+                vigor: document.querySelector('[data-stat="vigor"] .stat-value'),
+                focus: document.querySelector('[data-stat="focus"] .stat-value'), 
+                precision: document.querySelector('[data-stat="precision"] .stat-value'),
+                toughness: document.querySelector('[data-stat="toughness"] .stat-value')
+            };
+            
+            if (statElements.vigor) statElements.vigor.textContent = Math.round(calculatedStats.health);
+            if (statElements.focus) statElements.focus.textContent = Math.round(calculatedStats.power_available);
+            if (statElements.precision) statElements.precision.textContent = Math.round(calculatedStats.accuracy);
+            if (statElements.toughness) statElements.toughness.textContent = Math.round(calculatedStats.armor);
+            
+            // Update offensive stats using correct IDs
+            const offensiveElements = {
+                crit_chance: document.getElementById('crit-chance'),
+                crit_damage: document.getElementById('crit-damage'),
+                weak_spot: document.getElementById('weak-spot-damage'),
+                ice_damage: document.getElementById('ice-damage'),
+                electric_damage: document.getElementById('electric-damage'),
+                fire_damage: document.getElementById('fire-damage'),
+                nature_damage: document.getElementById('nature-damage'),
+                earth_damage: document.getElementById('earth-damage')
+            };
+            
+            if (offensiveElements.crit_chance) offensiveElements.crit_chance.textContent = calculatedStats.crit_chance.toFixed(1) + '%';
+            if (offensiveElements.crit_damage) offensiveElements.crit_damage.textContent = calculatedStats.crit_damage.toFixed(0) + '%';
+            if (offensiveElements.weak_spot) offensiveElements.weak_spot.textContent = '2.0x'; // Base weak spot multiplier
+            if (offensiveElements.ice_damage) offensiveElements.ice_damage.textContent = `+${calculatedStats.ice_damage || 0}`;
+            if (offensiveElements.electric_damage) offensiveElements.electric_damage.textContent = `+${calculatedStats.electric_damage || 0}`;
+            if (offensiveElements.fire_damage) offensiveElements.fire_damage.textContent = `+${calculatedStats.fire_damage || 0}`;
+            if (offensiveElements.nature_damage) offensiveElements.nature_damage.textContent = `+${calculatedStats.nature_damage || 0}`;
+            if (offensiveElements.earth_damage) offensiveElements.earth_damage.textContent = `+${calculatedStats.earth_damage || 0}`;
+            
+            // Update defensive stats using correct IDs
+            const defensiveElements = {
+                health: document.getElementById('total-health'),
+                health_regen: document.getElementById('health-regen'),
+                energy_shield: document.getElementById('energy-shield'),
+                armor: document.getElementById('total-armor'),
+                ice_res: document.getElementById('ice-resistance'),
+                electric_res: document.getElementById('electric-resistance'),
+                fire_res: document.getElementById('fire-resistance'),
+                nature_res: document.getElementById('nature-resistance'),
+                earth_res: document.getElementById('earth-resistance')
+            };
+            
+            if (defensiveElements.health) defensiveElements.health.textContent = calculatedStats.health.toLocaleString();
+            if (defensiveElements.health_regen) defensiveElements.health_regen.textContent = `${Math.round(calculatedStats.health * 0.05)}/sec`; // 5% of health per second
+            if (defensiveElements.energy_shield) defensiveElements.energy_shield.textContent = Math.round(calculatedStats.health * 0.3).toLocaleString(); // 30% of health as shield
+            if (defensiveElements.armor) defensiveElements.armor.textContent = calculatedStats.armor.toLocaleString();
+            if (defensiveElements.ice_res) defensiveElements.ice_res.textContent = `${calculatedStats.ice_resistance}%`;
+            if (defensiveElements.electric_res) defensiveElements.electric_res.textContent = `${calculatedStats.electric_resistance}%`;
+            if (defensiveElements.fire_res) defensiveElements.fire_res.textContent = `${calculatedStats.fire_resistance}%`;
+            if (defensiveElements.nature_res) defensiveElements.nature_res.textContent = `${calculatedStats.nature_resistance}%`;
+            if (defensiveElements.earth_res) defensiveElements.earth_res.textContent = `${calculatedStats.earth_resistance}%`;
+        }
+
+        // Core attribute breakdown functions
+        function getVigorBreakdown(vigorValue, calculatedStats) {
+            const healthBonus = Math.floor(vigorValue * 0.15); // 15% health per vigor point
+            const healthRegen = Math.floor(calculatedStats.health * 0.05); // 5% of total health per second
+            const staminaBonus = Math.floor(vigorValue * 0.8); // 80% stamina per vigor point
+            
+            const effects = [
+                `Health Bonus: +${healthBonus}`,
+                `Health Regen: ${healthRegen}/sec`,
+                `Stamina: +${staminaBonus}`
+            ];
+            
+            const effectsHtml = effects.map(effect => 
+                `<div style="padding: 4px 0; font-size: 12px; color: var(--text-normal); font-weight: normal;">• ${effect}</div>`
+            ).join('');
+            
+            return `<div style="margin-bottom: 8px; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim);">Affects Health and Stamina</div>${effectsHtml}`;
+        }
+
+        function getFocusBreakdown(focusValue, calculatedStats) {
+            const powerBonus = Math.floor(focusValue * 0.4); // 40% power capacity per focus point  
+            const skillDamage = Math.floor(focusValue * 0.12); // 12% skill damage per focus point
+            const cooldownReduction = Math.floor(focusValue * 0.05); // 5% cooldown reduction per focus point
+            const currentPower = calculatedStats.power_max - calculatedStats.power_used;
+            
+            const effects = [
+                `Power Capacity: +${powerBonus} (${currentPower}/${calculatedStats.power_max})`,
+                `Skill Damage: +${skillDamage}%`,
+                `Cooldown Reduction: ${cooldownReduction}%`
+            ];
+            
+            const effectsHtml = effects.map(effect => 
+                `<div style="padding: 4px 0; font-size: 12px; color: var(--text-normal); font-weight: normal;">• ${effect}</div>`
+            ).join('');
+            
+            return `<div style="margin-bottom: 8px; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim);">Affects Power and Skills</div>${effectsHtml}`;
+        }
+
+        function getForceBreakdown(forceValue, calculatedStats) {
+            const weaponDamage = Math.floor(forceValue * 0.25); // 25% weapon damage per force point
+            const critDamage = Math.floor(forceValue * 0.18); // 18% crit damage per force point
+            const armorPen = Math.floor(forceValue * 0.08); // 8% armor penetration per force point
+            const meleeBonus = Math.floor(forceValue * 0.3); // 30% melee damage per force point
+            
+            const effects = [
+                `Weapon Damage: +${weaponDamage}%`,
+                `Critical Damage: +${critDamage}%`,
+                `Armor Penetration: ${armorPen}%`,
+                `Melee Damage: +${meleeBonus}%`
+            ];
+            
+            const effectsHtml = effects.map(effect => 
+                `<div style="padding: 4px 0; font-size: 12px; color: var(--text-normal); font-weight: normal;">• ${effect}</div>`
+            ).join('');
+            
+            return `<div style="margin-bottom: 8px; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim);">Affects Weapon Damage</div>${effectsHtml}`;
+        }
+
+        function getMomentumBreakdown(momentumValue, calculatedStats) {
+            const moveSpeed = Math.floor(momentumValue * 0.06); // 6% move speed per momentum point
+            const reloadSpeed = Math.floor(momentumValue * 0.12); // 12% reload speed per momentum point
+            const dodgeChance = Math.floor(momentumValue * 0.04); // 4% dodge chance per momentum point  
+            const attackSpeed = Math.floor(momentumValue * 0.08); // 8% attack speed per momentum point
+            
+            const effects = [
+                `Movement Speed: +${moveSpeed}%`,
+                `Reload Speed: +${reloadSpeed}%`,
+                `Dodge Chance: ${dodgeChance}%`,
+                `Attack Speed: +${attackSpeed}%`
+            ];
+            
+            const effectsHtml = effects.map(effect => 
+                `<div style="padding: 4px 0; font-size: 12px; color: var(--text-normal); font-weight: normal;">• ${effect}</div>`
+            ).join('');
+            
+            return `<div style="margin-bottom: 8px; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim);">Affects Speed and Agility</div>${effectsHtml}`;
+        }
+
+        function getResonanceBreakdown(resonanceValue, calculatedStats) {
+            const elemDamage = Math.floor(resonanceValue * 0.2); // 20% elemental damage per resonance point
+            const elemResist = Math.floor(resonanceValue * 0.15); // 15% elemental resistance per resonance point
+            const statusDuration = Math.floor(resonanceValue * 0.1); // 10% status effect duration per resonance point
+            const statusResist = Math.floor(resonanceValue * 0.12); // 12% status resistance per resonance point
+            
+            const effects = [
+                `Elemental Damage: +${elemDamage}%`,
+                `Elemental Resistance: +${elemResist}%`,
+                `Status Duration: +${statusDuration}%`,
+                `Status Resistance: +${statusResist}%`
+            ];
+            
+            const effectsHtml = effects.map(effect => 
+                `<div style="padding: 4px 0; font-size: 12px; color: var(--text-normal); font-weight: normal;">• ${effect}</div>`
+            ).join('');
+            
+            return `<div style="margin-bottom: 8px; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim);">Affects Elemental Power</div>${effectsHtml}`;
+        }
+
+        function getDefenseBreakdown(defenseValue, calculatedStats) {
+            const armorBonus = Math.floor(defenseValue * 0.35); // 35% armor per defense point
+            const damageReduction = Math.floor(calculatedStats.armor / (calculatedStats.armor + 300) * 100); // Armor formula
+            const healthBonus = Math.floor(defenseValue * 0.08); // 8% health per defense point
+            const resistanceBonus = Math.floor(defenseValue * 0.05); // 5% all resistance per defense point
+            
+            const effects = [
+                `Armor: +${armorBonus} (${damageReduction}% damage reduction)`,
+                `Health Bonus: +${healthBonus}%`,
+                `All Resistances: +${resistanceBonus}%`
+            ];
+            
+            const effectsHtml = effects.map(effect => 
+                `<div style="padding: 4px 0; font-size: 12px; color: var(--text-normal); font-weight: normal;">• ${effect}</div>`
+            ).join('');
+            
+            return `<div style="margin-bottom: 8px; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim);">Affects Defense and Survivability</div>${effectsHtml}`;
+        }
+
+        // Get tooltip data for each stat with real calculated values
+        function getStatTooltipData(stat) {
+            const equippedItems = window.CourierGame?.data?.equippedItems || {};
+            const calculatedStats = calculateCharacterStats(equippedItems);
+            
+            // Get current stat values from UI
+            const currentStats = {
+                vigor: parseInt(document.querySelector('[data-stat="vigor"] .stat-value')?.textContent) || 280,
+                focus: parseInt(document.querySelector('[data-stat="focus"] .stat-value')?.textContent) || 310,
+                force: parseInt(document.querySelector('[data-stat="force"] .stat-value')?.textContent) || 245,
+                momentum: parseInt(document.querySelector('[data-stat="momentum"] .stat-value')?.textContent) || 195,
+                resonance: parseInt(document.querySelector('[data-stat="resonance"] .stat-value')?.textContent) || 220,
+                defense: parseInt(document.querySelector('[data-stat="defense"] .stat-value')?.textContent) || 165
+            };
+
+            const statInfo = {
+                vigor: {
+                    name: 'Vigor',
+                    description: getVigorBreakdown(currentStats.vigor, calculatedStats),
+                    type: 'stat',
+                    rarity: 'common',
+                    value: currentStats.vigor,
+                    customHtml: true
+                },
+                focus: {
+                    name: 'Focus', 
+                    description: getFocusBreakdown(currentStats.focus, calculatedStats),
+                    type: 'stat',
+                    rarity: 'common',
+                    value: currentStats.focus,
+                    customHtml: true
+                },
+                force: {
+                    name: 'Force',
+                    description: getForceBreakdown(currentStats.force, calculatedStats),
+                    type: 'stat',
+                    rarity: 'common',
+                    value: currentStats.force,
+                    customHtml: true
+                },
+                momentum: {
+                    name: 'Momentum',
+                    description: getMomentumBreakdown(currentStats.momentum, calculatedStats),
+                    type: 'stat',
+                    rarity: 'common',
+                    value: currentStats.momentum,
+                    customHtml: true
+                },
+                resonance: {
+                    name: 'Resonance',
+                    description: getResonanceBreakdown(currentStats.resonance, calculatedStats),
+                    type: 'stat',
+                    rarity: 'common',
+                    value: currentStats.resonance,
+                    customHtml: true
+                },
+                defense: {
+                    name: 'Defense',
+                    description: getDefenseBreakdown(currentStats.defense, calculatedStats),
+                    type: 'stat',
+                    rarity: 'common',
+                    value: currentStats.defense,
+                    customHtml: true
+                },
+                crit_chance: {
+                    name: 'Critical Hit Chance',
+                    description: `Chance for critical hits: ${calculatedStats.crit_chance.toFixed(1)}%`,
+                    type: 'stat'
+                },
+                crit_damage: {
+                    name: 'Critical Hit Damage', 
+                    description: `Extra damage on critical hits: ${calculatedStats.crit_damage.toFixed(0)}%`,
+                    type: 'stat'
+                },
+                armor: {
+                    name: 'Armor',
+                    description: `Damage reduction from armor: ${calculatedStats.armor}`,
+                    type: 'stat'
+                },
+                health: {
+                    name: 'Health',
+                    description: `Maximum health points: ${calculatedStats.health}`,
+                    type: 'stat'
+                },
+                fire_resistance: {
+                    name: 'Fire Resistance',
+                    description: `Resistance to fire damage: ${calculatedStats.fire_resistance}`,
+                    type: 'stat'
+                },
+                ice_resistance: {
+                    name: 'Ice Resistance', 
+                    description: `Resistance to ice damage: ${calculatedStats.ice_resistance}`,
+                    type: 'stat'
+                },
+                electric_resistance: {
+                    name: 'Electric Resistance',
+                    description: `Resistance to electric damage: ${calculatedStats.electric_resistance}`,
+                    type: 'stat'
+                }
+            };
+            
+            return statInfo[stat] || null;
+        }
+
+        // Simple function to load and display equipped items
+        async function loadAndDisplayEquippedItems() {
+            try {
+                console.log('Loading equipped items directly...');
+                const response = await window.CourierAPI.getEquipped();
+                console.log('Equipped items response:', response);
+                
+                if (response.success && response.equipped) {
+                    const equipped = response.equipped;
+                    
+                    // Update the global game state that CharacterSystem expects
+                    if (!window.CourierGame) {
+                        window.CourierGame = { data: {} };
+                    }
+                    if (!window.CourierGame.data) {
+                        window.CourierGame.data = {};
+                    }
+                    window.CourierGame.data.equippedItems = equipped;
+                    console.log('Updated global equipped items:', equipped);
+                    
+                    // Calculate and update real stats based on equipped items
+                    const calculatedStats = calculateCharacterStats(equipped);
+                    updateDashboardStats(calculatedStats);
+                    console.log('Updated dashboard stats:', calculatedStats);
+                    
+                    // Render each equipped item
+                    Object.keys(equipped).forEach(slot => {
+                        const item = equipped[slot];
+                        if (item) {
+                            const slotElement = document.querySelector(`[data-slot="${slot}"]`);
+                            if (slotElement) {
+                                // Fix icon path for dashboard (in game/ subfolder)  
+                                let iconPath = item.icon;
+                                console.log(`Original icon path: ${iconPath}, type: ${typeof iconPath}`);
+                                
+                                if (!iconPath || iconPath === 'undefined' || iconPath === 'null') {
+                                    console.warn(`Invalid icon path for ${item.name}: ${iconPath}`);
+                                    iconPath = '../assets/images/Icons/Symbols/Design.png'; // Fallback icon
+                                } else if (!iconPath.startsWith('../')) {
+                                    iconPath = '../' + iconPath;
+                                }
+                                
+                                console.log(`Final icon path: ${iconPath}`);
+                                
+                                // Add cache-busting parameter like inventory.html does
+                                const cacheBuster = Date.now();
+                                const iconPathWithCache = `${iconPath}?v=${cacheBuster}`;
+                                
+                                // Use EXACT same HTML structure as inventory-simple.js with proper sizing
+                                slotElement.innerHTML = `
+                                    <div class="equipped-item rarity-${item.rarity}">
+                                        <div class="item-icon">
+                                            <img src="${iconPathWithCache}" alt="" class="item-icon-img" />
+                                        </div>
+                                        <div class="power-rating">${item.power_cost || item.powerCost || 0}</div>
+                                        <div style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.8); color: white; font-size: 8px; padding: 2px; text-align: center;">${item.name}</div>
+                                    </div>
+                                `;
+                                
+                                // Add tooltips back now that CharacterSystem interference is resolved
+                                slotElement.addEventListener('mouseenter', (e) => {
+                                    console.log('Equipment mouseover triggered for:', item.name);
+                                    if (window.CourierTooltips) {
+                                        const tooltipItem = transformItemForTooltip(item);
+                                        console.log('Showing tooltip for:', tooltipItem);
+                                        window.CourierTooltips.showTooltip(e, tooltipItem);
+                                    } else {
+                                        console.error('CourierTooltips not available for equipment');
+                                    }
+                                });
+                                
+                                slotElement.addEventListener('mouseleave', () => {
+                                    if (window.CourierTooltips) {
+                                        window.CourierTooltips.hideTooltip();
+                                    }
+                                });
+                                
+                                // Add click functionality for equipped weapons (like inventory-simple.js)
+                                if (item.type === 'weapon') {
+                                    slotElement.style.cursor = 'pointer';
+                                    slotElement.addEventListener('click', (e) => {
+                                        e.stopPropagation();
+                                        window.location.href = `../weapon-detail.html?id=${item.id}`;
+                                    });
+                                }
+                            }
+                        }
+                    });
+                } else {
+                    console.log('No equipped items found or API call failed');
+                }
+            } catch (error) {
+                console.error('Error loading equipped items:', error);
+            }
+        }
         
         document.addEventListener('DOMContentLoaded', async () => {
             console.log('=== DOM CONTENT LOADED ===');
@@ -711,23 +1433,42 @@
                 const health = await window.CourierAPI.healthCheck();
                 console.log('API Health Check:', health);
                 
-                // Initialize tooltips
+                // Initialize tooltips with debugging
+                console.log('Checking tooltip system...', window.CourierTooltips);
                 if (window.CourierTooltips) {
                     window.CourierTooltips.init();
-                    console.log('Tooltips initialized');
+                    console.log('Tooltips initialized successfully');
+                    console.log('Available tooltip methods:', Object.keys(window.CourierTooltips));
+                } else {
+                    console.error('CourierTooltips not found - tooltip system not loaded');
+                    console.log('Available window objects:', Object.keys(window).filter(key => key.includes('tooltip') || key.includes('Tooltip')));
                 }
                 
-                // Initialize simple inventory system (only for equipped items display)
-                await window.SimpleInventory.loadEquipped();
-                window.SimpleInventory.renderEquipped();
-                window.SimpleInventory.updatePowerBudget();
+                // Simple equipped items display
+                await loadAndDisplayEquippedItems();
                 
                 
-                // Initialize character system for stat source tooltips
-                if (window.CharacterSystem) {
-                    await window.CharacterSystem.init();
-                    console.log('Character system initialized for stat tooltips');
-                }
+                // DISABLE CHARACTER SYSTEM COMPLETELY - it's interfering with equipped items display
+                // The character system keeps overwriting our equipment slots
+                console.log('Character system disabled to prevent equipment display conflicts');
+                
+                // Add window focus listener to refresh dashboard when returning from other pages
+                window.addEventListener('focus', async () => {
+                    console.log('Dashboard gained focus - refreshing equipment and stats...');
+                    try {
+                        await loadAndDisplayEquippedItems(); // This also updates stats
+                        
+                        // Refresh character header if available
+                        if (window.CharacterHeader) {
+                            await window.CharacterHeader.refresh();
+                        }
+                    } catch (error) {
+                        console.error('Error refreshing dashboard on focus:', error);
+                    }
+                });
+                
+                // Setup stat tooltips (replaces CharacterSystem stat tooltips)
+                setupStatTooltips();
                 
                 console.log('=== DASHBOARD LOADED WITH BACKEND API ===');
             } catch (error) {

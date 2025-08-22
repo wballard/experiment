@@ -482,7 +482,8 @@
     </div>
 
     <!-- Scripts -->
-    <script src="assets/js/api-client.js"></script>
+    <script src="assets/js/api-client-v4.js"></script>
+    <script src="assets/js/character-header.js"></script>
     <script src="assets/js/tooltips.js"></script>
     <script>
         class WeaponDetail {
@@ -603,7 +604,7 @@
                     
                     // Try direct fetch first as fallback
                     try {
-                        const directResponse = await fetch('/api/player/1/mods');
+                        const directResponse = await fetch('/api/mods');
                         console.log('Direct fetch response status:', directResponse.status);
                         
                         if (directResponse.ok) {
@@ -730,11 +731,11 @@
                 
                 // Define mod categories
                 const attachmentMods = [
-                    { name: 'Scope', icon: 'assets/images/Icons/Mods/Scope.png' },
-                    { name: 'Barrel', icon: 'assets/images/Icons/Mods/Barrel.png' },
-                    { name: 'Foregrip', icon: 'assets/images/Icons/Mods/Foregrip.png' },
-                    { name: 'Magazine', icon: 'assets/images/Icons/Mods/Mag.png' },
-                    { name: 'Stock', icon: 'assets/images/Icons/Mods/Stock.png' }
+                    { name: 'Scope', icon: 'assets/images/Icons/Mods/attachment_mods/Scope.png' },
+                    { name: 'Barrel', icon: 'assets/images/Icons/Mods/attachment_mods/Barrel.png' },
+                    { name: 'Foregrip', icon: 'assets/images/Icons/Mods/attachment_mods/Foregrip.png' },
+                    { name: 'Magazine', icon: 'assets/images/Icons/Mods/attachment_mods/Mag.png' },
+                    { name: 'Stock', icon: 'assets/images/Icons/Mods/attachment_mods/Stock.png' }
                 ];
                 
                 const catalystMods = [
@@ -1112,7 +1113,12 @@
                 }
                 
                 // Filter available mods by type
-                const compatibleMods = this.availableMods.filter(mod => mod.mod_type === slotType);
+                console.log('All available mods:', this.availableMods);
+                console.log('Looking for mods with mod_type:', slotType);
+                const compatibleMods = this.availableMods.filter(mod => {
+                    console.log(`Mod ${mod.name}: mod_type="${mod.mod_type}", matches=${mod.mod_type === slotType}`);
+                    return mod.mod_type === slotType;
+                });
                 console.log('Compatible mods for', slotType, ':', compatibleMods);
                 
                 compatibleMods.forEach(mod => {

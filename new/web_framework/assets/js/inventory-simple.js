@@ -42,11 +42,14 @@ window.SimpleInventory = {
 
     async loadEquipped() {
         try {
+            console.log('Calling API getEquipped()...');
             const response = await window.CourierAPI.getEquipped();
+            console.log('API response for equipped items:', response);
             this.equipped = response.equipped || {};
             console.log('Loaded equipped items:', this.equipped);
         } catch (error) {
             console.error('Failed to load equipped items:', error);
+            console.error('Error details:', error);
             this.equipped = {};
         }
     },
@@ -86,9 +89,9 @@ window.SimpleInventory = {
             const equippedCount = equippedItemCounts[itemId] || 0;
             const availableCount = items.length - equippedCount;
             
-            // Add the available instances (not equipped), but exclude mods from main inventory
+            // Add the available instances (not equipped), include all item types
             for (let i = 0; i < availableCount; i++) {
-                if (items[i] && items[i].type !== 'mod') {
+                if (items[i]) {
                     availableItems.push(items[i]);
                 }
             }
@@ -103,9 +106,10 @@ window.SimpleInventory = {
             return;
         }
 
-        // Separate items by type, excluding mods from main inventory
+        // Separate items by type
         const weapons = availableItems.filter(item => item.type === 'weapon');
         const armor = availableItems.filter(item => item.type === 'armor');
+        const mods = availableItems.filter(item => item.type === 'mod');
 
         // Create weapon section
         if (weapons.length > 0) {
@@ -144,8 +148,27 @@ window.SimpleInventory = {
             armorSection.appendChild(armorContainer);
             inventoryContainer.appendChild(armorSection);
         }
+
+        // Create mods section
+        if (mods.length > 0) {
+            const modsSection = document.createElement('div');
+            modsSection.className = 'mods-section';
+            modsSection.innerHTML = '<h3 style="color: #ff6600; font-size: 14px; margin-bottom: 10px;">MODS</h3>';
+            
+            const modsContainer = document.createElement('div');
+            modsContainer.className = 'mods-items';
+            modsContainer.style.cssText = 'display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px;';
+            
+            mods.forEach(mod => {
+                console.log('Rendering mod:', mod.name, mod.icon);
+                modsContainer.appendChild(this.createItemElement(mod));
+            });
+            
+            modsSection.appendChild(modsContainer);
+            inventoryContainer.appendChild(modsSection);
+        }
         
-        console.log('Rendered', availableItems.length, 'items in sections:', weapons.length, 'weapons,', armor.length, 'armor');
+        console.log('Rendered', availableItems.length, 'items in sections:', weapons.length, 'weapons,', armor.length, 'armor,', mods.length, 'mods');
     },
 
     createItemElement(item) {
@@ -167,9 +190,16 @@ window.SimpleInventory = {
         const cacheBuster = Date.now();
         const iconPathWithCache = `${iconPath}?v=${cacheBuster}`;
         
+        // Add modification indicator for weapons with mods
+        let modificationIndicator = '';
+        if (item.has_modifications) {
+            modificationIndicator = '<div class="mod-indicator" style="position: absolute; top: 2px; right: 2px; background: #ff6600; color: white; border-radius: 50%; width: 12px; height: 12px; font-size: 8px; display: flex; align-items: center; justify-content: center;">M</div>';
+        }
+
         div.innerHTML = `
-            <div class="item-icon">
+            <div class="item-icon" style="position: relative;">
                 <img src="${iconPathWithCache}" alt="${item.name}" class="item-icon-img" />
+                ${modificationIndicator}
             </div>
             <div class="power-rating">${item.power_cost || item.powerCost || 0}</div>
         `;
@@ -429,43 +459,65 @@ window.SimpleInventory = {
                     damage_multiplier_vs_bosses: item.damage_multiplier_vs_bosses || 0
                 };
             }
+            
+            // Add weapon modifications information
+            if (item.equipped_mods && item.has_modifications) {
+                tooltipItem.weaponMods = item.equipped_mods;
+                tooltipItem.modificationStatus = 'Modified';
+                
+                // Create mod summary for tooltip display
+                const modNames = Object.values(item.equipped_mods).map(mod => mod.name);
+                tooltipItem.modSummary = modNames.join(', ');
+            }
         }
         
         return tooltipItem;
     },
 
     updatePowerBudget() {
-        // Calculate total power cost from equipped items
+        // Calculate total power cost and max power from equipped items
         let totalPowerUsed = 0;
+        let totalPowerMax = 300; // Base power capacity
         
         Object.values(this.equipped).forEach(item => {
-            if (item && item.power_cost) {
-                totalPowerUsed += item.power_cost;
+            if (item) {
+                // Add power cost from all items
+                if (item.power_cost) {
+                    totalPowerUsed += item.power_cost;
+                }
+                
+                // Add power capacity from armor (some armor increases max power)
+                if (item.type === 'armor' && item.power) {
+                    totalPowerMax += item.power || 0;
+                }
             }
         });
 
         // Update power display elements
         const powerUsedElement = document.querySelector('.power-used');
-        const powerProgressFill = document.querySelector('.power-progress-fill');
         const powerMaxElement = document.querySelector('.power-max');
+        const powerProgressFill = document.querySelector('.power-progress-fill');
         
         if (powerUsedElement) {
             powerUsedElement.textContent = totalPowerUsed;
         }
         
-        if (powerProgressFill && powerMaxElement) {
-            const maxPower = parseInt(powerMaxElement.textContent) || 2140;
-            const percentage = Math.min((totalPowerUsed / maxPower) * 100, 100);
+        if (powerMaxElement) {
+            powerMaxElement.textContent = totalPowerMax;
+        }
+        
+        if (powerProgressFill) {
+            const percentage = Math.min((totalPowerUsed / totalPowerMax) * 100, 100);
             powerProgressFill.style.width = percentage + '%';
             
             // Add over-capacity styling if needed
-            if (totalPowerUsed > maxPower) {
+            if (totalPowerUsed > totalPowerMax) {
                 powerProgressFill.classList.add('over-capacity');
             } else {
                 powerProgressFill.classList.remove('over-capacity');
             }
         }
         
-        console.log('Power budget updated:', totalPowerUsed, 'used');
+        console.log('Power budget updated:', totalPowerUsed, 'used /', totalPowerMax, 'max');
     }
 };

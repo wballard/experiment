@@ -107,7 +107,7 @@ window.CourierTooltips = {
                         letter-spacing: 2px;
                         color: var(--text-dim);
                         margin-bottom: 8px;
-                    ">PRIMARY STATS</div>
+                    ">Primary Stats</div>
             `;
             
             // Handle structured stats object
@@ -141,7 +141,7 @@ window.CourierTooltips = {
                     if (item.damage || (item.damageMin && item.damageMax)) {
                         const min = item.damage?.min || item.damageMin;
                         const max = item.damage?.max || item.damageMax;
-                        html += `<div style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 12px;"><span style="color: var(--text-normal);">DAMAGE</span><span style="font-weight: bold; color: var(--text-bright);">${min}-${max}</span></div>`;
+                        html += `<div style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 12px;"><span style="color: var(--text-normal);">Damage</span><span style="font-weight: bold; color: var(--text-bright);">${min}-${max}</span></div>`;
                     }
                     
                     // Add detailed weapon attributes section
@@ -158,7 +158,7 @@ window.CourierTooltips = {
                                     letter-spacing: 2px;
                                     color: var(--text-dim);
                                     margin-bottom: 8px;
-                                ">WEAPON ATTRIBUTES</div>
+                                ">Weapon Attributes</div>
                         `;
                         
                         // Fire Rate
@@ -206,24 +206,186 @@ window.CourierTooltips = {
                         }
                     }
                     if (item.range) {
-                        html += `<div style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 12px;"><span style="color: var(--text-normal);">RANGE</span><span style="font-weight: bold; color: var(--text-bright);">${item.range}m</span></div>`;
+                        html += `<div style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 12px;"><span style="color: var(--text-normal);">Range</span><span style="font-weight: bold; color: var(--text-bright);">${item.range}m</span></div>`;
                     }
                     if (item.reloadTime) {
-                        html += `<div style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 12px;"><span style="color: var(--text-normal);">RELOAD</span><span style="font-weight: bold; color: var(--text-bright);">${item.reloadTime}s</span></div>`;
+                        html += `<div style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 12px;"><span style="color: var(--text-normal);">Reload</span><span style="font-weight: bold; color: var(--text-bright);">${item.reloadTime}s</span></div>`;
                     }
                     if (item.magazineSize) {
                         html += `<div style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 12px;"><span style="color: var(--text-normal);">Magazine Size</span><span style="font-weight: bold; color: var(--text-bright);">${item.magazineSize}</span></div>`;
                     }
+                    
+                    // Critical hit stats - MISSING FROM ORIGINAL
+                    if (item.critChance || item.crit_chance) {
+                        const critChance = item.critChance || item.crit_chance;
+                        html += `<div style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 12px;"><span style="color: var(--text-normal);">Critical Chance</span><span style="font-weight: bold; color: var(--stat-positive);">${critChance}%</span></div>`;
+                    }
+                    if (item.critMultiplier || item.crit_multiplier) {
+                        const critMult = item.critMultiplier || item.crit_multiplier;
+                        html += `<div style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 12px;"><span style="color: var(--text-normal);">Critical Multiplier</span><span style="font-weight: bold; color: var(--stat-positive);">${critMult.toFixed(1)}x</span></div>`;
+                    }
                 } else if (item.type === 'armor') {
-                    // Armor stats
+                    // Primary armor stats
                     if (item.armor) {
-                        html += `<div style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 12px;"><span style="color: var(--text-normal);">ARMOR</span><span style="font-weight: bold; color: var(--text-bright);">${item.armor}</span></div>`;
+                        html += `<div style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 12px;"><span style="color: var(--text-normal);">Armor</span><span style="font-weight: bold; color: var(--text-bright);">${item.armor}</span></div>`;
                     }
                     if (item.health) {
-                        html += `<div style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 12px;"><span style="color: var(--text-normal);">HEALTH</span><span style="font-weight: bold; color: var(--text-bright);">${item.health}</span></div>`;
+                        html += `<div style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 12px;"><span style="color: var(--text-normal);">Health</span><span style="font-weight: bold; color: var(--text-bright);">+${item.health}</span></div>`;
                     }
                     if (item.shields) {
-                        html += `<div style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 12px;"><span style="color: var(--text-normal);">SHIELDS</span><span style="font-weight: bold; color: var(--text-bright);">${item.shields}</span></div>`;
+                        html += `<div style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 12px;"><span style="color: var(--text-normal);">Shields</span><span style="font-weight: bold; color: var(--text-bright);">+${item.shields}</span></div>`;
+                    }
+                    
+                    
+                    // Critical hit bonuses
+                    if (item.crit_chance || item.critChance) {
+                        const critChance = (item.crit_chance || item.critChance) * 100;
+                        html += `<div style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 12px;"><span style="color: var(--text-normal);">CRIT CHANCE</span><span style="font-weight: bold; color: var(--stat-positive);">+${critChance.toFixed(1)}%</span></div>`;
+                    }
+                    if (item.crit_damage || item.critDamage) {
+                        const critDamage = ((item.crit_damage || item.critDamage) - 1) * 100;
+                        if (critDamage > 0) {
+                            html += `<div style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 12px;"><span style="color: var(--text-normal);">Critical Damage</span><span style="font-weight: bold; color: var(--stat-positive);">+${critDamage.toFixed(0)}%</span></div>`;
+                        }
+                    }
+                    
+                    // Resistances - including missing earth, nature, physical
+                    if (item.resistances) {
+                        // Handle structured resistances object from data-manager.js
+                        if (item.resistances.fire) {
+                            html += `<div style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 12px;"><span style="color: var(--text-normal);">Fire Resistance</span><span style="font-weight: bold; color: #ff6b4a;">+${item.resistances.fire}</span></div>`;
+                        }
+                        if (item.resistances.ice) {
+                            html += `<div style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 12px;"><span style="color: var(--text-normal);">Ice Resistance</span><span style="font-weight: bold; color: #4a9aff;">+${item.resistances.ice}</span></div>`;
+                        }
+                        if (item.resistances.electric) {
+                            html += `<div style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 12px;"><span style="color: var(--text-normal);">Electric Resistance</span><span style="font-weight: bold; color: #ffeb4a;">+${item.resistances.electric}</span></div>`;
+                        }
+                        // MISSING resistances added
+                        if (item.resistances.earth) {
+                            html += `<div style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 12px;"><span style="color: var(--text-normal);">Earth Resistance</span><span style="font-weight: bold; color: #8B4513;">+${item.resistances.earth}</span></div>`;
+                        }
+                        if (item.resistances.nature) {
+                            html += `<div style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 12px;"><span style="color: var(--text-normal);">Nature Resistance</span><span style="font-weight: bold; color: #4aff6b;">+${item.resistances.nature}</span></div>`;
+                        }
+                        if (item.resistances.physical && item.resistances.physical > 0) {
+                            html += `<div style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 12px;"><span style="color: var(--text-normal);">Physical Resistance</span><span style="font-weight: bold; color: #C0C0C0;">+${item.resistances.physical}</span></div>`;
+                        }
+                    } else {
+                        // Handle individual resistance properties for backward compatibility
+                        if (item.fire_resistance) {
+                            html += `<div style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 12px;"><span style="color: var(--text-normal);">Fire Resistance</span><span style="font-weight: bold; color: #ff6b4a;">+${(item.fire_resistance * 100).toFixed(0)}%</span></div>`;
+                        }
+                        if (item.ice_resistance) {
+                            html += `<div style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 12px;"><span style="color: var(--text-normal);">Ice Resistance</span><span style="font-weight: bold; color: #4a9aff;">+${(item.ice_resistance * 100).toFixed(0)}%</span></div>`;
+                        }
+                        if (item.electric_resistance) {
+                            html += `<div style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 12px;"><span style="color: var(--text-normal);">Electric Resistance</span><span style="font-weight: bold; color: #ffeb4a;">+${(item.electric_resistance * 100).toFixed(0)}%</span></div>`;
+                        }
+                        if (item.poison_resistance) {
+                            html += `<div style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 12px;"><span style="color: var(--text-normal);">Poison Resistance</span><span style="font-weight: bold; color: #4aff6b;">+${(item.poison_resistance * 100).toFixed(0)}%</span></div>`;
+                        }
+                    }
+                    
+                    // Set bonus information - MISSING FROM ORIGINAL  
+                    if (item.setBonus) {
+                        html += `
+                            <div style="
+                                margin-top: 12px; 
+                                padding-top: 12px; 
+                                border-top: 1px solid var(--border-gray);
+                            ">
+                                <div style="
+                                    font-size: 10px;
+                                    text-transform: uppercase;
+                                    letter-spacing: 2px;
+                                    color: var(--text-dim);
+                                    margin-bottom: 8px;
+                                ">Set Bonus</div>
+                                <div style="
+                                    font-size: 12px;
+                                    font-weight: bold;
+                                    color: var(--primary-cyan);
+                                    text-transform: uppercase;
+                                    letter-spacing: 1px;
+                                ">${item.setBonus}</div>
+                            </div>
+                        `;
+                    }
+                } else if (item.type === 'mod') {
+                    // Mod stats - show mod-specific attributes (power cost is in header)
+                    
+                    // Zoom for scopes
+                    if (item.zoom) {
+                        html += `<div style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 12px;"><span style="color: var(--text-normal);">Zoom</span><span style="font-weight: bold; color: var(--text-bright);">${item.zoom}x</span></div>`;
+                    }
+                    
+                    // Critical hit stats
+                    if (item.crit_chance) {
+                        const critChance = item.crit_chance * 100;
+                        html += `<div style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 12px;"><span style="color: var(--text-normal);">CRIT CHANCE</span><span style="font-weight: bold; color: var(--stat-positive);">+${critChance.toFixed(1)}%</span></div>`;
+                    }
+                    if (item.crit_damage) {
+                        const critDamage = (item.crit_damage - 1) * 100;
+                        if (critDamage > 0) {
+                            html += `<div style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 12px;"><span style="color: var(--text-normal);">Critical Damage</span><span style="font-weight: bold; color: var(--stat-positive);">+${critDamage.toFixed(0)}%</span></div>`;
+                        }
+                    }
+                    
+                    // Damage modifiers
+                    if (item.damage_percent) {
+                        html += `<div style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 12px;"><span style="color: var(--text-normal);">Damage</span><span style="font-weight: bold; color: var(--stat-positive);">+${item.damage_percent.toFixed(0)}%</span></div>`;
+                    }
+                    if (item.crit_chance_percent) {
+                        html += `<div style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 12px;"><span style="color: var(--text-normal);">CRIT CHANCE</span><span style="font-weight: bold; color: var(--stat-positive);">+${item.crit_chance_percent.toFixed(1)}%</span></div>`;
+                    }
+                    
+                    // Elemental damage
+                    if (item.fire_damage_flat) {
+                        html += `<div style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 12px;"><span style="color: var(--text-normal);">Fire Damage</span><span style="font-weight: bold; color: #ff6b4a;">+${item.fire_damage_flat}</span></div>`;
+                    }
+                    if (item.fire_damage_percent) {
+                        html += `<div style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 12px;"><span style="color: var(--text-normal);">Fire Damage</span><span style="font-weight: bold; color: #ff6b4a;">+${item.fire_damage_percent.toFixed(0)}%</span></div>`;
+                    }
+                    if (item.ice_damage_flat) {
+                        html += `<div style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 12px;"><span style="color: var(--text-normal);">Ice Damage</span><span style="font-weight: bold; color: #4a9aff;">+${item.ice_damage_flat}</span></div>`;
+                    }
+                    if (item.ice_damage_percent) {
+                        html += `<div style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 12px;"><span style="color: var(--text-normal);">Ice Damage</span><span style="font-weight: bold; color: #4a9aff;">+${item.ice_damage_percent.toFixed(0)}%</span></div>`;
+                    }
+                    if (item.electric_damage_flat) {
+                        html += `<div style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 12px;"><span style="color: var(--text-normal);">Electric Damage</span><span style="font-weight: bold; color: #ffeb4a;">+${item.electric_damage_flat}</span></div>`;
+                    }
+                    if (item.electric_damage_percent) {
+                        html += `<div style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 12px;"><span style="color: var(--text-normal);">Electric Damage</span><span style="font-weight: bold; color: #ffeb4a;">+${item.electric_damage_percent.toFixed(0)}%</span></div>`;
+                    }
+                    if (item.poison_damage_flat) {
+                        html += `<div style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 12px;"><span style="color: var(--text-normal);">Poison Damage</span><span style="font-weight: bold; color: #4aff6b;">+${item.poison_damage_flat}</span></div>`;
+                    }
+                    if (item.poison_damage_percent) {
+                        html += `<div style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 12px;"><span style="color: var(--text-normal);">Poison Damage</span><span style="font-weight: bold; color: #4aff6b;">+${item.poison_damage_percent.toFixed(0)}%</span></div>`;
+                    }
+                    
+                    // Special modifiers
+                    if (item.armor_penetration) {
+                        html += `<div style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 12px;"><span style="color: var(--text-normal);">Armor Penetration</span><span style="font-weight: bold; color: var(--stat-positive);">+${item.armor_penetration.toFixed(0)}%</span></div>`;
+                    }
+                    if (item.damage_multiplier_vs_elites) {
+                        html += `<div style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 12px;"><span style="color: var(--text-normal);">vs Elites</span><span style="font-weight: bold; color: var(--stat-positive);">+${(item.damage_multiplier_vs_elites * 100).toFixed(0)}%</span></div>`;
+                    }
+                    if (item.damage_multiplier_vs_bosses) {
+                        html += `<div style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 12px;"><span style="color: var(--text-normal);">vs Bosses</span><span style="font-weight: bold; color: var(--stat-positive);">+${(item.damage_multiplier_vs_bosses * 100).toFixed(0)}%</span></div>`;
+                    }
+                    
+                    // Scope-specific stats
+                    if (item.zoom) {
+                        html += `<div style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 12px;"><span style="color: var(--text-normal);">Zoom</span><span style="font-weight: bold; color: var(--text-bright);">${item.zoom}x</span></div>`;
+                    }
+                    if (item.ads_speed_modifier) {
+                        const modifier = (item.ads_speed_modifier - 1) * 100;
+                        const color = modifier > 0 ? 'var(--stat-negative)' : 'var(--stat-positive)';
+                        const sign = modifier > 0 ? '+' : '';
+                        html += `<div style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 12px;"><span style="color: var(--text-normal);">ADS Speed</span><span style="font-weight: bold; color: ${color};">${sign}${modifier.toFixed(0)}%</span></div>`;
                     }
                 }
             }
@@ -241,7 +403,7 @@ window.CourierTooltips = {
                         letter-spacing: 2px;
                         color: var(--text-dim);
                         margin-bottom: 8px;
-                    ">SECONDARY STATS</div>
+                    ">Secondary Stats</div>
             `;
             
             for (const [stat, value] of Object.entries(item.secondaryStats)) {
@@ -282,7 +444,7 @@ window.CourierTooltips = {
                             letter-spacing: 2px;
                             color: var(--text-dim);
                             margin-bottom: 8px;
-                        ">MODIFICATION BONUSES</div>
+                        ">Modification Bonuses</div>
                 `;
                 
                 if (advStats.damage_percent > 0) {
@@ -359,7 +521,7 @@ window.CourierTooltips = {
                             letter-spacing: 2px;
                             color: var(--text-dim);
                             margin-bottom: 8px;
-                        ">MODIFICATIONS</div>
+                        ">Modifications</div>
                     `;
                     
                     modifications.forEach(mod => {
@@ -403,7 +565,7 @@ window.CourierTooltips = {
                             letter-spacing: 2px;
                             color: var(--text-dim);
                             margin-bottom: 8px;
-                        ">EFFECTS</div>
+                        ">Effects</div>
                     `;
                     
                     item.effects.forEach(effect => {

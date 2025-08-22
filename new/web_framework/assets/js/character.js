@@ -64,13 +64,17 @@ window.CharacterSystem = {
                 window.CourierGame.data = {};
             }
 
-            const response = await fetch('../assets/data/item-database.json');
+            const response = await fetch('/api/items/database');
             if (response.ok) {
-                const data = await response.json();
-                // Combine weapons and armor into global items data
-                if (!window.CourierGame.data.items) {
-                    window.CourierGame.data.items = { ...data.weapons, ...data.armor };
-                    console.log('Character system loaded items data:', Object.keys(window.CourierGame.data.items).length, 'items');
+                const result = await response.json();
+                if (result.success) {
+                    // Combine weapons and armor into global items data
+                    if (!window.CourierGame.data.items) {
+                        window.CourierGame.data.items = { ...result.items.weapons, ...result.items.armor };
+                        console.log('Character system loaded items data from API:', Object.keys(window.CourierGame.data.items).length, 'items');
+                    }
+                } else {
+                    console.error('Failed to load items data:', result.error);
                 }
             } else {
                 console.error('Failed to load items data for character system');

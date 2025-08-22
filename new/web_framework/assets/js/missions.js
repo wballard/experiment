@@ -98,10 +98,15 @@ window.MissionSystem = {
     
     async loadMissionData() {
         try {
-            const response = await fetch('../../assets/data/missions.json');
+            const response = await fetch('/api/missions/data');
             if (response.ok) {
-                this.missionDatabase = await response.json();
-                console.log('Mission data loaded:', Object.keys(this.missionDatabase));
+                const data = await response.json();
+                if (data.success) {
+                    this.missionDatabase = data.missions;
+                    console.log('Mission data loaded from API:', Object.keys(this.missionDatabase));
+                } else {
+                    console.error('Failed to load mission data:', data.error);
+                }
             } else {
                 console.error('Failed to load mission data');
             }
@@ -112,12 +117,16 @@ window.MissionSystem = {
     
     async loadItemsData() {
         try {
-            const response = await fetch('../../assets/data/items.json');
+            const response = await fetch('/api/items/data');
             if (response.ok) {
                 const data = await response.json();
-                // Combine weapons and armor into CourierGame.data.items
-                window.CourierGame.data.items = { ...data.weapons, ...data.armor };
-                console.log('Items data loaded:', Object.keys(window.CourierGame.data.items).length, 'items');
+                if (data.success) {
+                    // Combine weapons and armor into CourierGame.data.items
+                    window.CourierGame.data.items = { ...data.items.weapons, ...data.items.armor };
+                    console.log('Items data loaded from API:', Object.keys(window.CourierGame.data.items).length, 'items');
+                } else {
+                    console.error('Failed to load items data:', data.error);
+                }
             } else {
                 console.error('Failed to load items data');
             }
@@ -244,13 +253,21 @@ window.MissionSystem = {
                     const rewardResponse = await window.CourierAPI.completeMission(missionId, missionType);
                     console.log('=== MISSION COMPLETED WITH REWARDS ===');
                     console.log('Response:', rewardResponse);
-                    this.showMissionSuccess(mission, rewardResponse.rewards);
+                    
+                    if (rewardResponse.success) {
+                        this.showMissionSuccess(mission, rewardResponse.rewards);
+                        
+                        // Refresh character header to show updated XP
+                        if (window.CharacterHeader) {
+                            await window.CharacterHeader.refresh();
+                        }
+                    } else {
+                        this.showMissionFailure(mission, rewardResponse.error);
+                    }
                 } catch (error) {
                     console.error('=== FAILED TO COMPLETE MISSION ===');
                     console.error('Error:', error);
-                    alert('Mission completion failed: ' + error.message);
-                    // Fallback to old system if backend fails
-                    this.showMissionSuccess(mission);
+                    this.showMissionFailure(mission, error.message || 'Network error occurred');
                 }
             }, 1000);
         } else {
@@ -278,7 +295,9 @@ window.MissionSystem = {
 
         // Use backend rewards if available, otherwise parse from mission data
         if (backendRewards) {
-            creditsElement.textContent = backendRewards.credits.toLocaleString();
+            // Backend doesn't provide credits yet, so generate some based on XP
+            const estimatedCredits = Math.floor(backendRewards.xp * 2.5);
+            creditsElement.textContent = estimatedCredits.toLocaleString();
             xpElement.textContent = backendRewards.xp.toLocaleString();
             this.generateBackendItemRewards(backendRewards, itemRewardsGrid);
         } else {
@@ -318,17 +337,28 @@ window.MissionSystem = {
             // Get all items from database to match against reward IDs
             const allItems = inventoryResponse.inventory;
             
-            // For each rewarded item ID, find the actual item data
+            // For each rewarded item, find the actual item data with full details
             const rewardItems = [];
-            backendRewards.items.forEach(rewardItemId => {
-                // Find the item in the current inventory by ID
-                const matchingItem = allItems.find(item => item.id === rewardItemId);
+            backendRewards.items.forEach(rewardItem => {
+                // Backend sends full item objects, but we need to get icon and other details from inventory
+                const matchingItem = allItems.find(item => item.id === rewardItem.id);
                 if (matchingItem) {
-                    rewardItems.push(matchingItem);
-                    console.log(`Found reward item: ${matchingItem.id} - ${matchingItem.name}, icon: ${matchingItem.icon}`);
+                    // Merge reward data with full item data from inventory
+                    const completeItem = { ...matchingItem, rewardQuantity: rewardItem.quantity };
+                    rewardItems.push(completeItem);
+                    console.log(`Found reward item: ${completeItem.id} - ${completeItem.name}, icon: ${completeItem.icon}`);
                 } else {
-                    console.warn(`Could not find item ${rewardItemId} in inventory`);
-                    console.log('Available items in inventory:', allItems.map(item => item.id));
+                    // If not in inventory yet (maybe inventory hasn't refreshed), create item from reward data
+                    console.warn(`Item ${rewardItem.id} not found in current inventory, using reward data`);
+                    rewardItems.push({
+                        id: rewardItem.id,
+                        name: rewardItem.name,
+                        type: rewardItem.type,
+                        rarity: rewardItem.rarity,
+                        icon: 'assets/icons/default-item.png', // fallback icon
+                        power_cost: 0,
+                        rewardQuantity: rewardItem.quantity
+                    });
                 }
             });
 
@@ -649,11 +679,107 @@ window.MissionSystem = {
             `;
             document.head.appendChild(style);
         }
+    },
+
+    showMissionFailure(mission, errorMessage) {
+        // Create or reuse failure overlay
+        let overlay = document.getElementById('mission-failure-overlay');
+        if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.id = 'mission-failure-overlay';
+            overlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.8);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 1000;
+            `;
+            overlay.innerHTML = `
+                <div style="
+                    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+                    border: 2px solid #ff4444;
+                    border-radius: 12px;
+                    padding: 2rem;
+                    max-width: 500px;
+                    width: 90%;
+                    color: white;
+                    text-align: center;
+                    box-shadow: 0 10px 30px rgba(255, 68, 68, 0.3);
+                ">
+                    <div style="
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        margin-bottom: 1.5rem;
+                        border-bottom: 1px solid #ff4444;
+                        padding-bottom: 1rem;
+                    ">
+                        <h2 style="color: #ff6666; margin: 0; font-size: 1.5rem;">⚠️ MISSION FAILED</h2>
+                        <button onclick="closeMissionFailure()" style="
+                            background: none;
+                            border: none;
+                            color: #ff6666;
+                            font-size: 24px;
+                            cursor: pointer;
+                            padding: 0;
+                        ">×</button>
+                    </div>
+                    <div style="margin-bottom: 2rem;">
+                        <div id="failure-mission-name" style="
+                            font-size: 1.2rem;
+                            font-weight: bold;
+                            color: #ffffff;
+                            margin-bottom: 1rem;
+                        ">Mission Name</div>
+                        <div id="failure-reason" style="
+                            color: #ffaaaa;
+                            font-size: 1rem;
+                            line-height: 1.4;
+                        ">Unknown error occurred</div>
+                    </div>
+                    <button onclick="closeMissionFailure()" style="
+                        background: linear-gradient(135deg, #ff4444, #cc2222);
+                        color: white;
+                        border: none;
+                        padding: 12px 24px;
+                        border-radius: 6px;
+                        font-weight: bold;
+                        cursor: pointer;
+                        font-size: 1rem;
+                        text-transform: uppercase;
+                        letter-spacing: 0.5px;
+                        transition: all 0.2s ease;
+                    " onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='translateY(0)'">
+                        Try Again
+                    </button>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+        }
+
+        // Set mission info
+        document.getElementById('failure-mission-name').textContent = mission.name;
+        document.getElementById('failure-reason').textContent = errorMessage;
+
+        // Show modal
+        overlay.style.display = 'flex';
     }
 };
 
 function closeMissionSuccess() {
     document.getElementById('mission-success-overlay').classList.add('hidden');
+}
+
+function closeMissionFailure() {
+    const overlay = document.getElementById('mission-failure-overlay');
+    if (overlay) {
+        overlay.style.display = 'none';
+    }
 }
 
 async function collectRewards() {
