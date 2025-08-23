@@ -3,7 +3,7 @@ window.CharacterHeader = {
     // Function to load and update character header
     async updateHeader() {
         try {
-            const response = await fetch('/api/character/active');
+            const response = await fetch('/api/characters/active');
             if (response.ok) {
                 const data = await response.json();
                 if (data.success && data.character) {

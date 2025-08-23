@@ -289,54 +289,626 @@ class Database {
     }
 
     initializeSkills() {
-        // Basic fire elemental skills for all classes
+        // Comprehensive skill system with Outlaw class and elemental trees
         const skills = [
-            // Tier 1 - Basic Skills (available at level 1)
+            // OUTLAW CLASS SKILLS
+            // Tier 1 - Foundation Skills
             {
-                id: 'fire_mastery_1',
-                name: 'Fire Mastery',
-                description: 'Increases fire damage by 5% per level',
-                class_id: null, // Available to all classes
-                tree: 'fire',
+                id: 'outlaw_dead_eye',
+                name: 'Dead Eye',
+                description: 'Increases accuracy and critical hit chance by 2% per level',
+                class_id: 'outlaw',
+                tree: 'outlaw',
                 tier: 1,
-                max_level: 5,
-                icon: 'assets/images/skills/fire_mastery.png',
+                max_level: 3,
+                icon: 'assets/images/Skills/Skill_Placeholder.png',
                 prerequisites: '[]'
             },
             {
-                id: 'ignite_1',
-                name: 'Ignite',
-                description: 'Chance to apply burning effect on hit',
+                id: 'outlaw_quick_hands',
+                name: 'Quick Hands',
+                description: 'Reduces reload time and weapon swap speed by 8% per level',
+                class_id: 'outlaw',
+                tree: 'outlaw',
+                tier: 1,
+                max_level: 3,
+                icon: 'assets/images/Skills/Skill_Placeholder.png',
+                prerequisites: '[]'
+            },
+            {
+                id: 'outlaw_lucky_charm',
+                name: 'Lucky Charm',
+                description: 'Improves loot quality and critical hit chance by 3% per level',
+                class_id: 'outlaw',
+                tree: 'outlaw',
+                tier: 1,
+                max_level: 2,
+                icon: 'assets/images/Skills/Skill_Placeholder.png',
+                prerequisites: '[]'
+            },
+            
+            // Tier 2 - Weapon Specialization
+            {
+                id: 'outlaw_handgun_specialist',
+                name: 'Handgun Specialist',
+                description: 'Increases handgun damage and accuracy by 10% per level',
+                class_id: 'outlaw',
+                tree: 'outlaw',
+                tier: 2,
+                max_level: 2,
+                icon: 'assets/images/Skills/Skill_Placeholder.png',
+                prerequisites: '["outlaw_dead_eye"]'
+            },
+            {
+                id: 'outlaw_sniper_specialist',
+                name: 'Sniper Specialist',
+                description: 'Increases sniper rifle damage and range by 15% per level',
+                class_id: 'outlaw',
+                tree: 'outlaw',
+                tier: 2,
+                max_level: 2,
+                icon: 'assets/images/Skills/Skill_Placeholder.png',
+                prerequisites: '["outlaw_dead_eye"]'
+            },
+            {
+                id: 'outlaw_shotgun_specialist',
+                name: 'Shotgun Specialist',
+                description: 'Increases shotgun damage and spread effectiveness by 12% per level',
+                class_id: 'outlaw',
+                tree: 'outlaw',
+                tier: 2,
+                max_level: 2,
+                icon: 'assets/images/Skills/Skill_Placeholder.png',
+                prerequisites: '["outlaw_quick_hands"]'
+            },
+            {
+                id: 'outlaw_steady_aim',
+                name: 'Steady Aim',
+                description: 'Reduces recoil and weapon spread by 15% per level',
+                class_id: 'outlaw',
+                tree: 'outlaw',
+                tier: 2,
+                max_level: 3,
+                icon: 'assets/images/Skills/Skill_Placeholder.png',
+                prerequisites: '["outlaw_quick_hands"]'
+            },
+            {
+                id: 'outlaw_hair_trigger',
+                name: 'Hair Trigger',
+                description: 'Increases fire rate by 8% per level',
+                class_id: 'outlaw',
+                tree: 'outlaw',
+                tier: 2,
+                max_level: 3,
+                icon: 'assets/images/Skills/Skill_Placeholder.png',
+                prerequisites: '["outlaw_lucky_charm"]'
+            },
+            {
+                id: 'outlaw_gunslinger_focus',
+                name: 'Gunslinger Focus',
+                description: 'Increases critical hit damage by 20% per level',
+                class_id: 'outlaw',
+                tree: 'outlaw',
+                tier: 2,
+                max_level: 2,
+                icon: 'assets/images/Skills/Skill_Placeholder.png',
+                prerequisites: '["outlaw_lucky_charm"]'
+            },
+            
+            // Tier 6 - Ultimate Abilities
+            {
+                id: 'outlaw_high_noon',
+                name: 'High Noon',
+                description: 'Time-slowing multi-target ultimate ability',
+                class_id: 'outlaw',
+                tree: 'outlaw',
+                tier: 6,
+                max_level: 5,
+                icon: 'assets/images/Skills/Skill_Placeholder.png',
+                prerequisites: '[]'
+            },
+            {
+                id: 'outlaw_dead_mans_hand',
+                name: 'Dead Man\'s Hand',
+                description: 'Luck-based devastating attack with random effects',
+                class_id: 'outlaw',
+                tree: 'outlaw',
+                tier: 6,
+                max_level: 5,
+                icon: 'assets/images/Skills/Skill_Placeholder.png',
+                prerequisites: '[]'
+            },
+            {
+                id: 'outlaw_perfect_shot',
+                name: 'Perfect Shot',
+                description: 'Guaranteed critical hit with armor piercing',
+                class_id: 'outlaw',
+                tree: 'outlaw',
+                tier: 6,
+                max_level: 5,
+                icon: 'assets/images/Skills/Skill_Placeholder.png',
+                prerequisites: '[]'
+            },
+            
+            // FIRE ELEMENTAL SKILLS (available to all classes) - 4 Tiers
+            // Tier 1 - Ignition Foundation
+            {
+                id: 'fire_combustion_mastery',
+                name: 'Combustion Mastery',
+                description: 'Fire damage +10% per level, burn duration +1s per level',
                 class_id: null,
                 tree: 'fire',
                 tier: 1,
                 max_level: 3,
-                icon: 'assets/images/skills/ignite.png',
+                icon: 'assets/images/Skills/Skill_Placeholder.png',
                 prerequisites: '[]'
             },
-            // Tier 2 - Requires level 10
             {
-                id: 'flame_weapon_2',
+                id: 'fire_flame_weapon',
                 name: 'Flame Weapon',
-                description: 'Weapons deal additional fire damage',
+                description: 'Weapons deal fire damage, 10% chance to ignite per level',
+                class_id: null,
+                tree: 'fire',
+                tier: 1,
+                max_level: 5,
+                icon: 'assets/images/Skills/Skill_Placeholder.png',
+                prerequisites: '[]'
+            },
+            {
+                id: 'fire_heat_resistance',
+                name: 'Heat Resistance',
+                description: 'Fire resistance +25% per level, immunity to self-fire damage',
+                class_id: null,
+                tree: 'fire',
+                tier: 1,
+                max_level: 2,
+                icon: 'assets/images/Skills/Skill_Placeholder.png',
+                prerequisites: '[]'
+            },
+            // Tier 2 - Inferno Specialization  
+            {
+                id: 'fire_fireball',
+                name: 'Fireball',
+                description: 'Launch explosive fireball (30 power cost), radius and damage increase per level',
                 class_id: null,
                 tree: 'fire',
                 tier: 2,
-                max_level: 5,
-                icon: 'assets/images/skills/flame_weapon.png',
-                prerequisites: '["fire_mastery_1"]'
+                max_level: 3,
+                icon: 'assets/images/Skills/Skill_Placeholder.png',
+                prerequisites: '["fire_combustion_mastery"]'
             },
-            // Tier 3 - Requires level 20
             {
-                id: 'inferno_3',
-                name: 'Inferno',
-                description: 'Area of effect fire damage ability',
+                id: 'fire_flame_wall',
+                name: 'Flame Wall',
+                description: 'Create wall of fire (40 power cost), duration and effects increase per level',
+                class_id: null,
+                tree: 'fire',
+                tier: 2,
+                max_level: 4,
+                icon: 'assets/images/Skills/Skill_Placeholder.png',
+                prerequisites: '["fire_flame_weapon"]'
+            },
+            {
+                id: 'fire_burning_ground',
+                name: 'Burning Ground',
+                description: 'Create area of burning ground (25 power cost), size and duration per level',
+                class_id: null,
+                tree: 'fire',
+                tier: 2,
+                max_level: 3,
+                icon: 'assets/images/Skills/Skill_Placeholder.png',
+                prerequisites: '["fire_heat_resistance"]'
+            },
+            // Tier 3 - Conflagration Mastery
+            {
+                id: 'fire_phoenix_surge',
+                name: 'Phoenix Surge',
+                description: 'Become fire elemental for 10s (100 power), duration and effects per level',
                 class_id: null,
                 tree: 'fire',
                 tier: 3,
+                max_level: 5,
+                icon: 'assets/images/Skills/Skill_Placeholder.png',
+                prerequisites: '["fire_fireball", "fire_flame_wall"]'
+            },
+            {
+                id: 'fire_combination_mastery',
+                name: 'Combination Mastery: Fire',
+                description: 'Combination abilities cost -25% power, effects last +50% longer per level',
+                class_id: null,
+                tree: 'fire',
+                tier: 3,
+                max_level: 2,
+                icon: 'assets/images/Skills/Skill_Placeholder.png',
+                prerequisites: '["fire_burning_ground"]'
+            },
+            // Tier 4 - Transcendence
+            {
+                id: 'fire_pyroclasm_lord',
+                name: 'Pyroclasm Lord',
+                description: 'Ultimate fire mastery: +100% fire potency, +50% resistance, ignore enemy resistance',
+                class_id: null,
+                tree: 'fire',
+                tier: 4,
+                max_level: 1,
+                icon: 'assets/images/Skills/Skill_Placeholder.png',
+                prerequisites: '["fire_phoenix_surge", "fire_combination_mastery"]'
+            },
+            
+            // ICE ELEMENTAL SKILLS (available to all classes) - 4 Tiers  
+            // Tier 1 - Frost Foundation
+            {
+                id: 'ice_cryogenic_mastery',
+                name: 'Cryogenic Mastery',
+                description: 'Ice damage +10% per level, slow effects +50% duration per level',
+                class_id: null,
+                tree: 'ice',
+                tier: 1,
                 max_level: 3,
-                icon: 'assets/images/skills/inferno.png',
-                prerequisites: '["flame_weapon_2"]'
+                icon: 'assets/images/Skills/Skill_Placeholder.png',
+                prerequisites: '[]'
+            },
+            {
+                id: 'ice_frost_weapon',
+                name: 'Frost Weapon',
+                description: 'Weapons deal ice damage, 10% chance to slow per level',
+                class_id: null,
+                tree: 'ice',
+                tier: 1,
+                max_level: 5,
+                icon: 'assets/images/Skills/Skill_Placeholder.png',
+                prerequisites: '[]'
+            },
+            {
+                id: 'ice_cold_resistance',
+                name: 'Cold Resistance',
+                description: 'Ice resistance +25% per level, immunity to slowing effects',
+                class_id: null,
+                tree: 'ice',
+                tier: 1,
+                max_level: 2,
+                icon: 'assets/images/Skills/Skill_Placeholder.png',
+                prerequisites: '[]'
+            },
+            // Tier 2 - Blizzard Specialization
+            {
+                id: 'ice_ice_shard',
+                name: 'Ice Shard',
+                description: 'Launch piercing ice projectile (25 power), splits and freezes per level',
+                class_id: null,
+                tree: 'ice',
+                tier: 2,
+                max_level: 3,
+                icon: 'assets/images/Skills/Skill_Placeholder.png',
+                prerequisites: '["ice_cryogenic_mastery"]'
+            },
+            {
+                id: 'ice_ice_barrier',
+                name: 'Ice Barrier',
+                description: 'Create defensive ice wall (35 power), reflects and explodes per level',
+                class_id: null,
+                tree: 'ice',
+                tier: 2,
+                max_level: 4,
+                icon: 'assets/images/Skills/Skill_Placeholder.png',
+                prerequisites: '["ice_frost_weapon"]'
+            },
+            {
+                id: 'ice_frozen_zone',
+                name: 'Frozen Zone',
+                description: 'Create slowing area (30 power), damage and mobility per level',
+                class_id: null,
+                tree: 'ice',
+                tier: 2,
+                max_level: 3,
+                icon: 'assets/images/Skills/Skill_Placeholder.png',
+                prerequisites: '["ice_cold_resistance"]'
+            },
+            // Tier 3 - Absolute Zero Mastery
+            {
+                id: 'ice_winters_embrace',
+                name: 'Winter\'s Embrace',
+                description: 'Freeze all enemies in large area (120 power), spreading and bonus damage per level',
+                class_id: null,
+                tree: 'ice',
+                tier: 3,
+                max_level: 5,
+                icon: 'assets/images/Skills/Skill_Placeholder.png',
+                prerequisites: '["ice_ice_shard", "ice_ice_barrier"]'
+            },
+            // Tier 4 - Transcendence
+            {
+                id: 'ice_cryogenic_master',
+                name: 'Cryogenic Master',
+                description: 'Become the ultimate master of Ice and Freeze: +100% Ice Potency, +50% Ice Resistance, All Ice abilities ignore 50% of enemy Ice Resistance, +50% freeze buildup rate on all Ice damage',
+                class_id: null,
+                tree: 'ice',
+                tier: 4,
+                max_level: 1,
+                icon: 'assets/images/Skills/Skill_Placeholder.png',
+                prerequisites: '["ice_winters_embrace", "ice_frozen_zone"]'
+            },
+            
+            // ELECTRIC ELEMENTAL SKILLS (available to all classes) - 4 Tiers
+            // Tier 1 - Current Foundation
+            {
+                id: 'electric_electrical_mastery',
+                name: 'Electrical Mastery',
+                description: 'Electric damage +10% per level, attacks chain to 1-3 enemies per level',
+                class_id: null,
+                tree: 'electric',
+                tier: 1,
+                max_level: 3,
+                icon: 'assets/images/Skills/Skill_Placeholder.png',
+                prerequisites: '[]'
+            },
+            {
+                id: 'electric_shock_weapon',
+                name: 'Shock Weapon',
+                description: 'Weapons deal electric damage, 10% chance to stun +10% per level up to 50%',
+                class_id: null,
+                tree: 'electric',
+                tier: 1,
+                max_level: 5,
+                icon: 'assets/images/Skills/Skill_Placeholder.png',
+                prerequisites: '[]'
+            },
+            {
+                id: 'electric_conductivity',
+                name: 'Conductivity',
+                description: 'Electric resistance +25% per level, gain energy when taking electric damage',
+                class_id: null,
+                tree: 'electric',
+                tier: 1,
+                max_level: 2,
+                icon: 'assets/images/Skills/Skill_Placeholder.png',
+                prerequisites: '[]'
+            },
+            // Tier 2 - Storm Specialization
+            {
+                id: 'electric_lightning_bolt',
+                name: 'Lightning Bolt',
+                description: 'Instant electric attack (20 power cost), chains through enemies per level',
+                class_id: null,
+                tree: 'electric',
+                tier: 2,
+                max_level: 3,
+                icon: 'assets/images/Skills/Skill_Placeholder.png',
+                prerequisites: '["electric_electrical_mastery"]'
+            },
+            {
+                id: 'electric_tesla_coil',
+                name: 'Tesla Coil',
+                description: 'Deploy electrical generator (45 power cost), damage/range/chaining/multiple per level',
+                class_id: null,
+                tree: 'electric',
+                tier: 2,
+                max_level: 4,
+                icon: 'assets/images/Skills/Skill_Placeholder.png',
+                prerequisites: '["electric_shock_weapon"]'
+            },
+            {
+                id: 'electric_electric_field',
+                name: 'Electric Field',
+                description: 'Create damaging electric area (35 power cost), stuns/follows per level',
+                class_id: null,
+                tree: 'electric',
+                tier: 2,
+                max_level: 3,
+                icon: 'assets/images/Skills/Skill_Placeholder.png',
+                prerequisites: '["electric_conductivity"]'
+            },
+            // Tier 3 - Tempest Mastery
+            {
+                id: 'electric_storm_lord',
+                name: 'Storm Lord',
+                description: 'Continuous lightning strikes in area (100 power cost), prioritizes strongest enemies, increasing damage, ally bonuses, guidable per level',
+                class_id: null,
+                tree: 'electric',
+                tier: 3,
+                max_level: 5,
+                icon: 'assets/images/Skills/Skill_Placeholder.png',
+                prerequisites: '["electric_lightning_bolt", "electric_tesla_coil"]'
+            },
+            // Tier 4 - Transcendence
+            {
+                id: 'electric_storm_god',
+                name: 'Storm God',
+                description: 'Become the ultimate master of lightning and storms: +100% Electric Potency, +50% Electric Resistance, All Electric abilities ignore 50% of enemy Electric Resistance, Chain damage no longer diminishes with jumps',
+                class_id: null,
+                tree: 'electric',
+                tier: 4,
+                max_level: 1,
+                icon: 'assets/images/Skills/Skill_Placeholder.png',
+                prerequisites: '["electric_storm_lord", "electric_electric_field"]'
+            },
+            
+            // NATURE ELEMENTAL SKILLS (available to all classes) - 4 Tiers
+            // Tier 1 - Growth Foundation
+            {
+                id: 'nature_natural_mastery',
+                name: 'Natural Mastery',
+                description: 'Nature damage +10% per level, healing effectiveness +25%/+50%/+75% per level',
+                class_id: null,
+                tree: 'nature',
+                tier: 1,
+                max_level: 3,
+                icon: 'assets/images/Skills/Skill_Placeholder.png',
+                prerequisites: '[]'
+            },
+            {
+                id: 'nature_living_weapon',
+                name: 'Living Weapon',
+                description: 'Weapons deal nature damage, 10% chance to heal on hit +10% per level up to 50%',
+                class_id: null,
+                tree: 'nature',
+                tier: 1,
+                max_level: 5,
+                icon: 'assets/images/Skills/Skill_Placeholder.png',
+                prerequisites: '[]'
+            },
+            {
+                id: 'nature_natural_resistance',
+                name: 'Natural Resistance',
+                description: 'Nature resistance +25% per level, regenerate health over time, regenerate energy over time at level 2',
+                class_id: null,
+                tree: 'nature',
+                tier: 1,
+                max_level: 2,
+                icon: 'assets/images/Skills/Skill_Placeholder.png',
+                prerequisites: '[]'
+            },
+            // Tier 2 - Verdant Specialization
+            {
+                id: 'nature_healing_burst',
+                name: 'Healing Burst',
+                description: 'Instant area healing (30 power cost), removes negative status effects, grants temporary damage resistance per level',
+                class_id: null,
+                tree: 'nature',
+                tier: 2,
+                max_level: 3,
+                icon: 'assets/images/Skills/Skill_Placeholder.png',
+                prerequisites: '["nature_natural_mastery"]'
+            },
+            {
+                id: 'nature_thorn_barrier',
+                name: 'Thorn Barrier',
+                description: 'Create damaging plant wall (35 power cost), heals allies who touch it, grows larger, multiple barriers per level',
+                class_id: null,
+                tree: 'nature',
+                tier: 2,
+                max_level: 4,
+                icon: 'assets/images/Skills/Skill_Placeholder.png',
+                prerequisites: '["nature_living_weapon"]'
+            },
+            {
+                id: 'nature_natures_blessing',
+                name: 'Nature\'s Blessing',
+                description: 'Create healing area over time (25 power cost), boosts ally damage, follows allies per level',
+                class_id: null,
+                tree: 'nature',
+                tier: 2,
+                max_level: 3,
+                icon: 'assets/images/Skills/Skill_Placeholder.png',
+                prerequisites: '["nature_natural_resistance"]'
+            },
+            // Tier 3 - Primal Mastery
+            {
+                id: 'nature_world_tree',
+                name: 'World Tree',
+                description: 'Summon massive healing tree (120 power cost), provides cover and elevation, spreads healing aura, allies gain nature damage bonus, tree can move and attack per level',
+                class_id: null,
+                tree: 'nature',
+                tier: 3,
+                max_level: 5,
+                icon: 'assets/images/Skills/Skill_Placeholder.png',
+                prerequisites: '["nature_healing_burst", "nature_thorn_barrier"]'
+            },
+            // Tier 4 - Transcendence
+            {
+                id: 'nature_plague_god',
+                name: 'Plague God',
+                description: 'Become the ultimate master of toxins and life: +100% Nature Potency, +50% Nature Resistance, All Nature abilities ignore 50% of enemy Nature Resistance, Toxin buildup spreads on any damage, not just contact',
+                class_id: null,
+                tree: 'nature',
+                tier: 4,
+                max_level: 1,
+                icon: 'assets/images/Skills/Skill_Placeholder.png',
+                prerequisites: '["nature_world_tree", "nature_natures_blessing"]'
+            },
+            
+            // EARTH ELEMENTAL SKILLS (available to all classes) - 4 Tiers
+            // Tier 1 - Stone Foundation
+            {
+                id: 'earth_geological_mastery',
+                name: 'Geological Mastery',
+                description: 'Earth damage +15% per level, damage reduction +20%/+35%/+50% per level',
+                class_id: null,
+                tree: 'earth',
+                tier: 1,
+                max_level: 3,
+                icon: 'assets/images/Skills/Skill_Placeholder.png',
+                prerequisites: '[]'
+            },
+            {
+                id: 'earth_stone_weapon',
+                name: 'Stone Weapon',
+                description: 'Weapons deal earth damage, 10% chance to knockdown +10% per level up to 50%',
+                class_id: null,
+                tree: 'earth',
+                tier: 1,
+                max_level: 5,
+                icon: 'assets/images/Skills/Skill_Placeholder.png',
+                prerequisites: '[]'
+            },
+            {
+                id: 'earth_seismic_stability',
+                name: 'Seismic Stability',
+                description: 'Immunity to knockback and displacement effects, +25% damage when standing still 3+ seconds at level 2',
+                class_id: null,
+                tree: 'earth',
+                tier: 1,
+                max_level: 2,
+                icon: 'assets/images/Skills/Skill_Placeholder.png',
+                prerequisites: '[]'
+            },
+            // Tier 2 - Terrain Specialization
+            {
+                id: 'earth_earth_spike',
+                name: 'Earth Spike',
+                description: 'Summon damaging stone spike (25 power cost), creates line of spikes, remains as terrain per level',
+                class_id: null,
+                tree: 'earth',
+                tier: 2,
+                max_level: 3,
+                icon: 'assets/images/Skills/Skill_Placeholder.png',
+                prerequisites: '["earth_geological_mastery"]'
+            },
+            {
+                id: 'earth_stone_wall',
+                name: 'Stone Wall',
+                description: 'Create defensive earth barrier (40 power cost), cover bonus, climbable, multiple walls per level',
+                class_id: null,
+                tree: 'earth',
+                tier: 2,
+                max_level: 4,
+                icon: 'assets/images/Skills/Skill_Placeholder.png',
+                prerequisites: '["earth_stone_weapon"]'
+            },
+            {
+                id: 'earth_earthquake',
+                name: 'Earthquake',
+                description: 'Create damaging ground tremor (50 power cost), knockdown, spreading waves per level',
+                class_id: null,
+                tree: 'earth',
+                tier: 2,
+                max_level: 3,
+                icon: 'assets/images/Skills/Skill_Placeholder.png',
+                prerequisites: '["earth_seismic_stability"]'
+            },
+            // Tier 3 - Tectonic Mastery
+            {
+                id: 'earth_mountains_fury',
+                name: 'Mountain\'s Fury',
+                description: 'Reshape battlefield terrain (150 power cost), create elevated positions and cover, permanent changes, ally bonuses, massive walls and chasms per level',
+                class_id: null,
+                tree: 'earth',
+                tier: 3,
+                max_level: 5,
+                icon: 'assets/images/Skills/Skill_Placeholder.png',
+                prerequisites: '["earth_earth_spike", "earth_stone_wall"]'
+            },
+            // Tier 4 - Transcendence
+            {
+                id: 'earth_earthquake_god',
+                name: 'Earthquake God',
+                description: 'Become the ultimate master of Earth and stone: +100% Earth Potency, +50% Earth Resistance, All Earth abilities ignore 50% of enemy Earth Resistance, Fracture buildup never decays',
+                class_id: null,
+                tree: 'earth',
+                tier: 4,
+                max_level: 1,
+                icon: 'assets/images/Skills/Skill_Placeholder.png',
+                prerequisites: '["earth_mountains_fury", "earth_earthquake"]'
             }
         ];
 

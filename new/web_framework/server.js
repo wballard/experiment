@@ -671,6 +671,245 @@ function createAPIRoutes() {
         }
     });
 
+    // ===== SKILLS ENDPOINTS =====
+
+    // Get available skill trees for a character
+    router.get('/skills/trees', requireAuth, async (req, res) => {
+        try {
+            const activeCharacter = await db.getActiveCharacter(req.session.playerId);
+            if (!activeCharacter) {
+                return res.status(404).json({ 
+                    success: false, 
+                    error: 'No active character found' 
+                });
+            }
+
+            // Get unique skill trees available to this character's class
+            const trees = await new Promise((resolve, reject) => {
+                db.db.all(`
+                    SELECT DISTINCT tree as tree_id, 
+                           UPPER(SUBSTR(tree, 1, 1)) || SUBSTR(tree, 2) as name
+                    FROM skills 
+                    WHERE class_id = ? OR class_id IS NULL
+                    ORDER BY tree
+                `, [activeCharacter.class_id], (err, rows) => {
+                    if (err) reject(err);
+                    else {
+                        // Add availability and ordering info
+                        const processedTrees = rows.map(tree => ({
+                            ...tree,
+                            available: true, // All trees are available for now
+                            unlocked: true,
+                            tree_type: tree.tree_id === activeCharacter.class_id ? 'class' : 'elemental'
+                        }));
+                        
+                        // Sort: class tree first, then elemental trees in spec order
+                        // Spec order: Fire, Ice, Electric, Earth, Nature (as per specs/04-elemental-skills.html)
+                        const elementalOrder = ['fire', 'ice', 'electric', 'earth', 'nature'];
+                        processedTrees.sort((a, b) => {
+                            // Class tree always first
+                            if (a.tree_type === 'class' && b.tree_type === 'elemental') return -1;
+                            if (a.tree_type === 'elemental' && b.tree_type === 'class') return 1;
+                            
+                            // Elemental trees in specification order  
+                            if (a.tree_type === 'elemental' && b.tree_type === 'elemental') {
+                                const aIndex = elementalOrder.indexOf(a.tree_id);
+                                const bIndex = elementalOrder.indexOf(b.tree_id);
+                                if (aIndex === -1) return 1; // Unknown elements go last
+                                if (bIndex === -1) return -1;
+                                return aIndex - bIndex;
+                            }
+                            return a.name.localeCompare(b.name);
+                        });
+                        
+                        resolve(processedTrees);
+                    }
+                });
+            });
+
+            res.json({ success: true, trees });
+        } catch (error) {
+            console.error('Error getting skill trees:', error);
+            res.status(500).json({ success: false, error: error.message });
+        }
+    });
+
+    // Get skills for a specific tree
+    router.get('/skills/tree/:treeId', requireAuth, async (req, res) => {
+        try {
+            const { treeId } = req.params;
+            const activeCharacter = await db.getActiveCharacter(req.session.playerId);
+            
+            if (!activeCharacter) {
+                return res.status(404).json({ 
+                    success: false, 
+                    error: 'No active character found' 
+                });
+            }
+
+            // Get skills for this tree that are available to the character's class
+            const skills = await new Promise((resolve, reject) => {
+                db.db.all(`
+                    SELECT s.*, COALESCE(cs.level, 0) as current_level
+                    FROM skills s
+                    LEFT JOIN character_skills cs ON s.id = cs.skill_id AND cs.character_id = ?
+                    WHERE s.tree = ? AND (s.class_id = ? OR s.class_id IS NULL)
+                    ORDER BY s.tier, s.id
+                `, [activeCharacter.id, treeId, activeCharacter.class_id], (err, rows) => {
+                    if (err) reject(err);
+                    else resolve(rows || []);
+                });
+            });
+
+            // Get player's current skill investments
+            const playerSkills = {};
+            skills.forEach(skill => {
+                if (skill.current_level > 0) {
+                    playerSkills[skill.id] = skill.current_level;
+                }
+            });
+
+            res.json({ 
+                success: true, 
+                skills: skills,
+                playerSkills: playerSkills
+            });
+        } catch (error) {
+            console.error('Error getting tree skills:', error);
+            res.status(500).json({ success: false, error: error.message });
+        }
+    });
+
+    // Get character's current skill points
+    router.get('/skills/points', requireAuth, async (req, res) => {
+        try {
+            const activeCharacter = await db.getActiveCharacter(req.session.playerId);
+            if (!activeCharacter) {
+                return res.status(404).json({ 
+                    success: false, 
+                    error: 'No active character found' 
+                });
+            }
+
+            res.json({ 
+                success: true, 
+                availablePoints: activeCharacter.skill_points_available,
+                totalPoints: activeCharacter.skill_points_available + activeCharacter.skill_points_invested
+            });
+        } catch (error) {
+            console.error('Error getting skill points:', error);
+            res.status(500).json({ success: false, error: error.message });
+        }
+    });
+
+    // Invest a skill point
+    router.post('/skills/invest', requireAuth, async (req, res) => {
+        try {
+            const { skillId } = req.body;
+            
+            if (!skillId) {
+                return res.status(400).json({ 
+                    success: false, 
+                    error: 'Skill ID is required' 
+                });
+            }
+
+            const activeCharacter = await db.getActiveCharacter(req.session.playerId);
+            if (!activeCharacter) {
+                return res.status(404).json({ 
+                    success: false, 
+                    error: 'No active character found' 
+                });
+            }
+
+            // Check if character has available skill points
+            if (activeCharacter.skill_points_available <= 0) {
+                return res.status(400).json({ 
+                    success: false, 
+                    error: 'No skill points available' 
+                });
+            }
+
+            // Get the skill to validate it exists and is available to this character
+            const skill = await new Promise((resolve, reject) => {
+                db.db.get(`
+                    SELECT * FROM skills 
+                    WHERE id = ? AND (class_id = ? OR class_id IS NULL)
+                `, [skillId, activeCharacter.class_id], (err, row) => {
+                    if (err) reject(err);
+                    else resolve(row);
+                });
+            });
+
+            if (!skill) {
+                return res.status(400).json({ 
+                    success: false, 
+                    error: 'Skill not found or not available to this character class' 
+                });
+            }
+
+            // Get current skill level
+            const currentSkill = await new Promise((resolve, reject) => {
+                db.db.get(`
+                    SELECT level FROM character_skills 
+                    WHERE character_id = ? AND skill_id = ?
+                `, [activeCharacter.id, skillId], (err, row) => {
+                    if (err) reject(err);
+                    else resolve(row);
+                });
+            });
+
+            const currentLevel = currentSkill ? currentSkill.level : 0;
+
+            // Check if skill is at max level
+            if (currentLevel >= skill.max_level) {
+                return res.status(400).json({ 
+                    success: false, 
+                    error: 'Skill is already at maximum level' 
+                });
+            }
+
+            // Invest the skill point
+            await new Promise((resolve, reject) => {
+                db.db.serialize(() => {
+                    // Update or insert character skill
+                    if (currentSkill) {
+                        db.db.run(`
+                            UPDATE character_skills 
+                            SET level = level + 1 
+                            WHERE character_id = ? AND skill_id = ?
+                        `, [activeCharacter.id, skillId]);
+                    } else {
+                        db.db.run(`
+                            INSERT INTO character_skills (character_id, skill_id, level)
+                            VALUES (?, ?, 1)
+                        `, [activeCharacter.id, skillId]);
+                    }
+
+                    // Update character skill points
+                    db.db.run(`
+                        UPDATE characters 
+                        SET skill_points_available = skill_points_available - 1,
+                            skill_points_invested = skill_points_invested + 1
+                        WHERE id = ?
+                    `, [activeCharacter.id], function(err) {
+                        if (err) reject(err);
+                        else resolve();
+                    });
+                });
+            });
+
+            res.json({ 
+                success: true, 
+                message: `Invested skill point in ${skill.name}`,
+                newLevel: currentLevel + 1
+            });
+        } catch (error) {
+            console.error('Error investing skill point:', error);
+            res.status(500).json({ success: false, error: error.message });
+        }
+    });
+
     // ===== ADMIN/DEVELOPMENT ENDPOINTS =====
 
     // Reset database (development only)

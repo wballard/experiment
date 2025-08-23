@@ -1,20 +1,34 @@
-// Working Skills System
+// Working Skills System  
+console.log('🔧 Skills.js loaded successfully');
 window.SkillSystem = {
     // State
     currentTree: null, // Will be set to first available tree
-    playerLevel: 60,
-    playerId: 1,
     
     // Data
     skillTrees: [],
     currentSkills: [],
     playerSkills: {},
-    skillData: { availablePoints: 60, totalPoints: 60 },
+    skillData: { availablePoints: 0, totalPoints: 0 },
     
     async init() {
         console.log('🎯 Skills System Starting...');
         
         try {
+            // Check authentication first
+            if (!window.CourierAPI) {
+                console.error('❌ CourierAPI not available');
+                document.getElementById('skillLoadingMessage').innerHTML = 'CourierAPI not available';
+                return;
+            }
+            
+            const authStatus = await window.CourierAPI.checkAuthStatus();
+            if (!authStatus) {
+                console.log('🔐 Not authenticated');
+                document.getElementById('skillLoadingMessage').innerHTML = 
+                    '<div style="color: #ff6464;">Please <a href="/" style="color: #00d4ff;">log in</a> to view skills</div>';
+                return;
+            }
+            
             // Find DOM elements
             this.tabsContainer = document.getElementById('skillTreeTabs');
             this.skillContainer = document.querySelector('.skill-tree.active');
@@ -37,10 +51,18 @@ window.SkillSystem = {
             // Load data
             await this.loadSkillTrees();
             
-            // Set current tree to first available tree if not already set
+            // Set current tree to character's class tree, not just first tree
             if (!this.currentTree && this.skillTrees.length > 0) {
-                this.currentTree = this.skillTrees[0].tree_id;
-                console.log('Set initial tree to:', this.currentTree);
+                // Find the character's class tree (should be tree_type: 'class')
+                const classTree = this.skillTrees.find(tree => tree.tree_type === 'class');
+                if (classTree) {
+                    this.currentTree = classTree.tree_id;
+                    console.log('Set initial tree to character class:', this.currentTree);
+                } else {
+                    // Fallback to first tree if no class tree found
+                    this.currentTree = this.skillTrees[0].tree_id;
+                    console.log('No class tree found, fallback to first tree:', this.currentTree);
+                }
             }
             
             await this.loadCurrentTree();
@@ -60,12 +82,13 @@ window.SkillSystem = {
     
     async loadSkillTrees() {
         try {
-            const response = await fetch(`/api/skills/trees?level=${this.playerLevel}&playerId=${this.playerId}`);
+            const response = await fetch('/api/skills/trees');
             const data = await response.json();
             
             if (data.success) {
                 this.skillTrees = data.trees;
-                console.log(`📋 Loaded ${this.skillTrees.length} skill trees`);
+                console.log(`📋 Loaded ${this.skillTrees.length} skill trees:`, 
+                    this.skillTrees.map(t => `${t.name} (${t.tree_type})`));
             } else {
                 throw new Error(data.error);
             }
@@ -83,7 +106,7 @@ window.SkillSystem = {
                 return;
             }
             
-            const response = await fetch(`/api/skills/tree/${this.currentTree}?playerId=${this.playerId}`);
+            const response = await fetch(`/api/skills/tree/${this.currentTree}`);
             const data = await response.json();
             
             if (data.success) {
@@ -103,11 +126,14 @@ window.SkillSystem = {
     
     async loadSkillPoints() {
         try {
-            const response = await fetch(`/api/player/${this.playerId}/skills`);
+            const response = await fetch('/api/skills/points');
             const data = await response.json();
             
             if (data.success) {
-                this.skillData = data.skillData;
+                this.skillData = {
+                    availablePoints: data.availablePoints,
+                    totalPoints: data.totalPoints
+                };
             }
         } catch (error) {
             console.error('Error loading skill points:', error);
@@ -115,14 +141,19 @@ window.SkillSystem = {
     },
     
     createTabs() {
-        if (!this.tabsContainer) return;
+        console.log('🏗️ Creating tabs for', this.skillTrees.length, 'trees');
+        if (!this.tabsContainer) {
+            console.error('❌ tabsContainer not found');
+            return;
+        }
         
         this.tabsContainer.innerHTML = '';
         
         // Create simple tabs
-        this.skillTrees.forEach(tree => {
+        this.skillTrees.forEach((tree, index) => {
+            console.log(`Creating tab ${index + 1}: ${tree.name} (${tree.tree_id})`);
             const button = document.createElement('button');
-            button.textContent = `${this.getTreeIcon(tree.tree_id)} ${tree.tree_name}`;
+            button.textContent = `${this.getTreeIcon(tree.tree_id)} ${tree.name}`;
             button.className = `tree-tab ${tree.tree_id === this.currentTree ? 'active' : ''}`;
             button.style.cssText = `
                 margin: 2px; padding: 8px 12px; 
@@ -166,6 +197,11 @@ window.SkillSystem = {
     renderSkills() {
         if (!this.skillContainer) return;
         
+        if (!this.currentTree) {
+            this.skillContainer.innerHTML = '<p style="color: #ff6464;">No skill tree selected</p>';
+            return;
+        }
+        
         this.skillContainer.innerHTML = `<h3 style="margin-bottom: 20px; color: #00d4ff;">${this.currentTree.toUpperCase()} SKILLS</h3>`;
         
         if (this.currentSkills.length === 0) {
@@ -197,7 +233,7 @@ window.SkillSystem = {
             `;
             
             skillsByTier[tier].forEach(skill => {
-                const currentRank = this.playerSkills[skill.skill_id] || 0;
+                const currentRank = this.playerSkills[skill.id] || 0;
                 const skillDiv = document.createElement('div');
                 
                 skillDiv.style.cssText = `
@@ -209,11 +245,11 @@ window.SkillSystem = {
                 
                 skillDiv.innerHTML = `
                     <div style="display: flex; align-items: center; margin-bottom: 8px;">
-                        <span style="font-size: 20px; margin-right: 10px;">${this.getSkillIcon(skill.skill_type)}</span>
+                        <span style="font-size: 20px; margin-right: 10px;">${this.getSkillIcon('passive')}</span>
                         <div style="flex: 1;">
-                            <strong style="color: #ffffff; font-size: 14px;">${skill.skill_name}</strong>
+                            <strong style="color: #ffffff; font-size: 14px;">${skill.name}</strong>
                             <div style="color: #00d4ff; font-size: 12px; font-weight: bold;">
-                                ${currentRank}/${skill.max_rank} • ${skill.skill_type.toUpperCase()}
+                                ${currentRank}/${skill.max_level} • TIER ${skill.tier}
                             </div>
                         </div>
                     </div>
@@ -255,7 +291,7 @@ window.SkillSystem = {
     getPointsInTier(tier) {
         return this.currentSkills
             .filter(skill => skill.tier === parseInt(tier))
-            .reduce((sum, skill) => sum + (this.playerSkills[skill.skill_id] || 0), 0);
+            .reduce((sum, skill) => sum + (this.playerSkills[skill.id] || 0), 0);
     },
     
     async switchTree(treeId) {
@@ -279,10 +315,10 @@ window.SkillSystem = {
     },
     
     async investSkillPoint(skill) {
-        const currentRank = this.playerSkills[skill.skill_id] || 0;
+        const currentRank = this.playerSkills[skill.id] || 0;
         
-        if (currentRank >= skill.max_rank) {
-            console.log(`⚠️ ${skill.skill_name} is already maxed`);
+        if (currentRank >= skill.max_level) {
+            console.log(`⚠️ ${skill.name} is already maxed`);
             return;
         }
         
@@ -292,25 +328,22 @@ window.SkillSystem = {
         }
         
         try {
-            const response = await fetch(`/api/player/${this.playerId}/skills/invest`, {
+            const response = await fetch('/api/skills/invest', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    skillId: skill.skill_id,
-                    skillTree: this.currentTree.includes('fire') || this.currentTree.includes('ice') || 
-                              this.currentTree.includes('electric') || this.currentTree.includes('earth') || 
-                              this.currentTree.includes('nature') ? 'elemental' : 'class'
+                    skillId: skill.id
                 })
             });
             
             const result = await response.json();
             
             if (result.success) {
-                this.playerSkills[skill.skill_id] = currentRank + 1;
+                this.playerSkills[skill.id] = currentRank + 1;
                 await this.loadSkillPoints();
                 this.renderSkills();
                 this.updatePointsDisplay();
-                console.log(`✅ Invested point in ${skill.skill_name}`);
+                console.log(`✅ Invested point in ${skill.name}`);
             } else {
                 console.error('Failed to invest skill point:', result.error);
             }

@@ -140,7 +140,7 @@ class CourierAPI {
 
     async loadActiveCharacter() {
         try {
-            const response = await this.fetch('/character/active');
+            const response = await this.fetch('/characters/active');
             const result = await response.json();
             
             if (result.success && result.character) {
