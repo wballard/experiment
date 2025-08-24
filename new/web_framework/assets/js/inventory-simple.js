@@ -19,9 +19,10 @@ window.SimpleInventory = {
             
             // Setup UI
             this.setupEquipmentSlots();
+            this.setupFilters();
             this.renderInventory();
             this.renderEquipped();
-            this.updatePowerBudget();
+            await this.updatePowerBudget();
             
             console.log('=== SIMPLE INVENTORY INIT COMPLETE ===');
         } catch (error) {
@@ -52,6 +53,71 @@ window.SimpleInventory = {
             console.error('Error details:', error);
             this.equipped = {};
         }
+    },
+
+    setupFilters() {
+        this.currentFilter = 'all';
+        this.currentSlotFilter = 'all';
+        this.currentModFilter = 'all';
+        
+        // Setup filter buttons
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        filterButtons.forEach(button => {
+            button.addEventListener('click', (e) => {
+                const filter = e.target.dataset.filter;
+                
+                // Update active state
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                e.target.classList.add('active');
+                
+                // Handle filter-specific dropdowns
+                const slotFilters = document.getElementById('slot-filters');
+                const modFilters = document.getElementById('mod-filters');
+                
+                if (filter === 'slot') {
+                    slotFilters.style.display = 'block';
+                    modFilters.style.display = 'none';
+                    this.currentFilter = 'slot';
+                    this.currentSlotFilter = document.getElementById('slot-dropdown').value || 'all';
+                } else if (filter === 'mod') {
+                    slotFilters.style.display = 'none';
+                    modFilters.style.display = 'block';
+                    this.currentFilter = 'mod';
+                    this.currentModFilter = document.getElementById('mod-dropdown').value || 'all';
+                } else {
+                    slotFilters.style.display = 'none';
+                    modFilters.style.display = 'none';
+                    this.currentFilter = filter;
+                    this.currentSlotFilter = 'all';
+                    this.currentModFilter = 'all';
+                }
+                
+                console.log('Filter changed to:', filter);
+                this.renderInventory();
+            });
+        });
+        
+        // Setup slot dropdown
+        const slotDropdown = document.getElementById('slot-dropdown');
+        if (slotDropdown) {
+            slotDropdown.addEventListener('change', (e) => {
+                this.currentSlotFilter = e.target.value;
+                console.log('Slot filter changed to:', this.currentSlotFilter);
+                this.renderInventory();
+            });
+        }
+        
+        // Setup mod dropdown
+        const modDropdown = document.getElementById('mod-dropdown');
+        if (modDropdown) {
+            modDropdown.addEventListener('change', (e) => {
+                this.currentModFilter = e.target.value;
+                console.log('Mod filter changed to:', this.currentModFilter);
+                this.renderInventory();
+            });
+        }
+        
+        console.log('Filters setup complete');
     },
 
     renderInventory() {
@@ -106,10 +172,29 @@ window.SimpleInventory = {
             return;
         }
 
-        // Separate items by type
-        const weapons = availableItems.filter(item => item.type === 'weapon');
-        const armor = availableItems.filter(item => item.type === 'armor');
-        const mods = availableItems.filter(item => item.type === 'mod');
+        // Apply filters to available items
+        let filteredItems = availableItems;
+        
+        if (this.currentFilter === 'weapon') {
+            filteredItems = availableItems.filter(item => item.type === 'weapon');
+        } else if (this.currentFilter === 'armor') {
+            filteredItems = availableItems.filter(item => item.type === 'armor');
+        } else if (this.currentFilter === 'mod') {
+            filteredItems = availableItems.filter(item => item.type === 'mod');
+            // Apply mod type sub-filter
+            if (this.currentModFilter && this.currentModFilter !== 'all' && this.currentModFilter !== '') {
+                filteredItems = filteredItems.filter(item => item.mod_type === this.currentModFilter);
+            }
+        } else if (this.currentFilter === 'slot' && this.currentSlotFilter !== 'all' && this.currentSlotFilter !== '') {
+            filteredItems = availableItems.filter(item => item.slot === this.currentSlotFilter);
+        }
+        
+        console.log(`Applied filter "${this.currentFilter}" (slot: "${this.currentSlotFilter}", mod: "${this.currentModFilter}"):`, filteredItems.length, 'items');
+        
+        // Separate filtered items by type for sectioned display
+        const weapons = filteredItems.filter(item => item.type === 'weapon');
+        const armor = filteredItems.filter(item => item.type === 'armor');
+        const mods = filteredItems.filter(item => item.type === 'mod');
 
         // Create weapon section
         if (weapons.length > 0) {
@@ -168,7 +253,7 @@ window.SimpleInventory = {
             inventoryContainer.appendChild(modsSection);
         }
         
-        console.log('Rendered', availableItems.length, 'items in sections:', weapons.length, 'weapons,', armor.length, 'armor,', mods.length, 'mods');
+        console.log('Rendered', filteredItems.length, 'filtered items in sections:', weapons.length, 'weapons,', armor.length, 'armor,', mods.length, 'mods');
     },
 
     createItemElement(item) {
@@ -371,7 +456,7 @@ window.SimpleInventory = {
             await this.loadEquipped();
             this.renderInventory();
             this.renderEquipped();
-            this.updatePowerBudget();
+            await this.updatePowerBudget();
             
             console.log('Item equipped successfully');
         } catch (error) {
@@ -391,7 +476,7 @@ window.SimpleInventory = {
             await this.loadEquipped();
             this.renderInventory();
             this.renderEquipped();
-            this.updatePowerBudget();
+            await this.updatePowerBudget();
             
             console.log('Item unequipped successfully');
         } catch (error) {
@@ -474,50 +559,74 @@ window.SimpleInventory = {
         return tooltipItem;
     },
 
-    updatePowerBudget() {
-        // Calculate total power cost and max power from equipped items
-        let totalPowerUsed = 0;
-        let totalPowerMax = 300; // Base power capacity
-        
-        Object.values(this.equipped).forEach(item => {
-            if (item) {
-                // Add power cost from all items
-                if (item.power_cost) {
-                    totalPowerUsed += item.power_cost;
-                }
-                
-                // Add power capacity from armor (some armor increases max power)
-                if (item.type === 'armor' && item.power) {
-                    totalPowerMax += item.power || 0;
-                }
+    async updatePowerBudget() {
+        try {
+            // Get character data to fetch power_max from database
+            const characterResponse = await window.CourierAPI.getActiveCharacter();
+            if (!characterResponse.success || !characterResponse.character) {
+                console.error('Failed to get active character for power budget');
+                return;
             }
-        });
-
-        // Update power display elements
-        const powerUsedElement = document.querySelector('.power-used');
-        const powerMaxElement = document.querySelector('.power-max');
-        const powerProgressFill = document.querySelector('.power-progress-fill');
-        
-        if (powerUsedElement) {
-            powerUsedElement.textContent = totalPowerUsed;
-        }
-        
-        if (powerMaxElement) {
-            powerMaxElement.textContent = totalPowerMax;
-        }
-        
-        if (powerProgressFill) {
-            const percentage = Math.min((totalPowerUsed / totalPowerMax) * 100, 100);
-            powerProgressFill.style.width = percentage + '%';
             
-            // Add over-capacity styling if needed
-            if (totalPowerUsed > totalPowerMax) {
-                powerProgressFill.classList.add('over-capacity');
-            } else {
-                powerProgressFill.classList.remove('over-capacity');
+            const character = characterResponse.character;
+            let powerMax = character.power_max || 300; // Use stored power_max from character
+            
+            // Calculate power used from equipped items
+            let powerUsed = 0;
+            Object.values(this.equipped).forEach(item => {
+                if (item && item.power_cost) {
+                    powerUsed += item.power_cost;
+                }
+            });
+            
+            // Add bonus power capacity from armor (rare case where armor increases max power)
+            Object.values(this.equipped).forEach(item => {
+                if (item && item.type === 'armor' && item.power) {
+                    powerMax += item.power;
+                }
+            });
+            
+            // Update power display elements
+            const powerUsedElement = document.querySelector('.power-used');
+            const powerMaxElement = document.querySelector('.power-max');
+            const powerProgressFill = document.querySelector('.power-progress-fill');
+            
+            if (powerUsedElement) {
+                powerUsedElement.textContent = powerUsed;
+            }
+            
+            if (powerMaxElement) {
+                powerMaxElement.textContent = powerMax;
+            }
+            
+            if (powerProgressFill && powerMax > 0) {
+                const percentage = Math.min((powerUsed / powerMax) * 100, 100);
+                powerProgressFill.style.width = percentage + '%';
+                
+                // Add over-capacity styling if needed
+                if (powerUsed > powerMax) {
+                    powerProgressFill.classList.add('over-capacity');
+                } else {
+                    powerProgressFill.classList.remove('over-capacity');
+                }
+            }
+            
+            console.log(`Power budget updated: ${powerUsed}/${powerMax} (${character.name} level ${character.level})`);
+            
+        } catch (error) {
+            console.error('Error updating power budget:', error);
+            // Fallback to basic calculation
+            let powerUsed = 0;
+            Object.values(this.equipped).forEach(item => {
+                if (item && item.power_cost) {
+                    powerUsed += item.power_cost;
+                }
+            });
+            
+            const powerUsedElement = document.querySelector('.power-used');
+            if (powerUsedElement) {
+                powerUsedElement.textContent = powerUsed;
             }
         }
-        
-        console.log('Power budget updated:', totalPowerUsed, 'used /', totalPowerMax, 'max');
     }
 };

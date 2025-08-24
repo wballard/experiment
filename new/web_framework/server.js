@@ -910,6 +910,321 @@ function createAPIRoutes() {
         }
     });
 
+    // ===== SKILL CALCULATION ENDPOINTS =====
+
+    // Update character stats with skill bonuses
+    router.post('/character/:id/stats/skill-bonuses', (req, res) => {
+        try {
+            const characterId = parseInt(req.params.id);
+            const { updates } = req.body;
+
+            if (!updates || !Array.isArray(updates)) {
+                return res.status(400).json({ 
+                    success: false, 
+                    error: 'Updates array required' 
+                });
+            }
+
+            // Process each stat update
+            updates.forEach(update => {
+                if (update.skill_bonus !== undefined) {
+                    // Simple modifier update
+                    db.db.run(`
+                        INSERT OR REPLACE INTO character_stats 
+                        (character_id, stat_name, skill_bonus, last_calculated)
+                        VALUES (?, ?, ?, CURRENT_TIMESTAMP)
+                    `, [characterId, update.stat_name, update.skill_bonus]);
+                }
+
+                if (update.skill_bonus_typed !== undefined) {
+                    // Typed modifier update
+                    db.db.run(`
+                        INSERT OR REPLACE INTO character_stats 
+                        (character_id, stat_name, skill_bonus_typed, last_calculated)
+                        VALUES (?, ?, ?, CURRENT_TIMESTAMP)
+                    `, [characterId, update.stat_name, update.skill_bonus_typed]);
+                }
+            });
+
+            res.json({ success: true, message: 'Skill bonuses updated' });
+        } catch (error) {
+            console.error('Error updating skill bonuses:', error);
+            res.status(500).json({ success: false, error: error.message });
+        }
+    });
+
+    // Recalculate total character stats
+    router.post('/character/:id/stats/recalculate', (req, res) => {
+        try {
+            const characterId = parseInt(req.params.id);
+
+            // Recalculate all total values (base + equipment + skill)
+            db.db.run(`
+                UPDATE character_stats 
+                SET total_value = COALESCE(base_value, 0) + COALESCE(equipment_bonus, 0) + COALESCE(skill_bonus, 0),
+                    last_calculated = CURRENT_TIMESTAMP
+                WHERE character_id = ? AND skill_bonus_typed IS NULL
+            `, [characterId]);
+
+            // For typed stats, we'll handle totals in the frontend for now
+            // since SQLite doesn't have good JSON aggregation functions
+
+            res.json({ success: true, message: 'Stats recalculated' });
+        } catch (error) {
+            console.error('Error recalculating stats:', error);
+            res.status(500).json({ success: false, error: error.message });
+        }
+    });
+
+    // Get detailed character stats with skill breakdown
+    router.get('/character/:id/stats/detailed', (req, res) => {
+        try {
+            const characterId = parseInt(req.params.id);
+
+            db.db.all(`
+                SELECT stat_name, base_value, equipment_bonus, skill_bonus, 
+                       skill_bonus_typed, total_value, total_value_typed, last_calculated
+                FROM character_stats 
+                WHERE character_id = ?
+                ORDER BY stat_name
+            `, [characterId], (err, rows) => {
+                if (err) {
+                    console.error('Database error:', err);
+                    return res.status(500).json({ success: false, error: err.message });
+                }
+
+                // Convert to object format
+                const stats = {};
+                rows.forEach(row => {
+                    stats[row.stat_name] = {
+                        base_value: row.base_value || 0,
+                        equipment_bonus: row.equipment_bonus || 0,
+                        skill_bonus: row.skill_bonus || 0,
+                        skill_bonus_typed: row.skill_bonus_typed ? JSON.parse(row.skill_bonus_typed) : null,
+                        total_value: row.total_value || 0,
+                        total_value_typed: row.total_value_typed ? JSON.parse(row.total_value_typed) : null,
+                        last_calculated: row.last_calculated
+                    };
+                });
+
+                res.json(stats);
+            });
+        } catch (error) {
+            console.error('Error getting detailed stats:', error);
+            res.status(500).json({ success: false, error: error.message });
+        }
+    });
+
+    // Get character skills (for skill calculations)
+    router.get('/character/:id/skills', (req, res) => {
+        try {
+            const characterId = parseInt(req.params.id);
+
+            db.db.all(`
+                SELECT cs.skill_id, cs.level, s.name, s.description, s.tree, s.tier, s.max_level
+                FROM character_skills cs
+                JOIN skills s ON cs.skill_id = s.id
+                WHERE cs.character_id = ?
+                ORDER BY s.tree, s.tier, s.id
+            `, [characterId], (err, rows) => {
+                if (err) {
+                    console.error('Database error:', err);
+                    return res.status(500).json({ success: false, error: err.message });
+                }
+
+                res.json(rows);
+            });
+        } catch (error) {
+            console.error('Error getting character skills:', error);
+            res.status(500).json({ success: false, error: error.message });
+        }
+    });
+
+    // Trigger stat recalculation when skill changes (webhook)
+    router.post('/character/:id/skill/:skillId/updated', async (req, res) => {
+        try {
+            const characterId = parseInt(req.params.id);
+            const skillId = req.params.skillId;
+            const { newLevel } = req.body;
+
+            // This endpoint can be called from the frontend after skill changes
+            // to trigger stat recalculation
+            
+            res.json({ 
+                success: true, 
+                message: `Skill ${skillId} updated to level ${newLevel}. Stats will be recalculated.`,
+                characterId,
+                skillId,
+                newLevel
+            });
+        } catch (error) {
+            console.error('Error handling skill update:', error);
+            res.status(500).json({ success: false, error: error.message });
+        }
+    });
+
+    // Get character info by ID
+    router.get('/characters/:id', (req, res) => {
+        try {
+            const characterId = parseInt(req.params.id);
+            
+            db.db.get(`
+                SELECT * FROM characters 
+                WHERE id = ?
+            `, [characterId], (err, character) => {
+                if (err) {
+                    console.error('Database error:', err);
+                    return res.status(500).json({ 
+                        success: false, 
+                        error: err.message 
+                    });
+                }
+                
+                if (!character) {
+                    return res.status(404).json({ 
+                        success: false, 
+                        error: 'Character not found' 
+                    });
+                }
+                
+                res.json(character);
+            });
+            
+        } catch (error) {
+            console.error('Error getting character:', error);
+            res.status(500).json({ 
+                success: false, 
+                error: error.message 
+            });
+        }
+    });
+
+    // Add skill to character (testing/development)
+    router.post('/character/:id/add-skill', (req, res) => {
+        try {
+            const characterId = parseInt(req.params.id);
+            const { skill_id, level } = req.body;
+            
+            if (!skill_id || !level || level <= 0) {
+                return res.status(400).json({ 
+                    success: false, 
+                    error: 'Invalid skill_id or level' 
+                });
+            }
+            
+            console.log(`Adding skill ${skill_id} level ${level} to character ${characterId}`);
+            
+            // Insert or update character skill
+            db.db.run(`
+                INSERT OR REPLACE INTO character_skills (character_id, skill_id, level)
+                VALUES (?, ?, ?)
+            `, [characterId, skill_id, level], function(err) {
+                if (err) {
+                    console.error('Error adding skill:', err);
+                    return res.status(500).json({ 
+                        success: false, 
+                        error: err.message 
+                    });
+                }
+                
+                console.log(`✅ Added ${skill_id} level ${level} to character ${characterId}`);
+                res.json({
+                    success: true,
+                    message: `Added ${skill_id} level ${level}`,
+                    skill_id,
+                    level
+                });
+            });
+            
+        } catch (error) {
+            console.error('Error adding skill:', error);
+            res.status(500).json({ 
+                success: false, 
+                error: error.message 
+            });
+        }
+    });
+
+    // Boost character XP (testing/development)
+    router.post('/character/:id/boost-xp', (req, res) => {
+        try {
+            const characterId = parseInt(req.params.id);
+            const { xp } = req.body;
+            
+            if (!xp || xp <= 0) {
+                return res.status(400).json({ 
+                    success: false, 
+                    error: 'Invalid XP amount' 
+                });
+            }
+            
+            console.log(`Boosting character ${characterId} by ${xp} XP`);
+            
+            // Get current character data
+            db.db.get(`
+                SELECT experience, level FROM characters 
+                WHERE id = ?
+            `, [characterId], (err, character) => {
+                if (err) {
+                    console.error('Database error:', err);
+                    return res.status(500).json({ 
+                        success: false, 
+                        error: err.message 
+                    });
+                }
+                
+                if (!character) {
+                    return res.status(404).json({ 
+                        success: false, 
+                        error: 'Character not found' 
+                    });
+                }
+                
+                const newXP = character.experience + xp;
+                
+                // Simple level calculation: 1000 XP per level
+                const newLevel = Math.floor(newXP / 1000) + 1;
+                const levelDifference = newLevel - character.level;
+                
+                // Update character XP and level
+                db.db.run(`
+                    UPDATE characters 
+                    SET experience = ?, 
+                        level = ?, 
+                        skill_points_available = skill_points_available + ?
+                    WHERE id = ?
+                `, [newXP, newLevel, levelDifference, characterId], function(updateErr) {
+                    if (updateErr) {
+                        console.error('Update error:', updateErr);
+                        return res.status(500).json({ 
+                            success: false, 
+                            error: updateErr.message 
+                        });
+                    }
+                    
+                    console.log(`✅ Character ${characterId} boosted: +${xp} XP, level ${character.level} → ${newLevel}`);
+                    
+                    res.json({
+                        success: true,
+                        message: `Added ${xp} XP`,
+                        oldXP: character.experience,
+                        newXP: newXP,
+                        oldLevel: character.level,
+                        newLevel: newLevel,
+                        skillPointsGained: levelDifference
+                    });
+                });
+            });
+            
+        } catch (error) {
+            console.error('Error boosting XP:', error);
+            res.status(500).json({ 
+                success: false, 
+                error: error.message 
+            });
+        }
+    });
+
     // ===== ADMIN/DEVELOPMENT ENDPOINTS =====
 
     // Reset database (development only)
@@ -936,6 +1251,38 @@ function createAPIRoutes() {
             timestamp: new Date().toISOString(),
             authenticated: !!req.session.playerId
         });
+    });
+
+    // Get all items for Armory
+    router.get('/items/all', (req, res) => {
+        try {
+            db.db.all(`
+                SELECT 
+                    id, name, type, slot, rarity, icon, power_cost,
+                    weapon_type, damage_min, damage_max, armor, health,
+                    description, mod_type, crit_chance, crit_damage,
+                    fire_damage_flat, ice_damage_flat, electric_damage_flat,
+                    fire_damage_percent, ice_damage_percent, electric_damage_percent,
+                    damage_percent, magazine_size, reload_speed, accuracy, stability,
+                    range_effective, zoom, ads_speed_modifier
+                FROM items 
+                ORDER BY type, rarity, name
+            `, (err, rows) => {
+                if (err) {
+                    console.error('Error fetching all items:', err);
+                    res.status(500).json({ success: false, error: err.message });
+                } else {
+                    res.json({ 
+                        success: true, 
+                        items: rows || [],
+                        count: rows ? rows.length : 0
+                    });
+                }
+            });
+        } catch (error) {
+            console.error('Error in items/all endpoint:', error);
+            res.status(500).json({ success: false, error: error.message });
+        }
     });
 
     return router;

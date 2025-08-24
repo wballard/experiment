@@ -344,6 +344,23 @@ window.SkillSystem = {
                 this.renderSkills();
                 this.updatePointsDisplay();
                 console.log(`✅ Invested point in ${skill.name}`);
+                
+                // Trigger skill stat recalculation
+                if (window.SkillCalculator) {
+                    try {
+                        const activeCharacter = await window.CourierAPI.getActiveCharacter();
+                        if (activeCharacter && activeCharacter.id) {
+                            console.log('Triggering skill stat recalculation...');
+                            await window.SkillCalculator.onSkillChanged(
+                                activeCharacter.id, 
+                                skill.id, 
+                                currentRank + 1
+                            );
+                        }
+                    } catch (error) {
+                        console.error('Error triggering skill stat recalculation:', error);
+                    }
+                }
             } else {
                 console.error('Failed to invest skill point:', result.error);
             }

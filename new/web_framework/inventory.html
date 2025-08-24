@@ -115,6 +115,7 @@
             <a href="build-planner.html" class="nav-item">BUILD PLANNER</a>
             <a href="marketplace.html" class="nav-item">MARKET</a>
             <a href="crafting.html" class="nav-item">CRAFTING</a>
+            <a href="armory.html" class="nav-item">ARMORY</a>
         </div>
     </nav>
 
@@ -196,6 +197,7 @@
                         <button class="filter-btn active" data-filter="all">ALL</button>
                         <button class="filter-btn" data-filter="weapon">WEAPON</button>
                         <button class="filter-btn" data-filter="armor">ARMOR</button>
+                        <button class="filter-btn" data-filter="mod">MOD</button>
                         <button class="filter-btn" data-filter="slot">SLOT</button>
                     </div>
                     <div id="slot-filters" class="slot-filters" style="display: none; margin-top: var(--spacing-sm); margin-left: 45px;">
@@ -217,6 +219,25 @@
                             <option value="gloves">GLOVES</option>
                             <option value="legs">LEGS</option>
                             <option value="back">BACK</option>
+                        </select>
+                    </div>
+                    <div id="mod-filters" class="mod-filters" style="display: none; margin-top: var(--spacing-sm); margin-left: 45px;">
+                        <select class="mod-dropdown" id="mod-dropdown" style="
+                            padding: 6px 12px; 
+                            background-color: var(--bg-medium); 
+                            border: 1px solid var(--border-gray); 
+                            color: var(--text-normal); 
+                            font-size: 10px; 
+                            text-transform: uppercase; 
+                            letter-spacing: 1px;
+                        ">
+                            <option value="">SELECT MOD TYPE</option>
+                            <option value="scope">SCOPE</option>
+                            <option value="barrel">BARREL</option>
+                            <option value="foregrip">FOREGRIP</option>
+                            <option value="stock">STOCK</option>
+                            <option value="magazine">MAGAZINE</option>
+                            <option value="catalyst">CATALYST</option>
                         </select>
                     </div>
                 </div>
@@ -310,7 +331,7 @@
                     await window.SimpleInventory.loadEquipped();
                     window.SimpleInventory.renderInventory();
                     window.SimpleInventory.renderEquipped();
-                    window.SimpleInventory.updatePowerBudget();
+                    await window.SimpleInventory.updatePowerBudget();
                     console.log('Inventory refreshed successfully');
                 } catch (error) {
                     console.error('Failed to refresh inventory:', error);

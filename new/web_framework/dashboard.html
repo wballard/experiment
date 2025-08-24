@@ -318,6 +318,7 @@
             <a href="build-planner.html" class="nav-item">BUILD PLANNER</a>
             <a href="marketplace.html" class="nav-item">MARKET</a>
             <a href="crafting.html" class="nav-item">CRAFTING</a>
+            <a href="armory.html" class="nav-item">ARMORY</a>
         </div>
     </nav>
 
@@ -679,10 +680,41 @@
 
     <!-- Footer -->
     <footer style="padding: 20px; text-align: center; font-size: 10px; color: #666; border-top: 1px solid #333; margin-top: 40px;">
-        <a href="../changelog.html" style="color: #666; text-decoration: none; border-bottom: 1px dotted #666;">CHANGELOG</a> • 
-        <a href="../specs/index.html" style="color: #666; text-decoration: none; border-bottom: 1px dotted #666;">SPECS</a> • 
-        <a href="../tuning/index.html" style="color: #666; text-decoration: none; border-bottom: 1px dotted #666;">TUNING</a> • 
-        LAST UPDATED: 2025-08-19 • DASHBOARD VERSION: v1.03 • STATIC TEST MODE
+        <div style="margin-bottom: 10px;">
+            <button id="boostXP" onclick="boostCharacterXP()" style="
+                padding: 8px 16px; 
+                background: #00ff88; 
+                color: #000; 
+                border: none; 
+                border-radius: 4px; 
+                font-size: 11px; 
+                font-weight: bold; 
+                cursor: pointer;
+                margin-right: 10px;
+                transition: all 0.2s ease;
+            " onmouseover="this.style.background='#00cc66'" onmouseout="this.style.background='#00ff88'">
+                🚀 BOOST +1000 XP
+            </button>
+            <button onclick="debugRecalculateStats()" style="
+                padding: 8px 16px; 
+                background: #00d4ff; 
+                color: #000; 
+                border: none; 
+                border-radius: 4px; 
+                font-size: 11px; 
+                font-weight: bold; 
+                cursor: pointer;
+                transition: all 0.2s ease;
+            " onmouseover="this.style.background='#00b8e6'" onmouseout="this.style.background='#00d4ff'">
+                🔄 REFRESH STATS
+            </button>
+        </div>
+        <div>
+            <a href="../changelog.html" style="color: #666; text-decoration: none; border-bottom: 1px dotted #666;">CHANGELOG</a> • 
+            <a href="../specs/index.html" style="color: #666; text-decoration: none; border-bottom: 1px dotted #666;">SPECS</a> • 
+            <a href="../tuning/index.html" style="color: #666; text-decoration: none; border-bottom: 1px dotted #666;">TUNING</a> • 
+            LAST UPDATED: 2025-08-19 • DASHBOARD VERSION: v1.03 • STATIC TEST MODE
+        </div>
     </footer>
 
     <!-- Load page-specific components -->
@@ -690,9 +722,216 @@
     <script src="assets/js/character-header.js"></script>
     <script src="assets/js/tooltips.js?v=17"></script>
     <script src="assets/js/inventory-simple.js"></script>
+    <script src="assets/js/skill-modifiers.js"></script>
+    <script src="assets/js/skill-calculator.js"></script>
+    <script src="assets/js/simple-skill-integration.js"></script>
     <!-- REMOVED character.js - it was interfering with equipped items display -->
     <script>
         console.log('=== DASHBOARD LOADING WITH BACKEND API ===');
+        
+        // Skill-enhanced stats display system
+        window.SkillStatsDisplay = {
+            characterStats: {},
+            
+            /**
+             * Load and display character stats with skill bonuses
+             */
+            async loadCharacterStatsWithSkills(characterId) {
+                try {
+                    // Get detailed stats including skill bonuses
+                    const response = await fetch(`/api/character/${characterId}/stats/detailed`);
+                    if (!response.ok) throw new Error('Failed to fetch character stats');
+                    
+                    this.characterStats = await response.json();
+                    console.log('Loaded character stats with skill bonuses:', this.characterStats);
+                    
+                    // Update stat displays
+                    this.updateStatDisplays();
+                    return this.characterStats;
+                } catch (error) {
+                    console.error('Error loading character stats:', error);
+                    return {};
+                }
+            },
+
+            /**
+             * Update stat displays with skill bonus information
+             */
+            updateStatDisplays() {
+                // Update Critical Hit Chance
+                this.updateStatDisplay('crit-chance', 'critical_strike_chance_percent', (value) => 
+                    `${(value * 100).toFixed(1)}%`
+                );
+
+                // Update Critical Hit Damage
+                this.updateStatDisplay('crit-damage', 'critical_strike_damage_percent', (value) =>
+                    `${(value * 100).toFixed(0)}%`
+                );
+
+                // Update Weapon Damage (if we have it)
+                this.updateStatDisplay('weapon-damage', 'weapon_damage_percent', (value) =>
+                    `+${(value * 100).toFixed(1)}%`
+                );
+
+                // Update elemental damage displays
+                this.updateElementalDamageDisplays();
+
+                // Update resistance displays  
+                this.updateResistanceDisplays();
+            },
+
+            /**
+             * Update a single stat display with skill bonus tooltip
+             */
+            updateStatDisplay(elementId, statName, formatter) {
+                const element = document.getElementById(elementId);
+                if (!element || !this.characterStats[statName]) return;
+
+                const stat = this.characterStats[statName];
+                const totalValue = stat.base_value + stat.equipment_bonus + stat.skill_bonus;
+                
+                // Update display value
+                element.textContent = formatter ? formatter(totalValue) : totalValue.toFixed(1);
+
+                // Add skill bonus indicator if there's a skill bonus
+                if (stat.skill_bonus > 0) {
+                    element.style.color = '#00ff88'; // Skill bonus color
+                    element.setAttribute('data-tooltip', this.createSkillBonusTooltip(statName, stat));
+                }
+            },
+
+            /**
+             * Create tooltip showing skill bonus breakdown
+             */
+            createSkillBonusTooltip(statName, stat) {
+                let tooltip = `<div class="stat-breakdown">`;
+                tooltip += `<div class="stat-breakdown-title">${statName.replace(/_/g, ' ').toUpperCase()}</div>`;
+                
+                if (stat.base_value > 0) {
+                    tooltip += `<div class="stat-source">Base: ${stat.base_value.toFixed(1)}</div>`;
+                }
+                if (stat.equipment_bonus > 0) {
+                    tooltip += `<div class="stat-source">Equipment: +${stat.equipment_bonus.toFixed(1)}</div>`;
+                }
+                if (stat.skill_bonus > 0) {
+                    tooltip += `<div class="stat-source skill-bonus">Skills: +${stat.skill_bonus.toFixed(1)}</div>`;
+                }
+                
+                const total = stat.base_value + stat.equipment_bonus + stat.skill_bonus;
+                tooltip += `<div class="stat-total">Total: ${total.toFixed(1)}</div>`;
+                tooltip += `</div>`;
+                
+                return tooltip;
+            },
+
+            /**
+             * Update elemental damage displays with typed bonuses
+             */
+            updateElementalDamageDisplays() {
+                const elements = ['fire', 'ice', 'electric', 'earth', 'nature'];
+                
+                elements.forEach(element => {
+                    // Check for damage conversion bonuses
+                    const conversionStat = this.characterStats.damage_conversion_percent;
+                    if (conversionStat?.skill_bonus_typed) {
+                        const conversions = conversionStat.skill_bonus_typed;
+                        const elementConversion = conversions.find(c => c.type === element);
+                        
+                        if (elementConversion) {
+                            this.showElementalBonus(element, 'conversion', elementConversion.value);
+                        }
+                    }
+
+                    // Check for damage multiplier bonuses
+                    const multiplierStat = this.characterStats.damage_percent;
+                    if (multiplierStat?.skill_bonus_typed) {
+                        const multipliers = multiplierStat.skill_bonus_typed;
+                        const elementMultiplier = multipliers.find(m => m.type === element);
+                        
+                        if (elementMultiplier) {
+                            this.showElementalBonus(element, 'multiplier', elementMultiplier.value);
+                        }
+                    }
+                });
+            },
+
+            /**
+             * Show elemental bonus indicator
+             */
+            showElementalBonus(element, type, value) {
+                // Create or update elemental bonus display
+                const containerId = `${element}-damage-bonus`;
+                let container = document.getElementById(containerId);
+                
+                if (!container) {
+                    // Find a place to add it (try to find existing elemental stats section)
+                    const statsContainer = document.querySelector('.offensive-stats');
+                    if (statsContainer) {
+                        container = document.createElement('div');
+                        container.id = containerId;
+                        container.className = 'elemental-bonus-indicator';
+                        container.innerHTML = `
+                            <span class="element-icon ${element}">🔥</span>
+                            <span class="bonus-text">+${(value * 100).toFixed(1)}% ${element} ${type}</span>
+                        `;
+                        statsContainer.appendChild(container);
+                    }
+                }
+            },
+
+            /**
+             * Update resistance displays
+             */
+            updateResistanceDisplays() {
+                const resistanceStat = this.characterStats.resistance_percent;
+                if (!resistanceStat?.skill_bonus_typed) return;
+
+                const resistances = resistanceStat.skill_bonus_typed;
+                
+                resistances.forEach(resistance => {
+                    this.showResistanceBonus(resistance.type, resistance.value);
+                });
+            },
+
+            /**
+             * Show resistance bonus indicator
+             */
+            showResistanceBonus(type, value) {
+                const containerId = `${type}-resistance-bonus`;
+                let container = document.getElementById(containerId);
+                
+                if (!container) {
+                    const defenseContainer = document.querySelector('.defense-stats');
+                    if (defenseContainer) {
+                        container = document.createElement('div');
+                        container.id = containerId;
+                        container.className = 'resistance-bonus-indicator';
+                        container.innerHTML = `
+                            <span class="resistance-text">+${(value * 100).toFixed(1)}% ${type} resistance</span>
+                        `;
+                        defenseContainer.appendChild(container);
+                    }
+                }
+            },
+
+            /**
+             * Calculate and update character stats when skills change
+             */
+            async recalculateStats(characterId) {
+                try {
+                    console.log('Recalculating stats for character:', characterId);
+                    
+                    // Trigger skill calculation
+                    await window.SkillCalculator.updateCharacterStats(characterId);
+                    
+                    // Reload and display updated stats
+                    await this.loadCharacterStatsWithSkills(characterId);
+                    
+                } catch (error) {
+                    console.error('Error recalculating stats:', error);
+                }
+            }
+        };
         
         // Initialize global game state object
         window.CourierGame = {
@@ -757,10 +996,10 @@
             const statItems = document.querySelectorAll('.stat-item');
             console.log('Found stat items:', statItems.length);
             statItems.forEach(statItem => {
-                statItem.addEventListener('mouseenter', (e) => {
+                statItem.addEventListener('mouseenter', async (e) => {
                     if (window.CourierTooltips) {
                         const stat = statItem.dataset.stat;
-                        const tooltipData = getStatTooltipData(stat);
+                        const tooltipData = await getStatTooltipData(stat);
                         if (tooltipData) {
                             window.CourierTooltips.showTooltip(e, tooltipData);
                         }
@@ -778,12 +1017,12 @@
             const offensiveStats = document.querySelectorAll('.offensive-stat');
             console.log('Found offensive stats:', offensiveStats.length);
             offensiveStats.forEach(offensiveStat => {
-                offensiveStat.addEventListener('mouseenter', (e) => {
+                offensiveStat.addEventListener('mouseenter', async (e) => {
                     if (window.CourierTooltips) {
                         const statLabel = offensiveStat.querySelector('.offensive-stat-label');
                         const statValue = offensiveStat.querySelector('.offensive-stat-value');
                         if (statLabel && statValue) {
-                            const tooltipData = getDetailedOffensiveTooltip(statLabel.textContent, statValue.textContent);
+                            const tooltipData = await getDetailedOffensiveTooltip(statLabel.textContent, statValue.textContent);
                             window.CourierTooltips.showTooltip(e, tooltipData);
                         }
                     }
@@ -800,12 +1039,12 @@
             const defensiveStats = document.querySelectorAll('.defense-stat');
             console.log('Found defensive stats:', defensiveStats.length);
             defensiveStats.forEach(defensiveStat => {
-                defensiveStat.addEventListener('mouseenter', (e) => {
+                defensiveStat.addEventListener('mouseenter', async (e) => {
                     if (window.CourierTooltips) {
                         const statLabel = defensiveStat.querySelector('.defense-stat-label');
                         const statValue = defensiveStat.querySelector('.defense-stat-value');
                         if (statLabel && statValue) {
-                            const tooltipData = getDetailedDefensiveTooltip(statLabel.textContent, statValue.textContent);
+                            const tooltipData = await getDetailedDefensiveTooltip(statLabel.textContent, statValue.textContent);
                             window.CourierTooltips.showTooltip(e, tooltipData);
                         }
                     }
@@ -820,9 +1059,9 @@
         }
         
         // Get detailed breakdown for offensive stats
-        function getDetailedOffensiveTooltip(statName, currentValue) {
+        async function getDetailedOffensiveTooltip(statName, currentValue) {
             const equippedItems = window.CourierGame?.data?.equippedItems || {};
-            const calculatedStats = calculateCharacterStats(equippedItems);
+            const calculatedStats = await calculateCharacterStats(equippedItems);
             
             // Build description as HTML with proper line breaks
             let sources = [];
@@ -848,6 +1087,10 @@
                             sources.push(`${item.name}: +${(item.crit_chance * 100).toFixed(1)}%`);
                         }
                     });
+                    // Add skill bonuses
+                    if (calculatedStats.skillBonuses?.critical_strike_chance_percent) {
+                        sources.push(`Skills: +${(calculatedStats.skillBonuses.critical_strike_chance_percent * 100).toFixed(1)}%`);
+                    }
                     break;
                     
                 case 'Crit Damage':
@@ -857,6 +1100,10 @@
                             sources.push(`${item.name}: +${((item.crit_damage - 1) * 100).toFixed(0)}%`);
                         }
                     });
+                    // Add skill bonuses
+                    if (calculatedStats.skillBonuses?.critical_strike_damage_percent) {
+                        sources.push(`Skills: +${(calculatedStats.skillBonuses.critical_strike_damage_percent * 100).toFixed(0)}%`);
+                    }
                     break;
                     
                 case 'Fire Damage':
@@ -865,6 +1112,7 @@
                 case 'Nature Damage':
                 case 'Earth Damage':
                     let damageType = statName.toLowerCase().replace(' damage', '_damage');
+                    let skillDamageType = statName.toLowerCase().replace(' damage', '');
                     // Handle nature damage mapping (poison in database)
                     if (damageType === 'nature_damage') {
                         damageType = 'poison_damage';
@@ -875,6 +1123,14 @@
                             sources.push(`${item.name}: +${item[damageType + '_flat']}`);
                         }
                     });
+                    // Add skill bonuses for flat elemental damage
+                    if (calculatedStats.skillBonuses?.damage_flat) {
+                        calculatedStats.skillBonuses.damage_flat.forEach(bonus => {
+                            if (bonus.type === skillDamageType) {
+                                sources.push(`Skills: +${bonus.value}`);
+                            }
+                        });
+                    }
                     break;
                     
                 default:
@@ -898,9 +1154,9 @@
         }
         
         // Get detailed breakdown for defensive stats
-        function getDetailedDefensiveTooltip(statName, currentValue) {
+        async function getDetailedDefensiveTooltip(statName, currentValue) {
             const equippedItems = window.CourierGame?.data?.equippedItems || {};
-            const calculatedStats = calculateCharacterStats(equippedItems);
+            const calculatedStats = await calculateCharacterStats(equippedItems);
             
             let sources = [];
             
@@ -936,6 +1192,8 @@
                 case 'Fire Resistance':
                 case 'Ice Resistance':
                 case 'Electric Resistance':
+                case 'Nature Resistance':
+                case 'Earth Resistance':
                     const resType = statName.toLowerCase().replace(' resistance', '');
                     sources.push("Base Character: 0%");
                     Object.entries(equippedItems).forEach(([slot, item]) => {
@@ -943,6 +1201,14 @@
                             sources.push(`${item.name}: +${item.resistances[resType]}%`);
                         }
                     });
+                    // Add skill bonuses for resistance
+                    if (calculatedStats.skillBonuses?.resistance_percent) {
+                        calculatedStats.skillBonuses.resistance_percent.forEach(bonus => {
+                            if (bonus.type === resType) {
+                                sources.push(`Skills: +${(bonus.value * 100).toFixed(0)}%`);
+                            }
+                        });
+                    }
                     break;
                     
                 default:
@@ -965,12 +1231,59 @@
             };
         }
         
-        // Calculate real character stats from equipped items
-        function calculateCharacterStats(equippedItems) {
+        // Calculate real character stats from equipped items AND skills
+        async function calculateCharacterStats(equippedItems) {
+            // Get character data including level and power_max
+            let characterLevel = 1;
+            let characterPowerMax = 300; // Default for level 1
+            let character = null;
+            
+            try {
+                const activeCharacterResponse = await window.CourierAPI.getActiveCharacter();
+                console.log('Active character response:', activeCharacterResponse);
+                
+                if (activeCharacterResponse && activeCharacterResponse.success && activeCharacterResponse.character) {
+                    character = activeCharacterResponse.character;
+                    characterLevel = character.level;
+                    characterPowerMax = character.power_max || (300 + (characterLevel - 1) * 50);
+                    console.log(`Using active character: ${character.name} (level ${characterLevel}, power_max ${characterPowerMax})`);
+                } else {
+                    console.log('No active character found, using fallback character 3');
+                    // Fallback to character 3 for testing
+                    const response = await fetch('/api/characters/3');
+                    if (response.ok) {
+                        character = await response.json();
+                        characterLevel = character.level || 1;
+                        characterPowerMax = character.power_max || (300 + (characterLevel - 1) * 50);
+                        console.log(`Using fallback character: ${character.name} (level ${characterLevel}, power_max ${characterPowerMax})`);
+                    }
+                }
+            } catch (e) {
+                console.error('Error getting character data:', e);
+                // Default character 3 for testing
+                const response = await fetch('/api/characters/3');
+                if (response.ok) {
+                    character = await response.json();
+                    characterLevel = character.level || 1;
+                    characterPowerMax = character.power_max || (300 + (characterLevel - 1) * 50);
+                    console.log(`Using error fallback character: ${character.name} (level ${characterLevel}, power_max ${characterPowerMax})`);
+                }
+            }
+            
+            console.log(`📊 Calculating stats for level ${characterLevel} character (power_max: ${characterPowerMax})`);
+            
             const baseStats = {
+                level: characterLevel,
                 health: 100,
-                power_max: 300, // Base power capacity
+                power_max: characterPowerMax,     // Use stored power_max from character record
                 armor: 0,
+                // Core attributes - scale with level
+                vigor: 250 + (characterLevel - 1) * 15,        // Health-related attribute
+                focus: 300 + (characterLevel - 1) * 10,        // Mental attribute affecting skills
+                force: 220 + (characterLevel - 1) * 12,        // Physical strength
+                momentum: 180 + (characterLevel - 1) * 8,      // Speed and agility
+                resonance: 200 + (characterLevel - 1) * 10,    // Elemental affinity  
+                defense: 150 + (characterLevel - 1) * 7,       // Defensive capability
                 crit_chance: 5, // 5% base
                 crit_damage: 150, // 150% base (1.5x multiplier)
                 accuracy: 75,
@@ -978,10 +1291,14 @@
                 fire_resistance: 0,
                 ice_resistance: 0,
                 electric_resistance: 0,
+                nature_resistance: 0,
+                earth_resistance: 0,
                 power_used: 0,
                 fire_damage: 0,
                 ice_damage: 0,
-                electric_damage: 0
+                electric_damage: 0,
+                nature_damage: 0,
+                earth_damage: 0
             };
             
             const totalStats = { ...baseStats };
@@ -1026,6 +1343,142 @@
                 }
             });
             
+            // Add skill bonuses if skill system is available
+            if (window.SkillModifiers) {
+                console.log('🎯 SkillModifiers available - calculating skill bonuses...');
+                try {
+                    // Get active character ID first
+                    let characterId = 3; // Default to character 3 for testing
+                    
+                    try {
+                        const activeCharacter = await window.CourierAPI.getActiveCharacter();
+                        if (activeCharacter && activeCharacter.id) {
+                            characterId = activeCharacter.id;
+                            console.log('📋 Active character:', characterId);
+                        } else {
+                            console.log('⚠️ No active character found, using default character:', characterId);
+                        }
+                    } catch (authError) {
+                        console.log('⚠️ Auth error, using default character:', characterId);
+                    }
+                    
+                    // Get character skills using existing endpoint
+                    const response = await fetch(`/api/character/${characterId}/skills`);
+                    console.log('📊 Character skills API response status:', response.status);
+                    if (response.ok) {
+                        const skillsData = await response.json();
+                        console.log('📊 Skills data received:', skillsData);
+                        
+                        // Convert to the format expected by SkillModifiers
+                        const purchasedSkills = skillsData
+                            .filter(skill => skill.level > 0)
+                            .map(skill => ({ skill_id: skill.skill_id, level: skill.level }));
+                    
+                        console.log('Found purchased skills for stat calculation:', purchasedSkills);
+                        
+                        if (purchasedSkills.length > 0) {
+                            // Calculate skill bonuses using the existing skill modifier system
+                            const skillBonuses = window.SkillModifiers.calculateSkillBonuses(purchasedSkills);
+                            console.log('Calculated skill bonuses for dashboard:', skillBonuses);
+                            
+                            // Apply skill bonuses to totalStats - same pattern as equipment
+                            if (skillBonuses.critical_strike_chance_percent) {
+                                totalStats.crit_chance += (skillBonuses.critical_strike_chance_percent * 100);
+                                console.log(`✅ Added skill crit chance: +${(skillBonuses.critical_strike_chance_percent * 100).toFixed(1)}%`);
+                            }
+                            
+                            if (skillBonuses.critical_strike_damage_percent) {
+                                totalStats.crit_damage += (skillBonuses.critical_strike_damage_percent * 100);
+                                console.log(`✅ Added skill crit damage: +${(skillBonuses.critical_strike_damage_percent * 100).toFixed(1)}%`);
+                            }
+                            
+                            // Apply weapon-related skill bonuses
+                            if (skillBonuses.weapon_damage_percent) {
+                                totalStats.weapon_damage_percent = (totalStats.weapon_damage_percent || 0) + (skillBonuses.weapon_damage_percent * 100);
+                                console.log(`✅ Added weapon damage: +${(skillBonuses.weapon_damage_percent * 100).toFixed(1)}%`);
+                            }
+                            
+                            // Apply movement and character bonuses
+                            if (skillBonuses.movement_speed_percent) {
+                                totalStats.movement_speed_percent = (totalStats.movement_speed_percent || 0) + (skillBonuses.movement_speed_percent * 100);
+                                console.log(`✅ Added movement speed: +${(skillBonuses.movement_speed_percent * 100).toFixed(1)}%`);
+                            }
+                            
+                            if (skillBonuses.damage_reduction_percent) {
+                                totalStats.damage_reduction_percent = (totalStats.damage_reduction_percent || 0) + (skillBonuses.damage_reduction_percent * 100);
+                                console.log(`✅ Added damage reduction: +${(skillBonuses.damage_reduction_percent * 100).toFixed(1)}%`);
+                            }
+                            
+                            // Apply shield bonuses
+                            if (skillBonuses.shield_capacity_percent) {
+                                totalStats.shield_capacity_percent = (totalStats.shield_capacity_percent || 0) + (skillBonuses.shield_capacity_percent * 100);
+                                console.log(`✅ Added shield capacity: +${(skillBonuses.shield_capacity_percent * 100).toFixed(1)}%`);
+                            }
+                            
+                            if (skillBonuses.shield_regen_rate_percent) {
+                                totalStats.shield_regen_rate_percent = (totalStats.shield_regen_rate_percent || 0) + (skillBonuses.shield_regen_rate_percent * 100);
+                                console.log(`✅ Added shield regen rate: +${(skillBonuses.shield_regen_rate_percent * 100).toFixed(1)}%`);
+                            }
+                            
+                            // Apply elemental damage bonuses
+                            if (skillBonuses.damage_flat && Array.isArray(skillBonuses.damage_flat)) {
+                                skillBonuses.damage_flat.forEach(bonus => {
+                                    const damageType = `${bonus.type}_damage`;
+                                    if (totalStats[damageType] !== undefined) {
+                                        totalStats[damageType] += bonus.value;
+                                        console.log(`✅ Added ${bonus.type} flat damage: +${bonus.value}`);
+                                    }
+                                });
+                            }
+                            
+                            // Apply resistance bonuses (including armor as physical resistance)
+                            if (skillBonuses.resistance_flat && Array.isArray(skillBonuses.resistance_flat)) {
+                                skillBonuses.resistance_flat.forEach(bonus => {
+                                    if (bonus.type === 'physical') {
+                                        totalStats.armor += bonus.value;
+                                        console.log(`✅ Added armor from skills: +${bonus.value}`);
+                                    } else {
+                                        const resistanceType = `${bonus.type}_resistance`;
+                                        if (totalStats[resistanceType] !== undefined) {
+                                            totalStats[resistanceType] += bonus.value;
+                                            console.log(`✅ Added ${bonus.type} flat resistance: +${bonus.value}`);
+                                        }
+                                    }
+                                });
+                            }
+                            
+                            // Apply percentage resistance bonuses (like Heat Resistance)
+                            if (skillBonuses.resistance_percent && Array.isArray(skillBonuses.resistance_percent)) {
+                                skillBonuses.resistance_percent.forEach(bonus => {
+                                    if (bonus.type === 'physical') {
+                                        // Physical resistance as armor - convert percentage to flat value
+                                        const armorBonus = bonus.value * 100; // 25% = 25 armor
+                                        totalStats.armor += armorBonus;
+                                        console.log(`✅ Added armor from ${bonus.type} resistance: +${armorBonus}`);
+                                    } else {
+                                        const resistanceType = `${bonus.type}_resistance`;
+                                        if (totalStats[resistanceType] !== undefined) {
+                                            const resistanceBonus = bonus.value * 100; // Convert to percentage
+                                            totalStats[resistanceType] += resistanceBonus;
+                                            console.log(`✅ Added ${bonus.type} resistance: +${resistanceBonus}%`);
+                                        }
+                                    }
+                                });
+                            }
+                            
+                            // Store skill bonuses for tooltip system
+                            totalStats.skillBonuses = skillBonuses;
+                        }
+                    } else {
+                        console.log('❌ Failed to fetch character skills');
+                    }
+                } catch (error) {
+                    console.error('Error loading skill bonuses for stat calculation:', error);
+                }
+            } else {
+                console.log('❌ SkillModifiers not available - skills not affecting stats');
+            }
+            
             // Calculate available power
             totalStats.power_available = totalStats.power_max - totalStats.power_used;
             
@@ -1054,12 +1507,21 @@
             const statElements = {
                 vigor: document.querySelector('[data-stat="vigor"] .stat-value'),
                 focus: document.querySelector('[data-stat="focus"] .stat-value'), 
+                force: document.querySelector('[data-stat="force"] .stat-value'),
+                momentum: document.querySelector('[data-stat="momentum"] .stat-value'),
+                resonance: document.querySelector('[data-stat="resonance"] .stat-value'),
+                defense: document.querySelector('[data-stat="defense"] .stat-value'),
                 precision: document.querySelector('[data-stat="precision"] .stat-value'),
                 toughness: document.querySelector('[data-stat="toughness"] .stat-value')
             };
             
-            if (statElements.vigor) statElements.vigor.textContent = Math.round(calculatedStats.health);
-            if (statElements.focus) statElements.focus.textContent = Math.round(calculatedStats.power_available);
+            // Update core attributes with their calculated values
+            if (statElements.vigor) statElements.vigor.textContent = Math.round(calculatedStats.vigor);
+            if (statElements.focus) statElements.focus.textContent = Math.round(calculatedStats.focus);
+            if (statElements.force) statElements.force.textContent = Math.round(calculatedStats.force);
+            if (statElements.momentum) statElements.momentum.textContent = Math.round(calculatedStats.momentum);
+            if (statElements.resonance) statElements.resonance.textContent = Math.round(calculatedStats.resonance);
+            if (statElements.defense) statElements.defense.textContent = Math.round(calculatedStats.defense);
             if (statElements.precision) statElements.precision.textContent = Math.round(calculatedStats.accuracy);
             if (statElements.toughness) statElements.toughness.textContent = Math.round(calculatedStats.armor);
             
@@ -1128,13 +1590,10 @@
         }
 
         function getFocusBreakdown(focusValue, calculatedStats) {
-            const powerBonus = Math.floor(focusValue * 0.4); // 40% power capacity per focus point  
             const skillDamage = Math.floor(focusValue * 0.12); // 12% skill damage per focus point
             const cooldownReduction = Math.floor(focusValue * 0.05); // 5% cooldown reduction per focus point
-            const currentPower = calculatedStats.power_max - calculatedStats.power_used;
             
             const effects = [
-                `Power Capacity: +${powerBonus} (${currentPower}/${calculatedStats.power_max})`,
                 `Skill Damage: +${skillDamage}%`,
                 `Cooldown Reduction: ${cooldownReduction}%`
             ];
@@ -1143,7 +1602,7 @@
                 `<div style="padding: 4px 0; font-size: 12px; color: var(--text-normal); font-weight: normal;">• ${effect}</div>`
             ).join('');
             
-            return `<div style="margin-bottom: 8px; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim);">Affects Power and Skills</div>${effectsHtml}`;
+            return `<div style="margin-bottom: 8px; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim);">Affects Skills</div>${effectsHtml}`;
         }
 
         function getForceBreakdown(forceValue, calculatedStats) {
@@ -1226,9 +1685,9 @@
         }
 
         // Get tooltip data for each stat with real calculated values
-        function getStatTooltipData(stat) {
+        async function getStatTooltipData(stat) {
             const equippedItems = window.CourierGame?.data?.equippedItems || {};
-            const calculatedStats = calculateCharacterStats(equippedItems);
+            const calculatedStats = await calculateCharacterStats(equippedItems);
             
             // Get current stat values from UI
             const currentStats = {
@@ -1349,8 +1808,8 @@
                     window.CourierGame.data.equippedItems = equipped;
                     console.log('Updated global equipped items:', equipped);
                     
-                    // Calculate and update real stats based on equipped items
-                    const calculatedStats = calculateCharacterStats(equipped);
+                    // Calculate and update real stats based on equipped items AND skills
+                    const calculatedStats = await calculateCharacterStats(equipped);
                     updateDashboardStats(calculatedStats);
                     console.log('Updated dashboard stats:', calculatedStats);
                     
@@ -1425,6 +1884,86 @@
             }
         }
         
+        // Debug function to manually recalculate stats
+        window.debugRecalculateStats = async function() {
+            console.log('🔄 Manual stat recalculation triggered...');
+            try {
+                const equippedItems = window.CourierGame?.data?.equippedItems || {};
+                const calculatedStats = await calculateCharacterStats(equippedItems);
+                updateDashboardStats(calculatedStats);
+                console.log('✅ Manual recalculation complete:', calculatedStats);
+                return calculatedStats;
+            } catch (error) {
+                console.error('❌ Manual recalculation failed:', error);
+            }
+        };
+
+        // Debug function to boost character XP
+        window.boostCharacterXP = async function() {
+            const button = document.getElementById('boostXP');
+            const originalText = button.textContent;
+            
+            try {
+                button.textContent = '⏳ Boosting...';
+                button.disabled = true;
+                console.log('🚀 Boosting character XP...');
+                
+                // Get active character or use default
+                let characterId = 3; // Default for testing
+                try {
+                    const activeCharacter = await window.CourierAPI.getActiveCharacter();
+                    if (activeCharacter && activeCharacter.id) {
+                        characterId = activeCharacter.id;
+                    }
+                } catch (e) {
+                    console.log('Using default character ID for XP boost');
+                }
+                
+                // Add XP via API (we'll need to create this endpoint)
+                const response = await fetch(`/api/character/${characterId}/boost-xp`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        xp: 1000
+                    })
+                });
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    console.log('✅ XP boost successful:', result);
+                    
+                    button.textContent = '✅ +1000 XP!';
+                    button.style.background = '#00ff88';
+                    
+                    // Refresh the dashboard to show updated level/skills
+                    setTimeout(async () => {
+                        await loadAndDisplayEquippedItems();
+                        if (window.CharacterHeader) {
+                            await window.CharacterHeader.refresh();
+                        }
+                        button.textContent = originalText;
+                        button.disabled = false;
+                    }, 1500);
+                    
+                } else {
+                    throw new Error(`Failed to boost XP: ${response.status}`);
+                }
+                
+            } catch (error) {
+                console.error('❌ XP boost failed:', error);
+                button.textContent = '❌ Failed';
+                button.style.background = '#ff4444';
+                
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.style.background = '#00ff88';
+                    button.disabled = false;
+                }, 2000);
+            }
+        };
+        
         document.addEventListener('DOMContentLoaded', async () => {
             console.log('=== DOM CONTENT LOADED ===');
             
@@ -1446,15 +1985,34 @@
                 
                 // Simple equipped items display
                 await loadAndDisplayEquippedItems();
-                
+
+                // Initialize simple skill integration
+                if (window.SimpleSkillIntegration) {
+                    console.log('Initializing simple skill integration...');
+                    await window.SimpleSkillIntegration.init();
+                }
                 
                 // DISABLE CHARACTER SYSTEM COMPLETELY - it's interfering with equipped items display
                 // The character system keeps overwriting our equipment slots
                 console.log('Character system disabled to prevent equipment display conflicts');
                 
+                // Add event listener for skill changes
+                window.addEventListener('skillStatsUpdated', async (event) => {
+                    console.log('Skills updated, refreshing character stats...', event.detail);
+                    const activeCharacter = await window.CourierAPI.getActiveCharacter();
+                    if (activeCharacter && activeCharacter.id) {
+                        await window.SkillStatsDisplay.loadCharacterStatsWithSkills(activeCharacter.id);
+                    }
+                });
+
                 // Add window focus listener to refresh dashboard when returning from other pages
                 window.addEventListener('focus', async () => {
                     console.log('Dashboard gained focus - refreshing equipment and stats...');
+                    
+                    // Refresh skill bonuses too
+                    if (window.SimpleSkillIntegration) {
+                        await window.SimpleSkillIntegration.refresh();
+                    }
                     try {
                         await loadAndDisplayEquippedItems(); // This also updates stats
                         

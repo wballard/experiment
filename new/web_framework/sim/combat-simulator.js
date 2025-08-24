@@ -76,6 +76,8 @@ class CombatSimulator {
             const equipment = this.getEquipmentData();
 
             // Compile character data
+            const calculatedStats = await this.calculateCharacterStats(skillPoints, equipment);
+            
             this.characterData = {
                 playerInfo: {
                     name: 'AGENT RECON-7',
@@ -86,7 +88,7 @@ class CombatSimulator {
                 skillInvestments: skillPoints,
                 activeLoadout: currentLoadout || { name: 'Default', ultimate: null, actives: [] },
                 equipment: equipment,
-                calculatedStats: this.calculateCharacterStats(skillPoints, equipment),
+                calculatedStats: calculatedStats,
                 exportTimestamp: new Date().toISOString()
             };
 
@@ -193,7 +195,7 @@ class CombatSimulator {
         };
     }
 
-    calculateCharacterStats(skillPoints, equipment) {
+    async calculateCharacterStats(skillPoints, equipment) {
         // Basic stat calculation based on skills and equipment
         let stats = {
             health: 1000,
@@ -202,7 +204,17 @@ class CombatSimulator {
             critChance: 5,
             critMultiplier: 1.5,
             attackSpeed: 1.0,
-            elementalDamage: {}
+            elementalDamage: {},
+            resistances: {
+                fire: 0,
+                ice: 0,
+                electric: 0,
+                earth: 0,
+                nature: 0
+            },
+            damageReduction: 0,
+            fireRate: 1.0,
+            reloadSpeed: 1.0
         };
 
         // Add equipment bonuses
@@ -232,18 +244,95 @@ class CombatSimulator {
             });
         }
 
-        // Add skill bonuses (simplified for demo)
-        if (skillPoints['dead-eye']) {
-            stats.critChance += skillPoints['dead-eye'] * 3;
-        }
-        if (skillPoints['quick-hands']) {
-            stats.attackSpeed += skillPoints['quick-hands'] * 0.05;
-        }
-        if (skillPoints['lucky-charm']) {
-            stats.critChance += skillPoints['lucky-charm'] * 2;
+        // Apply skill bonuses using SkillModifiers system
+        if (window.SkillModifiers && skillPoints) {
+            try {
+                // Convert skillPoints format to purchasedSkills format
+                const purchasedSkills = Object.keys(skillPoints).map(skillId => ({
+                    skill_id: skillId.replace(/-/g, '_'), // Convert dash to underscore for compatibility
+                    level: skillPoints[skillId]
+                })).filter(skill => skill.level > 0);
+
+                // Calculate skill bonuses
+                const skillBonuses = window.SkillModifiers.calculateSkillBonuses(purchasedSkills);
+                console.log('Combat Simulator: Applied skill bonuses:', skillBonuses);
+
+                // Apply skill bonuses to stats
+                this.applySkillBonusesToStats(stats, skillBonuses);
+                
+            } catch (error) {
+                console.error('Combat Simulator: Error applying skill bonuses:', error);
+            }
         }
 
         return stats;
+    }
+
+    applySkillBonusesToStats(stats, bonuses) {
+        // Apply simple percentage bonuses
+        if (bonuses.critical_strike_chance_percent) {
+            stats.critChance += bonuses.critical_strike_chance_percent * 100; // Convert to percentage
+        }
+        
+        if (bonuses.fire_rate_percent) {
+            stats.fireRate *= (1 + bonuses.fire_rate_percent);
+            stats.attackSpeed *= (1 + bonuses.fire_rate_percent);
+        }
+        
+        if (bonuses.reload_speed_percent) {
+            stats.reloadSpeed *= (1 + bonuses.reload_speed_percent);
+        }
+        
+        if (bonuses.damage_reduction_percent) {
+            stats.damageReduction += bonuses.damage_reduction_percent;
+        }
+
+        // Apply typed damage bonuses (fire, ice, electric, etc.) - adds base damage, then applies multipliers
+        if (bonuses.damage_percent && Array.isArray(bonuses.damage_percent)) {
+            bonuses.damage_percent.forEach(damageBonus => {
+                // Add base elemental damage if we don't have any
+                const baseDamage = Math.floor((stats.damage.min + stats.damage.max) / 4); // 25% conversion as base
+                
+                if (damageBonus.type === 'fire') {
+                    const currentFire = stats.elementalDamage.fire || baseDamage;
+                    stats.elementalDamage.fire = Math.floor(currentFire * (1 + damageBonus.value));
+                } else if (damageBonus.type === 'ice') {
+                    const currentIce = stats.elementalDamage.ice || baseDamage;
+                    stats.elementalDamage.ice = Math.floor(currentIce * (1 + damageBonus.value));
+                } else if (damageBonus.type === 'electric') {
+                    const currentElectric = stats.elementalDamage.electric || baseDamage;
+                    stats.elementalDamage.electric = Math.floor(currentElectric * (1 + damageBonus.value));
+                } else if (damageBonus.type === 'earth') {
+                    const currentEarth = stats.elementalDamage.earth || baseDamage;
+                    stats.elementalDamage.earth = Math.floor(currentEarth * (1 + damageBonus.value));
+                } else if (damageBonus.type === 'nature') {
+                    const currentNature = stats.elementalDamage.nature || baseDamage;
+                    stats.elementalDamage.nature = Math.floor(currentNature * (1 + damageBonus.value));
+                }
+            });
+        }
+
+        // Apply typed resistance bonuses
+        if (bonuses.resistance_percent && Array.isArray(bonuses.resistance_percent)) {
+            bonuses.resistance_percent.forEach(resistance => {
+                if (resistance.type === 'fire') {
+                    stats.resistances.fire += resistance.value;
+                } else if (resistance.type === 'ice') {
+                    stats.resistances.ice += resistance.value;
+                } else if (resistance.type === 'electric') {
+                    stats.resistances.electric += resistance.value;
+                } else if (resistance.type === 'earth') {
+                    stats.resistances.earth += resistance.value;
+                } else if (resistance.type === 'nature') {
+                    stats.resistances.nature += resistance.value;
+                }
+            });
+        }
+
+        // Cap resistances at 75%
+        Object.keys(stats.resistances).forEach(type => {
+            stats.resistances[type] = Math.min(0.75, stats.resistances[type]);
+        });
     }
 
     displayCharacterData() {
@@ -264,9 +353,28 @@ class CombatSimulator {
                     <div>Health: <span style="color: var(--primary-green);">${calculatedStats.health}</span></div>
                     <div>Armor: <span style="color: var(--primary-cyan);">${calculatedStats.armor}</span></div>
                     <div>Damage: <span style="color: var(--primary-orange);">${calculatedStats.damage.min}-${calculatedStats.damage.max}</span></div>
-                    <div>Crit: <span style="color: var(--primary-yellow);">${calculatedStats.critChance}%</span></div>
+                    <div>Crit: <span style="color: var(--primary-yellow);">${calculatedStats.critChance.toFixed(1)}%</span></div>
                     <div>Attack Speed: <span style="color: var(--primary-cyan);">${calculatedStats.attackSpeed.toFixed(2)}</span></div>
+                    ${calculatedStats.damageReduction > 0 ? `<div>Damage Reduction: <span style="color: var(--primary-green);">${(calculatedStats.damageReduction * 100).toFixed(1)}%</span></div>` : ''}
                 </div>
+                ${Object.keys(calculatedStats.elementalDamage).length > 0 ? `
+                <div style="margin-top: var(--spacing-sm);">
+                    <div style="color: var(--primary-orange); font-size: 11px; margin-bottom: var(--spacing-xs);">ELEMENTAL DAMAGE</div>
+                    <div style="font-size: 10px; line-height: 1.3;">
+                        ${Object.entries(calculatedStats.elementalDamage).map(([type, damage]) => 
+                            `<div>${this.getElementIcon(type)} ${type}: <span style="color: ${this.getElementColor(type)};">${damage}</span></div>`
+                        ).join('')}
+                    </div>
+                </div>` : ''}
+                ${Object.values(calculatedStats.resistances).some(r => r > 0) ? `
+                <div style="margin-top: var(--spacing-sm);">
+                    <div style="color: var(--primary-cyan); font-size: 11px; margin-bottom: var(--spacing-xs);">RESISTANCES</div>
+                    <div style="font-size: 10px; line-height: 1.3;">
+                        ${Object.entries(calculatedStats.resistances).filter(([type, resist]) => resist > 0).map(([type, resist]) => 
+                            `<div>${this.getElementIcon(type)} ${type}: <span style="color: var(--primary-green);">${(resist * 100).toFixed(1)}%</span></div>`
+                        ).join('')}
+                    </div>
+                </div>` : ''}
             </div>
 
             <div style="margin-bottom: var(--spacing-md);">
@@ -324,6 +432,30 @@ class CombatSimulator {
             'legendary-outlaw': 'Legendary Outlaw'
         };
         return skillNames[skillId] || skillId.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    }
+
+    getElementIcon(element) {
+        const icons = {
+            'fire': '🔥',
+            'ice': '❄️',
+            'electric': '⚡',
+            'earth': '🌍',
+            'nature': '🌿',
+            'poison': '☢️'
+        };
+        return icons[element] || '✨';
+    }
+
+    getElementColor(element) {
+        const colors = {
+            'fire': 'var(--primary-orange)',
+            'ice': 'var(--primary-cyan)', 
+            'electric': 'var(--primary-yellow)',
+            'earth': 'var(--primary-green)',
+            'nature': 'var(--primary-green)',
+            'poison': 'var(--primary-green)'
+        };
+        return colors[element] || 'var(--text-normal)';
     }
 
     exportCharacterData() {
@@ -439,7 +571,7 @@ class CombatSimulator {
         this.logCombat('Reload complete!', 'system');
     }
 
-    changeWeaponType() {
+    async changeWeaponType() {
         const selectedType = document.getElementById('weaponTypeSelect').value;
         
         if (!this.characterData) {
@@ -453,7 +585,7 @@ class CombatSimulator {
 
         // Update character data with new weapon
         this.characterData.equipment.weapon = newWeapon;
-        this.characterData.calculatedStats = this.calculateCharacterStats(
+        this.characterData.calculatedStats = await this.calculateCharacterStats(
             this.characterData.skillInvestments, 
             this.characterData.equipment
         );
@@ -559,24 +691,16 @@ class CombatSimulator {
         finalDamage = Math.floor(finalDamage * (1 - armorReduction));
         const armorMitigatedDamage = originalPhysicalDamage - finalDamage;
         
-        // Apply elemental damage
+        // Apply elemental damage with improved calculations
         let totalElementalDamage = 0;
         let elementalDamageDetails = [];
-        const elementalIcons = {
-            fire: '🔥',
-            ice: '❄️', 
-            electric: '⚡',
-            earth: '🌍',
-            nature: '🌿',
-            poison: '☢️'
-        };
         
         Object.entries(stats.elementalDamage || {}).forEach(([element, damage]) => {
             if (damage > 0) {
                 const resistance = this.monster.resistances[element] || 0;
                 const elementalPortion = Math.floor(damage * (1 - resistance / 100));
                 const mitigatedDamage = damage - elementalPortion;
-                const icon = elementalIcons[element] || '✨';
+                const icon = this.getElementIcon(element);
                 
                 if (elementalPortion > 0) {
                     totalElementalDamage += elementalPortion;

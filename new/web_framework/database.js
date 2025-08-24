@@ -203,12 +203,27 @@ class Database {
                     base_value REAL DEFAULT 0,
                     equipment_bonus REAL DEFAULT 0,
                     skill_bonus REAL DEFAULT 0,
+                    skill_bonus_typed TEXT DEFAULT NULL, -- JSON for typed modifiers
                     total_value REAL DEFAULT 0,
+                    total_value_typed TEXT DEFAULT NULL, -- JSON for typed total values
                     last_calculated DATETIME DEFAULT CURRENT_TIMESTAMP,
                     FOREIGN KEY (character_id) REFERENCES characters (id),
                     UNIQUE(character_id, stat_name)
                 )
             `);
+
+            // Add columns for typed modifiers (migration)
+            this.db.run(`
+                ALTER TABLE character_stats ADD COLUMN skill_bonus_typed TEXT DEFAULT NULL
+            `, () => {
+                // Ignore errors if column already exists
+            });
+
+            this.db.run(`
+                ALTER TABLE character_stats ADD COLUMN total_value_typed TEXT DEFAULT NULL
+            `, () => {
+                // Ignore errors if column already exists  
+            });
 
             // Initialize character classes
             this.initializeCharacterClasses();
