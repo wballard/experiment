@@ -306,7 +306,7 @@ window.SkillModifiers = {
             });
         });
 
-        return aggregatedBonuses;
+        return this.applyStatCaps(aggregatedBonuses);
     },
 
     /**
