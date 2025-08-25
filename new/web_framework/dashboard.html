@@ -9,6 +9,178 @@
     <!-- REMOVED game.css to fix equipment display conflicts -->
     <link rel="stylesheet" href="assets/css/inventory.css?v=18">
     <style>
+        /* WORKING STYLES FROM TEST WIDGET */
+        .equipment-grid {
+            display: grid !important;
+            grid-template-columns: 104px 104px 296px !important;
+            grid-template-rows: 104px 104px 104px !important;
+            gap: 4px !important;
+            max-width: 520px !important;
+            width: 520px !important;
+            box-sizing: border-box;
+            margin-top: var(--spacing-md);
+            background: transparent !important;
+        }
+
+        /* ARMOR SLOTS - 96px content + 2px buffer + 2px border each side = 104px total */
+        .equipment-slot[data-slot="head"],
+        .equipment-slot[data-slot="shoulders"], 
+        .equipment-slot[data-slot="chest"],
+        .equipment-slot[data-slot="gloves"],
+        .equipment-slot[data-slot="back"],
+        .equipment-slot[data-slot="legs"] {
+            width: 104px !important;
+            height: 104px !important;
+            min-width: 104px !important;
+            max-width: 104px !important;
+            box-sizing: border-box;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            background: rgba(30, 30, 30, 0.8) !important;
+            border: 2px solid var(--border-gray) !important;
+            border-radius: 4px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 2px; /* 2px buffer inside container */
+        }
+
+        /* WEAPON SLOTS - 288x96px content + 2px buffer + 2px border each side = 296x104px total */
+        .equipment-slot[data-slot="primary"],
+        .equipment-slot[data-slot="secondary"] {
+            width: 296px !important;
+            height: 104px !important;
+            min-width: 296px !important;
+            max-width: 296px !important;
+            box-sizing: border-box;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            background: rgba(30, 30, 30, 0.8) !important;
+            border: 2px solid var(--border-gray) !important;
+            border-radius: 4px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 2px; /* 2px buffer inside container */
+        }
+
+        /* GRID POSITIONING */
+        .equipment-slot[data-slot="head"] { grid-column: 1; grid-row: 1; }
+        .equipment-slot[data-slot="shoulders"] { grid-column: 2; grid-row: 1; }
+        .equipment-slot[data-slot="primary"] { grid-column: 3; grid-row: 1; }
+        .equipment-slot[data-slot="chest"] { grid-column: 1; grid-row: 2; }
+        .equipment-slot[data-slot="back"] { grid-column: 2; grid-row: 2; }
+        .equipment-slot[data-slot="secondary"] { grid-column: 3; grid-row: 2; }
+        .equipment-slot[data-slot="gloves"] { grid-column: 1; grid-row: 3; }
+        .equipment-slot[data-slot="legs"] { grid-column: 2; grid-row: 3; }
+
+        /* ARMOR SLOT ICONS - 96x96px */
+        .equipment-slot[data-slot="head"] .item-icon img,
+        .equipment-slot[data-slot="head"] .item-icon-img,
+        .equipment-slot[data-slot="shoulders"] .item-icon img,
+        .equipment-slot[data-slot="shoulders"] .item-icon-img,
+        .equipment-slot[data-slot="chest"] .item-icon img,
+        .equipment-slot[data-slot="chest"] .item-icon-img,
+        .equipment-slot[data-slot="gloves"] .item-icon img,
+        .equipment-slot[data-slot="gloves"] .item-icon-img,
+        .equipment-slot[data-slot="back"] .item-icon img,
+        .equipment-slot[data-slot="back"] .item-icon-img,
+        .equipment-slot[data-slot="legs"] .item-icon img,
+        .equipment-slot[data-slot="legs"] .item-icon-img {
+            width: 96px !important;
+            height: 96px !important;
+            object-fit: contain !important;
+            object-position: center !important;
+            max-width: 96px !important;
+            max-height: 96px !important;
+            display: block !important;
+        }
+
+        /* WEAPON SLOT ICONS - 288x96px */
+        .equipment-slot[data-slot="primary"] .item-icon img,
+        .equipment-slot[data-slot="primary"] .item-icon-img,
+        .equipment-slot[data-slot="secondary"] .item-icon img,
+        .equipment-slot[data-slot="secondary"] .item-icon-img {
+            width: 288px !important;
+            height: 96px !important;
+            object-fit: cover !important;
+            object-position: center !important;
+            max-width: 288px !important;
+            max-height: 96px !important;
+            display: block !important;
+        }
+
+        .equipped-item {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 2px;
+            position: relative;
+        }
+
+        .equipped-item .item-icon {
+            font-size: 24px;
+            margin-bottom: 2px;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            flex-shrink: 0 !important;
+        }
+
+        /* Rarity backgrounds */
+        .equipment-slot.equipped[data-rarity="common"],
+        .equipped-item.rarity-common { 
+            border-color: #666 !important;
+            background: rgba(157, 157, 157, 0.3); 
+        }
+        .equipment-slot.equipped[data-rarity="uncommon"],
+        .equipped-item.rarity-uncommon { 
+            border-color: #666 !important;
+            background: rgba(30, 255, 0, 0.3); 
+        }
+        .equipment-slot.equipped[data-rarity="rare"],
+        .equipped-item.rarity-rare { 
+            border-color: #666 !important;
+            background: rgba(0, 112, 221, 0.3); 
+        }
+        .equipment-slot.equipped[data-rarity="epic"],
+        .equipped-item.rarity-epic { 
+            border-color: #666 !important;
+            background: rgba(163, 53, 238, 0.3); 
+        }
+        .equipment-slot.equipped[data-rarity="legendary"],
+        .equipped-item.rarity-legendary { 
+            border-color: #666 !important;
+            background: rgba(255, 128, 0, 0.3); 
+        }
+        .equipment-slot.equipped[data-rarity="mythic"],
+        .equipped-item.rarity-mythic { 
+            border-color: #666 !important;
+            background: rgba(255, 0, 0, 0.3); 
+        }
+        .equipment-slot.equipped[data-rarity="primal"],
+        .equipped-item.rarity-primal { 
+            border-color: #666 !important;
+            background: rgba(0, 255, 255, 0.3); 
+        }
+
+        .equipment-placeholder {
+            color: var(--text-dim);
+            font-size: 8px;
+            text-align: center;
+            line-height: 1.1;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            word-wrap: break-word;
+            max-width: 100%;
+            padding: 2px;
+        }
+
         /* Power Budget Progress Bar Styles */
         .power-progress-bar {
             width: 100% !important;
@@ -341,7 +513,7 @@
                 <div style="margin-bottom: var(--spacing-lg);">
                     <div style="display: flex; justify-content: space-between; margin-bottom: var(--spacing-xs);">
                         <span class="text-dim">USED</span>
-                        <span class="text-cyan"><span class="power-used">0</span> / <span class="power-max">2140</span></span>
+                        <span class="text-cyan"><span class="power-used">372</span> / <span class="power-max">700</span></span>
                     </div>
                     <div class="power-progress-bar">
                         <div class="power-progress-fill" style="width: 0%;"></div>
@@ -721,7 +893,7 @@
     <script src="assets/js/api-client.js"></script>
     <script src="assets/js/character-header.js"></script>
     <script src="assets/js/tooltips.js?v=17"></script>
-    <script src="assets/js/inventory-simple.js"></script>
+    <script src="assets/js/equipped-items-widget.js?v=2"></script>
     <script src="assets/js/skill-modifiers.js"></script>
     <script src="assets/js/skill-calculator.js"></script>
     <script src="assets/js/simple-skill-integration.js"></script>
@@ -1270,38 +1442,167 @@
                 }
             }
             
-            console.log(`📊 Calculating stats for level ${characterLevel} character (power_max: ${characterPowerMax})`);
+            console.log(`📊 Calculating stats using NEW STAT SYSTEM for level ${characterLevel} character (power_max: ${characterPowerMax})`);
             
-            const baseStats = {
-                level: characterLevel,
-                health: 100,
-                power_max: characterPowerMax,     // Use stored power_max from character record
-                armor: 0,
-                // Core attributes - scale with level
-                vigor: 250 + (characterLevel - 1) * 15,        // Health-related attribute
-                focus: 300 + (characterLevel - 1) * 10,        // Mental attribute affecting skills
-                force: 220 + (characterLevel - 1) * 12,        // Physical strength
-                momentum: 180 + (characterLevel - 1) * 8,      // Speed and agility
-                resonance: 200 + (characterLevel - 1) * 10,    // Elemental affinity  
-                defense: 150 + (characterLevel - 1) * 7,       // Defensive capability
-                crit_chance: 5, // 5% base
-                crit_damage: 150, // 150% base (1.5x multiplier)
-                accuracy: 75,
-                stability: 50,
-                fire_resistance: 0,
-                ice_resistance: 0,
-                electric_resistance: 0,
-                nature_resistance: 0,
-                earth_resistance: 0,
-                power_used: 0,
-                fire_damage: 0,
-                ice_damage: 0,
-                electric_damage: 0,
-                nature_damage: 0,
-                earth_damage: 0
-            };
+            // 🔥 NEW: Fetch pre-calculated stats from database (event-driven)
+            try {
+                console.log('🔥 Fetching pre-calculated stats from database...');
+                const statsResponse = await fetch(`/api/character-stats/${character.id}`);
+                
+                if (statsResponse.ok) {
+                    const databaseStats = await statsResponse.json();
+                    console.log('✅ Database stats loaded:', databaseStats);
+                    
+                    // Map database stats to dashboard format
+                    const newStats = {
+                        level: characterLevel,
+                        power_max: characterPowerMax,
+                        power_used: 0, // Will be calculated from equipment
+                        
+                        // PRIMARY ATTRIBUTES (from database)
+                        vitality: databaseStats.vitality || 0,
+                        precision: databaseStats.precision || 0, 
+                        potency: databaseStats.potency || 0,
+                        alacrity: databaseStats.alacrity || 0,
+                        defense: databaseStats.defense || 0,
+                        
+                        // Map new stats to old names for display compatibility
+                        vigor: databaseStats.vitality || 0,     
+                        focus: databaseStats.precision || 0,   
+                        force: databaseStats.potency || 0,     
+                        momentum: databaseStats.alacrity || 0, 
+                        resonance: databaseStats.potency || 0, 
+                        
+                        // DERIVED STATS (from database)
+                        health: databaseStats.health || 100,
+                        armor: 0, // Will add from equipment
+                        crit_chance: databaseStats.critical_strike_chance_percent || 5,
+                        crit_damage: databaseStats.critical_strike_damage_percent || 150,
+                        accuracy: databaseStats.accuracy_percent || 75,
+                        stability: 50,
+                        
+                        // TYPED DAMAGE STATS (extract from database arrays)
+                        fire_damage: 0,
+                        ice_damage: 0,
+                        electric_damage: 0,
+                        nature_damage: 0,
+                        earth_damage: 0,
+                        
+                        // TYPED RESISTANCE STATS (extract from database arrays)
+                        fire_resistance: 0,
+                        ice_resistance: 0,
+                        electric_resistance: 0,
+                        nature_resistance: 0,
+                        earth_resistance: 0
+                    };
+                    
+                    // Extract typed stats from database JSON arrays
+                    if (databaseStats.damage_percent && Array.isArray(databaseStats.damage_percent)) {
+                        databaseStats.damage_percent.forEach(dmg => {
+                            const key = `${dmg.type}_damage`;
+                            if (newStats[key] !== undefined) {
+                                newStats[key] = dmg.value * 100; // Convert to display format
+                            }
+                        });
+                    }
+                    
+                    if (databaseStats.resistance_percent && Array.isArray(databaseStats.resistance_percent)) {
+                        databaseStats.resistance_percent.forEach(res => {
+                            const key = `${res.type}_resistance`;
+                            if (newStats[key] !== undefined) {
+                                newStats[key] = res.value;
+                            }
+                        });
+                    }
+                    
+                    console.log('✅ Database stats mapped to dashboard format:', newStats);
+                    var totalStats = { ...newStats };
+                }
+                
+            } catch (error) {
+                    console.error('❌ NEW STAT SYSTEM failed, falling back to old system:', error);
+                    // Fall back to old hardcoded system if new system fails
+                    var totalStats = {
+                        level: characterLevel,
+                        health: 100,
+                        power_max: characterPowerMax,
+                        armor: 0,
+                        // OLD HARDCODED STATS (FALLBACK ONLY)
+                        vigor: 250 + (characterLevel - 1) * 15,
+                        focus: 300 + (characterLevel - 1) * 10,
+                        force: 220 + (characterLevel - 1) * 12,
+                        momentum: 180 + (characterLevel - 1) * 8,
+                        resonance: 200 + (characterLevel - 1) * 10,
+                        defense: 150 + (characterLevel - 1) * 7,
+                        crit_chance: 5,
+                        crit_damage: 150,
+                        accuracy: 75,
+                        stability: 50,
+                        fire_resistance: 0,
+                        ice_resistance: 0,
+                        electric_resistance: 0,
+                        nature_resistance: 0,
+                        earth_resistance: 0,
+                        power_used: 0,
+                        fire_damage: 0,
+                        ice_damage: 0,
+                        electric_damage: 0,
+                        nature_damage: 0,
+                        earth_damage: 0
+                    };
+                }
             
-            const totalStats = { ...baseStats };
+            // Fallback stats if needed
+            if (!totalStats) {
+                console.log('⚠️ Using fallback stats system');
+                totalStats = {
+                    level: characterLevel,
+                    health: 100,
+                    power_max: characterPowerMax,
+                    armor: 0,
+                    vigor: 250 + (characterLevel - 1) * 15,
+                    focus: 300 + (characterLevel - 1) * 10,
+                    force: 220 + (characterLevel - 1) * 12,
+                    momentum: 180 + (characterLevel - 1) * 8,
+                    resonance: 200 + (characterLevel - 1) * 10,
+                    defense: 150 + (characterLevel - 1) * 7,
+                    crit_chance: 5,
+                    crit_damage: 150
+                };
+            }
+            
+            if (false) {
+                console.log('⚠️ CharacterStatCalculator not available or no character, using old system');
+                // Old hardcoded system as fallback
+                var totalStats = {
+                    level: characterLevel,
+                    health: 100,
+                    power_max: characterPowerMax,
+                    armor: 0,
+                    // OLD HARDCODED STATS 
+                    vigor: 250 + (characterLevel - 1) * 15,
+                    focus: 300 + (characterLevel - 1) * 10,
+                    force: 220 + (characterLevel - 1) * 12,
+                    momentum: 180 + (characterLevel - 1) * 8,
+                    resonance: 200 + (characterLevel - 1) * 10,
+                    defense: 150 + (characterLevel - 1) * 7,
+                    crit_chance: 5,
+                    crit_damage: 150,
+                    accuracy: 75,
+                    stability: 50,
+                    fire_resistance: 0,
+                    ice_resistance: 0,
+                    electric_resistance: 0,
+                    nature_resistance: 0,
+                    earth_resistance: 0,
+                    power_used: 0,
+                    fire_damage: 0,
+                    ice_damage: 0,
+                    electric_damage: 0,
+                    nature_damage: 0,
+                    earth_damage: 0
+                };
+            }
             
             // Add stats from each equipped item
             Object.values(equippedItems).forEach(item => {
@@ -1788,99 +2089,102 @@
             return statInfo[stat] || null;
         }
 
+        // Load character data directly from debug endpoint (bypasses auth issues)
+        async function loadCharacterData() {
+            try {
+                console.log('🔄 Loading character data...');
+                const response = await fetch('/api/debug/character/3');
+                const result = await response.json();
+                
+                if (result.success && result.character) {
+                    const char = result.character;
+                    console.log('Character data loaded:', char);
+                    
+                    // Update UI elements with database values
+                    document.querySelector('.power-max').textContent = char.power_max;
+                    
+                    // Update level, experience, etc. if elements exist
+                    const levelElement = document.querySelector('.character-level');
+                    if (levelElement) levelElement.textContent = char.level;
+                    
+                    const expElement = document.querySelector('.character-experience');  
+                    if (expElement) expElement.textContent = char.experience;
+                    
+                    const skillPointsElement = document.querySelector('.skill-points-available');
+                    if (skillPointsElement) skillPointsElement.textContent = char.skill_points_available;
+                    
+                    return char;
+                } else {
+                    console.error('Failed to load character data:', result);
+                    return null;
+                }
+            } catch (error) {
+                console.error('Error loading character data:', error);
+                return null;
+            }
+        }
+
+        // Load pre-calculated stats from database  
+        async function loadCalculatedStats() {
+            try {
+                console.log('🔄 Loading calculated stats...');
+                const response = await fetch('/api/character-stats/3');
+                const stats = await response.json();
+                console.log('Calculated stats loaded:', stats);
+                
+                // Update stat displays with database values
+                const healthElement = document.querySelector('.stat-health');
+                if (healthElement) healthElement.textContent = Math.round(stats.health || 0);
+                
+                const defenseElement = document.querySelector('.stat-defense');  
+                if (defenseElement) defenseElement.textContent = Math.round(stats.defense || 0);
+                
+                const potencyElement = document.querySelector('.stat-potency');
+                if (potencyElement) potencyElement.textContent = Math.round(stats.potency || 0);
+                
+                const vitalityElement = document.querySelector('.stat-vitality');
+                if (vitalityElement) vitalityElement.textContent = Math.round(stats.vitality || 0);
+                
+                const precisionElement = document.querySelector('.stat-precision');  
+                if (precisionElement) precisionElement.textContent = Math.round(stats.precision || 0);
+                
+                return stats;
+            } catch (error) {
+                console.error('Error loading calculated stats:', error);
+                return {};
+            }
+        }
+
         // Simple function to load and display equipped items
         async function loadAndDisplayEquippedItems() {
             try {
-                console.log('Loading equipped items directly...');
-                const response = await window.CourierAPI.getEquipped();
-                console.log('Equipped items response:', response);
+                console.log('🔄 Dashboard: Loading equipped items using standard widget...');
                 
-                if (response.success && response.equipped) {
-                    const equipped = response.equipped;
-                    
-                    // Update the global game state that CharacterSystem expects
-                    if (!window.CourierGame) {
-                        window.CourierGame = { data: {} };
-                    }
-                    if (!window.CourierGame.data) {
-                        window.CourierGame.data = {};
-                    }
-                    window.CourierGame.data.equippedItems = equipped;
-                    console.log('Updated global equipped items:', equipped);
-                    
-                    // Calculate and update real stats based on equipped items AND skills
-                    const calculatedStats = await calculateCharacterStats(equipped);
-                    updateDashboardStats(calculatedStats);
-                    console.log('Updated dashboard stats:', calculatedStats);
-                    
-                    // Render each equipped item
-                    Object.keys(equipped).forEach(slot => {
-                        const item = equipped[slot];
-                        if (item) {
-                            const slotElement = document.querySelector(`[data-slot="${slot}"]`);
-                            if (slotElement) {
-                                // Fix icon path for dashboard (in game/ subfolder)  
-                                let iconPath = item.icon;
-                                console.log(`Original icon path: ${iconPath}, type: ${typeof iconPath}`);
-                                
-                                if (!iconPath || iconPath === 'undefined' || iconPath === 'null') {
-                                    console.warn(`Invalid icon path for ${item.name}: ${iconPath}`);
-                                    iconPath = '../assets/images/Icons/Symbols/Design.png'; // Fallback icon
-                                } else if (!iconPath.startsWith('../')) {
-                                    iconPath = '../' + iconPath;
-                                }
-                                
-                                console.log(`Final icon path: ${iconPath}`);
-                                
-                                // Add cache-busting parameter like inventory.html does
-                                const cacheBuster = Date.now();
-                                const iconPathWithCache = `${iconPath}?v=${cacheBuster}`;
-                                
-                                // Use EXACT same HTML structure as inventory-simple.js with proper sizing
-                                slotElement.innerHTML = `
-                                    <div class="equipped-item rarity-${item.rarity}">
-                                        <div class="item-icon">
-                                            <img src="${iconPathWithCache}" alt="" class="item-icon-img" />
-                                        </div>
-                                        <div class="power-rating">${item.power_cost || item.powerCost || 0}</div>
-                                        <div style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.8); color: white; font-size: 8px; padding: 2px; text-align: center;">${item.name}</div>
-                                    </div>
-                                `;
-                                
-                                // Add tooltips back now that CharacterSystem interference is resolved
-                                slotElement.addEventListener('mouseenter', (e) => {
-                                    console.log('Equipment mouseover triggered for:', item.name);
-                                    if (window.CourierTooltips) {
-                                        const tooltipItem = transformItemForTooltip(item);
-                                        console.log('Showing tooltip for:', tooltipItem);
-                                        window.CourierTooltips.showTooltip(e, tooltipItem);
-                                    } else {
-                                        console.error('CourierTooltips not available for equipment');
-                                    }
-                                });
-                                
-                                slotElement.addEventListener('mouseleave', () => {
-                                    if (window.CourierTooltips) {
-                                        window.CourierTooltips.hideTooltip();
-                                    }
-                                });
-                                
-                                // Add click functionality for equipped weapons (like inventory-simple.js)
-                                if (item.type === 'weapon') {
-                                    slotElement.style.cursor = 'pointer';
-                                    slotElement.addEventListener('click', (e) => {
-                                        e.stopPropagation();
-                                        window.location.href = `../weapon-detail.html?id=${item.id}`;
-                                    });
-                                }
-                            }
-                        }
-                    });
-                } else {
-                    console.log('No equipped items found or API call failed');
+                // Check if equipment grid exists
+                const grid = document.querySelector('.equipment-grid');
+                if (!grid) {
+                    console.error('❌ Equipment grid not found in DOM');
+                    return;
                 }
+                console.log('✅ Equipment grid found');
+                
+                // Use the standard equipped items widget from working inventory
+                if (window.EquippedItemsWidget) {
+                    console.log('✅ EquippedItemsWidget found, initializing...');
+                    await window.EquippedItemsWidget.init(3);
+                    console.log('✅ EquippedItemsWidget initialized successfully');
+                    
+                    // Verify items were loaded
+                    const equippedSlots = document.querySelectorAll('.equipment-slot.equipped');
+                    console.log(`✅ Found ${equippedSlots.length} equipped items in dashboard`);
+                    
+                } else {
+                    console.error('❌ EquippedItemsWidget not loaded');
+                    console.log('Available window objects:', Object.keys(window).filter(key => key.includes('quip')).join(', '));
+                }
+                
             } catch (error) {
-                console.error('Error loading equipped items:', error);
+                console.error('❌ Dashboard error loading equipped items:', error);
             }
         }
         
@@ -1983,8 +2287,16 @@
                     console.log('Available window objects:', Object.keys(window).filter(key => key.includes('tooltip') || key.includes('Tooltip')));
                 }
                 
-                // Simple equipped items display
-                await loadAndDisplayEquippedItems();
+                // Load character data from database (no auth required)
+                await loadCharacterData();
+                
+                // Load pre-calculated stats from database  
+                await loadCalculatedStats();
+                
+                // Simple equipped items display - ENSURE IT LOADS LAST
+                setTimeout(async () => {
+                    await loadAndDisplayEquippedItems();
+                }, 100);
 
                 // Initialize simple skill integration
                 if (window.SimpleSkillIntegration) {
@@ -2024,6 +2336,16 @@
                         console.error('Error refreshing dashboard on focus:', error);
                     }
                 });
+
+                // Auto-refresh equipment data every 5 seconds to catch changes from inventory page
+                setInterval(async () => {
+                    try {
+                        console.log('🔄 Auto-refreshing equipment data...');
+                        await loadAndDisplayEquippedItems();
+                    } catch (error) {
+                        console.error('Error in auto-refresh:', error);
+                    }
+                }, 5000);
                 
                 // Setup stat tooltips (replaces CharacterSystem stat tooltips)
                 setupStatTooltips();
@@ -2046,5 +2368,9 @@
             }
         });
     </script>
+    
+    <!-- Character Stat Calculation System -->
+    <script src="assets/js/skill-modifiers.js"></script>
+    <script src="assets/js/character-stat-calculator.js"></script>
 </body>
 </html>
