@@ -340,7 +340,19 @@ function createAPIRoutes() {
                 });
             }
 
+            const oldLevel = activeCharacter.level;
             const result = await db.awardExperience(activeCharacter.id, amount);
+            
+            // Check if level changed and trigger stat recalculation
+            if (result.newLevel && result.newLevel > oldLevel) {
+                await triggerStatRecalculation(activeCharacter.id, 'level_changed', {
+                    oldLevel,
+                    newLevel: result.newLevel,
+                    experienceGained: amount,
+                    characterId: activeCharacter.id
+                });
+            }
+            
             res.json({ 
                 success: true, 
                 result: result,
@@ -437,6 +449,14 @@ function createAPIRoutes() {
             }
 
             const result = await db.equipCharacterItem(activeCharacter.id, slot, itemId);
+            
+            // Trigger stat recalculation
+            await triggerStatRecalculation(activeCharacter.id, 'equipment_equipped', {
+                slot,
+                itemId,
+                characterId: activeCharacter.id
+            });
+            
             res.json({ 
                 success: true, 
                 result: result,
@@ -469,6 +489,13 @@ function createAPIRoutes() {
             }
 
             const result = await db.unequipCharacterItem(activeCharacter.id, slot);
+            
+            // Trigger stat recalculation
+            await triggerStatRecalculation(activeCharacter.id, 'equipment_unequipped', {
+                slot,
+                characterId: activeCharacter.id
+            });
+            
             res.json({ 
                 success: true, 
                 result: result,
@@ -899,6 +926,15 @@ function createAPIRoutes() {
                 });
             });
 
+            // Trigger stat recalculation
+            await triggerStatRecalculation(activeCharacter.id, 'skill_upgraded', {
+                skillId,
+                skillName: skill.name,
+                oldLevel: currentLevel,
+                newLevel: currentLevel + 1,
+                characterId: activeCharacter.id
+            });
+            
             res.json({ 
                 success: true, 
                 message: `Invested skill point in ${skill.name}`,
@@ -953,7 +989,300 @@ function createAPIRoutes() {
         }
     });
 
-    // Recalculate total character stats
+    // New comprehensive stat calculation endpoint
+    router.post('/character-stats/calculate', async (req, res) => {
+        try {
+            const { characterId, stats } = req.body;
+            
+            if (!characterId || !stats) {
+                return res.status(400).json({ error: 'Missing characterId or stats' });
+            }
+            
+            // Start transaction
+            db.db.serialize(() => {
+                const stmt = db.db.prepare(`
+                    INSERT OR REPLACE INTO character_stats 
+                    (character_id, stat_name, base_value, equipment_bonus, skill_bonus, total_value, 
+                     equipment_bonus_typed, skill_bonus_typed, total_value_typed, last_calculated)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
+                `);
+                
+                for (const [statName, statValue] of Object.entries(stats)) {
+                    if (Array.isArray(statValue)) {
+                        // Typed stat - store as JSON
+                        stmt.run([
+                            characterId, statName, 0, 0, 0, 0,
+                            null, null, JSON.stringify(statValue)
+                        ]);
+                    } else {
+                        // Simple stat
+                        stmt.run([
+                            characterId, statName, 0, 0, 0, statValue,
+                            null, null, null
+                        ]);
+                    }
+                }
+                
+                stmt.finalize((err) => {
+                    if (err) {
+                        console.error('Error saving calculated stats:', err);
+                        return res.status(500).json({ error: 'Failed to save stats' });
+                    }
+                    
+                    // Create stat recalculation event
+                    db.db.run(`
+                        INSERT INTO character_events (character_id, event_type, event_data)
+                        VALUES (?, 'statrecalculation', ?)
+                    `, [characterId, JSON.stringify({ timestamp: Date.now(), stats_updated: Object.keys(stats).length })]);
+                    
+                    res.json({ success: true, stats_updated: Object.keys(stats).length });
+                });
+            });
+            
+        } catch (error) {
+            console.error('Error in stat calculation:', error);
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    });
+    
+    // Get all calculated stats for a character
+    router.get('/character-stats/:characterId', (req, res) => {
+        const { characterId } = req.params;
+        
+        db.db.all(`
+            SELECT stat_name, total_value, total_value_typed, last_calculated
+            FROM character_stats 
+            WHERE character_id = ?
+            ORDER BY stat_name
+        `, [characterId], (err, rows) => {
+            if (err) {
+                console.error('Error getting character stats:', err);
+                return res.status(500).json({ error: 'Failed to get stats' });
+            }
+            
+            const stats = {};
+            for (const row of rows) {
+                if (row.total_value_typed) {
+                    // Typed stat
+                    stats[row.stat_name] = JSON.parse(row.total_value_typed);
+                } else {
+                    // Simple stat
+                    stats[row.stat_name] = row.total_value;
+                }
+            }
+            
+            res.json(stats);
+        });
+    });
+    
+    // Get character stats with breakdown (base + equipment + skills)
+    router.get('/character-stats/:characterId/breakdown', (req, res) => {
+        const { characterId } = req.params;
+        
+        db.db.all(`
+            SELECT stat_name, base_value, equipment_bonus, skill_bonus, total_value, 
+                   equipment_bonus_typed, skill_bonus_typed, total_value_typed, last_calculated
+            FROM character_stats 
+            WHERE character_id = ?
+            ORDER BY stat_name
+        `, [characterId], (err, rows) => {
+            if (err) {
+                console.error('Error getting character stats breakdown:', err);
+                return res.status(500).json({ error: 'Failed to get stats breakdown' });
+            }
+            
+            const statsBreakdown = {};
+            for (const row of rows) {
+                statsBreakdown[row.stat_name] = {
+                    base: row.base_value || 0,
+                    equipment: row.equipment_bonus || 0,
+                    skills: row.skill_bonus || 0,
+                    total: row.total_value || 0,
+                    equipment_typed: row.equipment_bonus_typed ? JSON.parse(row.equipment_bonus_typed) : null,
+                    skills_typed: row.skill_bonus_typed ? JSON.parse(row.skill_bonus_typed) : null,
+                    total_typed: row.total_value_typed ? JSON.parse(row.total_value_typed) : null,
+                    last_calculated: row.last_calculated
+                };
+            }
+            
+            res.json(statsBreakdown);
+        });
+    });
+    
+    // Trigger stat recalculation for a character
+    // Debug character data (no auth required)
+    router.get('/debug/character/:characterId', async (req, res) => {
+        try {
+            const { characterId } = req.params;
+            
+            // Get character data
+            const character = await new Promise((resolve, reject) => {
+                db.db.get(`
+                    SELECT c.*, cc.name as class_name
+                    FROM characters c
+                    JOIN character_classes cc ON c.class_id = cc.id
+                    WHERE c.id = ?
+                `, [characterId], (err, row) => {
+                    if (err) reject(err);
+                    else resolve(row);
+                });
+            });
+            
+            if (!character) {
+                return res.status(404).json({ error: 'Character not found' });
+            }
+            
+            res.json({ 
+                success: true,
+                character: character
+            });
+            
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    });
+
+    // Debug equipped via db.getCharacterEquipped (no auth required)
+    router.get('/debug/db-equipped/:characterId', async (req, res) => {
+        try {
+            const { characterId } = req.params;
+            const equipped = await db.getCharacterEquipped(parseInt(characterId));
+            
+            res.json({ 
+                characterId: parseInt(characterId),
+                equipped: equipped,
+                method: 'db.getCharacterEquipped'
+            });
+            
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    });
+
+    // Debug equipped items endpoint (no auth required) 
+    router.get('/debug/equipped/:characterId', async (req, res) => {
+        try {
+            const { characterId } = req.params;
+            
+            const equipment = await new Promise((resolve, reject) => {
+                db.db.all(`
+                    SELECT ce.slot, i.*
+                    FROM character_equipment ce
+                    JOIN items i ON ce.item_id = i.id
+                    WHERE ce.character_id = ?
+                `, [characterId], (err, rows) => {
+                    if (err) reject(err);
+                    else resolve(rows || []);
+                });
+            });
+            
+            res.json({ 
+                characterId: parseInt(characterId),
+                equipmentCount: equipment.length,
+                equipment: equipment
+            });
+            
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    });
+
+    // Test event system endpoint (no auth required)
+    router.post('/test/event/:characterId/:eventType', async (req, res) => {
+        try {
+            const { characterId, eventType } = req.params;
+            const eventData = req.body || { test: true };
+            
+            const result = await triggerStatRecalculation(parseInt(characterId), eventType, eventData);
+            res.json(result);
+            
+        } catch (error) {
+            console.error('Error testing event system:', error);
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    });
+
+    router.post('/character-stats/:characterId/recalculate', async (req, res) => {
+        try {
+            const { characterId } = req.params;
+            
+            // Get character data
+            const character = await new Promise((resolve, reject) => {
+                db.db.get(`
+                    SELECT c.*, cc.name as class_name
+                    FROM characters c
+                    JOIN character_classes cc ON c.class_id = cc.id
+                    WHERE c.id = ?
+                `, [characterId], (err, row) => {
+                    if (err) reject(err);
+                    else resolve(row);
+                });
+            });
+            
+            if (!character) {
+                return res.status(404).json({ error: 'Character not found' });
+            }
+            
+            // Get equipped items
+            const equipment = await new Promise((resolve, reject) => {
+                db.db.all(`
+                    SELECT ce.slot, i.*
+                    FROM character_equipment ce
+                    JOIN items i ON ce.item_id = i.id
+                    WHERE ce.character_id = ?
+                `, [characterId], (err, rows) => {
+                    if (err) reject(err);
+                    else resolve(rows || []);
+                });
+            });
+            
+            // Get purchased skills
+            const skills = await new Promise((resolve, reject) => {
+                db.db.all(`
+                    SELECT skill_id, level
+                    FROM character_skills
+                    WHERE character_id = ?
+                `, [characterId], (err, rows) => {
+                    if (err) reject(err);
+                    else resolve(rows || []);
+                });
+            });
+            
+            // Calculate stats using the stat calculator
+            const characterData = {
+                id: character.id,
+                level: character.level,
+                class: character.class_name,
+                equipment,
+                skills
+            };
+            
+            // We need to implement server-side stat calculation 
+            // For now, calculate base stats and save them
+            const stats = await calculateCharacterStatsServerSide(characterData);
+            
+            // Save calculated stats to database
+            await saveCalculatedStatsToDatabase(characterId, stats);
+            
+            res.json({ 
+                success: true, 
+                message: 'Stats recalculated and saved',
+                characterData: {
+                    level: character.level,
+                    class: character.class_name,
+                    equipment_count: equipment.length,
+                    skills_count: skills.length
+                },
+                calculatedStats: stats
+            });
+            
+        } catch (error) {
+            console.error('Error triggering stat recalculation:', error);
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    });
+
+// Recalculate total character stats
     router.post('/character/:id/stats/recalculate', (req, res) => {
         try {
             const characterId = parseInt(req.params.id);
@@ -1290,6 +1619,418 @@ function createAPIRoutes() {
 
 // Mount API routes
 app.use('/api', createAPIRoutes());
+
+// Helper function to extract weapon stat values
+function getWeaponStatValue(statName, equipment) {
+    if (!equipment || !Array.isArray(equipment)) {
+        return 0;
+    }
+    
+    // Find primary and secondary weapons
+    const primaryWeapon = equipment.find(item => item.slot === 'primary');
+    const secondaryWeapon = equipment.find(item => item.slot === 'secondary');
+    
+    // Extract stat based on weapon and stat name
+    if (statName.startsWith('primary_weapon_')) {
+        if (!primaryWeapon) return 0;
+        const weaponStatName = statName.replace('primary_weapon_', '');
+        return getWeaponProperty(primaryWeapon, weaponStatName);
+    } else if (statName.startsWith('secondary_weapon_')) {
+        if (!secondaryWeapon) return 0;
+        const weaponStatName = statName.replace('secondary_weapon_', '');
+        return getWeaponProperty(secondaryWeapon, weaponStatName);
+    }
+    
+    return 0;
+}
+
+// Helper function to get weapon property by name
+function getWeaponProperty(weapon, propertyName) {
+    const propertyMap = {
+        'damage_min': weapon.damage_min || 0,
+        'damage_max': weapon.damage_max || 0,
+        'base_magazine': weapon.magazine_size || 0,
+        'base_reload_time': weapon.reload_speed || 0,
+        'base_ads_time': weapon.ads_speed || 0,
+        'base_fire_rate': weapon.fire_rate || 0,
+        'base_range': weapon.range_effective || 0,
+        'base_recoil': weapon.recoil || 0,
+        'base_spread': (100 - (weapon.accuracy || 0)), // Convert accuracy to spread
+        'base_handling': weapon.handling || weapon.stability || 0,
+        'type': weapon.weapon_type || ''
+    };
+    
+    return propertyMap[propertyName] || 0;
+}
+
+// Server-side stat calculation functions
+async function calculateCharacterStatsServerSide(characterData) {
+    // Base stat definitions with formulas (matching client-side calculator)
+    const baseStats = {
+        // Primary Attributes (Equipment + Skills Only - NO Player Allocation)
+        vitality: { base: 0, formula: 'equipment + skills' },
+        precision: { base: 0, formula: 'equipment + skills' },
+        potency: { base: 0, formula: 'equipment + skills' },
+        alacrity: { base: 0, formula: 'equipment + skills' },
+        capacity: { base: 0, formula: 'equipment + skills' },
+        defense: { base: 0, formula: 'equipment + skills' },
+        
+        // Health & Survivability (Derived from attributes + bonuses)
+        health: { base: 100, formula: 'base + (vitality * 5) + equipment + skills' },
+        shield_capacity: { base: 50, formula: 'base + (vitality * 2) + equipment + skills' },
+        health_regeneration_rate: { base: 1.0, formula: 'base + (vitality * 0.1) + equipment + skills' },
+        health_regeneration_delay: { base: 5.0, formula: 'base + equipment + skills' },
+        shield_regeneration_rate: { base: 10.0, formula: 'base + equipment + skills' },
+        shield_delay: { base: 2.0, formula: 'base + equipment + skills' },
+        shield_delay_change_percent: { base: 0, formula: '0 + equipment + skills', cap: 0.50 },
+        damage_reduction_percent: { base: 0, formula: '0 + (defense * 0.001) + equipment + skills' },
+        healing_effectiveness_percent: { base: 100, formula: 'base + equipment + skills' },
+        shield_gate_percent: { base: 0, formula: '0 + equipment + skills' },
+        recovery_speed_percent: { base: 100, formula: 'base + equipment + skills' },
+        revival_speed_percent: { base: 100, formula: 'base + equipment + skills' },
+        
+        // Critical Strike & Accuracy (Derived)
+        critical_strike_chance_percent: { base: 5, formula: 'base + (precision * 0.5) + equipment + skills', cap: 50 },
+        critical_strike_damage_percent: { base: 150, formula: 'base + (precision * 0.2) + equipment + skills' },
+        accuracy_percent: { base: 75, formula: 'base + (precision * 1.0) + equipment + skills' },
+        weak_spot_damage_percent: { base: 200, formula: 'base + equipment + skills' },
+        
+        // Movement & Mobility (Derived)
+        movement_speed_percent: { base: 0, formula: '0 + (alacrity * 0.4) + equipment + skills', cap: 30 },
+        sprint_speed_percent: { base: 0, formula: '0 + equipment + skills' },
+        crouch_speed_percent: { base: 0, formula: '0 + equipment + skills' },
+        slide_speed_percent: { base: 0, formula: '0 + equipment + skills' },
+        jump_height_percent: { base: 0, formula: '0 + equipment + skills' },
+        air_control_percent: { base: 0, formula: '0 + equipment + skills' },
+        fall_damage_reduction_percent: { base: 0, formula: '0 + equipment + skills' },
+        dodge_distance_percent: { base: 0, formula: '0 + equipment + skills' },
+        dodge_cooldown_percent: { base: 0, formula: '0 + equipment + skills' },
+        
+        // Ability & Cooldown System (NO ENERGY)
+        cooldown_reduction_percent: { base: 0, formula: '0 + (capacity * 0.2) + equipment + skills' },
+        ability_damage_percent: { base: 0, formula: '0 + (capacity * 0.5) + equipment + skills' },
+        ability_radius_percent: { base: 0, formula: '0 + equipment + skills' },
+        ability_duration_percent: { base: 0, formula: '0 + equipment + skills' },
+        ability_range_percent: { base: 0, formula: '0 + equipment + skills' },
+        ultimate_charge_rate_percent: { base: 0, formula: '0 + equipment + skills' },
+        ability_cost_reduction_percent: { base: 0, formula: '0 + equipment + skills' },
+        combo_damage_percent: { base: 0, formula: '0 + equipment + skills' },
+        
+        // Power Budget System
+        power_max: { base: 300, formula: 'base + (level * 50) + equipment + skills' },
+        power_efficiency_item_bonus: { base: 0, formula: '0 + item_rarity_bonus' },
+        loadout_power_cost: { base: 0, formula: 'sum_of_equipped_item_costs' },
+        
+        // Primary Weapon Base Stats (From Weapon Item)
+        primary_weapon_damage_min: { base: 0, formula: 'weapon_value_only' },
+        primary_weapon_damage_max: { base: 0, formula: 'weapon_value_only' },
+        primary_weapon_base_magazine: { base: 0, formula: 'weapon_value_only' },
+        primary_weapon_base_reload_time: { base: 0, formula: 'weapon_value_only' },
+        primary_weapon_base_ads_time: { base: 0, formula: 'weapon_value_only' },
+        primary_weapon_base_fire_rate: { base: 0, formula: 'weapon_value_only' },
+        primary_weapon_base_range: { base: 0, formula: 'weapon_value_only' },
+        primary_weapon_base_recoil: { base: 0, formula: 'weapon_value_only' },
+        primary_weapon_base_spread: { base: 0, formula: 'weapon_value_only' },
+        primary_weapon_base_handling: { base: 0, formula: 'weapon_value_only' },
+        primary_weapon_type: { base: '', formula: 'weapon_value_only' },
+        
+        // Secondary Weapon Base Stats (From Weapon Item)
+        secondary_weapon_damage_min: { base: 0, formula: 'weapon_value_only' },
+        secondary_weapon_damage_max: { base: 0, formula: 'weapon_value_only' },
+        secondary_weapon_base_magazine: { base: 0, formula: 'weapon_value_only' },
+        secondary_weapon_base_reload_time: { base: 0, formula: 'weapon_value_only' },
+        secondary_weapon_base_ads_time: { base: 0, formula: 'weapon_value_only' },
+        secondary_weapon_base_fire_rate: { base: 0, formula: 'weapon_value_only' },
+        secondary_weapon_base_range: { base: 0, formula: 'weapon_value_only' },
+        secondary_weapon_base_recoil: { base: 0, formula: 'weapon_value_only' },
+        secondary_weapon_base_spread: { base: 0, formula: 'weapon_value_only' },
+        secondary_weapon_base_handling: { base: 0, formula: 'weapon_value_only' },
+        secondary_weapon_type: { base: '', formula: 'weapon_value_only' },
+        
+        // Universal Weapon Modifiers (Apply to All Weapons)
+        magazine_size_change_percent: { base: 0, formula: '0 + equipment + skills' },
+        reload_speed_percent: { base: 0, formula: '0 + equipment + skills' },
+        ads_speed_percent: { base: 0, formula: '0 + equipment + skills' },
+        fire_rate_percent: { base: 0, formula: '0 + equipment + skills' },
+        range_percent: { base: 0, formula: '0 + equipment + skills' },
+        recoil_reduction_percent: { base: 0, formula: '0 + equipment + skills' },
+        spread_reduction_percent: { base: 0, formula: '0 + equipment + skills' },
+        handling_percent: { base: 0, formula: '0 + equipment + skills' },
+        armor_penetration_percent: { base: 0, formula: '0 + equipment + skills' },
+        projectile_speed_percent: { base: 0, formula: '0 + equipment + skills' },
+        projectile_count_bonus: { base: 0, formula: '0 + equipment + skills' },
+        ricochet_chance_percent: { base: 0, formula: '0 + equipment + skills' },
+        piercing_targets_bonus: { base: 0, formula: '0 + equipment + skills' }
+    };
+    
+    // Get equipment and skill bonuses
+    const equipmentBonuses = getEquipmentBonuses(characterData.equipment);
+    const skillBonuses = getSkillBonuses(characterData.skills);
+    
+    // Calculate primary attributes first
+    const attributes = {
+        vitality: (equipmentBonuses.vitality || 0) + (skillBonuses.vitality || 0),
+        precision: (equipmentBonuses.precision || 0) + (skillBonuses.precision || 0),
+        potency: (equipmentBonuses.potency || 0) + (skillBonuses.potency || 0),
+        alacrity: (equipmentBonuses.alacrity || 0) + (skillBonuses.alacrity || 0),
+        capacity: (equipmentBonuses.capacity || 0) + (skillBonuses.capacity || 0),
+        defense: (equipmentBonuses.defense || 0) + (skillBonuses.defense || 0)
+    };
+    
+    const stats = {};
+    
+    // Calculate all stats
+    for (const [statName, statDef] of Object.entries(baseStats)) {
+        let value = statDef.base;
+        
+        // Apply attribute scaling
+        if (statDef.formula.includes('vitality')) {
+            const multiplier = extractMultiplier(statDef.formula, 'vitality');
+            value += attributes.vitality * multiplier;
+        }
+        if (statDef.formula.includes('precision')) {
+            const multiplier = extractMultiplier(statDef.formula, 'precision');
+            value += attributes.precision * multiplier;
+        }
+        if (statDef.formula.includes('potency')) {
+            const multiplier = extractMultiplier(statDef.formula, 'potency');
+            value += attributes.potency * multiplier;
+        }
+        if (statDef.formula.includes('alacrity')) {
+            const multiplier = extractMultiplier(statDef.formula, 'alacrity');
+            value += attributes.alacrity * multiplier;
+        }
+        if (statDef.formula.includes('capacity')) {
+            const multiplier = extractMultiplier(statDef.formula, 'capacity');
+            value += attributes.capacity * multiplier;
+        }
+        if (statDef.formula.includes('defense')) {
+            const multiplier = extractMultiplier(statDef.formula, 'defense');
+            value += attributes.defense * multiplier;
+        }
+        
+        // Apply level scaling
+        if (statDef.formula.includes('level')) {
+            const multiplier = extractMultiplier(statDef.formula, 'level');
+            value += (characterData.level || 1) * multiplier;
+        }
+        
+        // Handle weapon-specific stats
+        if (statDef.formula === 'weapon_value_only') {
+            value = getWeaponStatValue(statName, characterData.equipment);
+        } else {
+            // Apply equipment and skill bonuses
+            value += equipmentBonuses[statName] || 0;
+            value += skillBonuses[statName] || 0;
+        }
+        
+        // Apply caps
+        if (statDef.cap && value > statDef.cap) {
+            value = statDef.cap;
+        }
+        
+        stats[statName] = value;
+    }
+    
+    // Add typed stats as empty arrays for now (can be enhanced later)
+    const typedStats = [
+        'damage_percent', 'weapon_type_damage_flat', 'weapon_type_damage_percent',
+        'resistance_percent', 'status_effect_chance', 'status_effect_duration_percent',
+        'status_effect_resistance', 'damage_vs_target_percent', 'ammo_capacity',
+        'cooldown_reduction_typed', 'class_skill_modifier'
+    ];
+    
+    for (const statName of typedStats) {
+        stats[statName] = 0; // Empty array placeholder
+    }
+    
+    // Add remaining weapon stats
+    const weaponStats = [
+        'weapon_base_damage', 'weapon_base_magazine', 'weapon_base_reload_time',
+        'weapon_base_ads_time', 'weapon_base_fire_rate', 'weapon_base_range',
+        'weapon_base_recoil', 'weapon_base_spread', 'weapon_base_handling',
+        'magazine_size_change_percent', 'reload_speed_percent', 'ads_speed_percent',
+        'fire_rate_percent', 'range_percent', 'recoil_reduction_percent',
+        'spread_reduction_percent', 'handling_percent', 'armor_penetration_percent',
+        'projectile_speed_percent', 'projectile_count', 'ricochet_chance_percent',
+        'piercing_targets'
+    ];
+    
+    for (const statName of weaponStats) {
+        stats[statName] = equipmentBonuses[statName] || skillBonuses[statName] || 0;
+    }
+    
+    return stats;
+}
+
+function extractMultiplier(formula, attribute) {
+    const regex = new RegExp(`\\\\(${attribute} \\\\* ([0-9.]+)\\\\)`);
+    const match = formula.match(regex);
+    return match ? parseFloat(match[1]) : 0;
+}
+
+function getEquipmentBonuses(equipment) {
+    const bonuses = {};
+    
+    for (const item of equipment) {
+        // Process main modifiers (attribute bonuses)
+        if (item.main_modifiers) {
+            const mainMods = typeof item.main_modifiers === 'string' 
+                ? JSON.parse(item.main_modifiers) 
+                : item.main_modifiers;
+                
+            for (const [stat, value] of Object.entries(mainMods)) {
+                bonuses[stat] = (bonuses[stat] || 0) + value;
+            }
+        }
+        
+        // Process extra modifiers (simple bonuses for now)
+        if (item.extra_modifiers) {
+            const extraMods = typeof item.extra_modifiers === 'string'
+                ? JSON.parse(item.extra_modifiers)
+                : item.extra_modifiers;
+                
+            for (const mod of extraMods) {
+                if (!mod.damageType && !mod.weaponType && !mod.statusType) {
+                    // Simple modifiers
+                    bonuses[mod.name] = (bonuses[mod.name] || 0) + mod.value;
+                }
+            }
+        }
+    }
+    
+    return bonuses;
+}
+
+function getSkillBonuses(skills) {
+    // Basic skill bonus system - can be enhanced later
+    const bonuses = {};
+    
+    for (const skill of skills) {
+        // Add basic resistance bonuses for the test skills
+        if (skill.skill_id === 'fire_heat_resistance') {
+            bonuses.fire_resistance = (bonuses.fire_resistance || 0) + (skill.level * 5);
+        } else if (skill.skill_id === 'ice_cold_resistance') {
+            bonuses.ice_resistance = (bonuses.ice_resistance || 0) + (skill.level * 5);
+        } else if (skill.skill_id === 'electric_conductivity') {
+            bonuses.electric_damage = (bonuses.electric_damage || 0) + (skill.level * 3);
+        }
+    }
+    
+    return bonuses;
+}
+
+async function saveCalculatedStatsToDatabase(characterId, stats) {
+    return new Promise((resolve, reject) => {
+        // Update each stat individually using the row-based structure
+        const updatePromises = [];
+        
+        for (const [statName, totalValue] of Object.entries(stats)) {
+            const promise = new Promise((statResolve, statReject) => {
+                db.db.run(`
+                    UPDATE character_stats 
+                    SET total_value = ?, last_calculated = CURRENT_TIMESTAMP
+                    WHERE character_id = ? AND stat_name = ?
+                `, [totalValue, characterId, statName], function(err) {
+                    if (err) {
+                        console.error(`Error updating stat ${statName}:`, err);
+                        statReject(err);
+                    } else {
+                        statResolve(this.changes);
+                    }
+                });
+            });
+            updatePromises.push(promise);
+        }
+        
+        Promise.all(updatePromises)
+            .then(results => {
+                const totalChanges = results.reduce((sum, changes) => sum + changes, 0);
+                console.log(`Updated ${totalChanges} stats for character ${characterId}`);
+                resolve(totalChanges);
+            })
+            .catch(reject);
+    });
+}
+
+// Event-driven stat recalculation system
+async function triggerStatRecalculation(characterId, eventType, eventData) {
+    try {
+        console.log(`🔄 Event triggered: ${eventType} for character ${characterId}`);
+        
+        // Log the event
+        await new Promise((resolve, reject) => {
+            db.db.run(`
+                INSERT INTO character_events (character_id, event_type, event_data)
+                VALUES (?, ?, ?)
+            `, [characterId, eventType, JSON.stringify(eventData)], function(err) {
+                if (err) reject(err);
+                else resolve(this.lastID);
+            });
+        });
+        
+        // Get character data
+        const character = await new Promise((resolve, reject) => {
+            db.db.get(`
+                SELECT c.*, cc.name as class_name
+                FROM characters c
+                JOIN character_classes cc ON c.class_id = cc.id
+                WHERE c.id = ?
+            `, [characterId], (err, row) => {
+                if (err) reject(err);
+                else resolve(row);
+            });
+        });
+        
+        if (!character) {
+            throw new Error(`Character ${characterId} not found`);
+        }
+        
+        // Get equipped items
+        const equipment = await new Promise((resolve, reject) => {
+            db.db.all(`
+                SELECT ce.slot, i.*
+                FROM character_equipment ce
+                JOIN items i ON ce.item_id = i.id
+                WHERE ce.character_id = ?
+            `, [characterId], (err, rows) => {
+                if (err) reject(err);
+                else resolve(rows || []);
+            });
+        });
+        
+        // Get purchased skills
+        const skills = await new Promise((resolve, reject) => {
+            db.db.all(`
+                SELECT skill_id, level
+                FROM character_skills
+                WHERE character_id = ?
+            `, [characterId], (err, rows) => {
+                if (err) reject(err);
+                else resolve(rows || []);
+            });
+        });
+        
+        // Calculate and save stats
+        const characterData = {
+            id: character.id,
+            level: character.level,
+            class: character.class_name,
+            equipment,
+            skills
+        };
+        
+        const stats = await calculateCharacterStatsServerSide(characterData);
+        await saveCalculatedStatsToDatabase(characterId, stats);
+        
+        console.log(`✅ Stats recalculated for character ${characterId} (${eventType})`);
+        return { success: true, eventType, characterId, statsCount: Object.keys(stats).length };
+        
+    } catch (error) {
+        console.error(`❌ Error in stat recalculation for character ${characterId}:`, error);
+        throw error;
+    }
+}
 
 // Only serve index.html for the root path, let static middleware handle other files
 app.get('/', (req, res) => {

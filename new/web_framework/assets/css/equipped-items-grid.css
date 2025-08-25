@@ -1,0 +1,275 @@
+/**
+ * Unified Equipped Items Grid Styles
+ * 
+ * Consistent styling for equipped items across all pages
+ */
+
+/* Equipment Grid Container */
+.equipment-grid {
+    display: grid;
+    grid-template-columns: 104px 104px 296px;
+    grid-template-rows: 104px 104px 104px;
+    gap: 8px;
+    max-width: 520px;
+    margin: 0 auto;
+}
+
+/* Individual Equipment Slots */
+.equipment-slot {
+    position: relative;
+    width: 104px;
+    height: 104px;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.8) 0%, rgba(20, 20, 20, 0.8) 100%);
+    border: 1px solid #333;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    transition: all 0.2s ease;
+}
+
+.equipment-slot:hover {
+    border-color: #555;
+    background: linear-gradient(135deg, rgba(10, 10, 10, 0.9) 0%, rgba(30, 30, 30, 0.9) 100%);
+}
+
+/* Empty Slot Placeholder */
+.equipment-placeholder {
+    color: #666;
+    font-size: 12px;
+    font-weight: 500;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Equipped Item Container */
+.equipped-item {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease;
+}
+
+.equipped-item:hover {
+    transform: scale(1.02);
+}
+
+/* Item Icon */
+.item-icon {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.item-icon-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+/* Power Rating Badge */
+.power-rating {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: rgba(0, 0, 0, 0.8);
+    color: #ffd700;
+    font-size: 10px;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 10px;
+    border: 1px solid #444;
+    min-width: 20px;
+    text-align: center;
+}
+
+/* Item Name Overlay */
+.item-name-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    font-size: 8px;
+    padding: 2px 4px;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
+/* Rarity Border Colors */
+.equipment-slot[data-rarity="common"] {
+    border-color: #9d9d9d;
+}
+
+.equipment-slot[data-rarity="uncommon"] {
+    border-color: #1eff00;
+}
+
+.equipment-slot[data-rarity="rare"] {
+    border-color: #0070dd;
+}
+
+.equipment-slot[data-rarity="epic"] {
+    border-color: #a335ee;
+}
+
+.equipment-slot[data-rarity="legendary"] {
+    border-color: #ff8000;
+}
+
+.equipment-slot[data-rarity="mythic"] {
+    border-color: #e6cc80;
+}
+
+/* Rarity Glow Effects */
+.equipment-slot.equipped[data-rarity="uncommon"]:hover {
+    box-shadow: 0 0 12px rgba(30, 255, 0, 0.3);
+}
+
+.equipment-slot.equipped[data-rarity="rare"]:hover {
+    box-shadow: 0 0 12px rgba(0, 112, 221, 0.3);
+}
+
+.equipment-slot.equipped[data-rarity="epic"]:hover {
+    box-shadow: 0 0 12px rgba(163, 53, 238, 0.3);
+}
+
+.equipment-slot.equipped[data-rarity="legendary"]:hover {
+    box-shadow: 0 0 12px rgba(255, 128, 0, 0.3);
+}
+
+.equipment-slot.equipped[data-rarity="mythic"]:hover {
+    box-shadow: 0 0 12px rgba(230, 204, 128, 0.3);
+}
+
+/* Grid Layout for Different Slot Arrangements */
+
+/* Primary weapon spans row 1, column 3 */
+.equipment-slot[data-slot="primary"] {
+    grid-column: 3;
+    grid-row: 1;
+    width: 296px;
+    height: 104px;
+}
+
+/* Secondary weapon spans row 2, column 3 */
+.equipment-slot[data-slot="secondary"] {
+    grid-column: 3;
+    grid-row: 2;
+    width: 296px;
+    height: 104px;
+}
+
+/* Head armor - row 1, column 1 */
+.equipment-slot[data-slot="head"] {
+    grid-column: 1;
+    grid-row: 1;
+}
+
+/* Shoulders - row 1, column 2 */
+.equipment-slot[data-slot="shoulders"] {
+    grid-column: 2;
+    grid-row: 1;
+}
+
+/* Chest - row 2, column 1 */
+.equipment-slot[data-slot="chest"] {
+    grid-column: 1;
+    grid-row: 2;
+}
+
+/* Back - row 2, column 2 */
+.equipment-slot[data-slot="back"] {
+    grid-column: 2;
+    grid-row: 2;
+}
+
+/* Gloves - row 3, column 1 */
+.equipment-slot[data-slot="gloves"] {
+    grid-column: 1;
+    grid-row: 3;
+}
+
+/* Legs - row 3, column 2 */
+.equipment-slot[data-slot="legs"] {
+    grid-column: 2;
+    grid-row: 3;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+    .equipment-grid {
+        grid-template-columns: 80px 80px 200px;
+        grid-template-rows: 80px 80px 80px;
+        gap: 6px;
+        max-width: 380px;
+    }
+    
+    .equipment-slot {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .equipment-slot[data-slot="primary"],
+    .equipment-slot[data-slot="secondary"] {
+        width: 200px;
+        height: 80px;
+    }
+    
+    .item-icon {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .power-rating {
+        font-size: 8px;
+        padding: 1px 4px;
+    }
+    
+    .item-name-overlay {
+        font-size: 7px;
+        padding: 1px 2px;
+    }
+}
+
+/* Loading State */
+.equipment-grid.loading .equipment-slot {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.equipment-grid.loading .equipment-slot::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid #333;
+    border-top-color: #666;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}

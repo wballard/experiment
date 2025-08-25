@@ -41,7 +41,9 @@
       "Bash(node server.js)",
       "Bash(npm run dev:*)",
       "Bash(git add:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(timeout:*)",
+      "Bash(/dev/null)"
     ],
     "deny": [],
     "ask": [],

@@ -29,10 +29,10 @@ fire_damage_percent = 0.35
 sniper_damage_percent = 0.20
 ```
 
-#### **Equipment Slot System (9 slots only)**
+#### **Equipment Slot System (11 slots only)**
 ```javascript
 // ✅ APPROVED SLOTS (DO NOT ADD MORE)
-primary, secondary, head, shoulders, chest, gloves, legs, back, trinket
+primary, secondary, head, shoulders, chest, gloves, legs, back, trinket, catalyst, attachment
 ```
 
 ### **❌ ABSOLUTELY FORBIDDEN**
@@ -62,7 +62,7 @@ luck, karma, reputation, faction_standing, crafting_skill
 ```javascript
 // ❌ DO NOT ADD
 rings, bracers, belt, boots, weapon_mod_1, weapon_mod_2
-// Use only the approved 9 slots
+// Use only the approved 11 slots
 ```
 
 ---
@@ -75,7 +75,7 @@ rings, bracers, belt, boots, weapon_mod_1, weapon_mod_2
 {
     id: 1234,
     name: "Plasma Rifle MK-VII",
-    slot: "primary", // Must be one of 9 approved slots
+    slot: "primary", // Must be one of 11 approved slots
     power_cost: 45,
     
     // Attribute bonuses (affects primary attributes)

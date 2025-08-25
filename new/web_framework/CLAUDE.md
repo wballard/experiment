@@ -39,7 +39,7 @@ You MUST reference these documents and follow their constraints:
 
 **Extra Equipment Slots:**
 - Do not add `rings`, `belt`, `boots`, `bracers`, `weapon_mod_1`, etc.
-- Use ONLY the approved 9 slots: `primary, secondary, head, shoulders, chest, gloves, legs, back, trinket`
+- Use ONLY the approved 11 slots: `primary, secondary, head, shoulders, chest, gloves, legs, back, trinket, catalyst, attachment`
 
 **Individual Hardcoded Stats:**
 - Never create `fire_damage_percent`, `sniper_damage_bonus`, `burn_resistance`

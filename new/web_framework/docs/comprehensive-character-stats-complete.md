@@ -17,7 +17,7 @@ This is the **DEFINITIVE LIST** of ALL 113 stats for the character system. **NO 
 - **NO player attribute allocation** (attributes come from equipment + skills only)
 - **Uses typed modifier system** for damage/resistance/status effects
 - **All modifiers use +/- pattern** (can increase OR decrease stats for trade-offs)
-- **9 equipment slots only** (no random additions)
+- **11 equipment slots only** (primary, secondary, head, shoulders, chest, gloves, legs, back, trinket, catalyst, attachment)
 - **Cooldown-based abilities** (no energy system)
 
 ---

@@ -1379,7 +1379,7 @@ class Database {
         return new Promise((resolve, reject) => {
             this.db.all(`
                 SELECT ce.slot, i.*
-                FROM character_equipped ce
+                FROM character_equipment ce
                 LEFT JOIN items i ON ce.item_id = i.id
                 WHERE ce.character_id = ?
             `, [characterId], async (err, rows) => {
@@ -1454,17 +1454,27 @@ class Database {
                         return;
                     }
 
-                    // Update equipped item
+                    // First remove any existing item in this slot, then add new item
                     this.db.run(`
-                        UPDATE character_equipped 
-                        SET item_id = ?, equipped_at = CURRENT_TIMESTAMP
+                        DELETE FROM character_equipment 
                         WHERE character_id = ? AND slot = ?
-                    `, [itemId, characterId, slot], function(err) {
-                        if (err) {
-                            reject(err);
-                        } else {
-                            resolve({ success: true, changes: this.changes });
+                    `, [characterId, slot], (deleteErr) => {
+                        if (deleteErr) {
+                            reject(deleteErr);
+                            return;
                         }
+                        
+                        // Insert new equipped item
+                        this.db.run(`
+                            INSERT INTO character_equipment (character_id, slot, item_id)
+                            VALUES (?, ?, ?)
+                        `, [characterId, slot, itemId], function(err) {
+                            if (err) {
+                                reject(err);
+                            } else {
+                                resolve({ success: true, changes: this.changes });
+                            }
+                        });
                     });
                 });
             });
@@ -1474,8 +1484,7 @@ class Database {
     async unequipCharacterItem(characterId, slot) {
         return new Promise((resolve, reject) => {
             this.db.run(`
-                UPDATE character_equipped 
-                SET item_id = NULL, equipped_at = CURRENT_TIMESTAMP
+                DELETE FROM character_equipment 
                 WHERE character_id = ? AND slot = ?
             `, [characterId, slot], function(err) {
                 if (err) {
